@@ -1,4 +1,4 @@
-![](https://github.com/github/training-kit/blob/master/images/professortocat.png)
+![](https://github.com/regini/inSquare/blob/gh-pages/INSQUARE%20LOGO.png)
 # inSquare
 Geolocalized interactions for anyone's need and those who want to know more about what’s going on
 
