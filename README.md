@@ -5,4 +5,4 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 Common needs in common places
 
 # Our Idea
-![](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
+[Download Pdf](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
