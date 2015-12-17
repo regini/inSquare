@@ -8,7 +8,7 @@ Common needs in common places
 [Download Pdf](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
 
 # Help us to better define our idea
-[Survey](http://moodle.dia.uniroma3.it/course/view.php?id=21)
+[Survey](https://goo.gl/07GxSS)
 
 # Mockups
 ![](http://regini.github.io/inSquare/mockup.png)
