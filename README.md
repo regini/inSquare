@@ -12,3 +12,7 @@ Common needs in common places
 
 # Mockups
 ![](http://regini.github.io/inSquare/mockup.png)
+
+
+# Let's Get In Touch!
+[Please feel free to contact us for any information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
