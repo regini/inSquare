@@ -13,6 +13,11 @@ Common needs in common places
 # Mockups
 ![](http://regini.github.io/inSquare/mockup.png)
 
+# Milestone 1 - Proof of Concept
+
+# Milestone 2 - Release Candidate
+
+# Milestone 3 - Public live BETA
 
 # Let's Get In Touch!
 [Please feel free to contact us for any information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
