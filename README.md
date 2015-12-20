@@ -36,7 +36,7 @@ Common needs in common places
     
        
           
-  * This is a tentative list depending on the user feedback we will collect   
+This is a tentative list depending on the user feedback we will collect   
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
