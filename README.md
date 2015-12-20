@@ -9,6 +9,7 @@ Common needs in common places
 
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)
+[Results](https://docs.google.com/forms/d/1VNDIqxvEftTTwklxarWzcM6DcCcdv_zyfekmQPCvtGc/viewanalytics)
 
 # Mockups
 ![](http://regini.github.io/inSquare/mockup.png)
