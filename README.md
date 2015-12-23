@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ![](https://github.com/regini/inSquare/blob/gh-pages/INSQUARE%20LOGO.png)
 # inSquare
 Geolocalized interactions for anyone's need and those who want to know more about what’s going on
@@ -40,8 +39,3 @@ Common needs in common places
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
-=======
-The OpenShift `nodejs` cartridge documentation can be found at:
-
-http://openshift.github.io/documentation/oo_cartridge_guide.html#nodejs
->>>>>>> b0992ba95167c75c0142c5b315c44ab9c288bda4
