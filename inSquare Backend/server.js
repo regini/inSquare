@@ -1,7 +1,6 @@
-var express = require('express');
-var app = express();
-var fs      = require('fs');
-var http    = require('http');
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var mysql = require('mysql');
 var vsprintf = require("sprintf-js").vsprintf;
 
@@ -16,12 +15,11 @@ var db_username = process.env.OPENSHIFT_MYSQL_DB_USERNAME;
 var db_password = process.env.OPENSHIFT_MYSQL_DB_PASSWORD;
 var db_name = process.env.OPENSHIFT_GEAR_NAME;
 
+var socketCount = 0;
+
 // CONNESSIONE AL SERVER
-var server = app.listen(server_port, server_ip_address, function () {
-    //stringhe per la console
-    var host = server.address().address;
-    var port = server.address().port;
-    console.log("Example app listening at http://%s:%s", host, port);
+http.listen(server_port, server_ip_address, function () {
+    console.log("Example app listening at http://%s:%s", server_ip_address, server_port);
 });
 
 //CONNESSIONE AL DATABASE
@@ -38,21 +36,33 @@ connection.connect(function(err) {
     console.error('error connecting: ' + err.stack);
     return;
   }
-
   console.log('connected as id ' + connection.threadId);
 });
 
-//GET request alla home che risponde con hello world
 app.get('/', function (req, res) {
-    console.log("Got a GET request for the homepage");
-    res.send('Hello World');
-})
+    res.sendFile(__dirname + '/index.html');
+});
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socketCount++;
+  io.emit('users connected', socketCount);
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+    connection.query('INSERT INTO `message`(`text`) VALUES (?)',msg);
+  });
+  socket.on('disconnect', function(){
+    socketCount--;
+    io.emit('users connected', socketCount)
+    console.log('user disconnected');
+  });
+});
 
 //POST request alla home che risponde con hello post
 app.post('/', function (req, res) {
    console.log("Got a POST request for the homepage");
    res.send('Hello POST');
-})
+});
 
 /*
     POST request per l'invio di un messaggio
@@ -67,7 +77,7 @@ app.post('/inviaMessaggio', function(req,res) {
         if (error) {
             res.send(error);
         } else {
-            var response = vsprintf('inseriti messaggio: %s', [message]);
+            var response = vsprintf('inserito messaggio: %s', [message]);
             res.send(response);
         }
     });
@@ -89,6 +99,3 @@ app.get('/getMessaggi', function(req,res) {
         res.send(response);
     });
 })
-
-
-
