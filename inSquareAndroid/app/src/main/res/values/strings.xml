@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">inSquare</string>
+    <string name="google_api_key">AIzaSyAxtPjGcRbeJFKEHugwNW8xJMxWnNNcfYc</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_fab">FabActivity</string>
+
+    <string name="error_connect">Connection has failed</string>
+    <string name="message_user_joined">%s has joined</string>
+    <string name="message_user_left">%s has left</string>
+    <string name="user_action_typing"> is typing</string>
+    <string name="username">Username</string>
+    <string name="ok">Ok</string>
+
+    <plurals name="message_participants">
+        <item quantity="one">There\'s %d participant</item>
+        <item quantity="other">There are %d participants</item>
+    </plurals>
 </resources>
