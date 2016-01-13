@@ -12,6 +12,7 @@
     <string name="user_action_typing"> is typing</string>
     <string name="username">Username</string>
     <string name="ok">Ok</string>
+    <string name="facebook_app_id">743420882424724</string>
 
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>
