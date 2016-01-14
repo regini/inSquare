@@ -18,11 +18,16 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.nsqre.insquare.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
 
     private TextView info;
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+    private String userId;
+    private String accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +39,19 @@ public class LoginActivity extends AppCompatActivity {
 
 
         callbackManager = CallbackManager.Factory.create();
-        //final Button loginfb = (Button) findViewById(R.id.buttonfb);
+        final Button loginfb = (Button) findViewById(R.id.buttonfb);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                userId = loginResult.getAccessToken().getUserId();
+                accessToken = loginResult.getAccessToken().getToken();
                 info.setText(
                     "User ID: "
-                    + loginResult.getAccessToken().getUserId()
+                    + userId
                     + "\n" +
                     "Auth Token: "
-                    + loginResult.getAccessToken().getToken()
+                    + accessToken
                 );
             }
 
@@ -55,39 +62,62 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException e) {
-                info.setText("Login attempt failed.");
+                info.setText(e.toString());
             }
         });
 
-
-/*
         loginfb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Instantiate the RequestQueue.
                 RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                String url = "http://private-24080-insquare.apiary-mock.com/users";
+                String url = "http://recapp-insquare.rhcloud.com/auth/facebook/token";
 
                 // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
                                 // Display the first 500 characters of the response string.
-                                loginfb.setText("Response is: " + response.substring(0, 300));
+                                loginfb.setText("Response is: " + response);
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         loginfb.setText("That didn't work!");
                     }
-                });
+                }) {
+                    /*
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("userid", userId);
+                        params.put("token", accessToken);
+
+                        return params;
+                    }
+                    */
+                    @Override
+                    protected Map<String,String> getParams(){
+                        Map<String,String> params = new HashMap<String, String>();
+                        params.put("access_token", accessToken);
+
+                        return params;
+                    }
+
+                    /*
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String,String> params = new HashMap<String, String>();
+                        params.put("Content-Type","application/x-www-form-urlencoded");
+                        return params;
+                    }
+                    */
+                };
                 // Add the request to the RequestQueue.
                 queue.add(stringRequest);
             }
         });
-*/
-
     }
 
     @Override
