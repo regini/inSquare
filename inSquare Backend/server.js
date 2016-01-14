@@ -1,77 +1,82 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var mongoose = require('mongoose');
+var mongoosastic = require('mongoosastic');
 var elasticsearch = require('elasticsearch');
-var vsprintf = require("sprintf-js").vsprintf;
-
 var passport = require('passport');
-var strategy = require('./setup-passport');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
+var flash = require('connect-flash');
 
-var requiresLogin = require('./requiresLogin');
+var morgan = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require("body-parser");
+var session = require('express-session');
 
 /*
   Setup delle variabili prese dall'environment
 */
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var connection_string = 'mongodb://localhost:27017/insquare';
+if (process.env.OPENSHIFT_MONGODB_DB_URL) {
+  connection_string = process.env.OPENSHIFT_MONGODB_DB_URL +
+                      process.env.OPENSHIFT_APP_NAME;
+}
 
-var socketCount = 0;
-
+app.use(morgan('dev'));
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(session({
-  secret: 'Hn98wRqgho210gbhs7UVNdQBzviVarMqJq51Md10QtlysDWYM0vs_6DLJLL8Ek5b',
+  secret: 'supersecret',
   resave: false,
   saveUninitialized: false
- }));
-
+}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
+require('./config/passport')(passport);
+
+app.set('view engine', 'ejs');
+
+var router = express.Router();
 
 // CONNESSIONE AL SERVER
+mongoose.connect(connection_string, function(err) {
+  console.log(connection_string);
+  if (err) {
+    console.error(err);
+  }
+  console.log('connected.... unless you see an error the line before this!');
+});
+
 http.listen(server_port, server_ip_address, function () {
     console.log("Example app listening at http://%s:%s", server_ip_address, server_port);
 });
 
-//CONNESSIONE AL DATABASE
 var client = new elasticsearch.Client({
   host: 'http://elastic-insquare.rhcloud.com',
   log: 'trace'
 });
 
-client.ping({
-  // ping usually has a 3000ms timeout
-  requestTimeout: Infinity,
+// client.ping({
+//   // ping usually has a 3000ms timeout
+//   requestTimeout: Infinity,
+//   // undocumented params are appended to the query string
+//   hello: "elasticsearch!"
+// }, function(error) {
+//   if (error) {
+//     console.trace('elasticsearch cluster is down!');
+//   } else {
+//     console.log('All is well');
+//   }
+// });
 
-  // undocumented params are appended to the query string
-  hello: "elasticsearch!"
-}, function (error) {
-  if (error) {
-    console.trace('elasticsearch cluster is down!');
-  } else {
-    console.log('All is well');
-  }
-});
-
-app.get('/callback',
-  passport.authenticate('auth0', { failureRedirect: 'www.google.com' }),
-  function(req, res) {
-    if (!req.user) {
-      throw new Error('user null');
-    }
-    res.sendFile(__dirname + '/chat.html');
-  });
-
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
-
-io.on('connection', function(socket){
+io.on('connection', function(socket,req,res) {
   console.log('a user connected');
-  socketCount++;
-  io.emit('users connected', socketCount);
+  io.emit('user connected');
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
     client.create({
@@ -79,82 +84,18 @@ io.on('connection', function(socket){
       type: 'messages',
       body: {
         text: msg,
-        user: "Nik",
+        user: '',
         square:"Roma",
         timestamp: new Date()
       }
     });
   });
-  socket.on('disconnect', function(){
-    socketCount--;
-    io.emit('users connected', socketCount)
+  socket.on('disconnect', function() {
+    io.emit('user disconnected')
     console.log('user disconnected');
   });
 });
 
-/*
-    POST request per l'invio di un messaggio
-    prende dalla query 'numericid' e 'message', connette al db, crea la query, la svolge restituendo un errore o la conferma
-*/
-app.post('/inviaMessaggio', function(req,res) {
-    console.log("richiesta di invio di un messaggio");
-    var message = req.query.message;
+require('./app/routes.js')(router,passport);
 
-    connection.query(query, function(error) {
-        if (error) {
-            res.send(error);
-        } else {
-            var response = vsprintf('inserito messaggio: %s', [message]);
-            res.send(response);
-        }
-    });
-});
-
-app.get('/getMessageHistory', function(req,res) {
-  console.log("chiamata a getMessageHistory");
-  client.search({
-    index: 'message',
-    type: 'messages',
-    body: {
-      query: {
-        match_all:{}
-      }
-    }
-    }).then(function (resp) {
-      var hits = resp.hits.hits;
-      res.send(resp);
-    }, function (err) {
-      console.trace(err.message);
-      res.send(err);
-    });
-});
-
-app.get('/user',
-  requiresLogin,
-  function (req, res) {
-    res.render('user', {
-      user: req.user
-    });
-  });
-
-/*
-    GET request per ottenere i messaggi nella table
-*/
-app.get('/getMessaggi', requiresLogin, function(req,res) {
-    console.log("chiamata a getMessaggi");
-    client.search({
-      index: 'message',
-      type: 'messages',
-      body: {
-        query: {
-          match_all:{}
-        }
-      }
-    }).then(function (resp) {
-      var hits = resp.hits.hits;
-      res.send(resp);
-    }, function (err) {
-      console.trace(err.message);
-      res.send(err);
-    });
-});
+app.use(router);
