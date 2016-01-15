@@ -4,7 +4,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_fab">FabActivity</string>
+    <string name="title_activity_fab">#inSquare</string>
 
     <string name="error_connect">Connection has failed</string>
     <string name="message_user_joined">%s has joined</string>
@@ -13,6 +13,7 @@
     <string name="username">Username</string>
     <string name="ok">Ok</string>
     <string name="facebook_app_id">743420882424724</string>
+    <string name="chatUrl">http://recapp-insquare.rhcloud.com/</string>
 
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>

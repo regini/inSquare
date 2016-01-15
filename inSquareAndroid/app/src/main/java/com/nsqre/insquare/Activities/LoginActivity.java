@@ -1,8 +1,10 @@
 package com.nsqre.insquare.Activities;
 
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -10,13 +12,16 @@ import android.widget.TextView;
 import com.android.volley.*;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.gson.Gson;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         info = (TextView)findViewById(R.id.info);
         loginButton = (LoginButton)findViewById(R.id.login_button);
-
 
         callbackManager = CallbackManager.Factory.create();
         final Button loginfb = (Button) findViewById(R.id.buttonfb);
@@ -78,13 +82,19 @@ public class LoginActivity extends AppCompatActivity {
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
                                 loginfb.setText("Response is: " + response);
+                                User user = new User();
+                                //// TODO: 15/01/2016  SOME JSON MAGIC MUST HAPPEN HERE
+                                //Gson gson = new Gson();
+                                //user = gson.fromJson(response, user.getClass());
+                                Intent intent = new Intent(getApplicationContext(), FabActivity.class);
+                                intent.putExtra("CURRENT_USER", user);
+                                startActivity(intent);
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loginfb.setText("That didn't work!");
+                        loginfb.setText(error.toString());
                     }
                 }) {
                     /*
@@ -114,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     */
                 };
+
                 // Add the request to the RequestQueue.
                 queue.add(stringRequest);
             }
@@ -123,5 +134,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        accessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
+        Log.d("token", accessToken);
     }
 }

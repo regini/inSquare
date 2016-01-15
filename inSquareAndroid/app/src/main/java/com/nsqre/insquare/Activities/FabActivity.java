@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +25,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
+import com.nsqre.insquare.Utilities.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,13 +51,17 @@ public class FabActivity extends AppCompatActivity {
 
     Dialog mDialog;
 
+    private User currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
+
         try {
-            mSocket = IO.socket("http://chat.socket.io");
+            mSocket = IO.socket(getResources().getString(R.string.chatUrl));
             messageAdapter = new MessageAdapter(getDataSet());
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
@@ -201,7 +207,7 @@ public class FabActivity extends AppCompatActivity {
     private void addTyping(String username)
     {
         messageAdapter.addItem(
-                new Message( Message.TYPE_ACTION, "", username)
+                new Message( Message.TYPE_ACTION, "is typing...", username)
         );
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
