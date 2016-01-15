@@ -14,6 +14,7 @@
     <string name="ok">Ok</string>
     <string name="facebook_app_id">743420882424724</string>
     <string name="chatUrl">http://recapp-insquare.rhcloud.com/</string>
+    <string name="server_client_id">231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com</string>
 
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>
