@@ -2,13 +2,9 @@ package com.nsqre.insquare.Activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,7 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.volley.*;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
@@ -26,33 +25,18 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.google.gson.Gson;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.User;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -236,10 +220,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void json2login(String jsonUser) {
-        User user = new User();
-        //// TODO: 15/01/2016  SOME JSON MAGIC MUST HAPPEN HERE
-        //Gson gson = new Gson();
-        //user = gson.fromJson(response, user.getClass());
+        User user;
+        Gson gson = new Gson();
+        user = gson.fromJson(jsonUser, User.class);
         Intent intent = new Intent(getApplicationContext(), FabActivity.class);
         intent.putExtra("CURRENT_USER", user);
         startActivity(intent);

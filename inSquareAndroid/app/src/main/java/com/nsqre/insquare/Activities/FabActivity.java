@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +13,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -147,7 +145,7 @@ public class FabActivity extends AppCompatActivity {
         super.onStart();
 
         //Initialize mDialog
-        mDialog = new Dialog(this);
+      /*  mDialog = new Dialog(this);
         mDialog.setContentView(R.layout.dialog_username);
         mDialog.setTitle("Enter username");
         mDialog.setCancelable(false);
@@ -165,7 +163,7 @@ public class FabActivity extends AppCompatActivity {
                     mDialog.dismiss();
                 }
             }
-        });
+        });*/
 
     }
 
