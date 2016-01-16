@@ -57,9 +57,10 @@ public class FabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
+        mUsername = currentUser.getName();
 
         try {
-            mSocket = IO.socket(getResources().getString(R.string.chatUrl));
+            mSocket = IO.socket(getString(R.string.chatUrl));
             messageAdapter = new MessageAdapter(getDataSet());
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
