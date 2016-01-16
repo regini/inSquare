@@ -36,21 +36,20 @@
             android:id="@+id/message_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_weight="90"
             android:hint="Enter message"
             android:layout_marginLeft="@dimen/fab_margin"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="1dp"
             android:maxLines="3"
             />
         <requestFocus/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginRight="@dimen/fab_margin"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="0dp"
             android:src="@drawable/ic_send" />
 
     </LinearLayout>

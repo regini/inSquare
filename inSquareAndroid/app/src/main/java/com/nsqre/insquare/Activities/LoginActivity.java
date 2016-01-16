@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -40,48 +39,44 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextView info;
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private String userId;
     private String accessToken;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
+    //private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
-        info = (TextView) findViewById(R.id.info);
         loginButton = (LoginButton) findViewById(R.id.login_button);
 
         callbackManager = CallbackManager.Factory.create();
-        final Button loginfb = (Button) findViewById(R.id.buttonfb);
+        final Button goChatButton = (Button) findViewById(R.id.goChat);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 userId = loginResult.getAccessToken().getUserId();
                 accessToken = loginResult.getAccessToken().getToken();
-                info.setText(
-                        "User ID: "
+                Log.d("FACEBOOK", "User ID: "
                                 + userId
                                 + "\n" +
                                 "Auth Token: "
-                                + accessToken
-                );
+                                + accessToken);
             }
 
             @Override
             public void onCancel() {
-                info.setText("Login attempt canceled.");
+                Log.d("FACEBOOK","Login attempt canceled.");
             }
 
             @Override
             public void onError(FacebookException e) {
-                info.setText(e.toString());
+                Log.d("FACEBOOK", e.toString());
             }
         });
 
@@ -94,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        Log.d("google", "connesso il client");
+                        Log.d("GOOGLE", "connesso il client");
                         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                         startActivityForResult(signInIntent, RC_SIGN_IN);
                     }
@@ -122,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         //accesso alla chat
-        loginfb.setOnClickListener(new View.OnClickListener() {
+        goChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Instantiate the RequestQueue.
@@ -134,13 +129,13 @@ public class LoginActivity extends AppCompatActivity {
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                loginfb.setText("Response is: " + response);
+                                Log.d("ServerResponse", response);
                                 json2login(response);
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loginfb.setText(error.toString());
+                        goChatButton.setText(error.toString());
                     }
                 }) {
                     @Override
@@ -166,59 +161,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void requestPermissionAccounts() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.GET_ACCOUNTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.GET_ACCOUNTS)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.GET_ACCOUNTS},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
-
     private void json2login(String jsonUser) {
         User user;
         Gson gson = new Gson();
@@ -229,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("google+", "handleSignInResult:" + result.isSuccess());
+        Log.d("GOOGLE+", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
@@ -249,14 +191,13 @@ public class LoginActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.d("google+response", error.toString());
+                    Log.d("GOOGLE+Response", error.toString());
                 }
             }) {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put("access_token", accessToken);
-
                     return params;
                 }
             };
