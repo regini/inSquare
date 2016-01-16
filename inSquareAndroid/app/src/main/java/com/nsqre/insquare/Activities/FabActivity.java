@@ -57,7 +57,6 @@ public class FabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
-        mUsername = currentUser.getName();
 
         try {
             mSocket = IO.socket(getString(R.string.chatUrl));
@@ -145,6 +144,9 @@ public class FabActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        mUsername = currentUser.getName();
+        mSocket.emit("add user", mUsername);
+
         //Initialize mDialog
       /*  mDialog = new Dialog(this);
         mDialog.setContentView(R.layout.dialog_username);
@@ -159,8 +161,7 @@ public class FabActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (validName()) {
-                    mUsername = usernameEditText.getText().toString().trim();
-                    mSocket.emit("add user", mUsername);
+
                     mDialog.dismiss();
                 }
             }
@@ -391,7 +392,6 @@ public class FabActivity extends AppCompatActivity {
 
     private Emitter.Listener onLogin = new Emitter.Listener()
     {
-
         @Override
         public void call(Object... args)
         {
