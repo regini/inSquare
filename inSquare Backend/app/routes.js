@@ -41,6 +41,7 @@ module.exports = function(router, passport)
 	// ===============
 	router.get('/profile', isLoggedIn, function(req,res)
 	{
+		console.log(req.user);
 		res.json(req.user);
 		//res.render('profile.ejs', {
 		//	user: req.user //get the user from the session and pass to template
@@ -53,7 +54,10 @@ module.exports = function(router, passport)
 	router.post('/auth/facebook/token', passport.authenticate('facebook-token'),
   	function (req, res) {
     // do something with req.user
-    	res.send(req.user? 200 : 401);
+			res.json({
+				id : req.user.facebook.id,
+				name : req.user.facebook.name,
+				email : req.user.facebook.email});
   	});
 
 	router.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
@@ -67,6 +71,12 @@ module.exports = function(router, passport)
 
 	// TWITTER ROUTES
 	// ==============
+	router.post('/auth/twitter/token', passport.authenticate('twitter-token'),
+  	function (req, res) {
+    // do something with req.user
+    	res.send(req.user ? 200 : 401);
+  	});
+
 	router.get('/auth/twitter', passport.authenticate('twitter'));
 
 	router.get('/auth/twitter/callback', passport.authenticate('twitter', {
@@ -77,6 +87,11 @@ module.exports = function(router, passport)
 
 	// GOOGLE ROUTES
 	// ==============
+	router.post('/auth/google/token', passport.authenticate('google-plus-token'),
+		function(req, res) {
+			res.send(req.user? 200 : 401);
+		});
+
 	router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
     // the callback after google has authenticated the user
