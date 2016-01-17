@@ -22,10 +22,12 @@ Common needs in common places
   
   • RudimentaryworkingchatonAndroid  
   
-  • Facebook & Google login integration  
+  • Facebook login integration  
   
 # Milestone 2 - Release Candidate
- • Full Google Maps API  
+ • Google, Twitter, Local login integration
+
+ • Full Google Maps API
  
  • Hashtag (SquareTag) tree-based structure   
  
