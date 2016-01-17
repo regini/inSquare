@@ -7,7 +7,7 @@ Common needs in common places
 # Our Adventure
 [Presenting The Idea (Pdf)](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
 
-[Milestone 1: Proof of Concept (Pdf)]()
+[Milestone 1: Proof of Concept (Pdf)](http://regini.github.io/inSquare/Milestone 1 - Slide.pdf)
 
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   
