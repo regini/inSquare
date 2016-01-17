@@ -20,7 +20,7 @@ Common needs in common places
 # Milestone 1 - Proof of Concept
   • First form of Persistency with a Cloud-Based DBMS   
   
-  • RudimentaryworkingchatonAndroid  
+  • Rudimentary working Chat onAndroid  
   
   • Facebook login integration  
   
