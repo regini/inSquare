@@ -18,14 +18,14 @@ Common needs in common places
 ![](http://regini.github.io/inSquare/mockup.png)
 
 # Milestone 1 - Proof of Concept
-  • First form of persistency with a Cloud-Based DBMS   
+  • First form of Persistency with a Cloud-Based DBMS   
   
   • RudimentaryworkingchatonAndroid  
   
   • Facebook login integration  
   
 # Milestone 2 - Release Candidate
- • Google, Twitter, Local login integration
+ • Google, Twitter, Local Login Integration
 
  • Full Google Maps API
  
