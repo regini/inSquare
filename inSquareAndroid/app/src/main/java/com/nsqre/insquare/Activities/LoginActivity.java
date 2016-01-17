@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        /*
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
@@ -115,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
-
+        */
         //accesso alla chat
         goChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,7 +209,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //mGoogleApiClient.connect();
         try {
             accessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
             Log.d("token", accessToken);
