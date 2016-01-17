@@ -6,6 +6,8 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookTokenStrategy = require('passport-facebook-token');
+var GoogleTokenStrategy = require('passport-google-plus-token');
+var TwitterTokenStrategy = require('passport-twitter-token');
 
 // load up the user model
 var User = require('../app/models/user');
@@ -103,8 +105,7 @@ module.exports = function(passport)
 				return done(null, user);
 			}
 		});
-	}
-	));
+	}));
 
 	// Local Login
 	// ===========
@@ -277,6 +278,61 @@ module.exports = function(passport)
 
 	// Twitter
 	// =======
+	passport.use(new TwitterTokenStrategy({
+		consumerKey : configAuth.twitterAuth.consumerKey,
+		consumerSecret : configAuth.twitterAuth.consumerSecret
+  }, function(accessToken, tokenSecret, profile, done) {
+		process.nextTick(function() {
+
+			// find the user in the database based on their twitter id
+			User.findOne({ 'twitter.id' : profile.id }, function(err, user) {
+
+				console.log(profile);
+					// if there is an error, stop everything and return that
+					// ie an error connecting to the database
+					if (err)
+							return done(err);
+
+					// if the user is found, then log them in
+					if (user)
+					{
+						// if there is a user id already but no token (user was linked at one point and then removed)
+								if (!user.twitter.token) {
+										user.twitter.token = accessToken;
+										user.twitter.name  = profile.name.givenName + ' ' + profile.name.familyName;
+										user.twitter.email = (profile.emails[0].value || '').toLowerCase();
+
+										user.save(function(err) {
+												if (err)
+														return done(err);
+
+												return done(null, user);
+										});
+								}
+							return done(null, user); // user found, return that user
+					} else {
+							// if there is no user found with that twitter id, create them
+							var newUser = new User();
+
+							// set all of the facebook information in our user model
+							newUser.twitter.id    = profile.id; // set the users facebook id
+							newUser.twitter.token = accessToken; // we will save the token that facebook provides to the user
+							newUser.twitter.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+							newUser.twitter.email = (profile.emails[0].value || '').toLowerCase();
+
+							// save our user to the database
+							newUser.save(function(err) {
+									if (err)
+											throw err;
+
+									// if successful, return the new user
+									return done(null, newUser);
+							});
+					}
+			});
+		});
+	}));
+
 	passport.use(new TwitterStrategy({
 		consumerKey : configAuth.twitterAuth.consumerKey,
 		consumerSecret : configAuth.twitterAuth.consumerSecret,
@@ -347,8 +403,64 @@ module.exports = function(passport)
 
 	// Google
 	// =======
+	passport.use(new GoogleTokenStrategy({
+		clientID         : configAuth.googleAuthApp.clientID,
+		clientSecret     : configAuth.googleAuthApp.clientSecret,
+    passReqToCallback: true
+	}, function(req, accessToken, refreshToken, profile, next) {
+		process.nextTick(function() {
+
+			// find the user in the database based on their google id
+			User.findOne({ 'google.id' : profile.id }, function(err, user) {
+
+				console.log(profile);
+					// if there is an error, stop everything and return that
+					// ie an error connecting to the database
+					if (err)
+							return done(err);
+
+					// if the user is found, then log them in
+					if (user)
+					{
+						// if there is a user id already but no token (user was linked at one point and then removed)
+								if (!user.google.token) {
+										user.google.token = accessToken;
+										user.google.name  = profile.name.givenName + ' ' + profile.name.familyName;
+										user.google.email = (profile.emails[0].value || '').toLowerCase();
+
+										user.save(function(err) {
+												if (err)
+														return done(err);
+
+												return done(null, user);
+										});
+								}
+							return done(null, user); // user found, return that user
+					} else {
+							// if there is no user found with that google id, create them
+							var newUser = new User();
+
+							// set all of the facebook information in our user model
+							newUser.google.id    = profile.id; // set the users facebook id
+							newUser.google.token = accessToken; // we will save the token that facebook provides to the user
+							newUser.google.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+							newUser.google.email = (profile.emails[0].value || '').toLowerCase();
+
+							// save our user to the database
+							newUser.save(function(err) {
+									if (err)
+											throw err;
+
+									// if successful, return the new user
+									return done(null, newUser);
+							});
+					}
+			});
+		});
+	}));
+
 	passport.use(new GoogleStrategy({
-		clientID        : configAuth.googleAuth.clientID,
+				clientID        : configAuth.googleAuth.clientID,
         clientSecret    : configAuth.googleAuth.clientSecret,
         callbackURL     : configAuth.googleAuth.callbackURL,
         passReqToCallback: true

@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var findOrCreate = require('mongoose-findorcreate');
 var mongoosastic = require('mongoosastic');
 var bcrypt = require('bcrypt-nodejs');
 
@@ -41,8 +40,6 @@ userSchema.methods.validPassword = function(password)
 {
 	return bcrypt.compareSync(password, this.local.password);
 };
-
-userSchema.plugin(findOrCreate);
 
 userSchema.plugin(mongoosastic, {
 	hosts: ['http://elastic-insquare.rhcloud.com']
