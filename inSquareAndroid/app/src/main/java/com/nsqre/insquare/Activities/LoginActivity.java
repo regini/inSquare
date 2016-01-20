@@ -80,12 +80,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        /*
+        //setup delle opzioni di google+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
 
+        //builda il client e prova a chiamare startActivityForResult, se il login è stato già fatto precedentemente
+        // il codice è quello corretto e l'app passa subito a fabactivity(ma tanto non lo fa perchè la post non funziona)
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -109,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+        // nel caso non hai ancora effettuato l'accesso con google+, questo bottone lo fa partire
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,8 +119,9 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
-        */
+
         //accesso alla chat
+        //bottone che invia il token a facebook e ti fa entrare nella fabactivity
         goChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                         goChatButton.setText(error.toString());
                     }
                 }) {
+                    //TOKEN messo nei parametri della query
                     @Override
                     protected Map<String, String> getParams() {
                         Map<String, String> params = new HashMap<String, String>();
@@ -154,14 +159,17 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //nel caso di google +
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         } else {
+            //questo è per facebook
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    //metodo che elabora il json preso dalle post, crea l'oggetto user e va a fabactivity
     private void json2login(String jsonUser) {
         User user;
         Gson gson = new Gson();
@@ -171,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d("GOOGLE+", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -209,6 +218,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        //FACEBOOK
         try {
             accessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
             Log.d("token", accessToken);

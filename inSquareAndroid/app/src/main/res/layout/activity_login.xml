@@ -50,13 +50,13 @@
         android:id="@+id/goChat"
         android:layout_below="@+id/info"
         android:layout_centerHorizontal="true" />
-<!--
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/login_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="54dp" />  -->
+        android:layout_marginTop="54dp" />
 
 </RelativeLayout>

@@ -140,6 +140,7 @@ public class FabActivity extends AppCompatActivity {
         return true;
     }
 
+    //MODIFICATO invece di chiedere chi sta scrivendo, prende il nome dall'user passato dall'activity di login
     @Override
     protected void onStart() {
         super.onStart();
