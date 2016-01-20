@@ -18,7 +18,7 @@ Common needs in common places
 ![](http://regini.github.io/inSquare/mockup.png)
 
 
-# Screanshoot
+# Screenshoot
 ![](http://regini.github.io/inSquare/Screanshoot.png)
 
 
