@@ -4,8 +4,10 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 
 Common needs in common places
 
-# Our Idea
-[Download Pdf](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
+# Our Adventure
+[Presenting The Idea (Pdf)](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
+
+[Milestone 1: Proof of Concept (Pdf)](http://regini.github.io/inSquare/Milestone 1 - Slide.pdf)
 
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   
@@ -15,15 +17,22 @@ Common needs in common places
 # Mockups
 ![](http://regini.github.io/inSquare/mockup.png)
 
+
+# Screanshoot
+![](http://regini.github.io/inSquare/Screanshoot.png)
+
+
 # Milestone 1 - Proof of Concept
-  • First form of persistency with a Cloud-Based DBMS   
+  • First form of Persistency with a Cloud-Based DBMS   
   
-  • RudimentaryworkingchatonAndroid  
+  • Rudimentary working Chat onAndroid  
   
-  • Facebook & Google login integration  
+  • Facebook login integration  
   
 # Milestone 2 - Release Candidate
- • Full Google Maps API  
+ • Google, Twitter, Local Login Integration
+
+ • Full Google Maps API
  
  • Hashtag (SquareTag) tree-based structure   
  
