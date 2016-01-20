@@ -61,18 +61,6 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
-// client.ping({
-//   // ping usually has a 3000ms timeout
-//   requestTimeout: Infinity,
-//   // undocumented params are appended to the query string
-//   hello: "elasticsearch!"
-// }, function(error) {
-//   if (error) {
-//     console.trace('elasticsearch cluster is down!');
-//   } else {
-//     console.log('All is well');
-//   }
-// });
 var Message = require('./app/models/message')
 var numUsers = 0;
 
@@ -92,7 +80,6 @@ io.on('connection', function (socket) {
     mess.createdAt = new Date();
     mess.senderId = socket.id;
     mess.senderEmail = socket.email;
-    //la query per salvare su elasticsearch, cambiare se necessario
     mess.save(function(err) {
       if(err) throw err;
       return mess;
@@ -144,6 +131,7 @@ io.on('connection', function (socket) {
     }
   });
 });
+
 require('./app/routes.js')(router,passport);
 
 app.use(router);
