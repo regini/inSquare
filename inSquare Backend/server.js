@@ -2,6 +2,11 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+// Path for the chat sockets
+var squares = io.of('/squares');
+// =========================
+
 var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var elasticsearch = require('elasticsearch');
@@ -132,6 +137,9 @@ io.on('connection', function (socket) {
   });
 });
 
+// ROUTES FOR THE CHATS 
+require('./app/chat_routes.js')(app,passport, squares);
+// ====================
 require('./app/routes.js')(router,passport);
 
 app.use(router);

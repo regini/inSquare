@@ -3,7 +3,11 @@ var mongoosastic = require('mongoosastic');
 
 var squareSchema = mongoose.Schema({
   id: String,
-  name: String
+  name: String,
+  location: {
+    x: Number,
+    y: Number
+  }
 });
 
 messageSchema.plugin(mongoosastic, {
