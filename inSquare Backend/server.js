@@ -137,9 +137,9 @@ io.on('connection', function (socket) {
   });
 });
 
-// ROUTES FOR THE CHATS 
-require('./app/chat_routes.js')(app,passport, squares);
+// ROUTES FOR THE CHATS
+require('./app/chat_routes.js')(router, passport, squares);
 // ====================
-require('./app/routes.js')(router,passport);
+require('./app/routes.js')(router, passport);
 
 app.use(router);

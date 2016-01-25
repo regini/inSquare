@@ -1,7 +1,7 @@
 var Message = require('./models/message');
 var http = require('http');
 
-module.exports = function(app, passport, squares)
+module.exports = function(router, passport, squares)
 {
 	squares.on('connection', function(socket)
 	{
@@ -19,28 +19,28 @@ module.exports = function(app, passport, squares)
 
 			if(room != "" || room != null || room != undefined)
 			{
-				
+
 				socket.username = data.user;
 
 				/*
 					message is an object with the following structure:
-					message = 
+					message =
 					{
 						.room, 		-> Square
 						.user,		-> sender
 						.contents	-> message text
 					}
 				 */
-				
+
 				var serverMessage = {};
 				serverMessage.room = data.room;
 				serverMessage.user = "Server";
 				serverMessage.contents = data.user + " has connected";
-				
+
 				// echo globally (all clients) that a person has connected
 			    socket.broadcast.emit('userJoined', serverMessage);
 			}
-			
+
 		});
 
 		socket.on('sendMessage', function(data)
@@ -75,41 +75,41 @@ module.exports = function(app, passport, squares)
 	});
 
 	// Send messages
-    app.get('/send_message', isLoggedIn, function(req, res)
+    router.post('/send_message', isLoggedIn, function(req, res)
     {
     	console.log("Trying to send a message!");
-		var text = req.query.message;
-		var room = req.query.square;
+			var text = req.query.message;
+			var room = req.query.square;
 
-		var email = (function()
-		{
-			if(req.user.local.email)
-				return req.user.local.email;
-			if(req.user.facebook.email)
-				return req.user.facebook.email;
-			if(req.user.google.email)
-				return req.user.google.email;
-		}) ();
+			var email = (function()
+			{
+				if(req.user.local.email)
+					return req.user.local.email;
+				if(req.user.facebook.email)
+					return req.user.facebook.email;
+				if(req.user.google.email)
+					return req.user.google.email;
+			}) ();
 
-		sendMessage(text, user, email, square);
+			sendMessage(text, user, email, square);
 
-		res.send(req.user + " created a new message!");
+			res.send(req.user + " created a new message!");
     });
-	
-    app.get('/get_messages', isLoggedIn, function(req, res)
+
+    router.get('/get_messages', isLoggedIn, function(req, res)
     {
     	// If url is http://<...>/get_messages/squareId=Sapienza
 		// it'll get the value in the parameter (->Sapienza)
     	var squareId = req.query.squareId;
     	var senderId = req.user.id;
-    	
+
     	if(senderId && squareId)
     	{
 	    	console.log(squareId);
 	    	console.log(senderId);
 
 	    	var params = { 'senderId':senderId, 'squareId':squareId };
-	    	
+
 	    	var query = findMessages(params, res);
 	    	query.exec(
 	    		function(err,messages)
@@ -160,8 +160,8 @@ module.exports = function(app, passport, squares)
 
 	    }
     });
-	
-	app.get('/get_all_messages', function(req, res)
+
+	router.get('/get_all_messages', function(req, res)
     {
     	var query = findMessages({}, res);
 	    	query.exec(
@@ -176,12 +176,12 @@ module.exports = function(app, passport, squares)
 
 	// CHATS
 	// =====
-	// app.use('/chat', function(req, res, next)
+	// router.use('/chat', function(req, res, next)
 	// {
 	// 	var id = req.query.squareId;
 	// 	next();
 	// });
-	app.get('/chat', function(req, res)
+	router.get('/chat', function(req, res)
 	{
 		// If url is http://<...>/chat?squareId=Sapienza
 		// it'll get the value in the parameter (->Sapienza)
@@ -193,13 +193,13 @@ module.exports = function(app, passport, squares)
 			console.log("No Id specified");
 			squareId = "Home";
 		}
-		
+
 		console.log("Currently in " + squareId);
 
-		res.render('chat.ejs', 
+		res.render('chat.ejs',
 		//Passing JS objects to the ejs template
 		{
-			user: username, 
+			user: username,
 			squareId: squareId
 		});
 	});
@@ -217,7 +217,7 @@ function isLoggedIn(req, res, next)
 
 function sendMessage(text, user, email, square)
 {
-	var mes = new Message(); 
+	var mes = new Message();
 
 	mes.text = text;
 	mes.createdAt = (new Date()).getTime();
