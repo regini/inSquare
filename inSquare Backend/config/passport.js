@@ -6,7 +6,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookTokenStrategy = require('passport-facebook-token');
-var GoogleTokenStrategy = require('passport-google-token').Strategy;
+var GoogleTokenStrategy = require('passport-google-id-token');
 var TwitterTokenStrategy = require('passport-twitter-token');
 
 // load up the user model
@@ -404,14 +404,15 @@ module.exports = function(passport)
 	// Google
 	// =======
 	passport.use(new GoogleTokenStrategy({
-		clientID         : configAuth.googleAuth.clientID,
-		clientSecret     : configAuth.googleAuth.clientSecret
-	}, function(accessToken, refreshToken, profile, done) {
+		clientID          : configAuth.googleAuth.clientID,
+		clientSecret      : configAuth.googleAuth.clientSecret,
+		passReqToCallback : true
+	}, function(idToken, parsedToken, googleId, done) {
 		process.nextTick(function() {
 			// find the user in the database based on their google id
-			User.findOne({ 'google.id' : profile.id }, function(err, user) {
+			User.findOne({ 'google.id' : googleId }, function(err, user) {
 
-				console.log(profile);
+				console.log(idToken.body.access_token);
 					// if there is an error, stop everything and return that
 					// ie an error connecting to the database
 					if (err)
@@ -422,9 +423,9 @@ module.exports = function(passport)
 					{
 						// if there is a user id already but no token (user was linked at one point and then removed)
 								if (!user.google.token) {
-										user.google.token = accessToken;
-										user.google.name  = profile.displayName;
-										user.google.email = (profile.email).toLowerCase();
+										user.google.token = idToken.body.access_token;
+										user.google.name  = parsedToken.name;
+										user.google.email = (parsedToken.email).toLowerCase();
 
 										user.save(function(err) {
 												if (err)
@@ -439,10 +440,10 @@ module.exports = function(passport)
 							var newUser = new User();
 
 							// set all of the facebook information in our user model
-							newUser.google.id    = profile.id; // set the users facebook id
-							newUser.google.token = accessToken; // we will save the token that facebook provides to the user
-							newUser.google.name  = profile.displayName;
-							newUser.google.email = (profile.email).toLowerCase();
+							newUser.google.id    = googleId; // set the users facebook id
+							newUser.google.token = idToken.body.access_token; // we will save the token that facebook provides to the user
+							newUser.google.name  = parsedToken.name;
+							newUser.google.email = (parsedToken.email).toLowerCase();
 
 							// save our user to the database
 							newUser.save(function(err) {

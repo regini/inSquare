@@ -87,7 +87,7 @@ module.exports = function(router, passport)
 
 	// GOOGLE ROUTES
 	// ==============
-	router.post('/auth/google/token', passport.authenticate('google-token'),
+	router.post('/auth/google/token', passport.authenticate('google-id-token'),
 	function (req, res) {
 	// do something with req.user
 		res.json({

@@ -258,7 +258,7 @@ public class LoginActivity extends AppCompatActivity
                 public Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put("access_token", gAccessToken);
-                    return params        ;
+                    return params;
                 }
             };
             queue.add(stringRequest);
