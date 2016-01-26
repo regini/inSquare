@@ -17,4 +17,34 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="FacebookLoginButton">
+        <item name="android:textSize">17sp</item>
+        <item name="android:background">@drawable/rounded_fb_button</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingRight">30dp</item>
+        <item name="android:drawableLeft">@null</item>
+    </style>
+
+    <style name="GoogleLoginButton">
+        <item name="android:textSize">17sp</item>
+        <item name="android:background">@drawable/rounded_google_button</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingRight">30dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="StandardRoundButton">
+        <item name="android:textSize">17sp</item>
+        <item name="android:background">@drawable/rounded_standard_button</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingRight">30dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>

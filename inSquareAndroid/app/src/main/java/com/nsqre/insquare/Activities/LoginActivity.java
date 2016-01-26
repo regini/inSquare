@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,42 +34,53 @@ import com.nsqre.insquare.Utilities.User;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity
+    implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
+{
 
-    private LoginButton loginButton;
-    private CallbackManager callbackManager;
-    private String userId;
-    private String facebookAccessToken;
-    private String googleAccessToken;
-    private GoogleApiClient mGoogleApiClient;
+    private static final String TAG = "LoginActivity";
+    
+    // Facebook Login
+    private LoginButton fbLoginButton;
+    private CallbackManager fbCallbackManager;
+    private String fbUserId;
+    private String fbAccessToken;
+    // ==============
+
+    // Google Login
+    private String gAccessToken;
+    private GoogleApiClient gApiClient;
+    private GoogleSignInOptions gSo;
     private static final int RC_SIGN_IN = 9001;
-    //private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
+    private Button gLoginButton;
+//    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
+    // ============
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 
-        callbackManager = CallbackManager.Factory.create();
-        final Button goChatButton = (Button) findViewById(R.id.goChat);
+        fbCallbackManager = CallbackManager.Factory.create();
+        final Button goChatButton = (Button) findViewById(R.id.chat_now_button);
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        fbLoginButton.registerCallback(fbCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                userId = loginResult.getAccessToken().getUserId();
-                facebookAccessToken = loginResult.getAccessToken().getToken();
+                fbUserId = loginResult.getAccessToken().getUserId();
+                fbAccessToken = loginResult.getAccessToken().getToken();
                 Log.d("FACEBOOK", "User ID: "
-                                + userId
-                                + "\n" +
-                                "Auth Token: "
-                                + facebookAccessToken);
+                        + fbUserId
+                        + "\n" +
+                        "Auth Token: "
+                        + fbAccessToken);
             }
 
             @Override
             public void onCancel() {
-                Log.d("FACEBOOK","Login attempt canceled.");
+                Log.d("FACEBOOK", "Login attempt canceled.");
             }
 
             @Override
@@ -77,47 +89,32 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //setup delle opzioni di google+
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        // setup delle opzioni di google+
+        gSo = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
 
-        //builda il client e prova a chiamare startActivityForResult, se il login è stato già fatto precedentemente
+        // builda il client e prova a chiamare startActivityForResult, se il login è stato già fatto precedentemente
         // il codice è quello corretto e l'app passa subito a fabactivity(ma tanto non lo fa perchè la post non funziona)
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle bundle) {
-                        Log.d("GOOGLE", "connesso il client");
-                        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                        startActivityForResult(signInIntent, RC_SIGN_IN);
-                    }
-
-                    @Override
-                    public void onConnectionSuspended(int i) {
-
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-                    }
-                })
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+        gApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gSo)
                 .build();
 
-        // nel caso non hai ancora effettuato l'accesso con google+, questo bottone lo fa partire
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        gApiClient.connect();
+
+        // Non avendo ancora effettuato il Login con Google
+        gLoginButton = (Button) findViewById(R.id.google_login_button);
+        gLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signIn();
+                googleDialogSignIn();
             }
         });
 
-        //accesso alla chat
-        //bottone che invia il token a facebook e ti fa entrare nella fabactivity
+        // accesso alla chat
+        // bottone che invia il token a facebook e ti fa entrare nella fabactivity
         goChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected Map<String, String> getParams() {
                         Map<String, String> params = new HashMap<String, String>();
-                        params.put("access_token", facebookAccessToken);
+                        params.put("access_token", fbAccessToken);
 
                         return params;
                     }
@@ -153,22 +150,70 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //nel caso di google +
+        // Ritorno dal login di Google+
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         } else {
-            //questo è per facebook
-            callbackManager.onActivityResult(requestCode, resultCode, data);
+            // Ritorno dal Login di Facebook
+            fbCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //FACEBOOK
+        try {
+            fbAccessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
+            Log.d("token", fbAccessToken);
+        }
+        catch (Exception e) {
+            Log.d("token", e.toString());
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d("GOOGLE", "connesso il client");
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if(connectionResult.hasResolution())
+        {
+            try
+            {
+                connectionResult.startResolutionForResult(this, 9000);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        }else
+        {
+            Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+        Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
+    }
+
+    private void googleDialogSignIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va a fabactivity
@@ -183,11 +228,14 @@ public class LoginActivity extends AppCompatActivity {
 
     //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("GOOGLE+", "handleSignInResult:" + result.isSuccess());
+
+        Log.d(TAG + " - Google", "Success? " + result.isSuccess());
+
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
+
             GoogleSignInAccount acct = result.getSignInAccount();
-            googleAccessToken = acct.getIdToken();
+            gAccessToken = acct.getIdToken();
+
             // Instantiate the RequestQueue.
             RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
             String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
@@ -209,63 +257,11 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put("access_token", googleAccessToken);
+                    params.put("access_token", gAccessToken);
                     return params        ;
                 }
-                };
+            };
             queue.add(stringRequest);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        //FACEBOOK
-        try {
-        facebookAccessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
-        Log.d("token", facebookAccessToken);
-        }
-        catch (Exception e) {
-        Log.d("token", e.toString());
-        }
-
-        /*
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW,
-                "Login Page",
-                // If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse(""),
-                // Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.nsqre.insquare.LoginActivity/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(mGoogleApiClient, viewAction);
-        */
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        /*
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW,
-                "Login Page",
-                //If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse(""),
-                //  Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.nsqre.insquare.LoginActivity/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(mGoogleApiClient, viewAction);
-        mGoogleApiClient.disconnect();
-        */
     }
 }

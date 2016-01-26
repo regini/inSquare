@@ -9,54 +9,66 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Activities.LoginActivity"
+    android:gravity="center_horizontal|center_vertical"
+    android:background="@color/grey_background"
     >
 
-    <!--<fragment-->
-        <!--android:id="@+id/map"-->
-        <!--android:name="com.nsqre.insquare.Fragments.MapFragment"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--/>-->
-
-       <!-- <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_create" />
-
-     -->
     <TextView
+        android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/info"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:textSize="18sp"
         />
 
+
+    <!-- alignStart e alignEnd uguali al FbButton assicurano che anche il tasto di
+        Google Login abbia la stessa dimensione sul layout -->
+
     <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
+        android:id="@+id/fb_login_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="@dimen/login_button_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/margin_button_height"
+        app:com_facebook_login_text="@string/fb_login_string"
+        style="@style/FacebookLoginButton"
+        />
 
     <Button
+        android:id="@+id/google_login_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start chatting now!"
-        android:id="@+id/goChat"
-        android:layout_below="@+id/info"
-        android:layout_centerHorizontal="true" />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
+        android:layout_height="@dimen/login_button_height"
+        android:layout_below="@id/fb_login_button"
+        android:layout_alignLeft="@id/fb_login_button"
+        android:layout_alignRight="@id/fb_login_button"
+        android:layout_alignStart="@id/fb_login_button"
+        android:layout_alignEnd="@id/fb_login_button"
+        android:layout_marginBottom="@dimen/margin_button_height"
+        android:text="@string/google_login_string"
+        android:textAllCaps="false"
+        style="@style/GoogleLoginButton"
+        android:stateListAnimator="@null"
+        />
+    <!--
+        stateListAnimator rimuove l'ombra dal tasto
+        allineare start/end con il tasto di facebook fa si che le loro dimensioni rimangano uguali
+    -->
+    <Button
+        android:id="@+id/chat_now_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/login_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="54dp" />
+        android:layout_height="@dimen/login_button_height"
+        android:text="Chat now!"
+        android:textAllCaps="false"
+        android:layout_below="@+id/google_login_button"
+        android:layout_alignLeft="@id/fb_login_button"
+        android:layout_alignRight="@id/fb_login_button"
+        android:layout_alignStart="@id/fb_login_button"
+        android:layout_alignEnd="@id/fb_login_button"
+        android:layout_marginBottom="@dimen/margin_button_height"
+        style="@style/StandardRoundButton"
+        android:stateListAnimator="@null"
+        />
 
 </RelativeLayout>
