@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 
 var squareSchema = mongoose.Schema({
-  id: String,
   name: String,
   location: {
     x: Number,
@@ -10,7 +9,7 @@ var squareSchema = mongoose.Schema({
   }
 });
 
-messageSchema.plugin(mongoosastic, {
+squareSchema.plugin(mongoosastic, {
 	hosts: ['http://elastic-insquare.rhcloud.com']
 })
 

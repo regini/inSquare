@@ -1,11 +1,7 @@
 package com.nsqre.insquare.Activities;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private String userId;
-    private String accessToken;
+    private String facebookAccessToken;
+    private String googleAccessToken;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     //private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
@@ -61,12 +58,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 userId = loginResult.getAccessToken().getUserId();
-                accessToken = loginResult.getAccessToken().getToken();
+                facebookAccessToken = loginResult.getAccessToken().getToken();
                 Log.d("FACEBOOK", "User ID: "
                                 + userId
                                 + "\n" +
                                 "Auth Token: "
-                                + accessToken);
+                                + facebookAccessToken);
             }
 
             @Override
@@ -115,8 +112,7 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
+                signIn();
             }
         });
 
@@ -147,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected Map<String, String> getParams() {
                         Map<String, String> params = new HashMap<String, String>();
-                        params.put("access_token", accessToken);
+                        params.put("access_token", facebookAccessToken);
 
                         return params;
                     }
@@ -157,8 +153,14 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         //nel caso di google +
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -185,7 +187,7 @@ public class LoginActivity extends AppCompatActivity {
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            accessToken = acct.getIdToken();
+            googleAccessToken = acct.getIdToken();
             // Instantiate the RequestQueue.
             RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
             String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
@@ -205,12 +207,12 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }) {
                 @Override
-                protected Map<String, String> getParams() {
+                public Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put("access_token", accessToken);
-                    return params;
+                    params.put("access_token", googleAccessToken);
+                    return params        ;
                 }
-            };
+                };
             queue.add(stringRequest);
         }
     }
@@ -221,11 +223,11 @@ public class LoginActivity extends AppCompatActivity {
 
         //FACEBOOK
         try {
-            accessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
-            Log.d("token", accessToken);
+        facebookAccessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
+        Log.d("token", facebookAccessToken);
         }
         catch (Exception e) {
-            Log.d("token", e.toString());
+        Log.d("token", e.toString());
         }
 
         /*

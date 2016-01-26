@@ -168,9 +168,7 @@ module.exports = function(router, passport, squares)
 	    		function(err,messages)
 		    	{
 		    		if(err) throw err;
-		    		var JSON = {};
-		    		JSON.messages = messages;
-		    		res.send(JSON);
+		    		res.json(messages);
 		    	});
 	});
 

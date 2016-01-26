@@ -45,6 +45,7 @@
     "passport-google-id-token": "^0.4.0",
     "passport-google-oauth": "^0.2.0",
     "passport-google-plus-token": "^2.0.1",
+    "passport-google-token": "^0.1.2",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.3",
     "passport-twitter-token": "^1.1.0",

@@ -6,7 +6,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookTokenStrategy = require('passport-facebook-token');
-var GoogleTokenStrategy = require('passport-google-plus-token');
+var GoogleTokenStrategy = require('passport-google-token').Strategy;
 var TwitterTokenStrategy = require('passport-twitter-token');
 
 // load up the user model
@@ -404,12 +404,10 @@ module.exports = function(passport)
 	// Google
 	// =======
 	passport.use(new GoogleTokenStrategy({
-		clientID         : configAuth.googleAuthApp.clientID,
-		clientSecret     : configAuth.googleAuthApp.clientSecret,
-    passReqToCallback: true
-	}, function(req, accessToken, refreshToken, profile, next) {
+		clientID         : configAuth.googleAuth.clientID,
+		clientSecret     : configAuth.googleAuth.clientSecret
+	}, function(accessToken, refreshToken, profile, done) {
 		process.nextTick(function() {
-
 			// find the user in the database based on their google id
 			User.findOne({ 'google.id' : profile.id }, function(err, user) {
 
@@ -425,8 +423,8 @@ module.exports = function(passport)
 						// if there is a user id already but no token (user was linked at one point and then removed)
 								if (!user.google.token) {
 										user.google.token = accessToken;
-										user.google.name  = profile.name.givenName + ' ' + profile.name.familyName;
-										user.google.email = (profile.emails[0].value || '').toLowerCase();
+										user.google.name  = profile.displayName;
+										user.google.email = (profile.email).toLowerCase();
 
 										user.save(function(err) {
 												if (err)
@@ -443,8 +441,8 @@ module.exports = function(passport)
 							// set all of the facebook information in our user model
 							newUser.google.id    = profile.id; // set the users facebook id
 							newUser.google.token = accessToken; // we will save the token that facebook provides to the user
-							newUser.google.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-							newUser.google.email = (profile.emails[0].value || '').toLowerCase();
+							newUser.google.name  = profile.displayName;
+							newUser.google.email = (profile.email).toLowerCase();
 
 							// save our user to the database
 							newUser.save(function(err) {

@@ -87,9 +87,13 @@ module.exports = function(router, passport)
 
 	// GOOGLE ROUTES
 	// ==============
-	router.post('/auth/google/token', passport.authenticate('google-plus-token'),
-		function(req, res) {
-			res.send(req.user? 200 : 401);
+	router.post('/auth/google/token', passport.authenticate('google-token'),
+	function (req, res) {
+	// do something with req.user
+		res.json({
+			id : req.user.google.id,
+			name : req.user.google.name,
+			email : req.user.google.email});
 		});
 
 	router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
@@ -194,6 +198,34 @@ module.exports = function(router, passport)
             res.redirect('/profile');
         });
     });
+
+		var Square = require('./models/square');
+
+		router.route('/squares')
+		.post(isLoggedIn, function(req, res) {
+			var square = new Square();
+			square.name = req.name;
+			square.location.x = req.location.lng;
+			square.location.y = req.location.lat;
+			square.save(function(err) {
+				res.send(err);
+			})
+			res.json(square);
+		})
+		.get(isLoggedIn, function(req, res) {
+			Square.find({}, function(err,squares) {
+				if(err) res.send(err);
+				res.json(squares);
+			})
+		});
+
+		router.get('/squares/:name', isLoggedIn, function(req, res) {
+			Square.findOne({ 'name' : req.name }, function(err, square) {
+				if(err) res.send(err);
+				if(square) res.json(square);
+				else res.send('No square with this name');
+			})
+		})
 };
 
 function isLoggedIn(req, res, next)
