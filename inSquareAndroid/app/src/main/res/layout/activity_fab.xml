@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,35 +25,46 @@
     <include layout="@layout/content_fab" />
 
     <LinearLayout
+        android:id="@+id/message_bottom_ll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom"
+        android:layout_height="@dimen/linear_layout_lower_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerInParent="true"
+        android:background="@color/white"
+        android:content="@+id/content"
         android:gravity="center_vertical"
-        android:background="@color/common_action_bar_splitter"
+        android:orientation="vertical"
         >
 
         <EditText
             android:id="@+id/message_text"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:layout_weight="90"
             android:hint="Enter message"
-            android:layout_marginLeft="@dimen/fab_margin"
-            android:layout_marginBottom="1dp"
+            android:layout_marginRight="@dimen/message_margin_right"
+            android:layout_marginLeft="@dimen/fab_margin_side"
+            android:layout_marginStart="@dimen/fab_margin_side"
+            android:layout_marginEnd="@dimen/message_margin_right"
+            android:layout_marginBottom="@dimen/fab_margin_bottom_smaller"
             android:maxLines="3"
             />
         <requestFocus/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_marginRight="@dimen/fab_margin"
-            android:layout_marginBottom="0dp"
-            android:src="@drawable/ic_send" />
-
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
+        android:layout_marginRight="@dimen/fab_margin_side"
+        android:layout_marginBottom="@dimen/fab_margin_bottom_smaller"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/send"
+        />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_list"
@@ -62,4 +74,4 @@
         android:layout_marginTop="?android:attr/actionBarSize"
         />
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

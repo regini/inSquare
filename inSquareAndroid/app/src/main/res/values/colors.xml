@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary2">#9A1C2C</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="oldColorAccent">#FF4081</color>
-    <color name="colorAccent">#9A1C2C</color>
+    <color name="colorAccent">#2c3e50</color>
+    <color name="colorAccent2">#9A1C2C</color>
     <color name="grey_background">#424242</color>
     <color name="blue_button">#0D47A1</color>
     <color name="red_button">#9A1C2C</color>
