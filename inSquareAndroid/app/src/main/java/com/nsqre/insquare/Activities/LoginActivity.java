@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -40,6 +41,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends AppCompatActivity
     implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
@@ -69,6 +72,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
@@ -282,9 +286,7 @@ public class LoginActivity extends AppCompatActivity
 
             gLoginButton.setText(R.string.google_logout_string);
 
-            // Commentato al momento perche' non funziona [Umberto]
-
-            /*// Instantiate the RequestQueue.
+            // Instantiate the RequestQueue.
             RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
             String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
 
@@ -309,7 +311,7 @@ public class LoginActivity extends AppCompatActivity
                     return params;
                 }
             };
-            queue.add(stringRequest);*/
+            queue.add(stringRequest);
         }
     }
 

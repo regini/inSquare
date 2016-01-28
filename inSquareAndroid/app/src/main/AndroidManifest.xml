@@ -50,6 +50,9 @@
         <activity android:name=".Activities.MapActivity" >
 
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="35c848454ff5eb807fec41acfff55e85f922c532" />
     </application>
 
 </manifest>
