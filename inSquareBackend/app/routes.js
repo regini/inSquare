@@ -48,6 +48,9 @@ module.exports = function(router, passport)
 		//});
 	});
 
+	router.get('/square', isLoggedIn, function(req,res){
+		res.render('square.ejs', {message: req.flash('squareMessage')})
+	});
 	// FACEBOOK ROUTES
 	// ===============
 
@@ -198,34 +201,6 @@ module.exports = function(router, passport)
             res.redirect('/profile');
         });
     });
-
-		var Square = require('./models/square');
-
-		router.route('/squares')
-		.post(isLoggedIn, function(req, res) {
-			var square = new Square();
-			square.name = req.name;
-			square.location.x = req.location.lng;
-			square.location.y = req.location.lat;
-			square.save(function(err) {
-				res.send(err);
-			})
-			res.json(square);
-		})
-		.get(isLoggedIn, function(req, res) {
-			Square.find({}, function(err,squares) {
-				if(err) res.send(err);
-				res.json(squares);
-			})
-		});
-
-		router.get('/squares/:name', isLoggedIn, function(req, res) {
-			Square.findOne({ 'name' : req.name }, function(err, square) {
-				if(err) res.send(err);
-				if(square) res.json(square);
-				else res.send('No square with this name');
-			})
-		})
 };
 
 function isLoggedIn(req, res, next)
