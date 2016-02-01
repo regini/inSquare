@@ -48,6 +48,9 @@ module.exports = function(router, passport)
 		//});
 	});
 
+	router.get('/square', isLoggedIn, function(req,res){
+		res.render('square.ejs', {message: req.flash('squareMessage')})
+	});
 	// FACEBOOK ROUTES
 	// ===============
 
@@ -198,7 +201,10 @@ module.exports = function(router, passport)
             res.redirect('/profile');
         });
     });
+<<<<<<< HEAD:inSquare Backend/app/routes.js
 
+=======
+>>>>>>> e5d27e506e7cd15bdbbbd2a257110556c82d7bf4:inSquareBackend/app/routes.js
 };
 
 function isLoggedIn(req, res, next)

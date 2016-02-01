@@ -3,9 +3,9 @@ var mongoosastic = require('mongoosastic');
 
 var squareSchema = mongoose.Schema({
   name: String,
-  loc: {
-    lat: Number,
-    lon: Number
+  geo_loc: {
+    type: String,
+    es_type: 'geo_point'
   }
 });
 

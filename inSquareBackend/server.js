@@ -139,8 +139,9 @@ io.on('connection', function (socket) {
 
 // ROUTES FOR THE CHATS
 require('./app/chat_routes.js')(router, passport, squares);
-require('./app/square_routes.js')(router,passport, squares);
 // ====================
 require('./app/routes.js')(router, passport);
+
+require('./app/square_routes.js')(router, passport);
 
 app.use(router);
