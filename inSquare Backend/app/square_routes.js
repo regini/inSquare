@@ -8,7 +8,7 @@ module.exports = function(router, passport, squares)
 		// Se l'url is http://<...>/create_square?nome=Sapienza&lat=12.3183128&lon=44.1293129
         var squareName = req.query.nome;
         var latitude = req.query.lat;
-        var longitude = req.query.lon;   
+        var longitude = req.query.lon;
 
         // TODO portare queste validations dentro allo schema di mongoose
         if(squareName == undefined || squareName == "")
@@ -26,7 +26,7 @@ module.exports = function(router, passport, squares)
             res.send(error);
         }
 
-        var result = 
+        var result =
         {
             square:squareName,
             latitude:latitude,
@@ -61,7 +61,7 @@ module.exports = function(router, passport, squares)
     		res.send(error);
     	}
 
-    	var result = 
+    	var result =
     	{
     		square:squareName,
     		latitude:latitude,
@@ -70,6 +70,15 @@ module.exports = function(router, passport, squares)
 
     	res.send(result);
     });
+
+    router.get('/squares/:name', isLoggedIn, function(req, res) {
+			Square.findOne({ 'name' : req.name }, function(err, square) {
+				if(err) res.send(err);
+				if(square) res.json(square);
+				else res.send('No square with this name');
+			})
+		});
+    
 };
 
 
