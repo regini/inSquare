@@ -1,12 +1,19 @@
 package com.nsqre.insquare.Activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -49,6 +56,7 @@ public class LoginActivity extends AppCompatActivity
 {
 
     private static final String TAG = "LoginActivity";
+    private User user;
 
     // Facebook Login
     private LoginButton fbLoginButton;
@@ -262,7 +270,6 @@ public class LoginActivity extends AppCompatActivity
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va a fabactivity
     private void json2login(String jsonUser) {
-        User user;
         Gson gson = new Gson();
         user = gson.fromJson(jsonUser, User.class);
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
@@ -350,5 +357,74 @@ public class LoginActivity extends AppCompatActivity
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
 
         return opr;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.instfeedback:
+                final Dialog d = new Dialog(this);
+                d.setContentView(R.layout.dialog_feedback);
+                d.setTitle("Feedback");
+                d.setCancelable(true);
+                d.show();
+
+                final EditText feedbackText = (EditText) d.findViewById(R.id.dialog_feedbacktext);
+                Button confirm = (Button) d.findViewById(R.id.dialog_feedback_confirm_button);
+                confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String feedback = feedbackText.getText().toString();
+                        final String activity = this.getClass().getSimpleName();
+                        // Instantiate the RequestQueue.
+                        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+                        String url = "http://recapp-insquare.rhcloud.com/feedback";
+
+                        // Request a string response from the provided URL.
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Log.d("VOLLEY", "ServerResponse: " + response);
+                                        CharSequence text = getString(R.string.thanks_feedback);
+                                        int duration = Toast.LENGTH_SHORT;
+                                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                        toast.show();
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("VOLLEY", error.toString());
+                                CharSequence text = getString(R.string.error_feedback);
+                                int duration = Toast.LENGTH_SHORT;
+                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                toast.show();
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("feedback", feedback);
+                                if (user != null)
+                                    params.put("username", user.getName());
+                                params.put("activity", activity);
+                                return params;
+                            }
+                        };
+                        queue.add(stringRequest);
+                        d.dismiss();
+                    }
+                });
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 }
