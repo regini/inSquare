@@ -2,7 +2,6 @@ package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -13,24 +12,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.nkzawa.engineio.client.transports.PollingXHR;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity {
 
+    private User currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
         setContentView(R.layout.activity_map);
     }
 
@@ -88,7 +89,7 @@ public class MapActivity extends AppCompatActivity {
                             protected Map<String, String> getParams() {
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("feedback", feedback);
-                                //params.put("username", currentUser.getName());
+                                params.put("username", currentUser.getId());
                                 params.put("activity", activity);
                                 return params;
                             }
