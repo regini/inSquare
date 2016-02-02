@@ -15,6 +15,11 @@
     <string name="facebook_app_id">743420882424724</string>
     <string name="chatUrl">http://recapp-insquare.rhcloud.com/</string>
     <string name="server_client_id">231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com</string>
+    <string name="feedback">Feedback</string>
+    <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
+    <string name="send">Invia</string>
+    <string name="thanks_feedback">Grazie per il feedback!</string>
+    <string name="error_feedback">Qualcosa è andato storto :(</string>
 
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>
