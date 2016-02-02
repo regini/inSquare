@@ -475,7 +475,7 @@ public class FabActivity extends AppCompatActivity {
                                     protected Map<String, String> getParams() {
                                         Map<String, String> params = new HashMap<String, String>();
                                         params.put("feedback", feedback);
-                                        params.put("username", currentUser.getName());
+                                        params.put("username", currentUser.getId());
                                         params.put("activity", activity);
                                         return params;
                                     }

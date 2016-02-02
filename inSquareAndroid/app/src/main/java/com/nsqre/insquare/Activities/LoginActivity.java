@@ -414,7 +414,7 @@ public class LoginActivity extends AppCompatActivity
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("feedback", feedback);
                                 if (user != null)
-                                    params.put("username", user.getName());
+                                    params.put("username", user.getId());
                                 params.put("activity", activity);
                                 return params;
                             }
