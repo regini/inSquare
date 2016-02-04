@@ -9,41 +9,19 @@ module.exports = function(router, passport, squares)
 	{
 		socket.on('addUser', function(data)
 		{
-			/*
-				data parameter is an object made like this:
-				{
-					.room, 	-> Square
-					.user 	-> user to be added
-				}
-			 */
-
 			var room = data.room;
 
 			if(room != "" || room != null || room != undefined)
 			{
-
-				var messages = getRecentMessages(room.id);
 				socket.username = data.user;
-
-				/*
-					message is an object with the following structure:
-					message =
-					{
-						.room, 		-> Square
-						.user,		-> sender
-						.contents	-> message text
-					}
-				 */
-
-				var serverMessage = {};
-				serverMessage.room = data.room;
-				serverMessage.user = "Server";
-				serverMessage.contents = data.user + " has connected";
-
-				// echo globally (all clients) that a person has connected
-			    socket.broadcast.emit('userJoined', serverMessage);
+				socket.room = data.room;
+				socket.join(data.room);
 			}
 
+		});
+
+		socket.on('tellRoom', function( msg, roomName ) {
+			socket.to( roomName ).emit('heyThere', msg, socket.id );
 		});
 
 		socket.on('sendMessage', function(data)
@@ -164,15 +142,17 @@ module.exports = function(router, passport, squares)
 	    }
     });
 
-	router.get('/get_all_messages', function(req, res)
+
+	router.get('/messages?', function(req, res)
     {
-    	var query = findMessages({}, res);
-	    	query.exec(
-	    		function(err,messages)
-		    	{
-		    		if(err) throw err;
-		    		res.json(messages);
-		    	});
+    	if((req.query.size!="" || req.query.size!=null || req.query.size!=undefined)
+    		&& req.query.recentMessages==true && 
+    		(req.query.square!="" || req.query.square!=null || req.query.square!=undefined) ){
+
+    	var messages = getRecentMessages(req.body.square,req.body.size);
+	    	
+	    res.json(messages);
+	  }
 	});
 
 	// CHATS
@@ -245,9 +225,9 @@ function sendMessage(text, user, square)
 
 }
 
-function getRecentMessages(square) {
+function getRecentMessages(square,size) {
 	Message.find({'squareId' : square})
-	.limit(50)
+	.limit(size)
 	.sort('-createdAt')
 	.exec(function(err,messages) {
 		if(err) throw err;
