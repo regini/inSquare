@@ -84,7 +84,6 @@ io.on('connection', function (socket) {
     mess.text = msg;
     mess.createdAt = new Date();
     mess.senderId = socket.id;
-    mess.senderEmail = socket.email;
     mess.save(function(err) {
       if(err) throw err;
       return mess;

@@ -1,16 +1,20 @@
 var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
+var Message = require('./message');
 
 var squareSchema = mongoose.Schema({
   name: String,
   geo_loc: {
     type: String,
     es_type: 'geo_point'
-  }
+  },
+  messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message',
+   es_schema: Message}]
 });
 
 squareSchema.plugin(mongoosastic, {
-	hosts: ['http://elastic-insquare.rhcloud.com']
+	hosts: ['http://elastic-insquare.rhcloud.com'],
+  populate: [{path: 'messages'}]
 })
 
 Square = module.exports = mongoose.model('Square', squareSchema);

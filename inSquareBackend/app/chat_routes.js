@@ -1,4 +1,6 @@
 var Message = require('./models/message');
+var Square = require('./models/square');
+var User = require('./models/user');
 var http = require('http');
 
 module.exports = function(router, passport, squares)
@@ -20,6 +22,7 @@ module.exports = function(router, passport, squares)
 			if(room != "" || room != null || room != undefined)
 			{
 
+				var messages = getRecentMessages(room.id);
 				socket.username = data.user;
 
 				/*
@@ -75,13 +78,13 @@ module.exports = function(router, passport, squares)
 	});
 
 	// Send messages
-    router.post('/send_message', isLoggedIn, function(req, res)
+    router.post('/send_message', function(req, res)
     {
     	console.log("Trying to send a message!");
 			var text = req.query.message;
-			var room = req.query.square;
-
-			var email = (function()
+			var square = req.query.square;
+			var user = req.user;
+			/*var email = (function()
 			{
 				if(req.user.local.email)
 					return req.user.local.email;
@@ -89,7 +92,7 @@ module.exports = function(router, passport, squares)
 					return req.user.facebook.email;
 				if(req.user.google.email)
 					return req.user.google.email;
-			}) ();
+			}) ();*/
 
 			sendMessage(text, user, email, square);
 
@@ -213,15 +216,26 @@ function isLoggedIn(req, res, next)
 	res.redirect('/');
 }
 
-function sendMessage(text, user, email, square)
+function sendMessage(text, user, square)
 {
 	var mes = new Message();
 
 	mes.text = text;
 	mes.createdAt = (new Date()).getTime();
 	mes.senderId = user;
-	mes.senderEmail = email;
 	mes.squareId = square;
+
+	User.findOne({'_id' : user}, function(err, usr) {
+		if(err) throw err;
+		usr.messages.push(mes);
+		usr.save();
+	})
+
+	Square.findOne({'_id' : square}, function(err, sqr) {
+		if(err) throw err;
+		sqr.messages.push(mes);
+		sqr.save();
+	})
 
 	mes.save(function(err)
 	{
@@ -230,6 +244,16 @@ function sendMessage(text, user, email, square)
 	});
 
 }
+
+function getRecentMessages(square) {
+	Message.find({'squareId' : square})
+	.limit(50)
+	.sort('-createdAt')
+	.exec(function(err,messages) {
+		if(err) throw err;
+		return messages;
+	})
+};
 
 function findMessages(params)
 {

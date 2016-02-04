@@ -1,4 +1,5 @@
 // router/routes
+var Feedback = require('./models/feedback');
 
 module.exports = function(router, passport)
 {
@@ -58,7 +59,7 @@ module.exports = function(router, passport)
   	function (req, res) {
     // do something with req.user
 			res.json({
-				id : req.user.facebook.id,
+				id : req.user.id,
 				name : req.user.facebook.name,
 				email : req.user.facebook.email});
   	});
@@ -94,7 +95,7 @@ module.exports = function(router, passport)
 	function (req, res) {
 	// do something with req.user
 		res.json({
-			id : req.user.google.id,
+			id : req.user.id,
 			name : req.user.google.name,
 			email : req.user.google.email});
 		});
@@ -158,6 +159,27 @@ module.exports = function(router, passport)
 		res.redirect('/');
 	});
 
+	//FEEDBACK
+	router.post('/feedback', function(req,res) {
+		var feedbacktext = req.body.feedback;
+		console.log(feedbacktext);
+		var user = req.body.username;
+		console.log(user);
+		var activity = req.body.activity;
+		console.log(activity);
+
+		var feedback = new Feedback();
+		feedback.text = feedbacktext;
+		feedback.user = user;
+		feedback.createdAt = (new Date()).getTime();
+		feedback.activity = activity;
+		feedback.save(function(err) {
+			if(err) throw err;
+			console.log(feedback);
+		});
+		res.send("feedback è " + feedbacktext + "; lo user è " + user + "; activity è " + activity + " inoltre req.body.feedback è " + req.body.feedback);
+	});
+
 	// =============================================================================
 	// UNLINK ACCOUNTS =============================================================
 	// =============================================================================
@@ -201,10 +223,6 @@ module.exports = function(router, passport)
             res.redirect('/profile');
         });
     });
-<<<<<<< HEAD:inSquare Backend/app/routes.js
-
-=======
->>>>>>> e5d27e506e7cd15bdbbbd2a257110556c82d7bf4:inSquareBackend/app/routes.js
 };
 
 function isLoggedIn(req, res, next)

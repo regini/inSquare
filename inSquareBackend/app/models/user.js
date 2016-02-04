@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var bcrypt = require('bcrypt-nodejs');
+var Message = require('./message');
 
 // schema for our user model
 var userSchema = mongoose.Schema({
@@ -25,7 +26,9 @@ var userSchema = mongoose.Schema({
 		token: String,
 		email: String,
 		name: String
-	}
+	},
+	messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message',
+   es_schema: Message}]
 });
 
 // methods
@@ -42,7 +45,8 @@ userSchema.methods.validPassword = function(password)
 };
 
 userSchema.plugin(mongoosastic, {
-	hosts: ['http://elastic-insquare.rhcloud.com']
+	hosts: ['http://elastic-insquare.rhcloud.com'],
+  populate: [{path: 'messages'}]
 });
 
 // create model and expose for our app to see
