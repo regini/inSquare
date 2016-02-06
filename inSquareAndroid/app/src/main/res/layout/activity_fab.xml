@@ -11,14 +11,30 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:title="#Square_placeholder"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="#SquareName"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="26sp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                />
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -32,7 +48,11 @@
         android:layout_alignParentLeft="false"
         android:layout_alignParentTop="false"
         android:layout_centerInParent="true"
-        android:background="@color/white"
+        android:paddingLeft="@dimen/fab_margin_side"
+        android:paddingStart="@dimen/fab_margin_side"
+        android:paddingRight="@dimen/message_margin_right"
+        android:paddingEnd="@dimen/message_margin_right"
+        android:paddingBottom="@dimen/fab_margin_bottom_smaller"
         android:content="@+id/content"
         android:gravity="center_vertical"
         android:orientation="vertical"
@@ -44,11 +64,6 @@
             android:layout_width="match_parent"
             android:layout_weight="90"
             android:hint="Enter message"
-            android:layout_marginRight="@dimen/message_margin_right"
-            android:layout_marginLeft="@dimen/fab_margin_side"
-            android:layout_marginStart="@dimen/fab_margin_side"
-            android:layout_marginEnd="@dimen/message_margin_right"
-            android:layout_marginBottom="@dimen/fab_margin_bottom_smaller"
             android:maxLines="3"
             />
         <requestFocus/>

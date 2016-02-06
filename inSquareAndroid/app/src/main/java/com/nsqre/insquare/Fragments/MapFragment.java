@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 
 import java.io.IOException;
 
@@ -70,6 +72,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private static final int REQUEST_COARSE_LOCATION = 1;
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute in milliseconds
     private static String[] PERMISSIONS =
             {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -185,6 +189,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 @Override
                 public void onLocationChanged(Location location) {
                     mCurrentLocation = location;
+                    DownloadClosestSquares dcs = new DownloadClosestSquares("10km",location.getLatitude(), location.getLongitude());
+                    dcs.execute();
+                    initCamera(mCurrentLocation);
                 }
 
                 @Override
@@ -197,8 +204,59 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 public void onProviderDisabled(String provider) {}
             };
 
+            String GPS = LocationManager.GPS_PROVIDER;
+            String NETWORK = LocationManager.NETWORK_PROVIDER;
+
+            if(locationManager.isProviderEnabled(GPS))
+            {
+                locationManager.requestLocationUpdates(GPS,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        locationListener);
+                if(locationManager != null)
+                {
+                    Location location = locationManager.getLastKnownLocation(GPS);
+                    if(location != null)
+                    {
+                        Log.d("GPS - " + TAG, "I've been able to get a location! Lat: "
+                                + location.getLatitude()
+                                + "; Long: "
+                                + location.getLongitude() + ";");
+                        mCurrentLocation = location;
+                    }
+                }else if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+                {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                            locationListener);
+                    if(locationManager != null)
+                    {
+                        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if(location != null)
+                        {
+                            Log.d("NETWORK - " + TAG, "I've been able to get a location! Lat: "
+                                    + location.getLatitude()
+                                    + "; Long: "
+                                    + location.getLongitude() + ";");
+                            mCurrentLocation = location;
+                        }
+                    }
+                }else
+                {
+                    Toast.makeText(getContext(),
+                            "There's no way for me to get a location!",
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
+            DownloadClosestSquares dcs = new DownloadClosestSquares("10km",
+                    mCurrentLocation.getLatitude(),
+                    mCurrentLocation.getLongitude());
+            dcs.execute();
             initCamera(mCurrentLocation);
         }
     }
@@ -244,11 +302,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     @Override
-    public void onInfoWindowClick(Marker marker) {
-
-    }
-
-    @Override
     public void onMapClick(LatLng latLng) {
         MarkerOptions options = new MarkerOptions().position(latLng);
         options.title(getAddressFromLatLng(latLng));
@@ -289,6 +342,12 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         marker.showInfoWindow();
         return true;
     }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

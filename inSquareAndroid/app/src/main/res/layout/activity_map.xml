@@ -5,13 +5,6 @@
     android:layout_height="match_parent"
     tools:context="com.nsqre.insquare.Activities.MapActivity">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.nsqre.insquare.Fragments.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
     <LinearLayout
         android:id="@+id/slider_ll"
         android:layout_width="match_parent"
@@ -36,9 +29,15 @@
             android:textSize="20sp"
             />
 
-
-
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.nsqre.insquare.Fragments.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/slider_ll"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -50,5 +49,5 @@
         android:layout_alignParentRight="true"
         android:src="@drawable/places_radius"
         />
-    
+
 </RelativeLayout>
