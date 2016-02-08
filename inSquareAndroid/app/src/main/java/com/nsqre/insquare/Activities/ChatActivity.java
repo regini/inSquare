@@ -1,7 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -10,9 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -31,11 +30,11 @@ import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
-import com.nsqre.insquare.Utilities.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,8 +44,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FabActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
+    private static final String TAG = "ChatActivity";
+    
     private static final long TYPING_TIMER_LENGTH = 600;
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
@@ -54,47 +55,61 @@ public class FabActivity extends AppCompatActivity {
     private EditText chatEditText;
     private EditText usernameEditText;
     private TextInputLayout textInputLayout;
+    private Toolbar toolbar;
 
     private Socket mSocket;
     private boolean mTyping = false;
     private Handler mTypingHandler = new Handler();
-    private String mUsername;
     private int mNumUsers;
 
     Dialog mDialog;
 
-    private User currentUser;
+    private InSquareProfile mProfile;
+
+    private String mSquareId;
+    private String mSquareName;
+    private String mUsername;
+    private String mUserId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
+//        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
 
         try {
-            mSocket = IO.socket(getString(R.string.chatUrl));
+
+            // Si connette alla socket che e' una sola
+            // La Room viene gestita a livello server tramite socket.join(room)
+            String url = getString(R.string.chatUrl);
+            Log.d(TAG, "onCreate: " + url);
+            mSocket = IO.socket(url);
+
+            // TODO prendere i messaggi recenti
             messageAdapter = new MessageAdapter(getDataSet());
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
             mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-            mSocket.on("new message", onNewMessage);
-            mSocket.on("user joined", onUserJoined);
-            mSocket.on("user left", onUserLeft);
+
+            mSocket.on("sendMessage", onSendMessage);
+            mSocket.on("addUser", onAddUser);
+            mSocket.on("userLeft", onUserLeft);
+
+            /*
             mSocket.on("typing", onTyping);
             mSocket.on("stop typing", onStopTyping);
             mSocket.on("login", onLogin);
+            */
 
             mSocket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
-        setContentView(R.layout.activity_fab);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_chat);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.chat_send_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,6 +120,9 @@ public class FabActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
@@ -112,31 +130,7 @@ public class FabActivity extends AppCompatActivity {
 
         chatEditText = (EditText) findViewById(R.id.message_text);
 
-        chatEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mUsername == null) return;
-                if (!mSocket.connected()) return;
-
-                if (!mTyping) {
-                    mTyping = true;
-                    mSocket.emit("typing");
-                }
-
-                mTypingHandler.removeCallbacks(onTypingTimeout);
-                mTypingHandler.postDelayed(onTypingTimeout, TYPING_TIMER_LENGTH);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        // TODO insert download of recent messages here
     }
 
     private boolean validName()
@@ -159,8 +153,33 @@ public class FabActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mUsername = currentUser.getName();
-        mSocket.emit("add user", mUsername);
+        Intent intent = getIntent();
+
+        mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
+        mSquareName = intent.getStringExtra(MapActivity.SQUARE_NAME_TAG);
+
+        TextView title = (TextView) findViewById(R.id.chat_title_tv);
+        title.setText("#" + mSquareName);
+
+        Log.d(TAG, "onCreate: " + mSquareId);
+        Log.d(TAG, "onCreate: " + mSquareName);
+
+
+        mUsername = InSquareProfile.getUsername();
+        mUserId = InSquareProfile.getUserId();
+
+        JSONObject data = new JSONObject();
+
+        try{
+            data.put("room", mSquareId);
+            data.put("username", mUsername);
+            data.put("user", mUserId);
+        }catch(JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        mSocket.emit("addUser", mUsername);
 
         //Initialize mDialog
       /*  mDialog = new Dialog(this);
@@ -196,15 +215,18 @@ public class FabActivity extends AppCompatActivity {
         mSocket.disconnect();
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        mSocket.off("new message", onNewMessage);
-        mSocket.off("user joined", onUserJoined);
-        mSocket.off("user left", onUserLeft);
-        mSocket.off("typing", onTyping);
-        mSocket.off("stop typing", onStopTyping);
-        mSocket.off("login", onLogin);
+        mSocket.off("sendMessage", onSendMessage);
+        mSocket.off("addUser", onAddUser);
+        mSocket.off("userLeft", onUserLeft);
+        
+        /*
+            mSocket.off("typing", onTyping);
+            mSocket.off("stop typing", onStopTyping);
+            mSocket.off("login", onLogin);
+        */
     }
 
-    private ArrayList<Message> getDataSet()
+        private ArrayList<Message> getDataSet()
     {
         ArrayList<Message> list = new ArrayList<>();
 
@@ -254,14 +276,24 @@ public class FabActivity extends AppCompatActivity {
 
     private void attemptSend()
     {
-        if(mUsername == null) return;
-        if(!mSocket.connected()) return;
+        if(mUsername == null) 
+        {
+            Log.d(TAG, "attemptSend: there's not Username specified");
+            return;
+        }
+        if(!mSocket.connected()) 
+        {
+            Log.d(TAG, "attemptSend: Socket is not connected");
+            return;
+        }
 
-        mTyping = false;
+//        mTyping = false;
 
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
+            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
+
             return;
         }
 
@@ -269,8 +301,20 @@ public class FabActivity extends AppCompatActivity {
 
         addMessage(mUsername, message);
 
+        // Il server riceve un oggetto in JSON che deve essere processato
+        JSONObject data = new JSONObject();
+
+        try{
+            data.put("room", mSquareId);
+            data.put("username", mUsername);
+            data.put("message", message);
+        }catch(JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         //This is the callback that socket.io uses to understand that an event has been triggered
-        mSocket.emit("new message", message);
+        mSocket.emit("sendMessage", data);
     }
 
 
@@ -281,24 +325,27 @@ public class FabActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, getString(R.string.error_connect));
                 }
             });
         }
     };
 
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+    private Emitter.Listener onSendMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     JSONObject data = (JSONObject) args[0];
-                    String username="";
-                    String message="";
+                    String username = "";
+                    String message = "";
 
                     try {
                         username = data.getString("username");
-                        message = data.getString("message");
+
+                        message = data.getString("contents");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -310,7 +357,7 @@ public class FabActivity extends AppCompatActivity {
         }
     };
 
-    private Emitter.Listener onUserJoined = new Emitter.Listener() {
+    private Emitter.Listener onAddUser = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
@@ -401,7 +448,7 @@ public class FabActivity extends AppCompatActivity {
             if (!mTyping) return;
 
             mTyping = false;
-            mSocket.emit("stop typing");
+//            mSocket.emit("stop typing");
         }
     };
 
@@ -430,7 +477,6 @@ public class FabActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
                 final Dialog d = new Dialog(this);
@@ -447,7 +493,7 @@ public class FabActivity extends AppCompatActivity {
                         final String feedback = feedbackText.getText().toString();
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
-                        RequestQueue queue = Volley.newRequestQueue(FabActivity.this);
+                        RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
                         String url = "http://recapp-insquare.rhcloud.com/feedback";
 
                         // Request a string response from the provided URL.
@@ -475,7 +521,7 @@ public class FabActivity extends AppCompatActivity {
                                     protected Map<String, String> getParams() {
                                         Map<String, String> params = new HashMap<String, String>();
                                         params.put("feedback", feedback);
-                                        params.put("username", currentUser.getId());
+                                        params.put("username", mUsername);
                                         params.put("activity", activity);
                                         return params;
                                     }

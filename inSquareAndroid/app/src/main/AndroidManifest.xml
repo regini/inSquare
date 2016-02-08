@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.FabActivity"
+            android:name=".Activities.ChatActivity"
             android:label="@string/title_activity_fab"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

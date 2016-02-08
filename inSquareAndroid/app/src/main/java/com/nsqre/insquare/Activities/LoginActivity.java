@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -40,6 +39,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.User;
 
@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity
 
     private static final String TAG = "LoginActivity";
     private User user;
+    private InSquareProfile profile;
 
     // Facebook Login
     private LoginButton fbLoginButton;
@@ -83,6 +84,10 @@ public class LoginActivity extends AppCompatActivity
         Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        // Profilo statico perche' non puo' cambiare.
+        // Singleton perche' cosi non puo' essere duplicato
+        profile = InSquareProfile.getInstance(getApplicationContext());
 
         fbCallbackManager = CallbackManager.Factory.create();
 
@@ -143,6 +148,7 @@ public class LoginActivity extends AppCompatActivity
         // Se il login e' gia' in cache, fai partire le chat
         if(getGoogleSignIn().isDone())
         {
+            Log.d(TAG, "Google is already signed in!");
             startInSquare();
             gLoginButton.setText(R.string.google_logout_string);
         }
@@ -257,14 +263,10 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
     }
 
-    private void googleDialogSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
     private void startInSquare()
     {
         Intent i = new Intent(LoginActivity.this, MapActivity.class);
+        Log.d(TAG, "startInSquare: start!");
         startActivity(i);
     }
 
@@ -273,6 +275,7 @@ public class LoginActivity extends AppCompatActivity
         Gson gson = new Gson();
         user = gson.fromJson(jsonUser, User.class);
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+        Log.d(TAG, "json2login: " + user);
         intent.putExtra("CURRENT_USER", user);
         startActivity(intent);
     }
@@ -292,6 +295,12 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Token is: " + acct.getIdToken());
 
             gLoginButton.setText(R.string.google_logout_string);
+
+            profile.googleEmail = acct.getEmail();
+            profile.googleToken = acct.getIdToken();
+            profile.googleName = acct.getDisplayName();
+            profile.googleId = acct.getId();
+            profile.save(getApplicationContext());
 
             // Instantiate the RequestQueue.
             RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
@@ -335,10 +344,18 @@ public class LoginActivity extends AppCompatActivity
                     String nome = object.getString("name");
                     String email = object.getString("email");
                     String gender = object.getString("gender");
+                    String id = object.getString("id");
+
+                    profile.facebookName = nome;
+                    profile.facebookEmail = email;
+                    profile.facebookId = id;
+//                    profile.facebookToken = ??
+                    profile.save(getApplicationContext());
 
                     Log.d(TAG, "Name: " + nome
                                 + " email: " + email
-                                + " Gender: " + gender);
+                                + " Gender: " + gender
+                                + " ID: " + id);
 
                 }catch (JSONException e)
                 {
