@@ -95,6 +95,7 @@ public class ChatActivity extends AppCompatActivity {
             mSocket.on("sendMessage", onSendMessage);
             mSocket.on("addUser", onAddUser);
             mSocket.on("userLeft", onUserLeft);
+            mSocket.on("newMessage", onNewMessage);
 
             /*
             mSocket.on("typing", onTyping);
@@ -179,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mSocket.emit("addUser", mUsername);
+        mSocket.emit("addUser", data);
 
         //Initialize mDialog
       /*  mDialog = new Dialog(this);
@@ -218,6 +219,7 @@ public class ChatActivity extends AppCompatActivity {
         mSocket.off("sendMessage", onSendMessage);
         mSocket.off("addUser", onAddUser);
         mSocket.off("userLeft", onUserLeft);
+        mSocket.off("newMessage", onNewMessage);
         
         /*
             mSocket.off("typing", onTyping);
@@ -307,6 +309,7 @@ public class ChatActivity extends AppCompatActivity {
         try{
             data.put("room", mSquareId);
             data.put("username", mUsername);
+            data.put("userid", mUserId);
             data.put("message", message);
         }catch(JSONException e)
         {
@@ -331,6 +334,22 @@ public class ChatActivity extends AppCompatActivity {
         }
     };
 
+    private Emitter.Listener onNewMessage = new Emitter.Listener()
+    {
+
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String username = "";
+                    String message = "";
+
+                }
+            });
+        }
+    };
     private Emitter.Listener onSendMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -339,13 +358,18 @@ public class ChatActivity extends AppCompatActivity {
                 public void run() {
 
                     JSONObject data = (JSONObject) args[0];
+                    String room = "";
+                    String userid = "";
                     String username = "";
                     String message = "";
 
                     try {
+                        room = data.getString("room");
+                        userid = data.getString("userid");
                         username = data.getString("username");
-
                         message = data.getString("contents");
+
+                        Log.d(TAG, userid + " - " + username + " IN: " + room + " saying: " + message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
