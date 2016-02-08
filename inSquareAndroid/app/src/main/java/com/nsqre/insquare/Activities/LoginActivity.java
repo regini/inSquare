@@ -31,6 +31,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -134,8 +135,10 @@ public class LoginActivity extends AppCompatActivity
         // Se il login e' gia' in cache, fai partire le chat
         if(getGoogleSignIn().isDone())
         {
+            gAccessToken = getGoogleSignIn().get().getSignInAccount().getIdToken();
+            Log.d("TOKEN GOOGLE", gAccessToken);
             Log.d(TAG, "Google is already signed in!");
-            startInSquare();
+            googlePostRequest();
             gLoginButton.setText(R.string.google_logout_string);
         }
 
@@ -263,6 +266,35 @@ public class LoginActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
+    private void googlePostRequest() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("google+response", "Response is: " + response);
+                        json2login(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("GOOGLE+Response", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("access_token", gAccessToken);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
     //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
     private void handleSignInResult(GoogleSignInResult result) {
 
@@ -285,32 +317,7 @@ public class LoginActivity extends AppCompatActivity
             profile.googleId = acct.getId();
             profile.save(getApplicationContext());
 
-            // Instantiate the RequestQueue.
-            RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-            String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
-
-            // Request a string response from the provided URL.
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("google+response", "Response is: " + response);
-                            json2login(response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("GOOGLE+Response", error.toString());
-                }
-            }) {
-                @Override
-                public Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("access_token", gAccessToken);
-                    return params;
-                }
-            };
-            queue.add(stringRequest);
+            googlePostRequest();
         }
     }
 
