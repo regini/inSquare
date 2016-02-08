@@ -366,6 +366,16 @@ public class ChatActivity extends AppCompatActivity {
                     String username = "";
                     String message = "";
 
+                    try {
+                        username = data.getString("username");
+                        message = data.getString("contents");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    addMessage(username, message);
+
                 }
             });
         }
