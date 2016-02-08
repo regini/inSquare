@@ -232,6 +232,7 @@ public class LoginActivity extends AppCompatActivity
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
+        profile.save(getApplicationContext());
         startActivity(intent);
     }
 

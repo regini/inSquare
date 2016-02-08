@@ -42,6 +42,8 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -148,6 +150,7 @@ public class ChatActivity extends AppCompatActivity {
                         Log.d("GETRECENTI", response);
                         Gson gson = new Gson();
                         Message[] messages = gson.fromJson(response, Message[].class);
+                        Collections.reverse(Arrays.asList(messages));
                         for (Message m : messages) {
                             addMessage(m.getName(),m.getText());
                         }
