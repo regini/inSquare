@@ -175,7 +175,7 @@ public class ChatActivity extends AppCompatActivity {
             data.put("room", mSquareId);
             data.put("username", mUsername);
             data.put("user", mUserId);
-        }catch(JSONException e)
+        } catch(JSONException e)
         {
             e.printStackTrace();
         }
@@ -316,6 +316,7 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        Log.d("profilo", InSquareProfile.getInstance(getApplicationContext()).toString());
         //This is the callback that socket.io uses to understand that an event has been triggered
         mSocket.emit("sendMessage", data);
     }
