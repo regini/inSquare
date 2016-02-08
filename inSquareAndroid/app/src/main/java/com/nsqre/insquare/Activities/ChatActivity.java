@@ -142,6 +142,8 @@ public class ChatActivity extends AppCompatActivity {
         String url = String.format("http://recapp-insquare.rhcloud.com/messages?recent=%1$s&size=%2$s&square=%3$s",
                 "true", q, mSquareId);  //"56b65fcff4db4a7677d951ea"
 
+        Log.d(TAG, "getRecentMessages from: " + url);
+
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
