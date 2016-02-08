@@ -54,7 +54,7 @@
     <!--
         stateListAnimator rimuove l'ombra dal tasto
         allineare start/end con il tasto di facebook fa si che le loro dimensioni rimangano uguali
-    -->
+
     <Button
         android:id="@+id/chat_now_button"
         android:layout_width="wrap_content"
@@ -71,4 +71,5 @@
         android:stateListAnimator="@null"
         />
 
+        -->
 </RelativeLayout>

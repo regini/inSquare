@@ -31,6 +31,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -73,10 +74,8 @@ public class LoginActivity extends AppCompatActivity
     private GoogleSignInOptions gSo;
     private static final int RC_SIGN_IN = 9001;
     private Button gLoginButton;
-//    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 211;
     // ============
 
-    private Button goChatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,18 +93,6 @@ public class LoginActivity extends AppCompatActivity
         fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         // Permessi da richiedere durante il login
         fbLoginButton.setReadPermissions("public_profile", "email", "user_friends");
-
-        // Controlla che un utente si sia gia' loggato
-        fbTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                if(AccessToken.getCurrentAccessToken() != null)
-                {
-                    Log.d(TAG, "onCurrentAccessTokenChanged: Facebook already logged in!");
-                    startInSquare();
-                }
-            }
-        };
 
         gLoginButton = (Button) findViewById(R.id.google_login_button);
 
@@ -148,8 +135,10 @@ public class LoginActivity extends AppCompatActivity
         // Se il login e' gia' in cache, fai partire le chat
         if(getGoogleSignIn().isDone())
         {
+            gAccessToken = getGoogleSignIn().get().getSignInAccount().getIdToken();
+            Log.d("TOKEN GOOGLE", gAccessToken);
             Log.d(TAG, "Google is already signed in!");
-            startInSquare();
+            googlePostRequest();
             gLoginButton.setText(R.string.google_logout_string);
         }
 
@@ -159,44 +148,6 @@ public class LoginActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
-
-        // accesso alla chat
-        // bottone che invia il token a facebook e ti fa entrare nella fabactivity
-        goChatButton = (Button) findViewById(R.id.chat_now_button);
-
-        goChatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Instantiate the RequestQueue.
-                RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                String url = "http://recapp-insquare.rhcloud.com/auth/facebook/token";
-
-                // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Log.d("ServerResponse", response);
-                                json2login(response);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        goChatButton.setText(error.toString());
-                    }
-                }) {
-                    //TOKEN messo nei parametri della query
-                    @Override
-                    protected Map<String, String> getParams() {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("access_token", fbAccessToken);
-
-                        return params;
-                    }
-                };
-                queue.add(stringRequest);
             }
         });
     }
@@ -221,10 +172,11 @@ public class LoginActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        //FACEBOOK
+        // Controlla che un utente si sia gia' loggato
         try {
-            fbAccessToken = AccessToken.getCurrentAccessToken().getToken(); //SE UTENTE HA GIà LOGGATO UN'ALTRA VOLTA, RITROVA IL TOKEN.
+            fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
             Log.d("token", fbAccessToken);
+            facebookPostRequest();
         }
         catch (Exception e) {
             Log.d("token", e.toString());
@@ -276,8 +228,71 @@ public class LoginActivity extends AppCompatActivity
         user = gson.fromJson(jsonUser, User.class);
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         Log.d(TAG, "json2login: " + user);
-        intent.putExtra("CURRENT_USER", user);
+        intent.putExtra("CURRENT_USER", user);  //TODO probabilmente da eliminare
+        profile.userId = user.getId();
+        profile.username = user.getName();
+        profile.email = user.getEmail();
         startActivity(intent);
+    }
+
+    private void facebookPostRequest() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        String url = "http://recapp-insquare.rhcloud.com/auth/facebook/token";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("ServerResponse", response);
+                        json2login(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ServerResponse", error.toString());
+            }
+        }) {
+            //TOKEN messo nei parametri della query
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("access_token", fbAccessToken);
+
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    private void googlePostRequest() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("google+response", "Response is: " + response);
+                        json2login(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("GOOGLE+Response", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("access_token", gAccessToken);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
     }
 
     //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
@@ -302,32 +317,7 @@ public class LoginActivity extends AppCompatActivity
             profile.googleId = acct.getId();
             profile.save(getApplicationContext());
 
-            // Instantiate the RequestQueue.
-            RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-            String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
-
-            // Request a string response from the provided URL.
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("google+response", "Response is: " + response);
-                            json2login(response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("GOOGLE+Response", error.toString());
-                }
-            }) {
-                @Override
-                public Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("access_token", gAccessToken);
-                    return params;
-                }
-            };
-            queue.add(stringRequest);
+            googlePostRequest();
         }
     }
 
@@ -349,15 +339,17 @@ public class LoginActivity extends AppCompatActivity
                     profile.facebookName = nome;
                     profile.facebookEmail = email;
                     profile.facebookId = id;
-//                    profile.facebookToken = ??
+                    profile.facebookToken = AccessToken.getCurrentAccessToken().getToken();
                     profile.save(getApplicationContext());
 
                     Log.d(TAG, "Name: " + nome
-                                + " email: " + email
-                                + " Gender: " + gender
-                                + " ID: " + id);
+                            + " email: " + email
+                            + " Gender: " + gender
+                            + " ID: " + id);
 
-                }catch (JSONException e)
+                    facebookPostRequest();
+                }
+                catch (JSONException e)
                 {
                     e.printStackTrace();
                 }
