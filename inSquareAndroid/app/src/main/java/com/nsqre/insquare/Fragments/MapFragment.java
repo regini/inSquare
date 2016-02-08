@@ -3,17 +3,19 @@ package com.nsqre.insquare.Fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,10 +30,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
+import com.nsqre.insquare.Utilities.Square;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +58,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final int MAX_SQUARENAME_LENGTH = 30;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -76,6 +83,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute in milliseconds
     private static String[] PERMISSIONS =
             {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
+    private HashMap<Marker, Square> squareHashMap; // Connessione Square collegati ai Marker sulla mappa
+    private MapActivity rootActivity;
 
     public MapFragment() {
         // Required empty public constructor
@@ -107,11 +117,14 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        squareHashMap = new HashMap<Marker, Square>();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        rootActivity = (MapActivity) getActivity();
 
         getMapAsync(this);
     }
@@ -171,6 +184,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
+
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -189,8 +203,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 @Override
                 public void onLocationChanged(Location location) {
                     mCurrentLocation = location;
-                    DownloadClosestSquares dcs = new DownloadClosestSquares("10km",location.getLatitude(), location.getLongitude());
-                    dcs.execute();
+                    downloadAndInsertPins();
                     initCamera(mCurrentLocation);
                 }
 
@@ -253,12 +266,32 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
-            DownloadClosestSquares dcs = new DownloadClosestSquares("10km",
-                    mCurrentLocation.getLatitude(),
-                    mCurrentLocation.getLongitude());
-            dcs.execute();
+            downloadAndInsertPins();
             initCamera(mCurrentLocation);
         }
+    }
+
+    private void downloadAndInsertPins()
+    {
+        DownloadClosestSquares dcs = new DownloadClosestSquares("10km",
+                mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude());
+        try {
+            HashMap<String, Square> squarePins = dcs.execute().get();
+
+            for(Square closeSquare : squarePins.values())
+            {
+                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                MarkerOptions options = new MarkerOptions().position(coords);
+                options.title(closeSquare.getName());
+                options.icon(BitmapDescriptorFactory.defaultMarker());
+                Marker marker = mGoogleMap.addMarker(options);
+                squareHashMap.put(marker, closeSquare);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void handlePermissions() {
@@ -303,23 +336,23 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onMapClick(LatLng latLng) {
-        MarkerOptions options = new MarkerOptions().position(latLng);
-        options.title(getAddressFromLatLng(latLng));
-
-        options.icon(BitmapDescriptorFactory.defaultMarker());
-        mGoogleMap.addMarker(options);
+//        MarkerOptions options = new MarkerOptions().position(latLng);
+//        options.title(getAddressFromLatLng(latLng));
+//
+//        options.icon(BitmapDescriptorFactory.defaultMarker());
+//        mGoogleMap.addMarker(options);
     }
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        MarkerOptions options = new MarkerOptions().position( latLng );
-        options.title( getAddressFromLatLng( latLng ) );
-
-        options.icon( BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory.decodeResource(getResources(),
-                        R.mipmap.ic_launcher)) );
-
-        mGoogleMap.addMarker(options);
+//        MarkerOptions options = new MarkerOptions().position( latLng );
+//        options.title( getAddressFromLatLng( latLng ) );
+//
+//        options.icon( BitmapDescriptorFactory.fromBitmap(
+//                BitmapFactory.decodeResource(getResources(),
+//                        R.mipmap.ic_launcher)) );
+//
+//        mGoogleMap.addMarker(options);
     }
 
     public String getAddressFromLatLng(LatLng latLng)
@@ -339,7 +372,31 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
+        TextView tv = (TextView)getActivity().findViewById(R.id.square_textview);
+        String text = marker.getTitle();
+        if(text.length() > MAX_SQUARENAME_LENGTH)
+        {
+            text = text.substring(0, MAX_SQUARENAME_LENGTH-3) + "...";
+        }
+        tv.setText("#" + text);
+
+        ((LinearLayout) getActivity().findViewById(R.id.slider_ll)).setVisibility(View.VISIBLE);
+        ((FloatingActionButton)getActivity().findViewById(R.id.map_fab)).setVisibility(View.VISIBLE);
+
         marker.showInfoWindow();
+        marker.getTitle();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                400, // Tempo di spostamento in ms
+                null); // callback
+        Square currentSquare = squareHashMap.get(marker);
+
+        // TODO pesca lo username effettivo
+        rootActivity.setSquareId(currentSquare.getId());
+        rootActivity.setSquareName(marker.getTitle());
+        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+
         return true;
     }
 

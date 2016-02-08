@@ -13,15 +13,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class DownloadClosestSquares extends AsyncTask<String, Void, ArrayList> {
+public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<String, Square>> {
 
     private static final String TAG = "DownloadClosestSquares";
     private static final String BASE_URL = "http://recapp-insquare.rhcloud.com/squares?";
     private String FINAL_URL;
 
-    private ArrayList<Square> squareList;
+//    private ArrayList<Square> squareList;
+    private HashMap<String, Square> squareMap;
     private String fulltext;
     private String name;
     // TODO save this as a param in the settings
@@ -58,9 +59,10 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, ArrayList> {
     }
 
     @Override
-    protected ArrayList doInBackground(String... params)
+    protected HashMap<String, Square> doInBackground(String... params)
     {
-        squareList = new ArrayList<>();
+//        squareList = new ArrayList<>();
+        squareMap = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
         try
@@ -72,14 +74,15 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, ArrayList> {
 
             while((str = in.readLine()) != null)
             {
-                Log.d(TAG, str);
+//                Log.d(TAG, str);
                 sb.append(str).append("\n");
             }
 
-            Log.d(TAG, "Results are IN!\n" + sb.toString());
+//            Log.d(TAG, "Results are IN!\n" + sb.toString());
 
             JSONArray closeSquares = new JSONArray(sb.toString());
-            for(int i = 0; i < closeSquares.length(); i++) {
+            int i = 0;
+            for(i = 0; i < closeSquares.length(); i++) {
                 JSONObject cs = closeSquares.getJSONObject(i);
 
                 String cs_index = cs.getString(TAG_INDEX);
@@ -107,11 +110,13 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, ArrayList> {
                             cs_type
                     );
 
-                    squareList.add(close_square);
-
-                    Log.d(TAG, close_square.toString());
+//                    squareList.add(close_square);
+                    squareMap.put(cs_source_name, close_square);
                 }
             }
+
+            Log.d(TAG, squareMap.size() + " vs " + i);
+
 //            JSONObject json = new JSONObject(sb.toString());
 //            JSONArray messages = json.getJSONArray(TAG_ARRAY);
 //
@@ -143,7 +148,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, ArrayList> {
             e.printStackTrace();
         }
 
-        return squareList;
+        return squareMap;
     }
 
     public class Message

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nsqre.insquare.Activities.MapActivity">
+    tools:context="com.nsqre.insquare.Activities.MapActivity"
+    >
 
     <LinearLayout
         android:id="@+id/slider_ll"
@@ -25,14 +26,14 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:fontFamily="sans-serif-condensed"
-            android:text="#Square_Placeholder"
+            android:text="@string/square_placeholder"
             android:textSize="20sp"
             />
 
     </LinearLayout>
 
     <fragment
-        android:id="@+id/map"
+        android:id="@+id/map_fragment"
         android:name="com.nsqre.insquare.Fragments.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -40,14 +41,14 @@
         />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/map_fab"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         android:layout_marginRight="@dimen/fab_margin_side"
         android:layout_marginBottom="@dimen/fab_margin_bottom"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/places_radius"
+        android:src="@drawable/message_processing"
         />
 
 </RelativeLayout>

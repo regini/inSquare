@@ -19,7 +19,13 @@ public class Square implements Serializable {
 
     @Override
     public String toString() {
-        return "Name: " + name + "; Loc: " + lat + "," + lon;
+        return id + " -- Name: " + name + "; Loc: " + lat + "," + lon;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.name.equals(((Square)o).getName());
+//        return this.id.equals(((Square)o).getId());
     }
 
     public String getId() {
