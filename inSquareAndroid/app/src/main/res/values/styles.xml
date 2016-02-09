@@ -24,7 +24,9 @@
         <item name="android:paddingBottom">10dp</item>
         <item name="android:paddingLeft">30dp</item>
         <item name="android:paddingRight">30dp</item>
-        <item name="android:drawableLeft">@null</item>
+        <!--<item name="android:drawableLeft">@null</item>-->
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="GoogleLoginButton">
@@ -35,6 +37,7 @@
         <item name="android:paddingLeft">30dp</item>
         <item name="android:paddingRight">30dp</item>
         <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="StandardRoundButton">
