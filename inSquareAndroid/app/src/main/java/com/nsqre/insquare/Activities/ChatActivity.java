@@ -167,7 +167,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         Intent intent = getIntent();
 
         mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
@@ -200,6 +199,11 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
