@@ -221,9 +221,11 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    mCurrentLocation = location;
-                    downloadAndInsertPins();
-                    initCamera(mCurrentLocation);
+                    if(getContext() != null) {
+                        mCurrentLocation = location;
+                        downloadAndInsertPins();
+                        initCamera(mCurrentLocation);
+                    }
                 }
 
                 @Override

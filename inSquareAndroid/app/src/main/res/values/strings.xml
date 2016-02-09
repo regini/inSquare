@@ -31,6 +31,7 @@
     <string name="google_login_string">Google Login</string>
     <string name="google_logout_string">Google Logout</string>
     <string name="fb_login_string">Facebook Login</string>
+    <string name="fb_logout_string">Facebook Logout</string>
     <string name="square_placeholder">Select a #Square on the map</string>
 
 </resources>

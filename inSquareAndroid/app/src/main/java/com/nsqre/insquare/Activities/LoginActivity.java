@@ -29,9 +29,8 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -47,6 +46,7 @@ import com.nsqre.insquare.Utilities.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity
     private InSquareProfile profile;
 
     // Facebook Login
-    private LoginButton fbLoginButton;
+    private Button fbLoginButton;
     private CallbackManager fbCallbackManager;
     private String fbUserId;
     private String fbAccessToken;
@@ -90,29 +90,33 @@ public class LoginActivity extends AppCompatActivity
 
         fbCallbackManager = CallbackManager.Factory.create();
 
-        fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
-        // Permessi da richiedere durante il login
-        fbLoginButton.setReadPermissions("public_profile", "email", "user_friends");
+        LoginManager.getInstance().registerCallback(fbCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("Success", "Login");
+                        requestFacebookData();
+                        fbLoginButton.setText(R.string.fb_logout_string);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d(TAG, "Facebook Login canceled");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Log.d(TAG, "onError:\n" + exception.toString());
+                    }
+                });
 
         gLoginButton = (Button) findViewById(R.id.google_login_button);
-
-        fbLoginButton.registerCallback(fbCallbackManager, new FacebookCallback<LoginResult>() {
+        fbLoginButton = (Button) findViewById(R.id.fb_login_button);
+        // Permessi da richiedere durante il login
+        fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                if(AccessToken.getCurrentAccessToken() != null)
-                {
-                    requestData();
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG + "Facebook", "Login attempt canceled.");
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Log.d(TAG + "Facebook", e.toString());
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
 
@@ -133,13 +137,16 @@ public class LoginActivity extends AppCompatActivity
         gApiClient.connect();
 
         // Se il login e' gia' in cache, fai partire le chat
-        if(getGoogleSignIn().isDone())
+        if(isGoogleSignedIn())
         {
-            gAccessToken = getGoogleSignIn().get().getSignInAccount().getIdToken();
-            Log.d("TOKEN GOOGLE", gAccessToken);
-            Log.d(TAG, "Google is already signed in!");
-            googlePostRequest();
+            Log.d(TAG, "Google is already logged in!");
             gLoginButton.setText(R.string.google_logout_string);
+            googlePostRequest();
+        }else if(isFacebookSignedIn())
+        {
+            Log.d(TAG, "onCreate: Facebook is already logged in!");
+            fbLoginButton.setText(R.string.fb_logout_string);
+            facebookPostRequest();
         }
 
         // Non avendo ancora effettuato il Login con Google
@@ -159,7 +166,7 @@ public class LoginActivity extends AppCompatActivity
         // Ritorno dal login di Google+
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+            googleSignInResult(result);
             startInSquare();
         } else {
             // Ritorno dal Login di Facebook
@@ -171,16 +178,6 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-
-        // Controlla che un utente si sia gia' loggato
-        try {
-            fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
-            Log.d("token", fbAccessToken);
-            facebookPostRequest();
-        }
-        catch (Exception e) {
-            Log.d("token", e.toString());
-        }
     }
 
     @Override
@@ -222,13 +219,13 @@ public class LoginActivity extends AppCompatActivity
         startActivity(i);
     }
 
-    //metodo che elabora il json preso dalle post, crea l'oggetto user e va a fabactivity
+    //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity
     private void json2login(String jsonUser) {
         Gson gson = new Gson();
         user = gson.fromJson(jsonUser, User.class);
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         Log.d(TAG, "json2login: " + user);
-        intent.putExtra("CURRENT_USER", user);  //TODO probabilmente da eliminare
+//        intent.putExtra("CURRENT_USER", user);  //TODO probabilmente da eliminare
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
@@ -297,7 +294,7 @@ public class LoginActivity extends AppCompatActivity
     }
 
     //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
-    private void handleSignInResult(GoogleSignInResult result) {
+    private void googleSignInResult(GoogleSignInResult result) {
 
         Log.d("Google" + TAG, "Success? " + result.isSuccess() + "\nStatus Code: " + result.getStatus().getStatusCode());
 
@@ -322,7 +319,7 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
-    private void requestData()
+    private void requestFacebookData()
     {
         // Creazione di una nuova richiesta al grafo di Facebook per le informazioni necessarie
         GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -362,12 +359,34 @@ public class LoginActivity extends AppCompatActivity
         graphRequest.executeAsync();
     }
 
-    private OptionalPendingResult<GoogleSignInResult> getGoogleSignIn()
+    private boolean isGoogleSignedIn()
     {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
+        gAccessToken = opr.get().getSignInAccount().getIdToken();
 
-        return opr;
+        return opr.isDone();
     }
+
+    private boolean isFacebookSignedIn()
+    {
+        // Controlla che Facebook sia gia' loggato
+        try {
+            AccessToken token = AccessToken.getCurrentAccessToken();
+            if(token != null)
+            {
+                fbAccessToken = token.getToken();
+                Log.d("token", fbAccessToken);
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception e) {
+            Log.d("token", e.toString());
+        }
+        return false;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
