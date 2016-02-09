@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
@@ -10,14 +11,26 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,8 +48,12 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -84,8 +101,10 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private static String[] PERMISSIONS =
             {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
-    private HashMap<Marker, Square> squareHashMap; // Connessione Square collegati ai Marker sulla mappa
+    // Relazione fra Square e Marker sulla mappa
+    private HashMap<Marker, Square> squareHashMap;
     private MapActivity rootActivity;
+    private String newSquareName;
 
     public MapFragment() {
         // Required empty public constructor
@@ -336,12 +355,40 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
-//        MarkerOptions options = new MarkerOptions().position(latLng);
-//        options.title(getAddressFromLatLng(latLng));
-//
-//        options.icon(BitmapDescriptorFactory.defaultMarker());
-//        mGoogleMap.addMarker(options);
+    public void onMapClick(final LatLng latLng) {
+
+        final String lat = Double.toString(latLng.latitude);
+        final String lon = Double.toString(latLng.longitude);
+
+        final Dialog mDialog = new Dialog(getContext());
+        mDialog.setContentView(R.layout.dialog_crea_square);
+        mDialog.setTitle("Crea una Square");
+        mDialog.setCancelable(true);
+        mDialog.show();
+
+        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
+        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
+        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
+        crea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String squareName = usernameEditText.getText().toString().trim();
+                if (!TextUtils.isEmpty(squareName)) {
+                    newSquareName = squareName;
+                    MarkerOptions options = new MarkerOptions().position(latLng);
+
+                    options.title(squareName);
+
+                    options.icon(BitmapDescriptorFactory.defaultMarker());
+                    Marker m = mGoogleMap.addMarker(options);
+
+                    // Richiesta Volley POST per la creazione di piazze
+                    createSquarePostRequest(squareName, lat, lon, m);
+                    mDialog.dismiss();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -382,9 +429,17 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         }
         tv.setText("#" + text);
 
-        ((LinearLayout) getActivity().findViewById(R.id.slider_ll)).setVisibility(View.VISIBLE);
-        ((FloatingActionButton)getActivity().findViewById(R.id.map_fab)).setVisibility(View.VISIBLE);
-
+        // Animazione per mostrare il riquadro in fondo allo schermo insieme al tasto per accedere alle piazze
+        LinearLayout ll = ((LinearLayout) getActivity().findViewById(R.id.slider_ll));
+        if(ll.getVisibility() == View.GONE) {
+            ll.setVisibility(View.VISIBLE);
+            Animation animationUp = AnimationUtils.loadAnimation(getContext(), R.anim.anim_up);
+            ll.startAnimation(animationUp);
+            FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.map_fab);
+            fab.setVisibility(View.VISIBLE);
+            fab.startAnimation(animationUp);
+        }
+        
         marker.showInfoWindow();
         marker.getTitle();
 
@@ -393,7 +448,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 null); // callback
         Square currentSquare = squareHashMap.get(marker);
 
-        // TODO pesca lo username effettivo
         rootActivity.setSquareId(currentSquare.getId());
         rootActivity.setSquareName(marker.getTitle());
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
@@ -412,6 +466,56 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         this.mGoogleMap = googleMap;
 
         initListeners();
+    }
+
+    private void createSquarePostRequest(final String squareName,
+                                         final String latitude,
+                                         final String longitude,
+                                         final Marker marker) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "http://recapp-insquare.rhcloud.com/squares";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Create Square response: " + response);
+                        try {
+                            /*
+                                Devo recuperare ID della Square dal responso del server
+                                per poter mantenere coerenti le strutture dati della mappa
+                            */
+
+                            JSONObject o = new JSONObject(response);
+                            String squareId = o.getString("_id");
+                            double lat = Double.parseDouble(latitude);
+                            double lon = Double.parseDouble(longitude);
+                            Square s = new Square(squareId, squareName, lat, lon, "geo_point");
+                            squareHashMap.put(marker, s);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Toast.makeText(getContext(), "Square cerated successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CreateSquare Response", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", squareName);
+                params.put("lat", latitude);
+                params.put("lon", longitude);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
     }
 
     /**

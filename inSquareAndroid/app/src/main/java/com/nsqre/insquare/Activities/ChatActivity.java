@@ -200,27 +200,6 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         mSocket.emit("addUser", data);
-
-        //Initialize mDialog
-      /*  mDialog = new Dialog(this);
-        mDialog.setContentView(R.layout.dialog_username);
-        mDialog.setTitle("Enter username");
-        mDialog.setCancelable(false);
-        mDialog.show();
-
-        usernameEditText = (EditText) mDialog.findViewById(R.id.et_username);
-        textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_name);
-        Button confirm = (Button) mDialog.findViewById(R.id.confirm_button);
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validName()) {
-
-                    mDialog.dismiss();
-                }
-            }
-        });*/
-
     }
 
     @Override

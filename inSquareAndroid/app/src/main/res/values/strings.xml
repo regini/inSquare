@@ -11,6 +11,8 @@
     <string name="message_user_left">%s has left</string>
     <string name="user_action_typing"> is typing</string>
     <string name="username">Username</string>
+    <string name="nome_square">Inserisci il Nome della Square</string>
+    <string name="crea_square">Crea!</string>
     <string name="ok">Ok</string>
     <string name="facebook_app_id">743420882424724</string>
     <string name="chatUrl">http://recapp-insquare.rhcloud.com/squares</string>
