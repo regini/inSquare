@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -30,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DividerItemDecoration;
@@ -41,6 +41,8 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,33 +123,45 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         chatEditText = (EditText) findViewById(R.id.message_text);
-
-        // TODO insert download of recent messages here
     }
 
-    private boolean validName()
-    {
-        if(usernameEditText.getText().toString().isEmpty())
-        {
-            textInputLayout.setError("Enter a username");
-            usernameEditText.requestFocus();
-            return false;
-        }else
-        {
-            textInputLayout.setErrorEnabled(false);
-        }
+    private void getRecentMessages(int quantity) {
+        RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
+        final String q = new Integer(quantity).toString();
 
-        return true;
+        String url = String.format("http://recapp-insquare.rhcloud.com/messages?recent=%1$s&size=%2$s&square=%3$s",
+                "true", q, mSquareId);  //"56b65fcff4db4a7677d951ea"
+
+        Log.d(TAG, "getRecentMessages from: " + url);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("GETRECENTI", response);
+                        Gson gson = new Gson();
+                        Message[] messages = gson.fromJson(response, Message[].class);
+                        Collections.reverse(Arrays.asList(messages));
+                        for (Message m : messages) {
+                            addMessage(m.getName(),m.getText());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("GETRECENTI", error.toString());
+            }
+        });
+        queue.add(stringRequest);
     }
+
 
     //MODIFICATO invece di chiedere chi sta scrivendo, prende il nome dall'user passato dall'activity di login
     @Override
@@ -159,12 +173,12 @@ public class ChatActivity extends AppCompatActivity {
         mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
         mSquareName = intent.getStringExtra(MapActivity.SQUARE_NAME_TAG);
 
-        TextView title = (TextView) findViewById(R.id.chat_title_tv);
-        title.setText("#" + mSquareName);
+        setTitle("#" + mSquareName);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
 
+        getRecentMessages(50);
 
         mUsername = InSquareProfile.getUsername();
         mUserId = InSquareProfile.getUserId();
@@ -181,27 +195,6 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         mSocket.emit("addUser", data);
-
-        //Initialize mDialog
-      /*  mDialog = new Dialog(this);
-        mDialog.setContentView(R.layout.dialog_username);
-        mDialog.setTitle("Enter username");
-        mDialog.setCancelable(false);
-        mDialog.show();
-
-        usernameEditText = (EditText) mDialog.findViewById(R.id.et_username);
-        textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_name);
-        Button confirm = (Button) mDialog.findViewById(R.id.confirm_button);
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validName()) {
-
-                    mDialog.dismiss();
-                }
-            }
-        });*/
-
     }
 
     @Override
@@ -257,7 +250,7 @@ public class ChatActivity extends AppCompatActivity {
         for(int i = messageAdapter.getItemCount()-1; i >= 0; i--)
         {
             Message message = messageAdapter.getMessage(i);
-            if(message.getMessageType() == Message.TYPE_ACTION && message.getSender().equals(username))
+            if(message.getMessageType() == Message.TYPE_ACTION && message.getName().equals(username))
             {
                 messageAdapter.removeItem(i);
                 return;
@@ -335,6 +328,8 @@ public class ChatActivity extends AppCompatActivity {
         }
     };
 
+
+    // TODO SOLLEVA ERRORE  java.lang.ClassCastException: java.lang.String cannot be cast to org.json.JSONObject ANCHE SE NESSUNO LO CHIAMA (?)
     private Emitter.Listener onNewMessage = new Emitter.Listener()
     {
 
@@ -346,6 +341,16 @@ public class ChatActivity extends AppCompatActivity {
                     JSONObject data = (JSONObject) args[0];
                     String username = "";
                     String message = "";
+
+                    try {
+                        username = data.getString("username");
+                        message = data.getString("contents");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    addMessage(username, message);
 
                 }
             });

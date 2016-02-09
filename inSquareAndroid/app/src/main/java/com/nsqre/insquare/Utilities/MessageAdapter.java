@@ -34,10 +34,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public void onBindViewHolder(MessageHolder holder, int position) {
         Message m = mDataset.get(position);
-        holder.content.setText(m.getContent());
+        holder.content.setText(m.getText());
 //        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-//        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getDate());
-        holder.username.setText(m.getSender());
+//        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
+        holder.username.setText(m.getName());
     }
 
     public void addItem(Message msg)

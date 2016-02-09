@@ -11,32 +11,35 @@ public class Message {
     public static final int TYPE_LOG = 1;
     public static final int TYPE_ACTION = 2;
 
-    private String content;
-    private Date date;
-    private String sender;
+    private String text;
+    private Date createdAt;
+    private String name;
     private int messageType;
+
+    public Message () {}
+
 
     public Message(int t, String m, String s)
     {
         this.messageType = t;
-        this.content=m;
+        this.text =m;
 
         Calendar c = new GregorianCalendar(TimeZone.getDefault());
-        this.date= c.getTime();
+        this.createdAt = c.getTime();
 
-        this.sender=s;
+        this.name =s;
     }
 
-    public String getContent() {
-        return content;
+    public String getText() {
+        return text;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public String getSender() {
-        return sender;
+    public String getName() {
+        return name;
     }
 
     public int getMessageType() { return this.messageType; }

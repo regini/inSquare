@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary2">#9A1C2C</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="oldColorAccent">#FF4081</color>
-    <color name="colorAccent">#2c3e50</color>
-    <color name="colorAccent2">#9A1C2C</color>
+    <color name="colorPrimary">#BF360C</color>
+    <color name="colorPrimary2">#3F51B5</color>
+    <color name="colorPrimaryDark">#af310b</color>
+    <color name="colorPrimaryDark2">#303F9F</color>
+    <color name="colorAccent">#212121</color>
+    <color name="colorAccent2">#FF4081</color>
+    <color name="colorAccent3">#2c3e50</color>
+    <color name="colorAccentLight">#616161</color>
+    <color name="colorAccentLightest">#E0E0E0</color>
     <color name="grey_background">#424242</color>
     <color name="blue_button">#0D47A1</color>
     <color name="red_button">#9A1C2C</color>
     <color name="white">#FFFFFF</color>
-    <color name="light_grey">#BDBDBD</color>
+    <color name="light_grey">#e0e0e0</color>
     <color name="dark_blue_grey">#37474F</color>
 </resources>
