@@ -9,17 +9,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Activities.LoginActivity"
-    android:gravity="center_horizontal|center_vertical"
-    android:background="@color/grey_background"
+    android:gravity="center_horizontal"
+    android:background="@color/colorAccent"
     >
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/slogan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="18sp"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
+        android:layout_marginTop="@dimen/big_vertical_margin"
+        android:textSize="25sp"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:text="Where you go.\nWho you meet."
+        android:fontFamily="sans-serif-thin"
+        />
+
+    <View
+        android:id="@+id/horizontal_line"
+        android:background="@color/light_grey"
+        android:layout_width = "wrap_content"
+        android:layout_height="1dip"
+        android:layout_centerVertical ="true"
+        android:layout_below="@id/slogan"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
         />
 
 
@@ -31,7 +46,9 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/login_button_height"
         android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/margin_button_height"
+        android:layout_below="@id/horizontal_line"
         app:com_facebook_login_text="@string/fb_login_string"
         style="@style/FacebookLoginButton"
         />
