@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -124,9 +123,6 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
@@ -177,8 +173,7 @@ public class ChatActivity extends AppCompatActivity {
         mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
         mSquareName = intent.getStringExtra(MapActivity.SQUARE_NAME_TAG);
 
-        TextView title = (TextView) findViewById(R.id.chat_title_tv);
-        title.setText("#" + mSquareName);
+        setTitle("#" + mSquareName);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
