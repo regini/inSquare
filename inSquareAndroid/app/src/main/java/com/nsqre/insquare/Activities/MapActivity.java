@@ -30,7 +30,7 @@ import com.nsqre.insquare.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity{
 
     private static final String TAG = "MapActivity";
 
