@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.R;
@@ -171,6 +172,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mGoogleMap.setOnMapLongClickListener(this);
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.setOnMapClickListener(this);
+        mGoogleMap.setOnCameraChangeListener(this);
     }
 
     @Override
@@ -203,7 +205,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 public void onLocationChanged(Location location) {
                     if(getContext() != null) {
                         mCurrentLocation = location;
-                        downloadAndInsertPins();
                         initCamera(mCurrentLocation);
                     }
                 }
@@ -267,14 +268,16 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
-            downloadAndInsertPins();
             initCamera(mCurrentLocation);
         }
     }
 
-    private void downloadAndInsertPins()
+    private void downloadAndInsertPins(double distance)
     {
-        DownloadClosestSquares dcs = new DownloadClosestSquares("10km",
+        String d = distance + "km";
+        Log.d(TAG, "downloadAndInsertPins: " + d);
+
+        DownloadClosestSquares dcs = new DownloadClosestSquares(d,
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude());
         try {
@@ -505,7 +508,31 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        Log.d(TAG, "onCameraChange: It moved! TO:" + cameraPosition.toString());
+        VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+
+        Log.d(TAG, "onCameraChange distance is:" + getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast));
+
+        double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
+
+        downloadAndInsertPins(distance);
+    }
+
+    // Con due locazioni restituisce il valore in km di distanza
+    private float getDistance(LatLng southwest,LatLng frnd_latlong){
+        Location l1=new Location("Southwest");
+        l1.setLatitude(southwest.latitude);
+        l1.setLongitude(southwest.longitude);
+
+        Location l2=new Location("Northeast");
+        l2.setLatitude(frnd_latlong.latitude);
+        l2.setLongitude(frnd_latlong.longitude);
+
+        float distance=l1.distanceTo(l2);
+
+        // Converti da metri in km
+        distance=distance/1000.0f;
+
+        return distance;
     }
 
     /**
