@@ -136,7 +136,15 @@ public class LoginActivity extends AppCompatActivity
                 .build();
         gApiClient.connect();
 
-        // Se il login e' gia' in cache, fai partire le chat
+        gLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+        // Se il login e' gia' stato effettuare, fai partire la mappa
         if(isGoogleSignedIn())
         {
             Log.d(TAG, "Google is already logged in!");
@@ -149,14 +157,7 @@ public class LoginActivity extends AppCompatActivity
             facebookPostRequest();
         }
 
-        // Non avendo ancora effettuato il Login con Google
-        gLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
+
     }
 
     @Override
@@ -362,9 +363,11 @@ public class LoginActivity extends AppCompatActivity
     private boolean isGoogleSignedIn()
     {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
-        gAccessToken = opr.get().getSignInAccount().getIdToken();
+        boolean result = opr.isDone();
+        if(result)
+            gAccessToken = opr.get().getSignInAccount().getIdToken();
 
-        return opr.isDone();
+        return result;
     }
 
     private boolean isFacebookSignedIn()

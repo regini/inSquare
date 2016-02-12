@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nsqre.insquare.Activities.MapActivity;
+import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
@@ -70,18 +71,21 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnCameraChangeListener,
         OnMapReadyCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    public static final int MAX_SQUARENAME_LENGTH = 30;
+    public static final int MAX_SQUARENAME_LENGTH = 40;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private MapWrapperLayout mTouchView;
+    private View mOriginalContentView;
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
@@ -104,7 +108,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
     private MapActivity rootActivity;
-    private String newSquareName;
 
     public MapFragment() {
         // Required empty public constructor
@@ -152,6 +155,15 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
+        if (mGoogleApiClient == null) {
+            Log.d(TAG, "Disconnected atm");
+        }
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     private void initListeners() {
@@ -161,44 +173,12 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mGoogleMap.setOnMapClickListener(this);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mGoogleApiClient == null) {
-            Log.d(TAG, "Disconnected atm");
-        }
-        mGoogleApiClient.connect();
-    }
-
     @Override
     public void onStop() {
         super.onStop();
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
+//        mListener = null;
     }
 
     @Override
@@ -339,11 +319,13 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 .tilt(0.0f)
                 .build();
 
-        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), null);
+//        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), null);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+//        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
     @Override
@@ -376,7 +358,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             public void onClick(View v) {
                 String squareName = usernameEditText.getText().toString().trim();
                 if (!TextUtils.isEmpty(squareName)) {
-                    newSquareName = squareName;
+                    String newSquareName = squareName;
                     MarkerOptions options = new MarkerOptions().position(latLng);
 
                     options.title(squareName);
@@ -385,6 +367,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     Marker m = mGoogleMap.addMarker(options);
 
                     // Richiesta Volley POST per la creazione di piazze
+                    // Si occupa anche di mantenere la mappa di Piazze
                     createSquarePostRequest(squareName, lat, lon, m);
                     mDialog.dismiss();
                 }
@@ -518,6 +501,11 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             }
         };
         queue.add(stringRequest);
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        Log.d(TAG, "onCameraChange: It moved! TO:" + cameraPosition.toString());
     }
 
     /**
