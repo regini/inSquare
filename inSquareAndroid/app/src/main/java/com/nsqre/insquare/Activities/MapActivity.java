@@ -174,4 +174,18 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(linearLayout.getVisibility() == View.VISIBLE)
+        {
+            linearLayout.startAnimation(animationDown);
+            linearLayout.setVisibility(View.GONE);
+            return;
+        }else
+        {
+            // Termina l'activity quando viene premuto BACK
+            this.finishAffinity();
+        }
+        super.onBackPressed();
+    }
 }
