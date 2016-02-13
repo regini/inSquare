@@ -90,12 +90,13 @@ public class LoginActivity extends AppCompatActivity
 
         fbCallbackManager = CallbackManager.Factory.create();
 
+        //chiamato quando c'è un successo(o fallimento) della connessione a fb
         LoginManager.getInstance().registerCallback(fbCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
-                        requestFacebookData();
+                        requestFacebookData();  //fa la post
                         fbLoginButton.setText(R.string.fb_logout_string);
                     }
 
@@ -129,7 +130,7 @@ public class LoginActivity extends AppCompatActivity
 
 
         // builda il client e prova a chiamare startActivityForResult, se il login è stato già fatto precedentemente
-        // il codice è quello corretto e l'app passa subito a fabactivity(ma tanto non lo fa perchè la post non funziona)
+        // il codice è quello corretto
         gApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gSo)
@@ -144,20 +145,17 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        // Se il login e' gia' stato effettuare, fai partire la mappa
-        if(isGoogleSignedIn())
-        {
+        // Se il login e' gia' stato effettuato, fai le post
+        if(isGoogleSignedIn()) {
             Log.d(TAG, "Google is already logged in!");
             gLoginButton.setText(R.string.google_logout_string);
             googlePostRequest();
-        }else if(isFacebookSignedIn())
+        } else if(isFacebookSignedIn())
         {
             Log.d(TAG, "onCreate: Facebook is already logged in!");
             fbLoginButton.setText(R.string.fb_logout_string);
             facebookPostRequest();
         }
-
-
     }
 
     @Override
@@ -167,12 +165,10 @@ public class LoginActivity extends AppCompatActivity
         // Ritorno dal login di Google+
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            googleSignInResult(result);
-            startInSquare();
+            googleSignInResult(result); //dalla post parte l'app
         } else {
             // Ritorno dal Login di Facebook
             fbCallbackManager.onActivityResult(requestCode, resultCode, data);
-            startInSquare();
         }
     }
 
@@ -211,13 +207,6 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
-    }
-
-    private void startInSquare()
-    {
-        Intent i = new Intent(LoginActivity.this, MapActivity.class);
-        Log.d(TAG, "startInSquare: start!");
-        startActivity(i);
     }
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity
@@ -294,7 +283,7 @@ public class LoginActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
-    //quando il login a g+ va a buon fine esegue questo, dove c'è la post(che da errore 500)
+    //quando il login a g+ va a buon fine esegue questo, dove c'è la post
     private void googleSignInResult(GoogleSignInResult result) {
 
         Log.d("Google" + TAG, "Success? " + result.isSuccess() + "\nStatus Code: " + result.getStatus().getStatusCode());
@@ -328,17 +317,19 @@ public class LoginActivity extends AppCompatActivity
             public void onCompleted(JSONObject object, GraphResponse response) {
                 Log.d(TAG, "Hello Facebook!" + response.toString());
 
-                try
-                {
+                try {
                     String nome = object.getString("name");
                     String email = object.getString("email");
                     String gender = object.getString("gender");
                     String id = object.getString("id");
 
+                    fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
+
                     profile.facebookName = nome;
                     profile.facebookEmail = email;
                     profile.facebookId = id;
-                    profile.facebookToken = AccessToken.getCurrentAccessToken().getToken();
+                    profile.facebookToken = fbAccessToken;
+
                     profile.save(getApplicationContext());
 
                     Log.d(TAG, "Name: " + nome
@@ -347,9 +338,7 @@ public class LoginActivity extends AppCompatActivity
                             + " ID: " + id);
 
                     facebookPostRequest();
-                }
-                catch (JSONException e)
-                {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -390,7 +379,7 @@ public class LoginActivity extends AppCompatActivity
         return false;
     }
 
-
+    //FEEDBACK STUFF
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
