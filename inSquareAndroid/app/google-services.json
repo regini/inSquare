@@ -38,12 +38,19 @@
             "package_name": "com.nsqre.insquare",
             "certificate_hash": "0D08C74CB0958DE91941DA040BD03FAFF346AA50"
           }
+        },
+        {
+          "client_id": "231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-73767507-1"
+          }
         },
         "cloud_messaging_service": {
           "status": 1,

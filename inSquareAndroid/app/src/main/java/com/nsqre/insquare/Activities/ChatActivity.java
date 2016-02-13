@@ -29,9 +29,11 @@ import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
@@ -73,10 +75,16 @@ public class ChatActivity extends AppCompatActivity {
     private String mUsername;
     private String mUserId;
 
+    private Tracker mTracker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
 //        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
 

@@ -24,8 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.Tracker;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +48,16 @@ public class MapActivity extends AppCompatActivity{
     private String mSquareId;
     private String mSquareName;
 
+    private Tracker mTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
 
         mapFab = (FloatingActionButton) findViewById(R.id.map_fab);
         mapFab.setVisibility(View.GONE);

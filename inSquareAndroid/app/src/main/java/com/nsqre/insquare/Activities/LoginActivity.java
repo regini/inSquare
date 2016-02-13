@@ -31,6 +31,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -41,6 +42,7 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.User;
 
 import org.json.JSONException;
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity
     private Button gLoginButton;
     // ============
 
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,11 @@ public class LoginActivity extends AppCompatActivity
         Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
 
         // Profilo statico perche' non puo' cambiare.
         // Singleton perche' cosi non puo' essere duplicato
