@@ -58,6 +58,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -112,6 +114,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private HashMap<Marker, Square> squareHashMap;
     private MapActivity rootActivity;
 
+    private boolean waitingDelay;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -138,6 +142,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        waitingDelay = false;
 
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -278,6 +283,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private void downloadAndInsertPins(double distance)
     {
+        waitingDelay = true;
+
         String d = distance + "km";
         Log.d(TAG, "downloadAndInsertPins: " + d);
 
@@ -300,6 +307,12 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             e.printStackTrace();
         }
 
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                waitingDelay = false;
+            }
+        }, 2000);
     }
 
     private void handlePermissions() {
@@ -517,8 +530,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         Log.d(TAG, "onCameraChange distance is:" + getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast));
 
         double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
-
-        downloadAndInsertPins(distance);
+        if (!waitingDelay)
+            downloadAndInsertPins(distance);
     }
 
     // Con due locazioni restituisce il valore in km di distanza

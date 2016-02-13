@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
                         requestFacebookData();  //fa la post
-                        fbLoginButton.setText(R.string.fb_logout_string);
+                        //fbLoginButton.setText(R.string.fb_logout_string);
                     }
 
                     @Override
@@ -156,12 +156,12 @@ public class LoginActivity extends AppCompatActivity
         // Se il login e' gia' stato effettuato, fai le post
         if(isGoogleSignedIn()) {
             Log.d(TAG, "Google is already logged in!");
-            gLoginButton.setText(R.string.google_logout_string);
+            //gLoginButton.setText(R.string.google_logout_string);
             googlePostRequest();
         } else if(isFacebookSignedIn())
         {
             Log.d(TAG, "onCreate: Facebook is already logged in!");
-            fbLoginButton.setText(R.string.fb_logout_string);
+            //fbLoginButton.setText(R.string.fb_logout_string);
             facebookPostRequest();
         }
     }
@@ -305,7 +305,7 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Login was a success: " + acct.getDisplayName() + ": " + acct.getEmail());
             Log.d(TAG, "Token is: " + acct.getIdToken());
 
-            gLoginButton.setText(R.string.google_logout_string);
+            //gLoginButton.setText(R.string.google_logout_string);
 
             profile.googleEmail = acct.getEmail();
             profile.googleToken = acct.getIdToken();
