@@ -281,15 +281,21 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private void downloadAndInsertPins(double distance)
     {
-        if(mCurrentLocation != null) {
             waitingDelay = true;
 
             String d = distance + "km";
             Log.d(TAG, "downloadAndInsertPins: " + d);
 
-            DownloadClosestSquares dcs = new DownloadClosestSquares(d,
+            DownloadClosestSquares dcs;
+            if(mCurrentLocation!=null)
+            {
+                    dcs = new DownloadClosestSquares(d,
                     mCurrentLocation.getLatitude(),
                     mCurrentLocation.getLongitude());
+            }
+            else
+                    dcs = new DownloadClosestSquares(d,0,0);
+
             try {
                 HashMap<String, Square> squarePins = dcs.execute().get();
 
@@ -308,7 +314,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     waitingDelay = false;
                 }
             }, 2000);
-        }
     }
 
     private void handlePermissions() {
