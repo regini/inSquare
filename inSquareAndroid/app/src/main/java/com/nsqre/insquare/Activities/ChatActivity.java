@@ -47,7 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
 
     private static final String TAG = "ChatActivity";
     
@@ -97,6 +97,7 @@ public class ChatActivity extends AppCompatActivity {
             mSocket = IO.socket(url);
 
             messageAdapter = new MessageAdapter();
+            messageAdapter.setOnClickListener(this);
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
             mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
@@ -421,5 +422,11 @@ public class ChatActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(int position, View v) {
+        // TODO implementare onclick behavior per i messaggi nella chat
+        Log.d(TAG, "onItemClick: I've just clicked item " + position);
     }
 }
