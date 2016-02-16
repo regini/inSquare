@@ -148,12 +148,12 @@ public class MapActivity extends AppCompatActivity
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.search_squares_action:
-                // [START feedback_event]
+                // [START search_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")
                         .setAction("Search")
                         .build());
-                // [END feedback_event]
+                // [END search_event]
 
                 Log.d(TAG, "I've just initiated search");
                 break;
