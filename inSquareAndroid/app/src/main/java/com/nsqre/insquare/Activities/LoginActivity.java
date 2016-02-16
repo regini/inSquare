@@ -440,6 +440,12 @@ public class LoginActivity extends AppCompatActivity
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");

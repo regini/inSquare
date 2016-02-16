@@ -242,6 +242,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private void attemptSend()
     {
+        // [START message_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Send Message")
+                .build());
+        // [END message_event]
+
         if(mUsername == null) 
         {
             Log.d(TAG, "attemptSend: there's no Username specified");
@@ -372,6 +379,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");
