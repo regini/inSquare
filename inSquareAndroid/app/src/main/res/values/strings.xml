@@ -15,12 +15,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_fab">#inSquare</string>
 
-    <string name="error_connect">Connection has failed</string>
-    <string name="message_user_joined">%s has joined</string>
-    <string name="message_user_left">%s has left</string>
-    <string name="user_action_typing"> is typing</string>
+    <string name="error_connect">Connessione fallita</string>
+    <string name="message_user_joined">%s si è unito</string>
+    <string name="message_user_left">%s è uscito</string>
+    <string name="user_action_typing"> sta scrivendo</string>
     <string name="username">Username</string>
-    <string name="nome_square">Inserisci il Nome della Square</string>
+    <string name="nome_square">Inserisci il nome della Square</string>
     <string name="crea_square">Crea!</string>
     <string name="ok">Ok</string>
     <string name="feedback">Feedback</string>
