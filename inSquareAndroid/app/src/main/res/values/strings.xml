@@ -22,6 +22,7 @@
     <string name="send">Invia</string>
     <string name="thanks_feedback">Grazie per il feedback!</string>
     <string name="error_feedback">Qualcosa è andato storto :(</string>
+    <string name="connFail">Connessione fallita. La tua connessione dati è attiva?</string>
 
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>

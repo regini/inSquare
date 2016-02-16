@@ -1,8 +1,11 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -96,6 +99,12 @@ public class LoginActivity extends AppCompatActivity
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
 
+        Log.d("DATILOGIN", "is: " + profile.hasLoginData());
+        Log.d("NETWORK", "is "+ isNetworkAvailable());
+        if (profile.hasLoginData() && isNetworkAvailable()) {
+            launchInSquare();
+        }
+
         fbCallbackManager = CallbackManager.Factory.create();
 
         //chiamato quando c'è un successo(o fallimento) della connessione a fb
@@ -116,6 +125,10 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void onError(FacebookException exception) {
                         Log.d(TAG, "onError:\n" + exception.toString());
+                        CharSequence text = getString(R.string.connFail);
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                        toast.show();
                     }
                 });
 
@@ -221,13 +234,17 @@ public class LoginActivity extends AppCompatActivity
     private void json2login(String jsonUser) {
         Gson gson = new Gson();
         user = gson.fromJson(jsonUser, User.class);
-        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         Log.d(TAG, "json2login: " + user);
-//        intent.putExtra("CURRENT_USER", user);  //TODO probabilmente da eliminare
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
         profile.save(getApplicationContext());
+        launchInSquare();
+    }
+
+    //metodo che crea l'intent alla map activity
+    private void launchInSquare() {
+        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         startActivity(intent);
     }
 
@@ -298,7 +315,6 @@ public class LoginActivity extends AppCompatActivity
 
         if (result.isSuccess())
         {
-
             GoogleSignInAccount acct = result.getSignInAccount();
             gAccessToken = acct.getIdToken();
 
@@ -314,6 +330,11 @@ public class LoginActivity extends AppCompatActivity
             profile.save(getApplicationContext());
 
             googlePostRequest();
+        } else { //connessione fallita
+            CharSequence text = getString(R.string.connFail);
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+            toast.show();
         }
     }
 
@@ -385,6 +406,14 @@ public class LoginActivity extends AppCompatActivity
             Log.d("token", e.toString());
         }
         return false;
+    }
+
+    //Controllo della disponibilità della connessione
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     //FEEDBACK STUFF
