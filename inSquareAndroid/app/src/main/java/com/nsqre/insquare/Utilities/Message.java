@@ -11,6 +11,7 @@ public class Message {
     public static final int TYPE_LOG = 1;
     public static final int TYPE_ACTION = 2;
 
+    private String msg_id;
     private String text;
     private Date createdAt;
     private String name;
@@ -21,6 +22,18 @@ public class Message {
 
     public Message(int t, String m, String s)
     {
+        this.messageType = t;
+        this.text =m;
+
+        Calendar c = new GregorianCalendar(TimeZone.getDefault());
+        this.createdAt = c.getTime();
+
+        this.name =s;
+    }
+
+    public Message(int t, String m, String s, String id)
+    {
+        this.msg_id = id;
         this.messageType = t;
         this.text =m;
 
@@ -43,4 +56,13 @@ public class Message {
     }
 
     public int getMessageType() { return this.messageType; }
+
+    public String getId() {
+        return msg_id;
+    }
+
+    @Override
+    public String toString() {
+        return this.name + " " + " said: " + this.text + "\nMessage #(" + this.msg_id + ") created: "+ this.createdAt.toString();
+    }
 }

@@ -3,6 +3,7 @@ package com.nsqre.insquare.Fragments;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,8 +18,6 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,7 +30,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -45,10 +43,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 
@@ -283,36 +281,34 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private void downloadAndInsertPins(double distance)
     {
-        waitingDelay = true;
+        if(mCurrentLocation != null) {
+            waitingDelay = true;
 
-        String d = distance + "km";
-        Log.d(TAG, "downloadAndInsertPins: " + d);
+            String d = distance + "km";
+            Log.d(TAG, "downloadAndInsertPins: " + d);
 
-        DownloadClosestSquares dcs = new DownloadClosestSquares(d,
-                mCurrentLocation.getLatitude(),
-                mCurrentLocation.getLongitude());
-        try {
-            HashMap<String, Square> squarePins = dcs.execute().get();
+            DownloadClosestSquares dcs = new DownloadClosestSquares(d,
+                    mCurrentLocation.getLatitude(),
+                    mCurrentLocation.getLongitude());
+            try {
+                HashMap<String, Square> squarePins = dcs.execute().get();
 
-            for(Square closeSquare : squarePins.values())
-            {
-                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                MarkerOptions options = new MarkerOptions().position(coords);
-                options.title(closeSquare.getName());
-                options.icon(BitmapDescriptorFactory.defaultMarker());
-                Marker marker = mGoogleMap.addMarker(options);
-                squareHashMap.put(marker, closeSquare);
+                for (Square closeSquare : squarePins.values()) {
+                    LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                    Marker m = createSquarePin(coords, closeSquare.getName());
+                    squareHashMap.put(m, closeSquare);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    waitingDelay = false;
+                }
+            }, 2000);
         }
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                waitingDelay = false;
-            }
-        }, 2000);
     }
 
     private void handlePermissions() {
@@ -358,6 +354,16 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     }
 
+    // LatLng | Name |
+    private Marker createSquarePin(LatLng pos, String name) {
+
+        MarkerOptions options = new MarkerOptions().position(pos);
+        options.title(name);
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        Marker marker = mGoogleMap.addMarker(options);
+
+        return marker;
+    }
     @Override
     public void onMapClick(final LatLng latLng) {
 
@@ -378,16 +384,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             public void onClick(View v) {
                 String squareName = usernameEditText.getText().toString().trim();
                 if (!TextUtils.isEmpty(squareName)) {
-                    String newSquareName = squareName;
-                    MarkerOptions options = new MarkerOptions().position(latLng);
-
-                    options.title(squareName);
-
-                    options.icon(BitmapDescriptorFactory.defaultMarker());
-                    Marker m = mGoogleMap.addMarker(options);
-
+                    Marker m = createSquarePin(latLng, squareName);
                     // Richiesta Volley POST per la creazione di piazze
-                    // Si occupa anche di mantenere la mappa di Piazze
+                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
                     createSquarePostRequest(squareName, lat, lon, m);
                     mDialog.dismiss();
                 }
@@ -398,14 +397,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-//        MarkerOptions options = new MarkerOptions().position( latLng );
-//        options.title( getAddressFromLatLng( latLng ) );
-//
-//        options.icon( BitmapDescriptorFactory.fromBitmap(
-//                BitmapFactory.decodeResource(getResources(),
-//                        R.mipmap.ic_launcher)) );
-//
-//        mGoogleMap.addMarker(options);
     }
 
     public String getAddressFromLatLng(LatLng latLng)
@@ -426,6 +417,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public boolean onMarkerClick(Marker marker) {
 
+        // TODO on secondo click start chat
+        marker.showInfoWindow();
+
         TextView tv = (TextView)getActivity().findViewById(R.id.square_textview);
         String text = marker.getTitle();
         if(text.length() > MAX_SQUARENAME_LENGTH)
@@ -438,15 +432,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         LinearLayout ll = ((LinearLayout) getActivity().findViewById(R.id.slider_ll));
         if(ll.getVisibility() == View.GONE) {
             ll.setVisibility(View.VISIBLE);
-            Animation animationUp = AnimationUtils.loadAnimation(getContext(), R.anim.anim_up);
-            ll.startAnimation(animationUp);
             FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.map_fab);
             fab.setVisibility(View.VISIBLE);
-            fab.startAnimation(animationUp);
         }
-        
-        marker.showInfoWindow();
-        marker.getTitle();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
@@ -462,7 +450,15 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        startChatActivity(marker);
+    }
 
+    private void startChatActivity(Marker marker) {
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        Square s = squareHashMap.get(marker);
+        intent.putExtra(MapActivity.SQUARE_ID_TAG, s.getId());
+        intent.putExtra(MapActivity.SQUARE_NAME_TAG, s.getName());
+        startActivity(intent);
     }
 
 
@@ -503,7 +499,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                             e.printStackTrace();
                         }
 
-                        Toast.makeText(getContext(), "Square cerated successfully!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -526,7 +522,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-
+        
         Log.d(TAG, "onCameraChange distance is:" + getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast));
 
         double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);

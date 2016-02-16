@@ -33,5 +33,6 @@
     <string name="fb_login_string">Facebook Login</string>
     <string name="fb_logout_string">Facebook Logout</string>
     <string name="square_placeholder">Select a #Square on the map</string>
+    <string name="hint_cerca_squares">Cerca #Squares</string>
 
 </resources>

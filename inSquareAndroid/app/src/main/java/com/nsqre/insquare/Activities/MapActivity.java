@@ -1,10 +1,14 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +36,9 @@ import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapActivity extends AppCompatActivity{
+public class MapActivity extends AppCompatActivity
+        implements SearchView.OnQueryTextListener
+{
 
     private static final String TAG = "MapActivity";
 
@@ -116,7 +122,14 @@ public class MapActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_map_actions, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(true);
+        searchView.setOnQueryTextListener(this);
         return true;
     }
 
@@ -124,6 +137,9 @@ public class MapActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.search_squares_action:
+                Log.d(TAG, "I've just initiated search");
+                break;
             case R.id.instfeedback:
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
@@ -178,8 +194,9 @@ public class MapActivity extends AppCompatActivity{
                     }
                 });
             default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -195,5 +212,17 @@ public class MapActivity extends AppCompatActivity{
             this.finishAffinity();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "onQueryTextChange: just written:" + newText);
+        return false;
     }
 }

@@ -17,9 +17,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private ArrayList<Message> mDataset;
     private static CustomClickListener myClickListener;
 
-    public MessageAdapter(ArrayList<Message> dataset)
+    public MessageAdapter()
     {
-        this.mDataset = dataset;
+        this.mDataset = new ArrayList<Message>();
     }
 
     @Override
