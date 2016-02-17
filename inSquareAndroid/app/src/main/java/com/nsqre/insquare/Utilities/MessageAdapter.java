@@ -97,7 +97,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         public void setSentMessage() {
             itemView.setBackgroundResource(R.drawable.bubble_a);
-            ((RelativeLayout) itemView).setGravity(Gravity.RIGHT);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)itemView.getLayoutParams();
+            params.addRule(Gravity.RIGHT);
+
+            itemView.setLayoutParams(params);
         }
     }
 
