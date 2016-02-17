@@ -186,6 +186,10 @@ public class InSquareProfile {
         return null;
     }
 
+    public static boolean hasLoginData() {
+        return userId!= null && username!= null && email != null;
+    }
+
     @Override
     public String toString() {
         return "==== USER  ====" +

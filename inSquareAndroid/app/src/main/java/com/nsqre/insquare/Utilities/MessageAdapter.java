@@ -15,11 +15,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     private static final String TAG = "MessageAdapter";
     private ArrayList<Message> mDataset;
-    private static CustomClickListener myClickListener;
+    private static ChatMessageClickListener myClickListener;
 
-    public MessageAdapter(ArrayList<Message> dataset)
+    public MessageAdapter()
     {
-        this.mDataset = dataset;
+        this.mDataset = new ArrayList<Message>();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         return mDataset.size();
     }
 
-    public void setOnClickListener(CustomClickListener clickListener)
+    public void setOnClickListener(ChatMessageClickListener clickListener)
     {
         this.myClickListener = clickListener;
     }
@@ -89,7 +89,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
-    public interface CustomClickListener {
+    public interface ChatMessageClickListener {
         public void onItemClick(int position, View v);
     }
 }

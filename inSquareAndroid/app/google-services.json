@@ -16,6 +16,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "231545488769-deajtp2j0a5fgvpf5ch9333ln8114hrm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsqre.insquare",
+            "certificate_hash": "A1466C8EABF55D4A6FF008439A43B37710B6BB6A"
+          }
+        },
+        {
           "client_id": "231545488769-d7eoihqjh5tb3gid9hgh4ab7bq6bms95.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -38,12 +46,19 @@
             "package_name": "com.nsqre.insquare",
             "certificate_hash": "0D08C74CB0958DE91941DA040BD03FAFF346AA50"
           }
+        },
+        {
+          "client_id": "231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-73767507-1"
+          }
         },
         "cloud_messaging_service": {
           "status": 1,

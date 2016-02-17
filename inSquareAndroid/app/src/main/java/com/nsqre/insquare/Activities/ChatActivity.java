@@ -29,9 +29,12 @@ import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
@@ -40,17 +43,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
 
     private static final String TAG = "ChatActivity";
     
     private static final long TYPING_TIMER_LENGTH = 600;
+    public static final int RECENT_MESSAGES_NUM = 50;
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -73,12 +76,19 @@ public class ChatActivity extends AppCompatActivity {
     private String mUsername;
     private String mUserId;
 
+    private Tracker mTracker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
 
         try {
 
@@ -88,15 +98,13 @@ public class ChatActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: " + url);
             mSocket = IO.socket(url);
 
-            // TODO prendere i messaggi recenti
-            messageAdapter = new MessageAdapter(getDataSet());
+            messageAdapter = new MessageAdapter();
+            messageAdapter.setOnClickListener(this);
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
             mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
             mSocket.on("sendMessage", onSendMessage);
-            mSocket.on("addUser", onAddUser);
-            mSocket.on("userLeft", onUserLeft);
             mSocket.on("newMessage", onNewMessage);
 
             /*
@@ -129,6 +137,15 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         chatEditText = (EditText) findViewById(R.id.message_text);
+
+        // Recuperiamo i dati passati dalla MapActivity
+        Intent intent = getIntent();
+
+        mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
+        mSquareName = intent.getStringExtra(MapActivity.SQUARE_NAME_TAG);
+
+        // Get Messaggi recenti
+        getRecentMessages(RECENT_MESSAGES_NUM);
     }
 
     private void getRecentMessages(int quantity) {
@@ -136,7 +153,7 @@ public class ChatActivity extends AppCompatActivity {
         final String q = new Integer(quantity).toString();
 
         String url = String.format("http://recapp-insquare.rhcloud.com/messages?recent=%1$s&size=%2$s&square=%3$s",
-                "true", q, mSquareId);  //"56b65fcff4db4a7677d951ea"
+                "true", q, mSquareId);
 
         Log.d(TAG, "getRecentMessages from: " + url);
 
@@ -150,7 +167,8 @@ public class ChatActivity extends AppCompatActivity {
                         Message[] messages = gson.fromJson(response, Message[].class);
                         Collections.reverse(Arrays.asList(messages));
                         for (Message m : messages) {
-                            addMessage(m.getName(),m.getText());
+                            addMessage(m.getName(), m.getText());
+//                            addMessageWithId(m.getName(),m.getText(), m.getId());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -167,17 +185,12 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = getIntent();
 
-        mSquareId = intent.getStringExtra(MapActivity.SQUARE_ID_TAG);
-        mSquareName = intent.getStringExtra(MapActivity.SQUARE_NAME_TAG);
 
         setTitle("#" + mSquareName);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
-
-        getRecentMessages(50);
 
         mUsername = InSquareProfile.getUsername();
         mUserId = InSquareProfile.getUserId();
@@ -187,7 +200,8 @@ public class ChatActivity extends AppCompatActivity {
         try{
             data.put("room", mSquareId);
             data.put("username", mUsername);
-            data.put("user", mUserId);
+            data.put("userid", mUserId);
+            data.put("message", mUsername + " joined");
         } catch(JSONException e)
         {
             e.printStackTrace();
@@ -199,6 +213,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -214,8 +231,6 @@ public class ChatActivity extends AppCompatActivity {
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
         mSocket.off("sendMessage", onSendMessage);
-        mSocket.off("addUser", onAddUser);
-        mSocket.off("userLeft", onUserLeft);
         mSocket.off("newMessage", onNewMessage);
         
         /*
@@ -225,59 +240,24 @@ public class ChatActivity extends AppCompatActivity {
         */
     }
 
-        private ArrayList<Message> getDataSet()
-    {
-        ArrayList<Message> list = new ArrayList<>();
-
-        //TODO retrieve list of old messages stored in shareedprefs
-
-        return list;
-    }
-
     private void addMessage(String username, String message)
     {
         messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message, username) );
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
-    private void addTyping(String username)
-    {
-        messageAdapter.addItem(
-                new Message( Message.TYPE_ACTION, "is typing...", username)
-        );
-        recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-    }
-
-    private void removeTyping(String username)
-    {
-
-        for(int i = messageAdapter.getItemCount()-1; i >= 0; i--)
-        {
-            Message message = messageAdapter.getMessage(i);
-            if(message.getMessageType() == Message.TYPE_ACTION && message.getName().equals(username))
-            {
-                messageAdapter.removeItem(i);
-                return;
-            }
-        }
-    }
-
-    private void addLog(String message)
-    {
-        messageAdapter.addItem( new Message(Message.TYPE_LOG, message, ""));
-        recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-    }
-
-    private void addParticipantsLog(int numUsers)
-    {
-        addLog(getResources().getQuantityString(R.plurals.message_participants, numUsers, numUsers));
-    }
-
     private void attemptSend()
     {
+        // [START message_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Send Message")
+                .build());
+        // [END message_event]
+
         if(mUsername == null) 
         {
-            Log.d(TAG, "attemptSend: there's not Username specified");
+            Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
         if(!mSocket.connected()) 
@@ -298,6 +278,7 @@ public class ChatActivity extends AppCompatActivity {
 
         chatEditText.setText("");
 
+        // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
         addMessage(mUsername, message);
 
         // Il server riceve un oggetto in JSON che deve essere processato
@@ -342,6 +323,7 @@ public class ChatActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "run: First arg: " + args[0]);
                     JSONObject data = (JSONObject) args[0];
                     String username = "";
                     String message = "";
@@ -384,120 +366,9 @@ public class ChatActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    removeTyping(username);
                     addMessage(username, message);
                 }
             });
-        }
-    };
-
-    private Emitter.Listener onAddUser = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    int numUsers;
-                    try {
-                        username = data.getString("username");
-                        numUsers = data.getInt("numUsers");
-                    } catch (JSONException e) {
-                        return;
-                    }
-
-                    addLog(getResources().getString(R.string.message_user_joined, username));
-                    addParticipantsLog(numUsers);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onUserLeft = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    int numUsers;
-                    try {
-                        username = data.getString("username");
-                        numUsers = data.getInt("numUsers");
-                    } catch (JSONException e) {
-                        return;
-                    }
-
-                    addLog(getResources().getString(R.string.message_user_left, username));
-                    addParticipantsLog(numUsers);
-                    removeTyping(username);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onTyping = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    try {
-                        username = data.getString("username");
-                    } catch (JSONException e) {
-                        return;
-                    }
-                    addTyping(username);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onStopTyping = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    try {
-                        username = data.getString("username");
-                    } catch (JSONException e) {
-                        return;
-                    }
-                    removeTyping(username);
-                }
-            });
-        }
-    };
-
-    private Runnable onTypingTimeout = new Runnable() {
-        @Override
-        public void run() {
-            if (!mTyping) return;
-
-            mTyping = false;
-//            mSocket.emit("stop typing");
-        }
-    };
-
-    private Emitter.Listener onLogin = new Emitter.Listener()
-    {
-        @Override
-        public void call(Object... args)
-        {
-            JSONObject data = (JSONObject) args[0];
-            try {
-                mNumUsers = data.getInt("numUsers");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
         }
     };
 
@@ -505,6 +376,7 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_actions, menu);
+
         return true;
     }
 
@@ -513,6 +385,12 @@ public class ChatActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");
@@ -568,5 +446,11 @@ public class ChatActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(int position, View v) {
+        // TODO implementare onclick behavior per i messaggi nella chat
+        Log.d(TAG, "onItemClick: I've just clicked item " + position);
     }
 }

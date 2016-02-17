@@ -1,10 +1,14 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,13 +28,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapActivity extends AppCompatActivity{
+public class MapActivity extends AppCompatActivity
+        implements SearchView.OnQueryTextListener
+{
 
     private static final String TAG = "MapActivity";
 
@@ -46,10 +55,17 @@ public class MapActivity extends AppCompatActivity{
     private String mSquareId;
     private String mSquareName;
 
+    private Tracker mTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
 
         mapFab = (FloatingActionButton) findViewById(R.id.map_fab);
         mapFab.setVisibility(View.GONE);
@@ -70,6 +86,14 @@ public class MapActivity extends AppCompatActivity{
         animationUp = AnimationUtils.loadAnimation(this, R.anim.anim_up);
         animationDown = AnimationUtils.loadAnimation(this, R.anim.anim_down);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -108,7 +132,14 @@ public class MapActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_map_actions, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(true);
+        searchView.setOnQueryTextListener(this);
         return true;
     }
 
@@ -116,7 +147,25 @@ public class MapActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.search_squares_action:
+                // [START search_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Search")
+                        .build());
+                // [END search_event]
+
+                Log.d(TAG, "I've just initiated search");
+                break;
             case R.id.instfeedback:
+
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
+
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");
@@ -170,8 +219,9 @@ public class MapActivity extends AppCompatActivity{
                     }
                 });
             default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -187,5 +237,17 @@ public class MapActivity extends AppCompatActivity{
             this.finishAffinity();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "onQueryTextChange: just written:" + newText);
+        return false;
     }
 }
