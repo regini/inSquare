@@ -4,6 +4,9 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -30,11 +33,16 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.maps.model.LatLng;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
@@ -74,6 +82,13 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapActivity.this, ChatActivity.class);
+
+                // [START FloatingButton_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("MapActivity")
+                        .setAction("FloatingButton")
+                        .build());
+                // [END FloatingButton_event]
 
                 intent.putExtra(SQUARE_ID_TAG, mSquareId);
                 intent.putExtra(SQUARE_NAME_TAG, mSquareName);
@@ -248,6 +263,36 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextChange(String newText) {
         Log.d(TAG, "onQueryTextChange: just written:" + newText);
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            Location l = mFrag.mCurrentLocation;
+            LatLng northeast = calculateOffset(l, 12000);
+            LatLng southwest = calculateOffset(l, -12000);
+
+            List<Address> results = geocoder.getFromLocationName(newText, 5,
+                southwest.latitude, //double lowerLeftLatitude,
+                southwest.longitude, //double lowerLeftLongitude,
+                northeast.latitude, //double upperRightLatitude,
+                northeast.longitude //double upperRightLongitude
+            );
+            Log.d(TAG, "onQueryTextChange results: " + results.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
+    }
+
+    private LatLng calculateOffset(Location position, float offset)
+    {
+        final int RADIUS = 6378137;
+        float diff_lat = offset/RADIUS;
+        double diff_lon = offset/(RADIUS * Math.cos(Math.PI * position.getLatitude()/180));
+
+        double lat = position.getLatitude() + diff_lat*180/Math.PI;
+        double lon = position.getLongitude() + diff_lon*180/Math.PI;
+
+        return new LatLng(lat, lon);
     }
 }

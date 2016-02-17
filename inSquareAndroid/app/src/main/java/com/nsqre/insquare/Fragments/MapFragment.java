@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,6 +31,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -56,6 +59,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,7 +96,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private View mOriginalContentView;
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
-    private Location mCurrentLocation;
+    public Location mCurrentLocation;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
@@ -114,6 +118,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private MapActivity rootActivity;
 
     private boolean waitingDelay;
+
+    private Tracker mTracker;
 
     public MapFragment() {
         // Required empty public constructor
@@ -140,6 +146,10 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
 
         waitingDelay = false;
 
@@ -271,13 +281,31 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                             "There's no way for me to get a location!",
                             Toast.LENGTH_LONG)
                             .show();
+                    return;
                 }
+
+
+
             }
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
             initCamera(mCurrentLocation);
         }
+    }
+
+    private Address reverseGeocode() throws IOException {
+        Geocoder gc = new Geocoder(getContext());
+        if(gc.isPresent())
+        {
+            List<Address> list = gc.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
+
+            Address address = list.get(0);
+            Log.d(TAG, "reverseGeocode: " + address.toString());
+
+            return address;
+        }
+        return null;
     }
 
     private void downloadAndInsertPins(double distance)
@@ -460,6 +488,14 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     private void startChatActivity(Marker marker) {
+
+        // [START PinButton_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MapActivity")
+                .setAction("PinButton")
+                .build());
+        // [END PinButton_event]
+
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
         intent.putExtra(MapActivity.SQUARE_ID_TAG, s.getId());
@@ -537,7 +573,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     // Con due locazioni restituisce il valore in km di distanza
-    private float getDistance(LatLng southwest,LatLng frnd_latlong){
+    private float getDistance(LatLng southwest, LatLng frnd_latlong){
         Location l1=new Location("Southwest");
         l1.setLatitude(southwest.latitude);
         l1.setLongitude(southwest.longitude);

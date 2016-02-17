@@ -14,6 +14,8 @@ public class Message {
     private String msg_id;
     private String text;
     private Date createdAt;
+    private String from;
+    private String squareId;
     private String name;
     private int messageType;
 
@@ -31,16 +33,14 @@ public class Message {
         this.name =s;
     }
 
-    public Message(int t, String m, String s, String id)
+    public Message(int t, String m, String un, String ui)
     {
-        this.msg_id = id;
         this.messageType = t;
-        this.text =m;
-
+        this.text = m;
         Calendar c = new GregorianCalendar(TimeZone.getDefault());
         this.createdAt = c.getTime();
-
-        this.name =s;
+        this.name = un;
+        this.from = ui;
     }
 
     public String getText() {
@@ -59,6 +59,22 @@ public class Message {
 
     public String getId() {
         return msg_id;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getSquareId() {
+        return squareId;
+    }
+
+    public void setSquareId(String squareId) {
+        this.squareId = squareId;
     }
 
     @Override
