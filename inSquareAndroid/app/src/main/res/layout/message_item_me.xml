@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/message_relative_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_gravity="right"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/bubble_b"
     >
 
-    <TextView
-        android:id="@+id/message_sender"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="Large Text"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="15sp"
-        android:gravity="right"
-        />
+        android:background="@drawable/bubble_b"
+        android:layout_alignParentRight="true"
+        >
+        <TextView
+            android:id="@+id/message_sender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:text="Large Text"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="15sp"
+            />
 
-    <TextView
-        android:id="@+id/message_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="Small Text"
-        android:layout_below="@id/message_sender"
-        android:fontFamily="sans-serif-condensed-light"
-        android:textSize="18sp"
-        android:gravity="right"
-        />
+        <TextView
+            android:id="@+id/message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="7dp"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:text="Small Text"
+            android:layout_below="@id/message_sender"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textSize="18sp"
+            />
+    </RelativeLayout>
 </RelativeLayout>

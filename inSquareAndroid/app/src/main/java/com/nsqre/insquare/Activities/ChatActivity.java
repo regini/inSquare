@@ -131,6 +131,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(this);
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
         //recyclerView.addItemDecoration(new DividerItemDecoration(this, null));

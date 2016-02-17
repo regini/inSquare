@@ -2,6 +2,7 @@ package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +28,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.mDataset = new ArrayList<Message>();
     }
 
+
+    @Override
+    public int getItemViewType(int position) {
+        Message m = mDataset.get(position);
+        if(m.getFrom().equals(profile.getUserId()))
+        {
+            return 1;
+        }
+        return 0;
+    }
+
     //2: appena ho tutti i messaggi inizio a creare gli item
     @Override
     public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message_item_me,parent,false);
-
+        View view = null;
+        switch (viewType)
+        {
+            case 0:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false);
+                break;
+            case 1:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item_me, parent, false);
+                break;
+        }
         MessageHolder msgHld = new MessageHolder(view);  //va a 3
         return msgHld;  //dopo aver creato il msgHld va su 4
     }
@@ -45,8 +64,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 //        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
         holder.username.setText(m.getName());
-        holder.setSentMessage(m.getFrom().equals(profile.getUserId()));  //va a 5
     }
+
 
     //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
     public void addItem(Message msg)
@@ -97,14 +116,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             myClickListener.onItemClick(getAdapterPosition(), v);
         }
 
-        //5: cambia bubble e allinea a destra(TODO)
-        public void setSentMessage(boolean isSent) {
-            if (isSent) {
-                relativeLayout.setBackgroundResource(R.drawable.bubble_b);
-            }
-            else
-                relativeLayout.setBackgroundResource(R.drawable.bubble_a);
-        }
     }
 
     public interface ChatMessageClickListener {

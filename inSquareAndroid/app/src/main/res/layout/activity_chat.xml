@@ -9,8 +9,6 @@
     tools:context=".Activities.ChatActivity"
     >
 
-    <include layout="@layout/content_fab" />
-
     <LinearLayout
         android:id="@+id/message_bottom_ll"
         android:layout_width="match_parent"
