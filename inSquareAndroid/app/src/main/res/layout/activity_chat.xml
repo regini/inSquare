@@ -34,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_weight="90"
             android:hint="Enter message"
+            android:inputType="textNoSuggestions|textCapSentences|textMultiLine"
             android:maxLines="3"
             />
         <requestFocus/>
