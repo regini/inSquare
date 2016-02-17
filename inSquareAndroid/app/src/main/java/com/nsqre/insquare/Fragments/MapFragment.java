@@ -48,7 +48,6 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 
@@ -102,7 +101,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             GoogleMap.MAP_TYPE_TERRAIN,
             GoogleMap.MAP_TYPE_NONE};
     private int curMapTypeIndex = 1;
-    private GoogleMap mGoogleMap;
+    public GoogleMap mGoogleMap;
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private static final int REQUEST_COARSE_LOCATION = 1;
