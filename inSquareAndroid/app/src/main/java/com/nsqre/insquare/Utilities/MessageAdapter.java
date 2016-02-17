@@ -47,7 +47,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 //        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
         holder.username.setText(m.getName());
-        Log.d("CONTROLLOID", m.getName() + " ha: " + m.getFrom() + "|" + profile.getUsername() + " ha: " + profile.getUserId());
         holder.setSentMessage(m.getFrom().equals(profile.getUserId()));  //va a 5
     }
 
@@ -104,13 +103,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         //5: cambia bubble e allinea a destra(TODO)
         public void setSentMessage(boolean isSent) {
-            if (isSent)
+            if (isSent) {
                 relativeLayout.setBackgroundResource(R.drawable.bubble_b);
+
+                //TODO far si che vada a destra
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(Gravity.RIGHT);
+                relativeLayout.setLayoutParams(params);
+            }
             else
                 relativeLayout.setBackgroundResource(R.drawable.bubble_a);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(Gravity.RIGHT);
-            relativeLayout.setLayoutParams(params);
+
+
         }
     }
 
