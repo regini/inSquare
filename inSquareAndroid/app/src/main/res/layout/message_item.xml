@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/bubble_b"
+    android:layout_gravity="right">
 
     <TextView
         android:id="@+id/message_sender"
@@ -15,6 +16,8 @@
         android:text="Large Text"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:fontFamily="sans-serif-condensed-light"
+        android:textSize="15sp"
         />
 
     <TextView
@@ -27,5 +30,8 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Small Text"
+        android:layout_below="@id/message_sender"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="22sp"
         />
-</LinearLayout>
+</RelativeLayout>

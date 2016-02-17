@@ -91,6 +91,13 @@ public class MapActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent intent = new Intent(MapActivity.this, ChatActivity.class);
 
+                // [START FloatingButton_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("MapActivity")
+                        .setAction("FloatingButton")
+                        .build());
+                // [END FloatingButton_event]
+
                 intent.putExtra(SQUARE_ID_TAG, mSquareId);
                 intent.putExtra(SQUARE_NAME_TAG, mSquareName);
                 startActivity(intent);
