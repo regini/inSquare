@@ -19,6 +19,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
 
     private static final String TAG = "DownloadClosestSquares";
     private static final String BASE_URL = "http://recapp-insquare.rhcloud.com/squares?";
+    private static final int SQUARE_LIMIT = 15;
     private String FINAL_URL;
 
 //    private ArrayList<Square> squareList;
@@ -83,6 +84,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
             JSONArray closeSquares = new JSONArray(sb.toString());
             int i = 0;
             for(i = 0; i < closeSquares.length(); i++) {
+                if(squareMap.size()>SQUARE_LIMIT) break;
                 JSONObject cs = closeSquares.getJSONObject(i);
 
                 String cs_index = cs.getString(TAG_INDEX);

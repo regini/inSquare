@@ -59,6 +59,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -85,6 +86,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int SQUARE_LIMIT = 15;
     public static final int MAX_SQUARENAME_LENGTH = 40;
 
     // TODO: Rename and change types of parameters
@@ -158,7 +160,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        squareHashMap = new HashMap<Marker, Square>();
+        squareHashMap = new LinkedHashMap<>();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -308,7 +310,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         return null;
     }
 
-    private void downloadAndInsertPins(double distance)
+    private void downloadAndInsertPins(double distance, LatLng position)
     {
             waitingDelay = true;
 
@@ -316,11 +318,12 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             Log.d(TAG, "downloadAndInsertPins: " + d);
 
             DownloadClosestSquares dcs;
+            //TODO check sul centro del mondo
             if(mCurrentLocation!=null)
             {
                     dcs = new DownloadClosestSquares(d,
-                    mCurrentLocation.getLatitude(),
-                    mCurrentLocation.getLongitude());
+                    position.latitude,
+                    position.longitude);
             }
             else
                     dcs = new DownloadClosestSquares(d,0,0);
@@ -332,6 +335,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
+                    if(squareHashMap.size()>SQUARE_LIMIT) {
+                      squareHashMap.remove(squareHashMap.entrySet().iterator().next().getKey());
+                    }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
@@ -569,7 +575,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
         if (!waitingDelay)
-            downloadAndInsertPins(distance);
+            downloadAndInsertPins(distance,cameraPosition.target);
     }
 
     // Con due locazioni restituisce il valore in km di distanza
