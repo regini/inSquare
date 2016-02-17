@@ -240,7 +240,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private void addMessage(String message, String username, String userId)
     {
-        messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message, username, userId));
+        messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message.trim(), username, userId));
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 

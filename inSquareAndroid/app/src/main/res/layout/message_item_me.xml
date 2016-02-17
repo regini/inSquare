@@ -4,9 +4,9 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_gravity="start"
+    android:layout_gravity="right"
     android:layout_margin="5dp"
-    android:background="@drawable/bubble_a"
+    android:background="@drawable/bubble_b"
     >
 
     <TextView
@@ -20,7 +20,7 @@
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed"
         android:textSize="15sp"
-        android:gravity="left"
+        android:gravity="right"
         />
 
     <TextView
@@ -34,6 +34,6 @@
         android:layout_below="@id/message_sender"
         android:fontFamily="sans-serif-condensed-light"
         android:textSize="18sp"
-        android:gravity="left"
+        android:gravity="right"
         />
 </RelativeLayout>

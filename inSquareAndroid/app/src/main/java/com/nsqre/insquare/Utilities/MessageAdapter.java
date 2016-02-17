@@ -2,8 +2,6 @@ package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +31,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message_item,parent,false);
+                .inflate(R.layout.message_item_me,parent,false);
 
         MessageHolder msgHld = new MessageHolder(view);  //va a 3
         return msgHld;  //dopo aver creato il msgHld va su 4
@@ -91,9 +89,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             username = (TextView) itemView.findViewById(R.id.message_sender);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
 
-
             itemView.setOnClickListener(this);
-
         }
 
         @Override
@@ -105,16 +101,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         public void setSentMessage(boolean isSent) {
             if (isSent) {
                 relativeLayout.setBackgroundResource(R.drawable.bubble_b);
-
-                //TODO far si che vada a destra
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                params.addRule(Gravity.RIGHT);
-                relativeLayout.setLayoutParams(params);
             }
             else
                 relativeLayout.setBackgroundResource(R.drawable.bubble_a);
-
-
         }
     }
 

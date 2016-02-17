@@ -6,14 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activities.ChatActivity">
+    tools:context=".Activities.ChatActivity"
+    >
 
     <include layout="@layout/content_fab" />
 
     <LinearLayout
         android:id="@+id/message_bottom_ll"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/linear_layout_lower_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="false"
         android:layout_alignParentTop="false"
