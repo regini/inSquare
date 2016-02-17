@@ -31,6 +31,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -117,6 +119,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private boolean waitingDelay;
 
+    private Tracker mTracker;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -142,6 +146,10 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ANALYTICS
+        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
 
         waitingDelay = false;
 
@@ -480,6 +488,14 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     private void startChatActivity(Marker marker) {
+
+        // [START PinButton_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MapActivity")
+                .setAction("PinButton")
+                .build());
+        // [END PinButton_event]
+
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
         intent.putExtra(MapActivity.SQUARE_ID_TAG, s.getId());
