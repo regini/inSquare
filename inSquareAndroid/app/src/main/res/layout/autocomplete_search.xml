@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill_horizontal"
+    android:focusable="true"
+>
+<android.support.v7.widget.AppCompatAutoCompleteTextView
+    android:id="@+id/search_box"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_alignParentTop="true"
+    android:dropDownWidth="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:inputType="textAutoComplete|textAutoCorrect"
+    android:ems="10"
+    />
+
+</RelativeLayout>

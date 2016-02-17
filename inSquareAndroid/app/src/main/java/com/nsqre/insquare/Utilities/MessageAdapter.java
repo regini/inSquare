@@ -29,15 +29,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.mDataset = new ArrayList<Message>();
     }
 
+    //2: appena ho tutti i messaggi inizio a creare gli item
     @Override
     public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.message_item,parent,false);
 
-        MessageHolder msgHld = new MessageHolder(view);
-        return msgHld;
+        MessageHolder msgHld = new MessageHolder(view);  //va a 3
+        return msgHld;  //dopo aver creato il msgHld va su 4
     }
 
+    //4: con la position nel dataset, si prende i messaggi, e setta il text nell'item, se gli id sono uguali cambia bubble
     @Override
     public void onBindViewHolder(MessageHolder holder, int position) {
         Message m = mDataset.get(position);
@@ -45,10 +47,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 //        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
         holder.username.setText(m.getName());
-        if (m.getFrom().equals(profile.getUserId()))
-            holder.setSentMessage();
+        Log.d("CONTROLLOID", m.getName() + " ha: " + m.getFrom() + "|" + profile.getUsername() + " ha: " + profile.getUserId());
+        holder.setSentMessage(m.getFrom().equals(profile.getUserId()));  //va a 5
     }
 
+    //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
     public void addItem(Message msg)
     {
         mDataset.add(msg);
@@ -79,11 +82,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     {
         private TextView content;
         private TextView username;
+        private RelativeLayout relativeLayout;
+
+        //3: si prende questi dati
         public MessageHolder(View itemView) {
             super(itemView);
 
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
+            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
 
 
             itemView.setOnClickListener(this);
@@ -95,12 +102,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             myClickListener.onItemClick(getAdapterPosition(), v);
         }
 
-        public void setSentMessage() {
-            itemView.setBackgroundResource(R.drawable.bubble_a);
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)itemView.getLayoutParams();
+        //5: cambia bubble e allinea a destra(TODO)
+        public void setSentMessage(boolean isSent) {
+            if (isSent)
+                relativeLayout.setBackgroundResource(R.drawable.bubble_b);
+            else
+                relativeLayout.setBackgroundResource(R.drawable.bubble_a);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.addRule(Gravity.RIGHT);
-
-            itemView.setLayoutParams(params);
+            relativeLayout.setLayoutParams(params);
         }
     }
 

@@ -113,38 +113,12 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
                     );
 
 //                    squareList.add(close_square);
-                    squareMap.put(cs_source_name, close_square);
+                    squareMap.put(cs_id, close_square);
+//                    squareMap.put(cs_source_name, close_square);
                 }
             }
 
             Log.d(TAG, squareMap.size() + " vs " + i);
-
-//            JSONObject json = new JSONObject(sb.toString());
-//            JSONArray messages = json.getJSONArray(TAG_ARRAY);
-//
-//            for(int i = 0; i< messages.length(); i++)
-//            {
-//                JSONObject jsonObject = messages.getJSONObject(i);
-//
-//                String id       = jsonObject.getString(TAG_ID);
-//                String square   = jsonObject.getString(TAG_SQUARE_ID);
-//                String sender   = jsonObject.getString(TAG_SENDER_ID);
-//                String date     = jsonObject.getString(TAG_CREATED_AT);
-//                String text     = jsonObject.getString(TAG_TEXT);
-//
-//                if(!square.isEmpty() || !sender.isEmpty() || !text.isEmpty())
-//                {
-//                    Message message = new Message(
-//                            id,
-//                            square,
-//                            sender,
-//                            date,
-//                            text
-//                    );
-//
-//                    squareList.add(message);
-//                }
-//            }
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();

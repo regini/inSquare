@@ -9,7 +9,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -20,6 +22,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -33,6 +37,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
@@ -64,6 +69,9 @@ public class MapActivity extends AppCompatActivity
     private String mSquareName;
 
     private Tracker mTracker;
+
+    private SearchView searchView;
+    private SimpleCursorAdapter mSearchAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +108,6 @@ public class MapActivity extends AppCompatActivity
         linearLayout.setVisibility(View.GONE);
         animationUp = AnimationUtils.loadAnimation(this, R.anim.anim_up);
         animationDown = AnimationUtils.loadAnimation(this, R.anim.anim_down);
-
     }
 
     @Override
@@ -151,9 +158,20 @@ public class MapActivity extends AppCompatActivity
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem searchItem = menu.findItem(R.id.search_squares_action);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint(getString(R.string.hint_cerca_squares));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(true);
+
+        AutoCompleteTextView searchTextView =
+                (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchTextView.setHintTextColor(ContextCompat.getColor(this, R.color.light_grey));
+        searchTextView.setTextColor(ContextCompat.getColor(this, R.color.white));
+
+        ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, R.layout.drop_down_entry);
+        searchTextView.setAdapter(adapter);
+
+        searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(this);
         return true;
     }
@@ -257,31 +275,47 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
+        searchLocationName(query.trim());
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         Log.d(TAG, "onQueryTextChange: just written:" + newText);
+        return false;
+    }
+
+    private void searchLocationName(String placeName) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         try {
             MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
             Location l = mFrag.mCurrentLocation;
-            LatLng northeast = calculateOffset(l, 12000);
-            LatLng southwest = calculateOffset(l, -12000);
+            LatLng northeast = calculateOffset(l, 8000);
+            LatLng southwest = calculateOffset(l, -8000);
 
-            List<Address> results = geocoder.getFromLocationName(newText, 5,
-                southwest.latitude, //double lowerLeftLatitude,
-                southwest.longitude, //double lowerLeftLongitude,
-                northeast.latitude, //double upperRightLatitude,
-                northeast.longitude //double upperRightLongitude
+            List<Address> results = geocoder.getFromLocationName(placeName,
+                    5, // num results
+                    southwest.latitude, //double lowerLeftLatitude,
+                    southwest.longitude, //double lowerLeftLongitude,
+                    northeast.latitude, //double upperRightLatitude,
+                    northeast.longitude //double upperRightLongitude
             );
-            Log.d(TAG, "onQueryTextChange results: " + results.toString());
+
+
+            if(!results.isEmpty())
+            {
+                Address first = results.get(0);
+                LatLng pos = new LatLng(first.getLatitude(), first.getLongitude());
+                mFrag.mGoogleMap.animateCamera(
+                        CameraUpdateFactory.newLatLng(pos),
+                        400,
+                        null
+                );
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     private LatLng calculateOffset(Location position, float offset)
