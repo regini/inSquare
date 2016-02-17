@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
@@ -85,8 +86,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-//        currentUser = (User)getIntent().getSerializableExtra("CURRENT_USER");
 
         try {
 
@@ -210,6 +212,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onResume() {
         super.onResume();
+
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -237,6 +242,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private void attemptSend()
     {
+        // [START message_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Send Message")
+                .build());
+        // [END message_event]
+
         if(mUsername == null) 
         {
             Log.d(TAG, "attemptSend: there's no Username specified");
@@ -367,6 +379,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");

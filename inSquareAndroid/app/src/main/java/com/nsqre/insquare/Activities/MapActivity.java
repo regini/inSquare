@@ -31,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.model.LatLng;
 import com.nsqre.insquare.Fragments.MapFragment;
@@ -73,6 +74,7 @@ public class MapActivity extends AppCompatActivity
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
+
         mapFab = (FloatingActionButton) findViewById(R.id.map_fab);
         mapFab.setVisibility(View.GONE);
 
@@ -92,6 +94,14 @@ public class MapActivity extends AppCompatActivity
         animationUp = AnimationUtils.loadAnimation(this, R.anim.anim_up);
         animationDown = AnimationUtils.loadAnimation(this, R.anim.anim_down);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -146,9 +156,24 @@ public class MapActivity extends AppCompatActivity
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.search_squares_action:
+                // [START search_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Search")
+                        .build());
+                // [END search_event]
+
                 Log.d(TAG, "I've just initiated search");
                 break;
             case R.id.instfeedback:
+
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
+
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");

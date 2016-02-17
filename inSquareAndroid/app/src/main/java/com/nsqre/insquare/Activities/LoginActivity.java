@@ -34,6 +34,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -93,6 +94,8 @@ public class LoginActivity extends AppCompatActivity
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
 
         // Profilo statico perche' non puo' cambiare.
@@ -196,6 +199,14 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -429,6 +440,12 @@ public class LoginActivity extends AppCompatActivity
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.instfeedback:
+                // [START feedback_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Feedback")
+                        .build());
+                // [END feedback_event]
                 final Dialog d = new Dialog(this);
                 d.setContentView(R.layout.dialog_feedback);
                 d.setTitle("Feedback");

@@ -1,39 +1,42 @@
 <resources>
     <string name="app_name">inSquare</string>
+
     <string name="google_api_key">AIzaSyDqLoMQ7XqXUtffExOJlsSZJ23P1lSxu5Q</string>
+    <string name="server_client_id">231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">743420882424724</string>
+
+    <string name="google_login_string">Google Login</string>
+    <string name="google_logout_string">Google Logout</string>
+
+    <string name="fb_login_string">Facebook Login</string>
+    <string name="fb_logout_string">Facebook Logout</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_fab">#inSquare</string>
 
-    <string name="error_connect">Connection has failed</string>
-    <string name="message_user_joined">%s has joined</string>
-    <string name="message_user_left">%s has left</string>
-    <string name="user_action_typing"> is typing</string>
+    <string name="error_connect">Connessione fallita</string>
+    <string name="message_user_joined">%s si è unito</string>
+    <string name="message_user_left">%s è uscito</string>
+    <string name="user_action_typing"> sta scrivendo</string>
     <string name="username">Username</string>
-    <string name="nome_square">Inserisci il Nome della Square</string>
+    <string name="nome_square">Inserisci il nome della Square</string>
     <string name="crea_square">Crea!</string>
     <string name="ok">Ok</string>
-    <string name="facebook_app_id">743420882424724</string>
-    <string name="chatUrl">http://recapp-insquare.rhcloud.com/squares</string>
-    <string name="server_client_id">231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com</string>
     <string name="feedback">Feedback</string>
     <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
     <string name="send">Invia</string>
     <string name="thanks_feedback">Grazie per il feedback!</string>
     <string name="error_feedback">Qualcosa è andato storto :(</string>
     <string name="connFail">Connessione fallita. La tua connessione dati è attiva?</string>
-
+    <string name="square_placeholder">Select a #Square on the map</string>
+    <string name="hint_cerca_squares">Cerca #Squares</string>
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>
         <item quantity="other">There are %d participants</item>
     </plurals>
 
-    <string name="google_login_string">Google Login</string>
-    <string name="google_logout_string">Google Logout</string>
-    <string name="fb_login_string">Facebook Login</string>
-    <string name="fb_logout_string">Facebook Logout</string>
-    <string name="square_placeholder">Select a #Square on the map</string>
-    <string name="hint_cerca_squares">Cerca #Squares</string>
+
+    <string name="chatUrl">http://recapp-insquare.rhcloud.com/squares</string>
 
 </resources>
