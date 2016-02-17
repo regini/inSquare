@@ -28,7 +28,7 @@
     <string name="send">Invia</string>
     <string name="thanks_feedback">Grazie per il feedback!</string>
     <string name="error_feedback">Qualcosa è andato storto :(</string>
-    <string name="connFail">Connessione fallita. La tua connessione dati è attiva?</string>
+    <string name="connFail">Connessione fallita.</string>
     <string name="square_placeholder">Select a #Square on the map</string>
     <string name="hint_cerca_squares">Cerca un luogo</string>
     <plurals name="message_participants">
