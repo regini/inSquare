@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
 
@@ -97,7 +98,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "onCreate: " + url);
             mSocket = IO.socket(url);
 
-            messageAdapter = new MessageAdapter(getApplicationContext());
+            messageAdapter = new MessageAdapter();
             messageAdapter.setOnClickListener(this);
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
@@ -133,7 +134,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(messageAdapter);
-        //recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         chatEditText = (EditText) findViewById(R.id.message_text);
 
@@ -166,7 +167,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         Message[] messages = gson.fromJson(response, Message[].class);
                         Collections.reverse(Arrays.asList(messages));
                         for (Message m : messages) {
-                            addMessage(m.getText(), m.getName(), m.getFrom());
+                            addMessage(m.getName(), m.getText());
+//                            addMessageWithId(m.getName(),m.getText(), m.getId());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -232,9 +234,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         */
     }
 
-    private void addMessage(String message, String username, String userId)
+    private void addMessage(String username, String message)
     {
-        messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message, username, userId));
+        messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message, username) );
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
@@ -271,7 +273,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chatEditText.setText("");
 
         // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
-        addMessage(message, mUsername, mUserId);
+        addMessage(mUsername, message);
 
         // Il server riceve un oggetto in JSON che deve essere processato
         JSONObject data = new JSONObject();
@@ -319,18 +321,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     JSONObject data = (JSONObject) args[0];
                     String username = "";
                     String message = "";
-                    String userId = "";
 
                     try {
                         username = data.getString("username");
                         message = data.getString("contents");
-                        userId = data.getString("userid");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    addMessage(message, username, userId);
+                    addMessage(username, message);
 
                 }
             });
@@ -360,7 +360,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         e.printStackTrace();
                     }
 
-                    addMessage(message, username, userid);
+                    addMessage(username, message);
                 }
             });
         }

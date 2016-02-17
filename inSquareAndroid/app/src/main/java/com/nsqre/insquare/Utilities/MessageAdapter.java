@@ -1,15 +1,11 @@
 package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
 import java.util.ArrayList;
@@ -20,11 +16,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private static final String TAG = "MessageAdapter";
     private ArrayList<Message> mDataset;
     private static ChatMessageClickListener myClickListener;
-    private InSquareProfile profile;
 
-    public MessageAdapter(Context c)
+    public MessageAdapter()
     {
-        profile = InSquareProfile.getInstance(c);
         this.mDataset = new ArrayList<Message>();
     }
 
@@ -44,8 +38,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 //        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
         holder.username.setText(m.getName());
-        if (m.getFrom().equals(profile.getUserId()))
-            holder.setSentMessage();
     }
 
     public void addItem(Message msg)
@@ -59,7 +51,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         return this.mDataset.get(position);
     }
 
-    public void removeItem(int position) {
+    public void removeItem(int position)
+    {
         mDataset.remove(position);
         notifyItemRemoved(position);
     }
@@ -76,14 +69,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
+
         private TextView content;
         private TextView username;
+
         public MessageHolder(View itemView) {
             super(itemView);
 
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
-
 
             itemView.setOnClickListener(this);
 
@@ -92,10 +86,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         @Override
         public void onClick(View v) {
             myClickListener.onItemClick(getAdapterPosition(), v);
-        }
-
-        public void setSentMessage() {
-            itemView.setBackgroundResource(R.drawable.bubble_a);
         }
     }
 
