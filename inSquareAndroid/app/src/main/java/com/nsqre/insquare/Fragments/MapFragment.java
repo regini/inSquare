@@ -50,6 +50,7 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 
@@ -85,7 +86,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final int SQUARE_LIMIT = 15;
+    private static final int SQUARE_LIMIT = 30;
     public static final int MAX_SQUARENAME_LENGTH = 40;
 
     // TODO: Rename and change types of parameters
@@ -335,7 +336,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
                     if(squareHashMap.size()>SQUARE_LIMIT) {
-                      squareHashMap.remove(squareHashMap.entrySet().iterator().next().getKey());
+                        Marker key = squareHashMap.entrySet().iterator().next().getKey();
+                        key.remove();
+                        squareHashMap.remove(key);
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {
