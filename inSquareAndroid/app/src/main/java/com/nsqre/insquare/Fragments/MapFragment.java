@@ -361,6 +361,25 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 PERMISSIONS, REQUEST_COARSE_LOCATION);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode)
+        {
+            case REQUEST_COARSE_LOCATION:
+            case REQUEST_FINE_LOCATION:
+                if(grantResults.length>0)
+                {
+                    initCamera(mCurrentLocation);
+                }
+                else{
+                    Toast.makeText(getContext(),
+                            "Senza permessi non posso funzionare!", Toast.LENGTH_SHORT).show();
+                }
+
+                return;
+        }
+    }
+
     private void initCamera(Location mCurrentLocation) {
 
         if (ActivityCompat.checkSelfPermission(getContext(),
@@ -401,7 +420,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin_centered));
         Marker marker = mGoogleMap.addMarker(options);
 
         return marker;

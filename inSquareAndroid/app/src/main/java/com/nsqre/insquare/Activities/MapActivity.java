@@ -263,6 +263,7 @@ public class MapActivity extends AppCompatActivity
         {
             linearLayout.startAnimation(animationDown);
             linearLayout.setVisibility(View.GONE);
+            mapFab.setVisibility(View.GONE);
             return;
         }else
         {
