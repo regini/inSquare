@@ -158,38 +158,33 @@ module.exports = function(passport)
 	                // if the user is found, then log them in
 	                if (user)
 	                {
-	                	// if there is a user id already but no token (user was linked at one point and then removed)
-                        if (!user.facebook.token) {
-                            user.facebook.token = accessToken;
-                            user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
-                            user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                    user.facebook.token = accessToken;
+                    user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
+                    user.facebook.email = (profile.emails[0].value || '').toLowerCase();
 
-                            user.save(function(err) {
-                                if (err)
-                                    return done(err);
-
-                                return done(null, user);
-                            });
-                        }
-	                    return done(null, user); // user found, return that user
+                    user.save(function(err) {
+                    	if (err)
+                        return done(err);
+											return done(null, user);
+                  	});
 	                } else {
-	                    // if there is no user found with that facebook id, create them
-	                    var newUser            = new User();
+	                  // if there is no user found with that facebook id, create them
+	                  var newUser            = new User();
 
-	                    // set all of the facebook information in our user model
-	                    newUser.facebook.id    = profile.id; // set the users facebook id
-	                    newUser.facebook.token = accessToken; // we will save the token that facebook provides to the user
-	                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-	                    newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+	                  // set all of the facebook information in our user model
+	                  newUser.facebook.id    = profile.id; // set the users facebook id
+	                  newUser.facebook.token = accessToken; // we will save the token that facebook provides to the user
+										newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+	                  newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
 
-	                    // save our user to the database
-	                    newUser.save(function(err) {
-	                        if (err)
-	                            throw err;
+	                  // save our user to the database
+	                  newUser.save(function(err) {
+											if (err)
+	                      throw err;
 
-	                        // if successful, return the new user
-	                        return done(null, newUser);
-	                    });
+	                    // if successful, return the new user
+	                    return done(null, newUser);
+	                  });
 	                }
 	            });
 	        });
@@ -412,7 +407,7 @@ module.exports = function(passport)
 			// find the user in the database based on their google id
 			User.findOne({ 'google.id' : googleId }, function(err, user) {
 
-				console.log(idToken.body.access_token);
+				console.log(parsedToken.payload);
 					// if there is an error, stop everything and return that
 					// ie an error connecting to the database
 					if (err)
@@ -421,20 +416,14 @@ module.exports = function(passport)
 					// if the user is found, then log them in
 					if (user)
 					{
-						// if there is a user id already but no token (user was linked at one point and then removed)
-								if (!user.google.token) {
-										user.google.token = idToken.body.access_token;
-										user.google.name  = parsedToken.name;
-										user.google.email = (parsedToken.email).toLowerCase();
-
-										user.save(function(err) {
-												if (err)
-														return done(err);
-
-												return done(null, user);
-										});
-								}
-							return done(null, user); // user found, return that user
+						user.google.token = idToken.body.access_token;
+						user.google.name  = parsedToken.payload.name;
+						user.google.email = (parsedToken.payload.email).toLowerCase();
+						user.save(function(err) {
+							if (err)
+								return done(err);
+							return done(null, user);
+						});
 					} else {
 							// if there is no user found with that google id, create them
 							var newUser = new User();
@@ -442,8 +431,8 @@ module.exports = function(passport)
 							// set all of the facebook information in our user model
 							newUser.google.id    = googleId; // set the users facebook id
 							newUser.google.token = idToken.body.access_token; // we will save the token that facebook provides to the user
-							newUser.google.name  = parsedToken.name;
-							newUser.google.email = (parsedToken.email).toLowerCase();
+							newUser.google.name  = parsedToken.payload.name;
+							newUser.google.email = (parsedToken.payload.email).toLowerCase();
 
 							// save our user to the database
 							newUser.save(function(err) {

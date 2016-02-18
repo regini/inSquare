@@ -13,8 +13,9 @@ var messageSchema = mongoose.Schema({
 		es_schema: Square}
 });
 
+
 messageSchema.plugin(mongoosastic, {
-	hosts: ['http://elastic-insquare.rhcloud.com'],
+	hosts: ['http://insquare:recappelasticdb@elastic-insquaredb.rhcloud.com/elasticsearch'],
 	populate: [{path: 'squares'},{path:"users"}]
 })
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Basic Chat</title>
+	<script>
+	var usr;
+	var socket;
+	var id;
+	</script>
+	<script>
+	function sendFunction()
+	{
+		var data = document.getElementById("new-message").value;
+
+		if(data != "")
+		{
+			console.log(usr + " said: " + data);
+			socket.emit('sendMessage', { 
+				room: id,
+				user: usr,
+		 		message: data,
+		 		email: usr+"@insquare.com"
+		 	});
+	
+			document.getElementById("new-message").value = "";
+
+			addConversation("You: " + data);
+
+		}else
+		{
+			console.log("This is an empty message");
+		}
+	}
+
+	function askName()
+	{
+		usr = "<%= user %>";
+		while(usr == undefined || usr == "" || usr == null)
+		{
+			usr = prompt("What's your name?");
+			console.log("User is " + usr);
+		}
+	}
+
+	function addConversation(text)
+	{
+		var messages = document.getElementById("messages-area");
+		var li = document.createElement("li");
+		li.appendChild(document.createTextNode(text));
+			
+		messages.appendChild(li);
+	}
+	</script>
+</head>
+<body onload="askName()">
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		id = "<%= squareId %>";
+		socket = io.connect("http://localhost:8050/squares");
+
+		socket.on('connect', function()
+		{
+			console.log("Connecting..");
+			socket.emit('addUser', { 
+				user:usr,
+				room:id
+			});
+		});
+
+		//when receiving a new message adds it to the list
+		socket.on('newMessage', function(message)
+		{
+			// Message is a JS object with fields:
+			// .room
+			// .user
+			// .contents
+			
+			var text = message.user + ": " + message.contents;
+		
+			addConversation(text);
+		});
+
+
+		socket.on('userJoined', function(data)
+		{
+			addConversation(data.user + ": " + data.contents);
+		});
+
+		socket.on('userLeft', function(data)
+		{
+			addConversation(data.user + " has left");
+		});
+	</script>
+	<h1>List of messages from <%= squareId %></h1>
+	<h3 id="users">Users #: </h3>
+
+	<ul id="messages-area"></ul>
+
+	<form id="form" onsubmit="return false;">
+		<input id="new-message" type="text" />
+			<button onclick="sendFunction()">Send Message</button>
+	</form>
+
+</body>
+</html>

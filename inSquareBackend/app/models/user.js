@@ -45,7 +45,7 @@ userSchema.methods.validPassword = function(password)
 };
 
 userSchema.plugin(mongoosastic, {
-	hosts: ['http://elastic-insquare.rhcloud.com'],
+	hosts: ['http://insquare:recappelasticdb@elastic-insquaredb.rhcloud.com/elasticsearch'],
   populate: [{path: 'messages'}]
 });
 

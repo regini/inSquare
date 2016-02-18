@@ -11,8 +11,9 @@ var feedbackSchema = mongoose.Schema({
 	activity: String
 });
 
+
 feedbackSchema.plugin(mongoosastic, {
-	hosts: ['http://elastic-insquare.rhcloud.com'],
+	hosts: ['http://insquare:recappelasticdb@elastic-insquaredb.rhcloud.com/elasticsearch'],
 	populate: [{path:"users"}]
 })
 

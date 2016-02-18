@@ -223,6 +223,11 @@ module.exports = function(router, passport)
             res.redirect('/profile');
         });
     });
+
+		//eliminare
+		router.get('/credentials', function(req,res) {
+			res.send("string is " + process.env.OPENSHIFT_NODEJS_SECRET);
+		})
 };
 
 function isLoggedIn(req, res, next)

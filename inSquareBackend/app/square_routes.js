@@ -1,4 +1,5 @@
 var Square = require('./models/square');
+var Message = require('./models/message');
 var fs = require('fs');
 
 module.exports = function(router, passport)
@@ -27,12 +28,21 @@ module.exports = function(router, passport)
 
     router.post('/squares', function(req, res)
     {
-        var squareName = req.body.name;
-        var latitude = parseFloat(req.body.lat);
-        var longitude = parseFloat(req.body.lon);
+      var squareName = req.body.name;
+      var latitude = parseFloat(req.body.lat);
+      var longitude = parseFloat(req.body.lon);
 
-        var square = createSquare(squareName, latitude, longitude);
-        res.json(square);
+      if(squareName == undefined)
+      {
+        res.send("Non e' stato inserito un nome valido");
+      }
+      if(latitude == undefined || longitude == undefined)
+      {
+        res.send("Bisogna specificare delle coordinate valide!");
+      }
+
+      var square = createSquare(squareName, latitude, longitude);
+      res.json(square);
 
     });
 
@@ -43,6 +53,11 @@ module.exports = function(router, passport)
       })
     });
 
+    router.delete('/squares/:name', function(req,res) {
+      deleteSquare(req.params.name);
+      res.send('done');
+    });
+
     router.get('/squares?', function(req,res) {
       if(req.query.fulltext && req.query.name != undefined) {
         Square.search ({
@@ -51,12 +66,12 @@ module.exports = function(router, passport)
           }
         }, function(err,squares) {
           if(err) throw err;
-          console.log(squares);
+          console.log("SQUARES:\n" + squares);
           res.json(squares.hits.hits);
         })
       }
       else if(req.query.name) {
-        console.log(req.query.name);
+        console.log("REQ QUERY NAME:\n" + req.query.name);
         Square.findOne({ 'name' : req.query.name }, function(err,square) {
             if(err) res.send(err);
             if(square) res.json(square);
@@ -76,9 +91,22 @@ module.exports = function(router, passport)
               }
             }
           }
-        }, {size : 200}, function(err,squares) {
-          if(err) throw err;
-          console.log(squares.hits.hits);
+        },
+        {
+          sort : [
+            {
+              _geo_distance : {
+                geo_loc : req.query.lat + ',' + req.query.lon,
+                order : "asc",
+                unit : "km"
+              }
+            }
+          ],
+          from : 0,
+          size : 200
+        }, function(err,squares) {
+          if(err)
+            console.log("Error while searching for squares: " + err);
           res.json(squares.hits.hits);
         })
       } else {res.send("Invalid query")};
@@ -104,7 +132,33 @@ function createSquare(squareName, latitude, longitude) {
 	square.geo_loc = latitude + ',' + longitude;
 	square.save(function(err) {
 		if(err) throw err;
-		console.log(square);
+		console.log("Created square ====\n" + square + "\n====");
 	});
   return square;
+}
+
+function findSquareByName(squareName){
+    return Square.find({name: /squareName/i});
+}
+
+
+function deleteSquare(squareName) {
+  Square.find()
+  .where('name')
+  .regex(new RegExp(squareName,'i'))
+  .exec(function(err,mySquares) {
+    for(var i=0; i<mySquares.length; i++) {
+      Message.find({'squareId' : mySquares[i].id})
+      .exec(function(err,messages) {
+        for(var j=0; j<messages.length; j++) {
+          messages[j].remove(function (err,message) {
+            if(err) throw err;
+          });
+        }
+      });
+      mySquares[i].remove(function(err, square) {
+        if(err) throw err;
+	     });
+     }
+  });
 }
