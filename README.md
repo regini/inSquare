@@ -9,7 +9,7 @@ Common needs in common places
 
 [Milestone 1: Proof of Concept (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOGNwU21hY0NlOUU)
 
-[Milestone 2: Proof of Concept (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOWxzMS14alQ3MG8)
+[Milestone 2: Release Candidate (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOWxzMS14alQ3MG8)
 
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   
