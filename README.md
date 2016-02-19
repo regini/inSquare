@@ -11,6 +11,12 @@ Common needs in common places
 
 [Milestone 2: Release Candidate (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOWxzMS14alQ3MG8)
 
+# Our Presentation Videos
+
+[#BasketballPlayground](https://drive.google.com/open?id=0ByoM6ITfn2ntNFlGS1VJalNtUHM)
+
+[#MerulanaPub](https://drive.google.com/open?id=0ByoM6ITfn2ntVFU2eGw1bUI2c2c)
+
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   
 
