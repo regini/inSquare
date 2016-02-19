@@ -3,7 +3,7 @@
 Geolocalized interactions for anyone's need and those who want to know more about what’s going on.
 
 
-![](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
+![Get it on Google Play](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
 
 Where we go. Who we meet.
 
