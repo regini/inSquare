@@ -1,8 +1,11 @@
 ![](https://github.com/regini/inSquare/blob/gh-pages/INSQUARE%20LOGO.png)
 # inSquare
-Geolocalized interactions for anyone's need and those who want to know more about what’s going on
+Geolocalized interactions for anyone's need and those who want to know more about what’s going on.
 
-Common needs in common places
+
+![](https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png)
+
+Where we go. Who we meet.
 
 # Our Adventure
 [Presenting The Idea (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntM1ktMXhTWW5vSFU)
