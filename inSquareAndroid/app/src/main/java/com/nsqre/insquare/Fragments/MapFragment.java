@@ -319,15 +319,16 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
             DownloadClosestSquares dcs;
             //TODO check sul centro del mondo
-            if(mCurrentLocation!=null)
+            if(position!=null)
             {
                     dcs = new DownloadClosestSquares(d,
                     position.latitude,
                     position.longitude);
             }
             else
-                    dcs = new DownloadClosestSquares(d,0,0);
-
+            {
+                dcs = new DownloadClosestSquares(d, 0, 0);
+            }
             try {
                 HashMap<String, Square> squarePins = dcs.execute().get();
 
@@ -597,6 +598,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
         if (!waitingDelay)
             downloadAndInsertPins(distance,cameraPosition.target);
+        Log.d(TAG,cameraPosition.target.toString());
     }
 
     // Con due locazioni restituisce il valore in km di distanza
