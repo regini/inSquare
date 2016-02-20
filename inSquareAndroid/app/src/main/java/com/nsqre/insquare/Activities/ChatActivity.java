@@ -105,6 +105,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
             mSocket.on("sendMessage", onSendMessage);
             mSocket.on("newMessage", onNewMessage);
+            mSocket.on("ping", onPing);
 
             /*
             mSocket.on("typing", onTyping);
@@ -368,6 +369,19 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     }
 
                     addMessage(message, username, userid);
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onPing = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    mSocket.emit("pong", data);
                 }
             });
         }

@@ -16,6 +16,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "231545488769-39bqmj6sogj9felh55q03p6p2sie96rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsqre.insquare",
+            "certificate_hash": "1FEB7F5D6ED9937B4F14B570B7A7B419C434B5BF"
+          }
+        },
+        {
           "client_id": "231545488769-r4a36ppltfid2594jp5kemameiv3r0ko.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
