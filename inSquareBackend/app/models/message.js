@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var Square = require('./square');
 var User = require('./user');
+var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
 
 // schema for our messages model
 var messageSchema = mongoose.Schema({
@@ -15,7 +16,7 @@ var messageSchema = mongoose.Schema({
 
 
 messageSchema.plugin(mongoosastic, {
-	hosts: ['http://insquare:recappelasticdb@elastic-insquaredb.rhcloud.com/elasticsearch'],
+	hosts: [db],
 	populate: [{path: 'squares'},{path:"users"}]
 })
 
