@@ -38,6 +38,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
     private static final String TAG_SOURCE = "_source";
     private static final String TAG_SOURCE_NAME= "name";
     private static final String TAG_SOURCE_GEO_LOC= "geo_loc";
+    private static final String TAG_OWNER_ID= "ownerId";
     private static final String TAG_SORT = "sort";
 
     public DownloadClosestSquares(String fulltext, String name) {
@@ -82,7 +83,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
 //            Log.d(TAG, "Results are IN!\n" + sb.toString());
 
             JSONArray closeSquares = new JSONArray(sb.toString());
-            int i = 0;
+            int i;
             for(i = 0; i < closeSquares.length(); i++) {
                 if(squareMap.size()>SQUARE_LIMIT) break;
                 JSONObject cs = closeSquares.getJSONObject(i);
@@ -92,6 +93,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
                 String cs_id = cs.getString(TAG_ID);
                 String cs_score = cs.getString(TAG_SCORE);
 
+
                 JSONObject cs_source = cs.getJSONObject(TAG_SOURCE);
                 String cs_source_name = cs_source.getString(TAG_SOURCE_NAME);
                 String cs_source_loc = cs_source.getString(TAG_SOURCE_GEO_LOC);
@@ -99,17 +101,25 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
                 double lat = Double.parseDouble(location[0]);
                 double lon = Double.parseDouble(location[1]);
 
+                String cs_source_ownerId;
+                try {
+                    cs_source_ownerId = cs_source.getString(TAG_OWNER_ID);
+                }catch (JSONException e) {
+                    cs_source_ownerId = null;
+                }
+
                 // TODO if needed list of messages can be added here
 //                String cs_sort          = cs.getString(TAG_SORT);
 
-                if (!cs_id.isEmpty() || !cs_source_name.isEmpty() || !cs_source_loc.isEmpty())
+                if (! (cs_id.isEmpty() && cs_source_name.isEmpty() && cs_source_loc.isEmpty()))
                 {
                     Square close_square = new Square(
                             cs_id,
                             cs_source_name,
                             lat,
                             lon,
-                            cs_type
+                            cs_type,
+                            cs_source_ownerId
                     );
 
 //                    squareList.add(close_square);
@@ -127,42 +137,5 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
         return squareMap;
     }
 
-    public class Message
-    {
-        String id;
-        String squareId;
-        String senderId;
-        String createdAt;
-        String text;
-
-        public Message(String id, String sqId, String sendId, String crea, String t)
-        {
-            this.id = id;
-            this.squareId = sqId;
-            this.senderId = sendId;
-            this.createdAt = crea;
-            this.text = t;
-        }
-
-        public String getSquareId() {
-            return squareId;
-        }
-
-        public String getSenderId() {
-            return senderId;
-        }
-
-        public String getCreatedAt() {
-            return createdAt;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
 
 }
