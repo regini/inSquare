@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var bcrypt = require('bcrypt-nodejs');
 var Message = require('./message');
-var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
 
 // schema for our user model
 var userSchema = mongoose.Schema({
@@ -46,7 +45,7 @@ userSchema.methods.validPassword = function(password)
 };
 
 userSchema.plugin(mongoosastic, {
-	hosts: [db],
+	hosts: ['http://insquare:recappelasticdb@elastic-insquaredb.rhcloud.com/elasticsearch'],
   populate: [{path: 'messages'}]
 });
 
