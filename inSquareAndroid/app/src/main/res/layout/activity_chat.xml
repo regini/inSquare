@@ -7,16 +7,14 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".Activities.ChatActivity"
-    >
+    android:elevation="2dp">
 
     <LinearLayout
         android:id="@+id/message_bottom_ll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-        android:layout_centerInParent="true"
         android:paddingLeft="@dimen/fab_margin_side"
         android:paddingStart="@dimen/fab_margin_side"
         android:paddingRight="@dimen/message_margin_right"
@@ -25,17 +23,23 @@
         android:content="@+id/content"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        >
+        android:elevation="4dp"
+        android:contextClickable="false"
+        android:focusable="false"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/message_list">
 
         <EditText
             android:id="@+id/message_text"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:layout_weight="90"
             android:hint="Enter message"
             android:inputType="textNoSuggestions|textCapSentences|textMultiLine"
-            android:maxLines="3"
-            />
+            android:maxLines="2"
+            android:scrollbars="vertical"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="-8dp" />
         <requestFocus/>
 
     </LinearLayout>
@@ -49,13 +53,15 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:src="@drawable/send"
-        />
+        android:elevation="4dp"
+        android:contextClickable="false"
+        android:focusable="false" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?android:attr/actionBarSize"
-        />
+        android:elevation="8dp"
+        android:layout_above="@+id/chat_send_fab" />
 
 </RelativeLayout>
