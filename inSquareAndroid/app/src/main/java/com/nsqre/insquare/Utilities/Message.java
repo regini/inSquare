@@ -1,5 +1,9 @@
 package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
+import android.util.Log;
+
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,8 +32,11 @@ public class Message {
     {
         this.messageType = t;
         this.text = m;
-        Calendar c = new GregorianCalendar(TimeZone.getDefault());
-        this.messageTimestamp = c.getTime();
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        this.createdAt = sdf.format(now);
+        //Log.d("MESSAGE", this.createdAt);  //2016-02-22T11:36:59.687Z
+        this.messageTimestamp = sdf.parse(this.createdAt, new ParsePosition(0));
         this.name = un;
         this.from = ui;
     }
