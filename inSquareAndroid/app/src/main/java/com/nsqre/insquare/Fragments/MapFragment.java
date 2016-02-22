@@ -112,8 +112,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private HashMap<Marker, Square> squareHashMap;
     private MapActivity rootActivity;
 
-    private boolean waitingDelay;
-
     private Tracker mTracker;
 
     public MapFragment() {
@@ -143,7 +141,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
-        waitingDelay = false;
         mLastUpdateLocation = new LatLng(0,0);
 
         squareHashMap = new LinkedHashMap<>();
@@ -203,7 +200,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         if(mCurrentLocation == null)
         {
-            Log.d(TAG, "The location was null");
+            Log.d(TAG, "Nessuna locazione corrente, ora provvedo");
             LocationManager locationManager = (LocationManager) this.getContext().getSystemService(Context.LOCATION_SERVICE);
 
             LocationListener locationListener = new LocationListener() {
@@ -234,48 +231,41 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                         MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES,
                         locationListener);
-                if(locationManager != null)
+                Location location = locationManager.getLastKnownLocation(GPS);
+                if(location != null)
                 {
-                    Location location = locationManager.getLastKnownLocation(GPS);
-                    if(location != null)
-                    {
-                        Log.d(TAG + " - GPS", "I've been able to get a location! Lat: "
-                                + location.getLatitude()
-                                + "; Long: "
-                                + location.getLongitude() + ";");
-                        mCurrentLocation = location;
-                    }
-                }else if(locationManager.isProviderEnabled(NETWORK))
-                {
-                    locationManager.requestLocationUpdates(NETWORK,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                            locationListener);
-                    if(locationManager != null)
-                    {
-                        Location location = locationManager.getLastKnownLocation(NETWORK);
-                        if(location != null)
-                        {
-                            Log.d(TAG + "NETWORK - ", "I've been able to get a location! Lat: "
-                                    + location.getLatitude()
-                                    + "; Long: "
-                                    + location.getLongitude() + ";");
-                            mCurrentLocation = location;
-                        }
-                    }
-                }else
-                {
-                    Toast.makeText(getContext(),
-                            "There's no way for me to get a location!",
-                            Toast.LENGTH_LONG)
-                            .show();
-                    return;
+                    Log.d(TAG, "Locazione da GPS - Lat: ("
+                            + location.getLatitude()
+                            + "; Lon: "
+                            + location.getLongitude() + ")");
+                    mCurrentLocation = location;
                 }
 
-
-
+            }else if(locationManager.isProviderEnabled(NETWORK))
+            {
+                locationManager.requestLocationUpdates(NETWORK,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        locationListener);
+                Location location = locationManager.getLastKnownLocation(NETWORK);
+                if(location != null)
+                {
+                    Log.d(TAG, "Locazione da NETWORK -  Lat: ("
+                            + location.getLatitude()
+                            + "; Lon: "
+                            + location.getLongitude() + ")");
+                    mCurrentLocation = location;
+                }
+            }else
+            {
+                Toast.makeText(getContext(),
+                        "Geolocalizzazione disattivata..?",
+                        Toast.LENGTH_LONG)
+                        .show();
+                return;
             }
 
+            // Se ci sono GPS o Network Provider attivati, richiedi la locazione
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
             initCamera(mCurrentLocation);
@@ -294,59 +284,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             return address;
         }
         return null;
-    }
-
-    private void downloadAndInsertPins(double distance, LatLng position)
-    {
-//      waitingDelay = true;
-
-        String d = distance + "km";
-        Log.d(TAG, "downloadAndInsertPins: " + d);
-
-        DownloadClosestSquares dcs;
-
-        //TODO check sul centro del mondo
-        if(position != null)
-        {
-                dcs = new DownloadClosestSquares(d,
-                position.latitude,
-                position.longitude);
-        }
-        else
-        {
-            dcs = new DownloadClosestSquares(d, 0, 0);
-            Log.d(TAG, "downloadAndInsertPins: downloading at the center of the world..?");
-        }
-
-
-        try {
-            // Update con l'ultima posizione a cui ho effettuato l'aggiornamento
-            mLastUpdateLocation = position;
-
-            HashMap<String, Square> squarePins = dcs.execute().get();
-
-            // Rimuovi le Squares di troppo
-            for (Square closeSquare : squarePins.values()) {
-                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                Marker m = createSquarePin(coords, closeSquare.getName());
-                squareHashMap.put(m, closeSquare);
-                if(squareHashMap.size() > SQUARE_DOWNLOAD_LIMIT) {
-                    Marker key = squareHashMap.entrySet().iterator().next().getKey();
-                    key.remove();
-                    squareHashMap.remove(key);
-                }
-            }
-            Log.d(TAG, "downloadAndInsertPins: squareHashMapSize: " + squareHashMap.size());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-//            new Timer().schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    waitingDelay = false;
-//                }
-//            }, 2000);
     }
 
     private void handlePermissions() {
@@ -604,6 +541,50 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             Log.d(TAG, "Downloading From: " + cameraPosition.target.toString());
         }
     }
+
+    private void downloadAndInsertPins(double distance, LatLng position)
+    {
+        String d = distance + "km";
+
+        DownloadClosestSquares dcs;
+
+        //TODO check sul centro del mondo
+        if(position != null)
+        {
+            dcs = new DownloadClosestSquares(d,
+                    position.latitude,
+                    position.longitude);
+        }
+        else
+        {
+            dcs = new DownloadClosestSquares(d, 0, 0);
+            Log.d(TAG, "downloadAndInsertPins: downloading at the center of the world..?");
+        }
+
+
+        try {
+            // Update con l'ultima posizione a cui ho effettuato l'aggiornamento
+            mLastUpdateLocation = position;
+
+            HashMap<String, Square> squarePins = dcs.execute().get();
+
+            // Rimuovi le Squares di troppo
+            for (Square closeSquare : squarePins.values()) {
+                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                Marker m = createSquarePin(coords, closeSquare.getName());
+                squareHashMap.put(m, closeSquare);
+                if(squareHashMap.size() > SQUARE_DOWNLOAD_LIMIT) {
+                    Marker key = squareHashMap.entrySet().iterator().next().getKey();
+                    key.remove();
+                    squareHashMap.remove(key);
+                }
+            }
+            Log.d(TAG, "downloadAndInsertPins: squareHashMapSize: " + squareHashMap.size());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // Con due locazioni restituisce il valore in km di distanza
     private float getDistance(LatLng southwest, LatLng frnd_latlong){
