@@ -32,6 +32,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
@@ -164,11 +165,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     @Override
                     public void onResponse(String response) {
                         Log.d("GETRECENTI", response);
-                        Gson gson = new Gson();
+                        //Gson gson = new Gson();
+                        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
                         Message[] messages = gson.fromJson(response, Message[].class);
                         Collections.reverse(Arrays.asList(messages));
                         for (Message m : messages) {
-                            addMessage(m.getText(), m.getName(), m.getFrom());
+                            addMessage(m);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -240,9 +242,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         */
     }
 
-    private void addMessage(String message, String username, String userId)
+    private void addMessage(Message m)
     {
-        messageAdapter.addItem(new Message(Message.TYPE_MESSAGE, message.trim(), username, userId));
+        m.setMessageType(Message.TYPE_MESSAGE);
+        m.setText(m.getText().trim());
+        messageAdapter.addItem(m);
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
@@ -279,7 +283,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chatEditText.setText("");
 
         // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
-        addMessage(message, mUsername, mUserId);
+        addMessage(new Message(Message.TYPE_MESSAGE, message, mUsername, mUserId));
 
         // Il server riceve un oggetto in JSON che deve essere processato
         JSONObject data = new JSONObject();
@@ -313,8 +317,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
-
-    // TODO SOLLEVA ERRORE  java.lang.ClassCastException: java.lang.String cannot be cast to org.json.JSONObject ANCHE SE NESSUNO LO CHIAMA (?)
     private Emitter.Listener onNewMessage = new Emitter.Listener()
     {
 
@@ -338,7 +340,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         e.printStackTrace();
                     }
 
-                    addMessage(message, username, userId);
+                    addMessage(new Message(Message.TYPE_MESSAGE, message, username, userId));
 
                 }
             });
@@ -368,7 +370,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         e.printStackTrace();
                     }
 
-                    addMessage(message, username, userid);
+                    addMessage(new Message(Message.TYPE_MESSAGE, message, username, userid));
                 }
             });
         }

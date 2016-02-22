@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -438,6 +439,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mDialog.setTitle("Crea una Square");
         mDialog.setCancelable(true);
         mDialog.show();
+
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
         TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);

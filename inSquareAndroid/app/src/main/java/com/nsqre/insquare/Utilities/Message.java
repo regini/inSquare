@@ -11,34 +11,25 @@ public class Message {
     public static final int TYPE_LOG = 1;
     public static final int TYPE_ACTION = 2;
 
-    private String msg_id;
+    private String id;
     private String text;
-    private Date createdAt;
     private String from;
+    private String createdAt;
     private String squareId;
+
+    private Date messageTimestamp;
     private String name;
     private int messageType;
 
     public Message () {}
 
 
-    public Message(int t, String m, String s)
-    {
-        this.messageType = t;
-        this.text =m;
-
-        Calendar c = new GregorianCalendar(TimeZone.getDefault());
-        this.createdAt = c.getTime();
-
-        this.name =s;
-    }
-
     public Message(int t, String m, String un, String ui)
     {
         this.messageType = t;
         this.text = m;
         Calendar c = new GregorianCalendar(TimeZone.getDefault());
-        this.createdAt = c.getTime();
+        this.messageTimestamp = c.getTime();
         this.name = un;
         this.from = ui;
     }
@@ -47,7 +38,11 @@ public class Message {
         return text;
     }
 
-    public Date getCreatedAt() {
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getCreatedAt() {
         return createdAt;
     }
 
@@ -57,8 +52,12 @@ public class Message {
 
     public int getMessageType() { return this.messageType; }
 
+    public void setMessageType(int messageType) {
+        this.messageType = messageType;
+    }
+
     public String getId() {
-        return msg_id;
+        return id;
     }
 
     public String getFrom() {
@@ -77,8 +76,12 @@ public class Message {
         this.squareId = squareId;
     }
 
+    public Date getMessageTimestamp() {
+        return messageTimestamp;
+    }
+
     @Override
     public String toString() {
-        return this.name + " " + " said: " + this.text + "\nMessage #(" + this.msg_id + ") created: "+ this.createdAt.toString();
+        return this.name + " " + " said: " + this.text + "\nMessage #(" + this.id + ") created: "+ this.createdAt.toString();
     }
 }

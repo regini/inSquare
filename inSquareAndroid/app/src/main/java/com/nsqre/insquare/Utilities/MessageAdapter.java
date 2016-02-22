@@ -3,6 +3,7 @@ package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,15 @@ import android.widget.TextView;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>
 {
@@ -21,6 +30,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private ArrayList<Message> mDataset;
     private static ChatMessageClickListener myClickListener;
     private InSquareProfile profile;
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
     public MessageAdapter(Context c)
     {
@@ -70,8 +80,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 1:
                 break;
         }
-//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-//        String hourMinutes = "Sent @ " + sdf.format(mDataset.get(position).getCreatedAt());
+        String timetoShow = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Date now = new Date();
+        Date message_time = sdf.parse(m.getCreatedAt(), new ParsePosition(0));
+        if (now.getYear() != message_time.getYear()) {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            timetoShow = sdf.format(message_time);
+        } else if (now.getDay() != message_time.getDay()) {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("MM/dd HH:mm");
+            timetoShow = sdf1.format(message_time);
+        } else {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+            timetoShow = sdf1.format(message_time);
+        }
+        holder.datetime.setText(timetoShow);
     }
 
 
@@ -106,6 +129,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     {
         private TextView content;
         private TextView username;
+        private TextView datetime;
         private RelativeLayout relativeLayout;
 
         //3: si prende questi dati
@@ -114,6 +138,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
+            datetime =  (TextView) itemView.findViewById(R.id.message_timestamp);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
 
             itemView.setOnClickListener(this);
