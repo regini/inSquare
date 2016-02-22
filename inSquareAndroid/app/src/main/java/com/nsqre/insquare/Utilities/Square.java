@@ -8,13 +8,18 @@ public class Square implements Serializable {
     private String name;
     private double lat, lon;
     private String type;
+    private String ownerId;
 
-    public Square(String id, String name, double lat, double lon, String type) {
+
+
+
+    public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
         this.name = name;
         this.lat = lat;
         this.lon = lon;
         this.type = type;
+        this.ownerId = ownerId;
     }
 
     @Override
@@ -66,5 +71,13 @@ public class Square implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

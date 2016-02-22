@@ -1,13 +1,25 @@
 ![](https://github.com/regini/inSquare/blob/gh-pages/INSQUARE%20LOGO.png)
 # inSquare
-Geolocalized interactions for anyone's need and those who want to know more about what’s going on
+Geolocalized interactions for anyone's need and those who want to know more about what’s going on.
 
-Common needs in common places
+Where we go. Who we meet.
+
+[Our app is now available on Google Play.](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
+
+[Get the iOS App] (https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
 
 # Our Adventure
-[Presenting The Idea (Pdf)](http://regini.github.io/inSquare/inSquare%20-%20Presentazione.pdf)
+[Presenting The Idea (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntM1ktMXhTWW5vSFU)
 
-[Milestone 1: Proof of Concept (Pdf)](http://regini.github.io/inSquare/Milestone 1 - Slide.pdf)
+[Milestone 1: Proof of Concept (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOGNwU21hY0NlOUU)
+
+[Milestone 2: Release Candidate (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOWxzMS14alQ3MG8)
+
+# Our Presentation Videos
+
+[#BasketballPlayground](https://drive.google.com/open?id=0ByoM6ITfn2ntNFlGS1VJalNtUHM)
+
+[#MerulanaPub](https://drive.google.com/open?id=0ByoM6ITfn2ntVFU2eGw1bUI2c2c)
 
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   

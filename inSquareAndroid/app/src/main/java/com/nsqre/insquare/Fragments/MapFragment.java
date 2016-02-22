@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
@@ -319,15 +321,16 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
             DownloadClosestSquares dcs;
             //TODO check sul centro del mondo
-            if(mCurrentLocation!=null)
+            if(position!=null)
             {
                     dcs = new DownloadClosestSquares(d,
                     position.latitude,
                     position.longitude);
             }
             else
-                    dcs = new DownloadClosestSquares(d,0,0);
-
+            {
+                dcs = new DownloadClosestSquares(d, 0, 0);
+            }
             try {
                 HashMap<String, Square> squarePins = dcs.execute().get();
 
@@ -437,6 +440,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mDialog.setCancelable(true);
         mDialog.show();
 
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
         final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
         TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
         Button crea = (Button) mDialog.findViewById(R.id.button_crea);
@@ -448,7 +453,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     Marker m = createSquarePin(latLng, squareName);
                     // Richiesta Volley POST per la creazione di piazze
                     // Si occupa anche di creare e aggiungere la nuova Square al HashMap
-                    createSquarePostRequest(squareName, lat, lon, m);
+                    String ownerId = InSquareProfile.getUserId();
+                    createSquarePostRequest(squareName, lat, lon, m, ownerId);
                     mDialog.dismiss();
                 }
             }
@@ -541,7 +547,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private void createSquarePostRequest(final String squareName,
                                          final String latitude,
                                          final String longitude,
-                                         final Marker marker) {
+                                         final Marker marker,
+                                         final String ownerId) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "http://recapp-insquare.rhcloud.com/squares";
@@ -560,9 +567,11 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
                             JSONObject o = new JSONObject(response);
                             String squareId = o.getString("_id");
+                            String name = o.getString("name");
                             double lat = Double.parseDouble(latitude);
                             double lon = Double.parseDouble(longitude);
-                            Square s = new Square(squareId, squareName, lat, lon, "geo_point");
+                            String owner = o.getString("ownerId");
+                            Square s = new Square(squareId, name, lat, lon, "geo_point",owner);
                             squareHashMap.put(marker, s);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -582,6 +591,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 params.put("name", squareName);
                 params.put("lat", latitude);
                 params.put("lon", longitude);
+                params.put("ownerId",ownerId);
                 return params;
             }
         };
@@ -597,6 +607,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
         if (!waitingDelay)
             downloadAndInsertPins(distance,cameraPosition.target);
+        Log.d(TAG,cameraPosition.target.toString());
     }
 
     // Con due locazioni restituisce il valore in km di distanza

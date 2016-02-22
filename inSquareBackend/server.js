@@ -29,7 +29,10 @@ if (process.env.OPENSHIFT_MONGODB_DB_URL) {
                       process.env.OPENSHIFT_APP_NAME;
 }
 
+//Log delle get e delle post ricevute
 app.use(morgan('dev'));
+
+//Gestisce sessione su browser web
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -41,6 +44,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.set('json spaces', 4);
 
 require('./config/passport')(passport);
 
@@ -61,80 +65,11 @@ http.listen(server_port, server_ip_address, function () {
     console.log("Example app listening at http://%s:%s", server_ip_address, server_port);
 });
 
-var client = new elasticsearch.Client({
-  host: 'http://elastic-insquare.rhcloud.com',
-  log: 'trace'
-});
+
 
 var Message = require('./app/models/message')
 var numUsers = 0;
 
-io.on('connection', function (socket) {
-  var addedUser = false;
-
-  // when the client emits 'new message', this listens and executes
-  socket.on('new message', function (msg) {
-    // we tell the client to execute 'new message'
-    //io.emit('chat message', msg) ??;
-    socket.broadcast.emit('new message', {
-      username: socket.username,
-      message: msg
-    });
-    var mess = new Message();
-    mess.text = msg;
-    mess.createdAt = new Date();
-    mess.senderId = socket.id;
-    mess.save(function(err) {
-      if(err) throw err;
-      return mess;
-    });
-  });
-
-  // when the client emits 'add user', this listens and executes
-  socket.on('add user', function (username) {
-    if (addedUser) return;
-
-    // we store the username in the socket session for this client
-    socket.username = username;
-    ++numUsers;
-    addedUser = true;
-    socket.emit('login', {
-      numUsers: numUsers
-    });
-    // echo globally (all clients) that a person has connected
-    socket.broadcast.emit('user joined', {
-      username: socket.username,
-      numUsers: numUsers
-    });
-  });
-
-  // when the client emits 'typing', we broadcast it to others
-  socket.on('typing', function () {
-    socket.broadcast.emit('typing', {
-      username: socket.username
-    });
-  });
-
-  // when the client emits 'stop typing', we broadcast it to others
-  socket.on('stop typing', function () {
-    socket.broadcast.emit('stop typing', {
-      username: socket.username
-    });
-  });
-
-  // when the user disconnects.. perform this
-  socket.on('disconnect', function () {
-    if (addedUser) {
-      --numUsers;
-
-      // echo globally that this client has left
-      socket.broadcast.emit('user left', {
-        username: socket.username,
-        numUsers: numUsers
-      });
-    }
-  });
-});
 
 // ROUTES FOR THE CHATS
 require('./app/chat_routes.js')(router, passport, squares);

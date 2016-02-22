@@ -13,46 +13,78 @@ module.exports = function(router, passport, squares)
 
 			if(room != "" || room != null || room != undefined)
 			{
-				socket.username = data.user;
-				socket.room = data.room;
-				socket.join(data.room);
-			}
+				console.log("%j", data);
+				socket.username = data.username;
+				socket.userid = data.userid;
+				socket.room = room;
+				socket.username = data.username;
 
+				// newMessage event must emit an object that contains
+				// 1 - room
+				// 2 - userid
+				// 3 - username
+				// 4 - message
+				var serverMessage = {};
+				serverMessage.room = room;
+				serverMessage.userid = "0";
+				serverMessage.username = "Server";
+				serverMessage.contents = data.username + " is now connected";
+
+				socket.join(data.room);
+
+				//socket.to(data.room).broadcast.emit('newMessage', serverMessage);
+			}
+		});
+
+		socket.on('pong', function(data){
+			console.log("Pong received from client");
 		});
 
 		socket.on('tellRoom', function( msg, roomName ) {
 			socket.to( roomName ).emit('heyThere', msg, socket.id );
 		});
 
-		socket.on('sendMessage', function(data)
+		socket.on('sendMessage', function(msg)
 		{
 			var message = {};
-			var room = data.room;
+			var room = msg.room;
+
 			if(room != "" || room != null || room != undefined)
 			{
 				console.log("Room: " + room);
+				console.log("UserId: " + msg.userid);
+				console.log(msg.username + " said: " + msg.message);
 
-				console.log(data.user + " said: " + data.message);
-
-				message.room = data.room;
-				message.user = data.user;
-				message.contents = data.message;
+				message.room = msg.room;
+				message.userid = msg.userid;
+				message.username = msg.username;
+				message.contents = msg.message;
 
 				// socket.emit('newMessage', data.user, data.message);
-				socket.broadcast.emit('newMessage', message);
+				socket.to(room).broadcast.emit('newMessage', message);
 
-				sendMessage(data.message, data.user, data.email, room);
-			}
+				sendMessage(msg.message, msg.userid, room);
+			};
 		});
 
 		socket.on('disconnect', function()
 		{
 			console.log(socket.username + " disconnected");
+
 			var data = {};
-			data.user = socket.username;
-			// socket.broadcast.emit('newMessage', 'Server', socket.username + " is now disconnected");
-			socket.broadcast.emit('userLeft', data);
+			data.user = socket.user;
+
+			var serverMessage = {};
+			serverMessage.room = socket.room;
+			serverMessage.userid = "0";
+			serverMessage.username = "Server";
+			serverMessage.contents = socket.username + " is now disconnected";
+			console.log("Message %j", serverMessage);
+			//socket.broadcast.to(socket.room).emit('newMessage', serverMessage);
+			socket.leave(socket.room);
 		});
+
+		setTimeout(sendHeartbeat, 8000);
 	});
 
 	// Send messages
@@ -72,7 +104,7 @@ module.exports = function(router, passport, squares)
 					return req.user.google.email;
 			}) ();*/
 
-			sendMessage(text, user, email, square);
+			sendMessage(text, user, square);
 
 			res.send(req.user + " created a new message!");
     });
@@ -143,17 +175,50 @@ module.exports = function(router, passport, squares)
     });
 
 
+    // Get Messaggi Recenti con parametri:
+    // - size = quantita'
+    // - squareId = da quale Square
 	router.get('/messages?', function(req, res)
     {
     	if((req.query.size!="" || req.query.size!=null || req.query.size!=undefined)
-    		&& req.query.recentMessages==true && 
-    		(req.query.square!="" || req.query.square!=null || req.query.square!=undefined) ){
+    		&& req.query.recent &&
+    		(req.query.square!="" || req.query.square!=null || req.query.square!=undefined)){
 
-    	var messages = getRecentMessages(req.body.square,req.body.size);
-	    	
-	    res.json(messages);
-	  }
-	});
+				Message.find({'squareId' : req.query.square})
+				.limit(req.query.size)
+				.sort('-createdAt')
+				.populate('senderId')
+				.select('senderId text createdAt')
+				.exec(function(err,messages) {
+					if(err) throw err;
+					var result = [];
+					if(messages.length != 0) {
+						console.log(messages);
+						for(var i = 0; i<messages.length; i++) {
+							var msg = {}
+							if(messages[i].senderId.google.name)
+								msg.name = messages[i].senderId.google.name;
+							else if(messages[i].senderId.facebook.name)
+								msg.name = messages[i].senderId.facebook.name;
+							msg.text = messages[i].text;
+							msg.createdAt = messages[i].createdAt;
+							msg.msg_id = messages[i].id;
+							msg.from = messages[i].senderId.id;
+							console.log("%j", msg);
+							result.push(msg);
+						}
+					}
+					res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+					res.header("Pragma", "no-cache");
+					res.removeHeader('ETag');
+					res.header("expires", 0);
+
+					res.json(result);
+				})
+	  	} else {
+				res.send("Malformed query");
+			}
+		});
 
 	// CHATS
 	// =====
@@ -167,23 +232,29 @@ module.exports = function(router, passport, squares)
 		// If url is http://<...>/chat?squareId=Sapienza
 		// it'll get the value in the parameter (->Sapienza)
 		var squareId = req.query.squareId;
-		var username = req.query.user;
+		var userid = req.query.userId;
+		var username = req.query.username;
 
 		if(squareId == undefined)
 		{
 			console.log("No Id specified");
-			squareId = "Home";
 		}
 
 		console.log("Currently in " + squareId);
 
-		res.render('chat.ejs',
-		//Passing JS objects to the ejs template
-		{
-			user: username,
-			squareId: squareId
+		res.render('chat2ejs', {
+			data: {
+				user: userid,
+				username: username,
+				room: squareId
+			}
 		});
 	});
+	
+	function sendHeartbeat(){
+	    setTimeout(sendHeartbeat, 8000);
+	    squares.emit('ping', { beat : 1 });
+	}
 };
 
 function isLoggedIn(req, res, next)
@@ -209,13 +280,13 @@ function sendMessage(text, user, square)
 		if(err) throw err;
 		usr.messages.push(mes);
 		usr.save();
-	})
+	});
 
 	Square.findOne({'_id' : square}, function(err, sqr) {
 		if(err) throw err;
 		sqr.messages.push(mes);
 		sqr.save();
-	})
+	});
 
 	mes.save(function(err)
 	{
@@ -229,10 +300,22 @@ function getRecentMessages(square,size) {
 	Message.find({'squareId' : square})
 	.limit(size)
 	.sort('-createdAt')
+	//.populate('senderId')
 	.exec(function(err,messages) {
 		if(err) throw err;
 		return messages;
 	})
+};
+
+function deleteMessage(messageId) {
+	Message.findById(messageId, function(err, message) {
+		message.remove(function(err, message) {
+	  	if (err) {
+	    	console.log(err);
+	      return;
+	    }
+	  });
+	});
 };
 
 function findMessages(params)
