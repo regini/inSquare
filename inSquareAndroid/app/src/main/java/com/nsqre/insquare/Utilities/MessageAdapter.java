@@ -81,14 +81,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 break;
         }
         String timetoShow = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         Date now = new Date();
         Date message_time = sdf.parse(m.getCreatedAt(), new ParsePosition(0));
         if (now.getYear() != message_time.getYear()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
             timetoShow = sdf.format(message_time);
         } else if (now.getDay() != message_time.getDay()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("MM/dd HH:mm");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MMM HH:mm");
             timetoShow = sdf1.format(message_time);
         } else {
             SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
