@@ -32,9 +32,12 @@ module.exports = function(router, passport, squares)
 
 				socket.join(data.room);
 
-				socket.to(data.room).broadcast.emit('newMessage', serverMessage);
+				//socket.to(data.room).broadcast.emit('newMessage', serverMessage);
 			}
+		});
 
+		socket.on('pong', function(data){
+			console.log("Pong received from client");
 		});
 
 		socket.on('tellRoom', function( msg, roomName ) {
@@ -58,7 +61,7 @@ module.exports = function(router, passport, squares)
 				message.contents = msg.message;
 
 				// socket.emit('newMessage', data.user, data.message);
-				socket.to(room).emit('newMessage', message);
+				socket.to(room).broadcast.emit('newMessage', message);
 
 				sendMessage(msg.message, msg.userid, room);
 			};
@@ -77,9 +80,11 @@ module.exports = function(router, passport, squares)
 			serverMessage.username = "Server";
 			serverMessage.contents = socket.username + " is now disconnected";
 			console.log("Message %j", serverMessage);
-			socket.broadcast.to(socket.room).emit('newMessage', serverMessage);
+			//socket.broadcast.to(socket.room).emit('newMessage', serverMessage);
 			socket.leave(socket.room);
 		});
+
+		setTimeout(sendHeartbeat, 8000);
 	});
 
 	// Send messages
@@ -245,6 +250,11 @@ module.exports = function(router, passport, squares)
 			}
 		});
 	});
+	
+	function sendHeartbeat(){
+	    setTimeout(sendHeartbeat, 8000);
+	    squares.emit('ping', { beat : 1 });
+	}
 };
 
 function isLoggedIn(req, res, next)
