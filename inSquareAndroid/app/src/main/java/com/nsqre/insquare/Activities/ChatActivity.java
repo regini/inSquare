@@ -164,7 +164,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("GETRECENTI", response);
+//                        Log.d(TAG + "GETRECENTI", response);
                         //Gson gson = new Gson();
                         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
                         Message[] messages = gson.fromJson(response, Message[].class);
@@ -269,8 +269,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "attemptSend: Socket is not connected");
             return;
         }
-
-//        mTyping = false;
 
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {

@@ -3,6 +3,7 @@ package com.nsqre.insquare.Utilities.REST;/* Created by umbertosonnino on 20/1/1
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Utilities.Square;
 
 import org.json.JSONArray;
@@ -19,7 +20,6 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
 
     private static final String TAG = "DownloadClosestSquares";
     private static final String BASE_URL = "http://recapp-insquare.rhcloud.com/squares?";
-    private static final int SQUARE_LIMIT = 15;
     private String FINAL_URL;
 
 //    private ArrayList<Square> squareList;
@@ -85,7 +85,7 @@ public class DownloadClosestSquares extends AsyncTask<String, Void, HashMap<Stri
             JSONArray closeSquares = new JSONArray(sb.toString());
             int i;
             for(i = 0; i < closeSquares.length(); i++) {
-                if(squareMap.size()>SQUARE_LIMIT) break;
+                if(squareMap.size() > MapFragment.SQUARE_DOWNLOAD_LIMIT) break;
                 JSONObject cs = closeSquares.getJSONObject(i);
 
                 String cs_index = cs.getString(TAG_INDEX);

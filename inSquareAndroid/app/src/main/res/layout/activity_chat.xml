@@ -40,7 +40,6 @@
             android:scrollbars="vertical"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="-8dp" />
-        <requestFocus/>
 
     </LinearLayout>
 

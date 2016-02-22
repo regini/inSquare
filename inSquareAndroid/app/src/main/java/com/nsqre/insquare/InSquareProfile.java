@@ -164,7 +164,6 @@ public class InSquareProfile {
     {
         if(userId != null)
         {
-            Log.d(TAG, "getUserId: user id!");
             return userId;
         }else if(googleId != null)
         {

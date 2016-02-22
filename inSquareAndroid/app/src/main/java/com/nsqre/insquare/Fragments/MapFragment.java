@@ -49,7 +49,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.Fragments.Helpers.MapWrapperLayout;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
@@ -64,8 +63,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -83,24 +80,18 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraChangeListener,
-        OnMapReadyCallback {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final int SQUARE_LIMIT = 30;
+        OnMapReadyCallback
+{
+
+    public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
     public static final int MAX_SQUARENAME_LENGTH = 40;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
-    private MapWrapperLayout mTouchView;
-    private View mOriginalContentView;
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
     public Location mCurrentLocation;
+    private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
+    private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
@@ -140,10 +131,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance(String param1, String param2) {
         MapFragment fragment = new MapFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -156,11 +144,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mTracker = application.getDefaultTracker();
 
         waitingDelay = false;
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mLastUpdateLocation = new LatLng(0,0);
 
         squareHashMap = new LinkedHashMap<>();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -255,24 +239,24 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                     Location location = locationManager.getLastKnownLocation(GPS);
                     if(location != null)
                     {
-                        Log.d("GPS - " + TAG, "I've been able to get a location! Lat: "
+                        Log.d(TAG + " - GPS", "I've been able to get a location! Lat: "
                                 + location.getLatitude()
                                 + "; Long: "
                                 + location.getLongitude() + ";");
                         mCurrentLocation = location;
                     }
-                }else if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+                }else if(locationManager.isProviderEnabled(NETWORK))
                 {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    locationManager.requestLocationUpdates(NETWORK,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListener);
                     if(locationManager != null)
                     {
-                        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        Location location = locationManager.getLastKnownLocation(NETWORK);
                         if(location != null)
                         {
-                            Log.d("NETWORK - " + TAG, "I've been able to get a location! Lat: "
+                            Log.d(TAG + "NETWORK - ", "I've been able to get a location! Lat: "
                                     + location.getLatitude()
                                     + "; Long: "
                                     + location.getLongitude() + ";");
@@ -314,46 +298,55 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private void downloadAndInsertPins(double distance, LatLng position)
     {
-            waitingDelay = true;
+//      waitingDelay = true;
 
-            String d = distance + "km";
-            Log.d(TAG, "downloadAndInsertPins: " + d);
+        String d = distance + "km";
+        Log.d(TAG, "downloadAndInsertPins: " + d);
 
-            DownloadClosestSquares dcs;
-            //TODO check sul centro del mondo
-            if(position!=null)
-            {
-                    dcs = new DownloadClosestSquares(d,
-                    position.latitude,
-                    position.longitude);
-            }
-            else
-            {
-                dcs = new DownloadClosestSquares(d, 0, 0);
-            }
-            try {
-                HashMap<String, Square> squarePins = dcs.execute().get();
+        DownloadClosestSquares dcs;
 
-                for (Square closeSquare : squarePins.values()) {
-                    LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                    Marker m = createSquarePin(coords, closeSquare.getName());
-                    squareHashMap.put(m, closeSquare);
-                    if(squareHashMap.size()>SQUARE_LIMIT) {
-                        Marker key = squareHashMap.entrySet().iterator().next().getKey();
-                        key.remove();
-                        squareHashMap.remove(key);
-                    }
+        //TODO check sul centro del mondo
+        if(position != null)
+        {
+                dcs = new DownloadClosestSquares(d,
+                position.latitude,
+                position.longitude);
+        }
+        else
+        {
+            dcs = new DownloadClosestSquares(d, 0, 0);
+            Log.d(TAG, "downloadAndInsertPins: downloading at the center of the world..?");
+        }
+
+
+        try {
+            // Update con l'ultima posizione a cui ho effettuato l'aggiornamento
+            mLastUpdateLocation = position;
+
+            HashMap<String, Square> squarePins = dcs.execute().get();
+
+            // Rimuovi le Squares di troppo
+            for (Square closeSquare : squarePins.values()) {
+                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                Marker m = createSquarePin(coords, closeSquare.getName());
+                squareHashMap.put(m, closeSquare);
+                if(squareHashMap.size() > SQUARE_DOWNLOAD_LIMIT) {
+                    Marker key = squareHashMap.entrySet().iterator().next().getKey();
+                    key.remove();
+                    squareHashMap.remove(key);
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
             }
+            Log.d(TAG, "downloadAndInsertPins: squareHashMapSize: " + squareHashMap.size());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    waitingDelay = false;
-                }
-            }, 2000);
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    waitingDelay = false;
+//                }
+//            }, 2000);
     }
 
     private void handlePermissions() {
@@ -399,12 +392,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 .tilt(0.0f)
                 .build();
 
-//        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), null);
         mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-        mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
-        mGoogleMap.setTrafficEnabled(false);
-        mGoogleMap.setMyLocationEnabled(true);
 //        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
@@ -423,7 +411,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin_centered));
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
         Marker marker = mGoogleMap.addMarker(options);
 
         return marker;
@@ -540,6 +528,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mGoogleMap = googleMap;
+        mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
+        mGoogleMap.setTrafficEnabled(false);
+        mGoogleMap.setMyLocationEnabled(true);
 
         initListeners();
     }
@@ -601,13 +592,17 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-        
-        Log.d(TAG, "onCameraChange distance is:" + getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast));
 
-        double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
-        if (!waitingDelay)
-            downloadAndInsertPins(distance,cameraPosition.target);
-        Log.d(TAG,cameraPosition.target.toString());
+        double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
+
+//        double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
+//        if (!waitingDelay)
+//            downloadAndInsertPins(30.0f,cameraPosition.target);
+        if( distance > PIN_DOWNLOAD_RADIUS*0.9f)
+        {
+            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
+            Log.d(TAG, "Downloading From: " + cameraPosition.target.toString());
+        }
     }
 
     // Con due locazioni restituisce il valore in km di distanza

@@ -50,6 +50,7 @@
         <activity
             android:name=".Activities.ChatActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/title_activity_fab"
             android:theme="@style/AppTheme"></activity>
         <activity
