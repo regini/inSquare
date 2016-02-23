@@ -5,7 +5,16 @@ var User = require('./user');
 var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
 
 var squareSchema = mongoose.Schema({
-  name: String,
+  name: {
+    type : String
+  },
+  searchName: {
+    type: String,
+    es_type: 'completion',
+    es_index_analyzer: 'simple',
+    es_search_analyzer: 'simple',
+    es_payloads: true
+  },
   geo_loc: {
     type: String,
     es_type: 'geo_point'
