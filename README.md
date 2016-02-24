@@ -21,6 +21,10 @@ Where we go. Who we meet.
 
 [#MerulanaPub](https://drive.google.com/open?id=0ByoM6ITfn2ntVFU2eGw1bUI2c2c)
 
+[Milestone II - Release Candidate Presentation](https://youtu.be/BWIQcIFk5Yw)
+
+[Milestone II - Release Candidate Questions](https://youtu.be/yWCflRAcMyM)
+
 # Help us to better define our idea
 [Survey](https://goo.gl/07GxSS)   
 
