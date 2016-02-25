@@ -1,94 +1,84 @@
 package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
-import android.util.Log;
-
-import java.text.ParsePosition;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.util.Locale;
 
 public class Message {
 
-    public static final int TYPE_MESSAGE = 0;
-    public static final int TYPE_LOG = 1;
-    public static final int TYPE_ACTION = 2;
-
-    private String id;
+    private static final String TAG = "Message";
+    private String msg_id;
     private String text;
+    private String name;
     private String from;
     private String createdAt;
-    private String squareId;
+    private Calendar calendar;
 
-    private Date messageTimestamp;
-    private String name;
-    private int messageType;
-
-    public Message () {}
-
-
-    public Message(int t, String m, String un, String ui)
+    public Message(String m, String username, String userId, Locale l)
     {
-        this.messageType = t;
-        this.text = m;
-        Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        this.createdAt = sdf.format(now);
-        //Log.d("MESSAGE", this.createdAt);  //2016-02-22T11:36:59.687Z
-        this.messageTimestamp = sdf.parse(this.createdAt, new ParsePosition(0));
-        this.name = un;
-        this.from = ui;
+        this.text = m.trim();
+
+        // La data viene formattata con la forma locale
+        Calendar c = Calendar.getInstance();
+        this.createdAt = getFormatter(l).format(c.getTime());
+
+        this.name = username;
+        this.from = userId;
+    }
+
+    public Message(String mes_id, String contents, String username, String userId, String date, Locale l)
+    {
+        this.msg_id = mes_id;
+        this.text = contents;
+        this.name = username;
+        this.from = userId;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
+        try {
+            Date d = df.parse(date);
+            this.calendar = Calendar.getInstance();
+            this.calendar.setTime(d);
+
+            this.createdAt = df.format(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getText() {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
     public String getCreatedAt() {
-        return createdAt;
+        return this.createdAt;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getMessageType() { return this.messageType; }
-
-    public void setMessageType(int messageType) {
-        this.messageType = messageType;
-    }
-
     public String getId() {
-        return id;
+        return msg_id;
     }
 
     public String getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public SimpleDateFormat getFormatter(Locale loc)
+    {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", loc);
     }
 
-    public String getSquareId() {
-        return squareId;
-    }
-
-    public void setSquareId(String squareId) {
-        this.squareId = squareId;
-    }
-
-    public Date getMessageTimestamp() {
-        return messageTimestamp;
+    public Calendar getCalendar() {
+        return calendar;
     }
 
     @Override
     public String toString() {
-        return this.name + " " + " said: " + this.text + "\nMessage #(" + this.id + ") created: "+ this.createdAt.toString();
+        return this.name + " " + " said: " + this.text + "\nMessage #(" + this.msg_id + ") created: "+ this.createdAt;
     }
 }

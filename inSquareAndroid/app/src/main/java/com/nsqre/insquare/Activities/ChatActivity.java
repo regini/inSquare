@@ -38,6 +38,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
+import com.nsqre.insquare.Utilities.MessageDeserializer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
@@ -77,7 +79,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private String mUserId;
 
     private Tracker mTracker;
-
+    private Locale format;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
+        format = getResources().getConfiguration().locale;
 
         try {
 
@@ -165,8 +168,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     @Override
                     public void onResponse(String response) {
 //                        Log.d(TAG + "GETRECENTI", response);
-                        //Gson gson = new Gson();
-                        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+                        GsonBuilder b = new GsonBuilder();
+                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
+                        b.registerTypeAdapter(Message.class, new MessageDeserializer(format));
+                        Gson gson = b.create();
                         Message[] messages = gson.fromJson(response, Message[].class);
                         Collections.reverse(Arrays.asList(messages));
                         for (Message m : messages) {
@@ -244,8 +249,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private void addMessage(Message m)
     {
-        m.setMessageType(Message.TYPE_MESSAGE);
-        m.setText(m.getText().trim());
         messageAdapter.addItem(m);
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
@@ -281,7 +284,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chatEditText.setText("");
 
         // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
-        addMessage(new Message(Message.TYPE_MESSAGE, message, mUsername, mUserId));
+        addMessage(new Message(message, mUsername, mUserId, format));
 
         // Il server riceve un oggetto in JSON che deve essere processato
         JSONObject data = new JSONObject();
@@ -338,7 +341,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(Message.TYPE_MESSAGE, message, username, userId));
+                    addMessage(new Message(message, username, userId, format));
 
                 }
             });
@@ -368,7 +371,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(Message.TYPE_MESSAGE, message, username, userid));
+                    addMessage(new Message(message, username, userid, format));
                 }
             });
         }

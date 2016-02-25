@@ -2,6 +2,7 @@ package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,24 +12,22 @@ import android.widget.TextView;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
-import java.text.ParsePosition;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>
 {
-
     private static final String TAG = "MessageAdapter";
     private ArrayList<Message> mDataset;
     private static ChatMessageClickListener myClickListener;
-    private InSquareProfile profile;
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private Context context;
 
     public MessageAdapter(Context c)
     {
-        profile = InSquareProfile.getInstance(c);
+        this.context = c;
         this.mDataset = new ArrayList<Message>();
     }
 
@@ -36,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public int getItemViewType(int position) {
         Message m = mDataset.get(position);
-        if(m.getFrom().equals(profile.getUserId()))
+        if(m.getFrom().equals(InSquareProfile.getInstance(this.context).getUserId()))
         {
             return 1;
         }
@@ -74,20 +73,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 1:
                 break;
         }
+
         String timetoShow = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        Date now = new Date();
-        Date message_time = sdf.parse(m.getCreatedAt(), new ParsePosition(0));
-        if (now.getYear() != message_time.getYear()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
-            timetoShow = sdf.format(message_time);
-        } else if (now.getDay() != message_time.getDay()) {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd MMM HH:mm");
-            timetoShow = sdf1.format(message_time);
-        } else {
-            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
-            timetoShow = sdf1.format(message_time);
+        Calendar c = Calendar.getInstance();
+        int tYear = c.get(Calendar.YEAR);
+        int tDay = c.get(Calendar.DAY_OF_MONTH);
+
+        Calendar msgCal = m.getCalendar();
+        int mYear = msgCal.get(Calendar.YEAR);
+        int mDay = msgCal.get(Calendar.DAY_OF_MONTH);
+
+        Locale l = this.context.getResources().getConfiguration().locale;
+        DateFormat df;
+        if(mYear != tYear)
+        {
+            df = new SimpleDateFormat("MMM d, ''yy", l);
+        }else if(mDay != tDay)
+        {
+            df = new SimpleDateFormat("MMM d", l);
+        }else
+        {
+            df = new SimpleDateFormat("HH:mm", l);
         }
+
+        timetoShow = df.format(msgCal.getTime());
+
+        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
+
         holder.datetime.setText(timetoShow);
     }
 

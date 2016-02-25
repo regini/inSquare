@@ -27,6 +27,7 @@
             android:text="Small Text"
             android:textSize="18sp"
             android:fontFamily="sans-serif-condensed-light"
+            android:autoLink="web"
             />
         <TextView
             android:id="@+id/message_timestamp"
