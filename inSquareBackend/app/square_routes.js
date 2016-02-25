@@ -1,5 +1,6 @@
 var Square = require('./models/square');
 var Message = require('./models/message');
+var User = require('./models/user');
 var fs = require('fs');
 
 module.exports = function(router, passport)
@@ -55,6 +56,67 @@ module.exports = function(router, passport)
 
     });
 
+    //solo per aggiornamento dei modelli
+    router.patch('/squares?', function(req,res) {
+      if(req.query.update) {
+        Square.find({}, function(err,squares) {
+          if(err) throw err;
+          for(var i = 0; i<squares.length; i++) {
+            if(squares[i].name != undefined) {
+              squares[i].searchName = squares[i].name;
+              console.log(squares[i]);
+              squares[i].save(function(err) {
+                if(err) throw err;
+              });
+            }
+          }
+        })
+      }
+      res.send('done');
+    })
+
+    router.post('/favouritesquares', function(req, res) {
+        var squareId = req.body.squareId;
+        if(squareId != null && squareId != undefined && squareId != ""){
+          var userId = req.body.userId;
+          if(userId != null && userId != undefined && userId != ""){
+            Square.findById(squareId, function (err, sqr) {
+                if (err) throw err;
+                User.findById(userId, function(err, usr) {
+                  usr.favourites.push(sqr);
+                  usr.save(function(err){
+                    if(err) throw err;
+                    console.log(usr);
+                  })
+                });
+              });
+        }
+      }
+        res.send("La square è stata aggiunta come preferita");
+    });
+
+
+    router.delete('/favouritesquares', function(req, res) {
+        console.log(req.body.squareId + "  " + req.body.userId);
+        var squareId = req.body.squareId;
+        if(squareId != null && squareId != undefined && squareId != ""){
+          var userId = req.body.userId;
+          if(userId != null && userId != undefined && userId != ""){
+                User.findById(userId, function(err, usr){
+                  if(err) throw err;
+                  var index = (usr.favourites).indexOf(squareId);
+                  (usr.favourites).splice(index,1);
+                  usr.save(function(err){
+                    if(err) throw err;
+                    console.log(usr);
+                  });
+                });
+            }
+          }
+        res.send("La square è stata eliminata dai preferiti");
+    });
+
+
     router.get('/squares/:id', function(req,res) {
       Square.findOne({'_id' : req.params.id}, function(err,square) {
         if(err) throw err;
@@ -69,14 +131,28 @@ module.exports = function(router, passport)
     });
 
     router.get('/squares?', function(req,res) {
-      if(req.query.fulltext && req.query.name != undefined) {
-        Square.search ({
-          match : {
-            name : req.query.name
+      if(req.query.autocomplete && req.query.name != undefined) {
+        var splitted = req.query.name.split(" ");
+        Square.search({
+          bool : {
+            should : [
+              {
+                match : {
+                  name : {
+                    query : req.query.name,
+                    fuzziness : 'AUTO'
+                  }
+                }
+              },
+              {
+                prefix : {
+                  name : splitted[splitted.length-1]
+                }
+              }
+            ]
           }
-        }, function(err,squares) {
+        }, {size : 5}, function(err,squares) {
           if(err) throw err;
-          console.log("SQUARES:\n" + squares);
           res.json(squares.hits.hits);
         })
       }
@@ -136,11 +212,12 @@ function isLoggedIn(req, res, next)
 }
 
 //Aggiunto ownerID
-function createSquare(squareName, latitude, longitude,ownerId) {
+function createSquare(squareName, latitude, longitude, ownerId) {
 	var square = new Square();
 
     // TODO aggiungere la ricerca di una piazza gia' esistente (o farlo tramite validation)
 	square.name = squareName;
+  square.searchName = squareName;
 	square.geo_loc = latitude + ',' + longitude;
   square.ownerId = ownerId;
 	square.save(function(err) {

@@ -14,4 +14,9 @@
     <dimen name="margin_button_height">30dp</dimen>
 
     <dimen name="message_margin_right">72dp</dimen>
+
+    <dimen name="bubble_vertical_margin">5dp</dimen>
+    <dimen name="bubble_horizontal_margin">8dp</dimen>
+    <dimen name="bubble_big_margin">16dp</dimen>
+    <dimen name="bubble_min_width">100dp</dimen>
 </resources>

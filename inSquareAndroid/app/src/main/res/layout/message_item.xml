@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="start"
-    android:layout_margin="5dp"
+    android:layout_margin="@dimen/bubble_vertical_margin"
     >
 
     <RelativeLayout
@@ -13,14 +13,16 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bubble_a"
         android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/bubble_vertical_margin"
+        android:paddingBottom="@dimen/bubble_vertical_margin"
+        android:paddingRight="@dimen/bubble_horizontal_margin"
+        android:paddingLeft="@dimen/bubble_big_margin"
         >
         <TextView
             android:id="@+id/message_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
             android:text="Large Text"
             android:textStyle="bold"
             android:fontFamily="sans-serif-condensed"
@@ -29,12 +31,9 @@
             />
         <TextView
             android:id="@+id/message_content"
-            android:minWidth="100dp"
+            android:minWidth="@dimen/bubble_min_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="5dp"
             android:text="Small Text"
             android:layout_below="@id/message_sender"
             android:fontFamily="sans-serif-condensed-light"
@@ -48,10 +47,9 @@
             android:text="Time Text"
             android:textSize="12sp"
             android:fontFamily="sans-serif-condensed-light"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp"
             android:layout_below="@+id/message_content"
             android:layout_alignRight="@+id/message_content"
-            android:layout_alignEnd="@+id/message_content" />
+            android:layout_alignEnd="@+id/message_content"
+            />
         </RelativeLayout>
 </RelativeLayout>

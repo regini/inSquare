@@ -29,7 +29,9 @@ var userSchema = mongoose.Schema({
 		name: String
 	},
 	messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message',
-   es_schema: Message}]
+  	es_schema: Message}],
+	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Square',
+		es_schema: Square}]
 });
 
 // methods
@@ -47,7 +49,7 @@ userSchema.methods.validPassword = function(password)
 
 userSchema.plugin(mongoosastic, {
 	hosts: [db],
-  populate: [{path: 'messages'}]
+  populate: [{path: 'messages'},{path: 'squares'}]
 });
 
 // create model and expose for our app to see

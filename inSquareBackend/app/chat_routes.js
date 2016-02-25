@@ -2,6 +2,7 @@ var Message = require('./models/message');
 var Square = require('./models/square');
 var User = require('./models/user');
 var http = require('http');
+var request = require('request');
 
 module.exports = function(router, passport, squares)
 {
@@ -49,8 +50,7 @@ module.exports = function(router, passport, squares)
 			var message = {};
 			var room = msg.room;
 
-			if(room != "" || room != null || room != undefined)
-			{
+			if(room != "" || room != null || room != undefined) {
 				console.log("Room: " + room);
 				console.log("UserId: " + msg.userid);
 				console.log(msg.username + " said: " + msg.message);
@@ -64,6 +64,22 @@ module.exports = function(router, passport, squares)
 				socket.to(room).broadcast.emit('newMessage', message);
 
 				sendMessage(msg.message, msg.userid, room);
+				request({
+					method: 'POST',
+    			uri: 'https://android.googleapis.com/gcm/send',
+    			headers: {
+        		'Content-Type': 'application/json',
+						//Chiave di test
+        		'Authorization':'key=AIzaSyBzr7mpZzDMqdADEZvqK4733UkJewb0O0A'
+    			},
+    			body: JSON.stringify({
+  					"data" : {"message":msg.message},
+						"to":"/topics/global"})
+    			},
+					function (error, response, body) {
+						if(error) console.log(error);
+    			}
+  			)
 			};
 		});
 
@@ -250,7 +266,7 @@ module.exports = function(router, passport, squares)
 			}
 		});
 	});
-	
+
 	function sendHeartbeat(){
 	    setTimeout(sendHeartbeat, 8000);
 	    squares.emit('ping', { beat : 1 });
