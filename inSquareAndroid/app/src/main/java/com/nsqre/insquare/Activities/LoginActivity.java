@@ -249,6 +249,7 @@ public class LoginActivity extends AppCompatActivity
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
+        profile.pictureUrl = user.getPicture();
         profile.save(getApplicationContext());
         launchInSquare();
     }

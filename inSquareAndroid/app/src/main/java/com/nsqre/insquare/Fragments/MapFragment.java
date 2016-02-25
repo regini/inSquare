@@ -330,6 +330,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 .build();
 
         mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+        mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
+        mGoogleMap.setTrafficEnabled(false);
+        mGoogleMap.setMyLocationEnabled(true);
 //        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
@@ -465,9 +468,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mGoogleMap = googleMap;
-        mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
-        mGoogleMap.setTrafficEnabled(false);
-        mGoogleMap.setMyLocationEnabled(true);
 
         initListeners();
     }
