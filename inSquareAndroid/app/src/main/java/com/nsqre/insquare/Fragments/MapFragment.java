@@ -18,8 +18,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -114,6 +118,15 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private Tracker mTracker;
 
+    private LinearLayout linearLayout;
+    private FloatingActionButton mapFab;
+    private Animation animationUp, animationDown;
+    // Variabili per l'inizializzazione della Chat
+    public static final String SQUARE_ID_TAG = "SQUARE_URL";
+    public static final String SQUARE_NAME_TAG = "SQUARE_NAME";
+    private String mSquareId;
+    private String mSquareName;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -156,6 +169,38 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        //onCreateView viene chiamato dopo onAttach e onCreate, subito dopo questa riga il codice torna su onAttach()
+        View v = inflater.inflate(R.layout.fragment_map, container, false);
+
+        mapFab = (FloatingActionButton) v.findViewById(R.id.map_fab);
+        Log.d("Inflater", "mapfab is:" + (mapFab==null));
+        mapFab.setVisibility(View.GONE);
+        mapFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(rootActivity, ChatActivity.class);
+                // [START FloatingButton_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("MapActivity")
+                        .setAction("FloatingButton")
+                        .build());
+                // [END FloatingButton_event]
+                intent.putExtra(SQUARE_ID_TAG, mSquareId);
+                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
+                startActivity(intent);
+            }
+        });
+        linearLayout = (LinearLayout) v.findViewById(R.id.slider_ll);
+        linearLayout.setVisibility(View.GONE);
+        animationUp = AnimationUtils.loadAnimation(getContext(), R.anim.anim_up);
+        animationDown = AnimationUtils.loadAnimation(getContext(), R.anim.anim_down);
+        return v;
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
@@ -163,6 +208,34 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             Log.d(TAG, "Disconnected atm");
         }
         mGoogleApiClient.connect();
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    //Fa crashare se in mapActivity non è implementato OnFragmentInteractionListener, scommenta quel codice e da errore
+    // per correggerlo va messo un altro implements in mapactivity e l'override di un metodo, ma non risolve nulla, e poi
+    // perchè questo fragment vuole che mapactivity lo implementi, ma gli altri due funzionano senza?
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        /*
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+        */
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -436,11 +509,18 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 null); // callback
         Square currentSquare = squareHashMap.get(marker);
 
-        rootActivity.setSquareId(currentSquare.getId());
-        rootActivity.setSquareName(marker.getTitle());
+        setSquareId(currentSquare.getId());
+        setSquareName(marker.getTitle());
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
         return true;
+    }
+
+    public void setSquareName(String squareName) {
+        this.mSquareName = squareName;
+    }
+    public void setSquareId(String mSquareId) {
+        this.mSquareId = mSquareId;
     }
 
     @Override
@@ -459,8 +539,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
-        intent.putExtra(MapActivity.SQUARE_ID_TAG, s.getId());
-        intent.putExtra(MapActivity.SQUARE_NAME_TAG, s.getName());
+        intent.putExtra(SQUARE_ID_TAG, s.getId());
+        intent.putExtra(SQUARE_NAME_TAG, s.getName());
         startActivity(intent);
     }
 

@@ -4,16 +4,21 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,11 +27,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -40,11 +48,16 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.nsqre.insquare.Fragments.MapFragment;
+import com.nsqre.insquare.Fragments.ProfileFragment;
+import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.DrawerListAdapter;
+import com.nsqre.insquare.Utilities.NavItem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -56,14 +69,7 @@ public class MapActivity extends AppCompatActivity
 
     private static final String TAG = "MapActivity";
 
-    private LinearLayout linearLayout;
-    private FloatingActionButton mapFab;
     private float startTouchY;
-    private Animation animationUp, animationDown;
-
-    // Variabili per l'inizializzazione della Chat
-    public static final String SQUARE_ID_TAG = "SQUARE_URL";
-    public static final String SQUARE_NAME_TAG = "SQUARE_NAME";
 
     private String mSquareId;
     private String mSquareName;
@@ -72,6 +78,15 @@ public class MapActivity extends AppCompatActivity
 
     private SearchView searchView;
     private SimpleCursorAdapter mSearchAdapter;
+
+    ListView mDrawerList;
+    RelativeLayout mDrawerPane;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+    ProfileFragment profileFragment;
+    RecentSquaresFragment recentSquaresFragment;
+    MapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,32 +97,49 @@ public class MapActivity extends AppCompatActivity
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
+        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.logo));
+        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.logo));
+        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.logo));
 
-        mapFab = (FloatingActionButton) findViewById(R.id.map_fab);
-        mapFab.setVisibility(View.GONE);
+        // DrawerLayout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-        mapFab.setOnClickListener(new View.OnClickListener() {
+        // Populate the Navigtion Drawer with options
+        mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+        mDrawerList = (ListView) findViewById(R.id.navList);
+        DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+        mDrawerList.setAdapter(adapter);
+
+        // Drawer Item click listeners
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MapActivity.this, ChatActivity.class);
-
-                // [START FloatingButton_event]
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("MapActivity")
-                        .setAction("FloatingButton")
-                        .build());
-                // [END FloatingButton_event]
-
-                intent.putExtra(SQUARE_ID_TAG, mSquareId);
-                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItemFromDrawer(position);
             }
         });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //crea il bottone toggle del drawer menu
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();    //c'è l'override di questo metodo, ma non serve a nulla(teoricamente toglie dall'action bar ciò che non vogliamo far vedere quando l'hamburger è aperto
+            }
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                Log.d(TAG, "onDrawerClosed: " + getTitle());
+                invalidateOptionsMenu();
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        linearLayout = (LinearLayout) findViewById(R.id.slider_ll);
-        linearLayout.setVisibility(View.GONE);
-        animationUp = AnimationUtils.loadAnimation(this, R.anim.anim_up);
-        animationDown = AnimationUtils.loadAnimation(this, R.anim.anim_down);
+
+        mapFragment = new MapFragment();
+        recentSquaresFragment = new RecentSquaresFragment();
+        profileFragment = new ProfileFragment();
+
+        selectItemFromDrawer(2);  //TODO RIMUOVERE O METTERE 0
     }
 
     @Override
@@ -178,6 +210,12 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle
+        // If it returns true, then it has handled
+        // the nav drawer indicator touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {   //permette al toggle di aprire e chiudere il menu hamburger
+            return true;
+        }
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.search_squares_action:
@@ -259,6 +297,8 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        //TODO ORA QUESTI ELEMENTI SONO IN MAP FRAGMENT
+        /*
         if(linearLayout.getVisibility() == View.VISIBLE)
         {
             linearLayout.startAnimation(animationDown);
@@ -267,9 +307,10 @@ public class MapActivity extends AppCompatActivity
             return;
         }else
         {
+        */
             // Termina l'activity quando viene premuto BACK
             this.finishAffinity();
-        }
+        //}
         super.onBackPressed();
     }
 
@@ -338,5 +379,61 @@ public class MapActivity extends AppCompatActivity
         double lon = position.getLongitude() + diff_lon*180/Math.PI;
 
         return new LatLng(lat, lon);
+    }
+
+    /*
+    *  Apre il fragment scelto dal burger menu
+    *
+    * */
+    private void selectItemFromDrawer(int position) {
+        //switch che in base al pulsante scelto esegue
+        switch (position) {
+            case 0:   //caso mappa
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContent, mapFragment, "MAPPA")
+                        .commit();
+//                mapFab.show();
+//                linearLayout.setVisibility(View.VISIBLE);
+                break;
+            case 1:  //caso recenti
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.mainContent, recentSquaresFragment, "RECENTS")
+                        .commit();
+//                mapFab.hide();
+//                linearLayout.setVisibility(View.INVISIBLE);
+                break;
+            case 2:  //caso profilo
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.mainContent, profileFragment, "PROFILE")
+                        .commit();
+//                mapFab.hide();
+//                linearLayout.setVisibility(View.INVISIBLE);
+                break;
+            default:
+                break;
+        }
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mNavItems.get(position).getmTitle());
+        // Close the drawer
+        mDrawerLayout.closeDrawer(mDrawerPane);
+    }
+    @Override
+    // Called when invalidateOptionsMenu() is invoked
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        //menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggle
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 }
