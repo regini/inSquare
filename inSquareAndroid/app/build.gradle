@@ -54,6 +54,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:8.3.0'
     compile 'com.google.android.gms:play-services-appindexing:8.3.0'
     compile 'com.google.android.gms:play-services-auth:8.3.0'
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.google.code.gson:gson:2.5'
