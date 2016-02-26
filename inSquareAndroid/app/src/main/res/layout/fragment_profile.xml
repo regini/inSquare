@@ -1,0 +1,94 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.nsqre.insquare.Fragments.ProfileFragment"
+    android:background="@color/light_grey"
+    android:id="@+id/profile_fragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/profile_fragment_main_content">
+
+
+        <!-- Profile Box -->
+
+        <RelativeLayout
+            android:id="@+id/user_profile"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/material_blue_grey_800"
+            android:padding="8dp" >
+
+            <ImageView
+                android:id="@+id/user_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/white_nsqre_logo"
+                android:layout_marginTop="15dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/user_avatar"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nome Cognome"
+                    android:textColor="#fff"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="4dp"
+                    android:text="Una bellissima persona"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/squares_lists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:layout_below="@+id/user_profile">
+            <TextView
+                android:id="@+id/text_owned_squares"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Squares create"
+                android:textSize="15dp"
+                />
+            <ListView
+                android:id="@+id/squares_owned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_owned_squares"/>
+            <TextView
+                android:id="@+id/text_preferred_squares"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Squares preferite"
+                android:textSize="15dp"
+                android:layout_below="@+id/squares_owned"
+                />
+            <ListView
+                android:id="@+id/squares_preferred"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_preferred_squares"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>
