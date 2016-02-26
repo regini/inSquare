@@ -5,10 +5,9 @@
     <dimen name="big_vertical_margin">48dp</dimen>
     <dimen name="linear_layout_lower_height">60dp</dimen>
 
-    <dimen name="fab_size">56dp</dimen>
-    <dimen name="fab_margin_side">16dp</dimen>
-    <dimen name="fab_margin_bottom">35dp</dimen>
-    <dimen name="fab_margin_bottom_smaller">12dp</dimen>
+    <dimen name="input_bar_height">56dp</dimen>
+    <dimen name="input_margin_side">16dp</dimen>
+    <dimen name="button_size">36dp</dimen>
 
     <dimen name="login_button_height">45dp</dimen>
     <dimen name="margin_button_height">30dp</dimen>

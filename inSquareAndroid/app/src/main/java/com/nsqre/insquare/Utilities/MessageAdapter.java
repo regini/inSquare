@@ -87,10 +87,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         DateFormat df;
         if(mYear != tYear)
         {
-            df = new SimpleDateFormat("MMM d, ''yy", l);
+            df = new SimpleDateFormat("MMM d, ''yy, HH:mm", l);
         }else if(mDay != tDay)
         {
-            df = new SimpleDateFormat("MMM d", l);
+            df = new SimpleDateFormat("MMM d, HH:mm", l);
         }else
         {
             df = new SimpleDateFormat("HH:mm", l);

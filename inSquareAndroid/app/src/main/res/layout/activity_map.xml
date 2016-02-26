@@ -42,10 +42,10 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/map_fab"
-        android:layout_width="@dimen/fab_size"
-        android:layout_height="@dimen/fab_size"
-        android:layout_marginRight="@dimen/fab_margin_side"
-        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_width="@dimen/input_bar_height"
+        android:layout_height="@dimen/input_bar_height"
+        android:layout_marginRight="@dimen/input_margin_side"
+        android:layout_marginBottom="@dimen/button_size"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:src="@drawable/message_processing"
