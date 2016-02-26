@@ -291,7 +291,16 @@ public class MapActivity extends AppCompatActivity
 
         try {
             MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-            Location l = mFrag.mCurrentLocation;
+            Location l;
+            if(mFrag.mCurrentLocation == null)
+            {
+                l = new Location("");
+                l.setLatitude(0.0d);
+                l.setLongitude(0.0d);
+            }
+            else
+                l = mFrag.mCurrentLocation;
+
             LatLng northeast = calculateOffset(l, 8000);
             LatLng southwest = calculateOffset(l, -8000);
 

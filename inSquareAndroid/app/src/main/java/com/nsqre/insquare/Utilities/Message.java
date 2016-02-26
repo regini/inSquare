@@ -19,14 +19,14 @@ public class Message {
 
     public Message(String m, String username, String userId, Locale l)
     {
+        //this.msg_id
         this.text = m.trim();
-
-        // La data viene formattata con la forma locale
-        Calendar c = Calendar.getInstance();
-        this.createdAt = getFormatter(l).format(c.getTime());
-
         this.name = username;
         this.from = userId;
+        // La data viene formattata con la forma locale
+        this.calendar = Calendar.getInstance();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
+        this.createdAt = df.format(this.calendar.getTime());
     }
 
     public Message(String mes_id, String contents, String username, String userId, String date, Locale l)
@@ -66,11 +66,6 @@ public class Message {
 
     public String getFrom() {
         return from;
-    }
-
-    public SimpleDateFormat getFormatter(Locale loc)
-    {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", loc);
     }
 
     public Calendar getCalendar() {

@@ -22,10 +22,11 @@
     <LinearLayout
         android:id="@+id/input_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/input_bar_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="8dp"
         android:orientation="horizontal"
+        android:background="@color/white"
         >
 
         <EditText
