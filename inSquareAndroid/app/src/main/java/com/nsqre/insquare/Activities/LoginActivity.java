@@ -90,6 +90,8 @@ public class LoginActivity extends AppCompatActivity
     private GoogleCloudMessaging gcm;
     private String regid;
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
