@@ -86,8 +86,6 @@ public class LoginActivity extends AppCompatActivity
     // ============
 
     private Tracker mTracker;
-    private GoogleCloudMessaging gcm;
-    private String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +144,6 @@ public class LoginActivity extends AppCompatActivity
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRegId();
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
@@ -170,7 +167,6 @@ public class LoginActivity extends AppCompatActivity
         gLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRegId();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
@@ -246,28 +242,6 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
-    }
-
-    public void getRegId(){
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-                    }
-                    regid = gcm.register(getString(R.string.google_project_number));
-                    msg = "Device registered, registration ID=" + regid;
-                    Log.i("GCM",  msg);
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-
-                }
-                return msg;
-            }
-        }.execute(null, null, null);
     }
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity
