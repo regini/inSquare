@@ -135,7 +135,7 @@ public class MapActivity extends AppCompatActivity
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
-        selectItemFromDrawer(2);  //TODO RIMUOVERE O METTERE 0
+        selectItemFromDrawer(0);
     }
 
     @Override
