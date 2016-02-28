@@ -3,36 +3,29 @@ package com.nsqre.insquare.Activities;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -47,6 +40,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
@@ -86,7 +80,7 @@ public class MapActivity extends AppCompatActivity
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
     ProfileFragment profileFragment;
     RecentSquaresFragment recentSquaresFragment;
-    MapFragment mapFragment;
+    MainMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +91,9 @@ public class MapActivity extends AppCompatActivity
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
-        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.logo));
-        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.logo));
-        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.logo));
+        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps));
+        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended));
+        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle));
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -123,7 +117,9 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();    //c'è l'override di questo metodo, ma non serve a nulla(teoricamente toglie dall'action bar ciò che non vogliamo far vedere quando l'hamburger è aperto
+                // C'è l'override di questo metodo, ma non serve a nulla
+                // (teoricamente toglie dall'action bar ciò che non vogliamo far vedere quando l'hamburger è aperto
+                invalidateOptionsMenu();
             }
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -135,7 +131,7 @@ public class MapActivity extends AppCompatActivity
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
-        mapFragment = new MapFragment();
+        mapFragment = new MainMapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 

@@ -24,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="8dp"
+        android:paddingLeft="@dimen/input_margin_side"
+        android:paddingRight="@dimen/input_margin_side"
         android:orientation="horizontal"
         android:background="@color/white"
         >
@@ -37,6 +38,7 @@
             android:hint="Scrivi un messaggio"
             android:inputType="textNoSuggestions|textCapSentences|textMultiLine"
             android:maxLines="3"
+            android:layout_gravity="center_vertical"
             />
 
         <ImageButton
@@ -44,7 +46,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginLeft="@dimen/input_margin_side"
-            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"
             android:background="@drawable/send_red"
             />
 

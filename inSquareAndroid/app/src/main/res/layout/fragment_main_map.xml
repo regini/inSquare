@@ -1,0 +1,69 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/main_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.nsqre.insquare.Fragments.MainMapFragment"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fitsSystemWindows="true"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="56dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/input_margin_side"
+                android:paddingStart="@dimen/input_margin_side"
+                android:paddingRight="@dimen/input_margin_side"
+                android:paddingEnd="@dimen/input_margin_side"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/bottom_sheet_square_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_weight="0.7"
+                    android:gravity="center_vertical"
+                    android:text="Drag me!"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    />
+
+                <ImageButton
+                    android:id="@+id/bottom_sheet_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/message_square"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/bottom_sheet_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

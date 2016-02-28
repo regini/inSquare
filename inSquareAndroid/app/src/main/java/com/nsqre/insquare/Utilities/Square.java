@@ -10,9 +10,6 @@ public class Square implements Serializable {
     private String type;
     private String ownerId;
 
-
-
-
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
         this.name = name;

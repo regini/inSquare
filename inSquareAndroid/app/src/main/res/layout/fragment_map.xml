@@ -51,7 +51,7 @@
             android:layout_marginBottom="@dimen/button_size"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/message_processing"
+            android:src="@drawable/message_processing_white"
             />
     </RelativeLayout>
 </FrameLayout>

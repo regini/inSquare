@@ -5,28 +5,25 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,22 +59,13 @@ import com.nsqre.insquare.Utilities.Square;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MapFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MapFragment extends SupportMapFragment implements GoogleApiClient.ConnectionCallbacks,
+public class MainMapFragment extends Fragment
+        implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMapLongClickListener,
@@ -87,11 +75,11 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         OnMapReadyCallback
 {
 
+    private SupportMapFragment mainMapFragment;
     public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
     public static final int MAX_SQUARENAME_LENGTH = 40;
 
-    private OnFragmentInteractionListener mListener;
-    private static final String TAG = "MapFragment";
+    private static final String TAG = "MainMapFragment";
     private GoogleApiClient mGoogleApiClient;
     public Location mCurrentLocation;
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
@@ -116,24 +104,25 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private HashMap<Marker, Square> squareHashMap;
     private MapActivity rootActivity;
 
+    private TextView bottomSheetSquareName;
+    private ImageButton bottomSheetButton;
+    private RecyclerView bottomSheetList;
+
     private Tracker mTracker;
 
-    private LinearLayout linearLayout;
-    private FloatingActionButton mapFab;
-    private Animation animationUp, animationDown;
     // Variabili per l'inizializzazione della Chat
     public static final String SQUARE_ID_TAG = "SQUARE_URL";
     public static final String SQUARE_NAME_TAG = "SQUARE_NAME";
     private String mSquareId;
     private String mSquareName;
 
-    public MapFragment() {
+    public MainMapFragment() {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance(String param1, String param2) {
-        MapFragment fragment = new MapFragment();
-
+    public static MainMapFragment newInstance(String param1, String param2) {
+        MainMapFragment fragment = new MainMapFragment();
+        Bundle args = new Bundle();
         return fragment;
     }
 
@@ -155,39 +144,30 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 .build();
 
         rootActivity = (MapActivity) getActivity();
-
-        getMapAsync(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //onCreateView viene chiamato dopo onAttach e onCreate, subito dopo questa riga il codice torna su onAttach()
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        View v = inflater.inflate(R.layout.fragment_main_map, container, false);
 
-        mapFab = (FloatingActionButton) v.findViewById(R.id.map_fab);
-        Log.d("Inflater", "mapfab is:" + (mapFab==null));
-        mapFab.setVisibility(View.GONE);
-        mapFab.setOnClickListener(new View.OnClickListener() {
+        // Recuperiamo un po' di riferimenti ai layout
+        bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
+        bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
+        bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
+
+        FrameLayout bottomSheet = (FrameLayout) bottomSheetList.getParent().getParent();
+        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
+
+        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(rootActivity, ChatActivity.class);
-                // [START FloatingButton_event]
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("MapActivity")
-                        .setAction("FloatingButton")
-                        .build());
-                // [END FloatingButton_event]
-                intent.putExtra(SQUARE_ID_TAG, mSquareId);
-                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
-                startActivity(intent);
+                // TODO implementare la funzionalità del tasto
+                Log.d(TAG, "Button has been clicked!");
             }
         });
-        linearLayout = (LinearLayout) v.findViewById(R.id.slider_ll);
-        linearLayout.setVisibility(View.GONE);
-        animationUp = AnimationUtils.loadAnimation(getContext(), R.anim.anim_up);
-        animationDown = AnimationUtils.loadAnimation(getContext(), R.anim.anim_down);
+
         return v;
     }
 
@@ -195,64 +175,40 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-        if (mGoogleApiClient == null) {
-            Log.d(TAG, "Disconnected atm");
+
+        mainMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.main_map);
+        mainMapFragment.getMapAsync(this);
+
+        if(mainMapFragment != null)
+        {
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            if(locationManager != null && mainMapFragment.getMap() != null)
+            {
+                mGoogleMap = mainMapFragment.getMap();
+            }
         }
+
+        if(mGoogleApiClient == null)
+        {
+            Toast.makeText(getContext(), "Google API Client is null", Toast.LENGTH_SHORT).show();
+        }
+
         mGoogleApiClient.connect();
-    }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    //Fa crashare se in mapActivity non è implementato OnFragmentInteractionListener, scommenta quel codice e da errore
-    // per correggerlo va messo un altro implements in mapactivity e l'override di un metodo, ma non risolve nulla, e poi
-    // perchè questo fragment vuole che mapactivity lo implementi, ma gli altri due funzionano senza?
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        /*
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-        */
-    }
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    private void initListeners() {
-        mGoogleMap.setOnMarkerClickListener(this);
-        mGoogleMap.setOnMapLongClickListener(this);
-        mGoogleMap.setOnInfoWindowClickListener(this);
-        mGoogleMap.setOnMapClickListener(this);
-        mGoogleMap.setOnCameraChangeListener(this);
-    }
-
-    @Override
-    public void onStop() {
+    public void onStop()
+    {
         super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        {
             mGoogleApiClient.disconnect();
-//        mListener = null;
+        }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -260,6 +216,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             handlePermissions();
             return;
         }
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if(mCurrentLocation == null)
@@ -336,20 +294,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         }
     }
 
-    private Address reverseGeocode() throws IOException {
-        Geocoder gc = new Geocoder(getContext());
-        if(gc.isPresent())
-        {
-            List<Address> list = gc.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
-
-            Address address = list.get(0);
-            Log.d(TAG, "reverseGeocode: " + address.toString());
-
-            return address;
-        }
-        return null;
-    }
-
     private void handlePermissions() {
         ActivityCompat.requestPermissions(getActivity(),
                 PERMISSIONS, REQUEST_FINE_LOCATION);
@@ -358,6 +302,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 PERMISSIONS, REQUEST_COARSE_LOCATION);
     }
 
+    // Permessi di locazioni richiesti
+    // Gestione di ritorno dalla richiesta
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode)
@@ -397,204 +343,12 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
-//        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+        // mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
 
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    // LatLng | Name |
-    private Marker createSquarePin(LatLng pos, String name) {
-
-        MarkerOptions options = new MarkerOptions().position(pos);
-        options.title(name);
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
-        Marker marker = mGoogleMap.addMarker(options);
-
-        return marker;
-    }
-    @Override
-    public void onMapClick(final LatLng latLng) {
-
-        final String lat = Double.toString(latLng.latitude);
-        final String lon = Double.toString(latLng.longitude);
-
-        final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_crea_square);
-        mDialog.setTitle("Crea una Square");
-        mDialog.setCancelable(true);
-        mDialog.show();
-
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-
-        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
-        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
-        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
-        crea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String squareName = usernameEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(squareName)) {
-                    Marker m = createSquarePin(latLng, squareName);
-                    // Richiesta Volley POST per la creazione di piazze
-                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
-                    String ownerId = InSquareProfile.getUserId();
-                    createSquarePostRequest(squareName, lat, lon, m, ownerId);
-                    mDialog.dismiss();
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-    }
-
-    public String getAddressFromLatLng(LatLng latLng)
-    {
-        Geocoder geocoder = new Geocoder( getActivity() );
-
-        String address = "";
-        try {
-            address = geocoder
-                    .getFromLocation( latLng.latitude, latLng.longitude, 1 )
-                    .get( 0 ).getAddressLine( 0 );
-        } catch (IOException e ) {
-        }
-
-        return address;
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        // TODO on secondo click start chat
-        marker.showInfoWindow();
-
-        TextView tv = (TextView)getActivity().findViewById(R.id.square_textview);
-        String text = marker.getTitle();
-        if(text.length() > MAX_SQUARENAME_LENGTH)
-        {
-            text = text.substring(0, MAX_SQUARENAME_LENGTH-3) + "...";
-        }
-        tv.setText("#" + text);
-
-        // Animazione per mostrare il riquadro in fondo allo schermo insieme al tasto per accedere alle piazze
-        LinearLayout ll = ((LinearLayout) getActivity().findViewById(R.id.slider_ll));
-        if(ll.getVisibility() == View.GONE) {
-            ll.setVisibility(View.VISIBLE);
-            FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.map_fab);
-            fab.setVisibility(View.VISIBLE);
-        }
-
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
-                400, // Tempo di spostamento in ms
-                null); // callback
-        Square currentSquare = squareHashMap.get(marker);
-
-        setSquareId(currentSquare.getId());
-        setSquareName(marker.getTitle());
-        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
-
-        return true;
-    }
-
-    public void setSquareName(String squareName) {
-        this.mSquareName = squareName;
-    }
-    public void setSquareId(String mSquareId) {
-        this.mSquareId = mSquareId;
-    }
-
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        startChatActivity(marker);
-    }
-
-    private void startChatActivity(Marker marker) {
-
-        // [START PinButton_event]
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("MapActivity")
-                .setAction("PinButton")
-                .build());
-        // [END PinButton_event]
-
-        Intent intent = new Intent(getActivity(), ChatActivity.class);
-        Square s = squareHashMap.get(marker);
-        intent.putExtra(SQUARE_ID_TAG, s.getId());
-        intent.putExtra(SQUARE_NAME_TAG, s.getName());
-        startActivity(intent);
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.mGoogleMap = googleMap;
-
-        initListeners();
-    }
-
-    private void createSquarePostRequest(final String squareName,
-                                         final String latitude,
-                                         final String longitude,
-                                         final Marker marker,
-                                         final String ownerId) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://recapp-insquare.rhcloud.com/squares";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Create Square response: " + response);
-                        try {
-                            /*
-                                Devo recuperare ID della Square dal responso del server
-                                per poter mantenere coerenti le strutture dati della mappa
-                            */
-
-                            JSONObject o = new JSONObject(response);
-                            String squareId = o.getString("_id");
-                            String name = o.getString("name");
-                            double lat = Double.parseDouble(latitude);
-                            double lon = Double.parseDouble(longitude);
-                            String owner = o.getString("ownerId");
-                            Square s = new Square(squareId, name, lat, lon, "geo_point",owner);
-                            squareHashMap.put(marker, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("CreateSquare Response", error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", squareName);
-                params.put("lat", latitude);
-                params.put("lon", longitude);
-                params.put("ownerId",ownerId);
-                return params;
-            }
-        };
-        queue.add(stringRequest);
     }
 
     @Override
@@ -656,7 +410,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         }
     }
 
-
     // Con due locazioni restituisce il valore in km di distanza
     private float getDistance(LatLng southwest, LatLng frnd_latlong){
         Location l1=new Location("Southwest");
@@ -675,18 +428,195 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         return distance;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        startChatActivity(marker);
+    }
+
+    private void startChatActivity(Marker marker) {
+
+        // [START PinButton_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MapActivity")
+                .setAction("PinButton")
+                .build());
+        // [END PinButton_event]
+
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        Square s = squareHashMap.get(marker);
+        intent.putExtra(SQUARE_ID_TAG, s.getId());
+        intent.putExtra(SQUARE_NAME_TAG, s.getName());
+        startActivity(intent);
+    }
+
+    // LatLng | Name |
+    private Marker createSquarePin(LatLng pos, String name) {
+
+        MarkerOptions options = new MarkerOptions().position(pos);
+        options.title(name);
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        Marker marker = mGoogleMap.addMarker(options);
+
+        return marker;
+    }
+
+    @Override
+    public void onMapClick(final LatLng latLng) {
+        final String lat = Double.toString(latLng.latitude);
+        final String lon = Double.toString(latLng.longitude);
+
+        final Dialog mDialog = new Dialog(getContext());
+        mDialog.setContentView(R.layout.dialog_crea_square);
+        mDialog.setTitle("Crea una Square");
+        mDialog.setCancelable(true);
+        mDialog.show();
+
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
+        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
+        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
+        crea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String squareName = usernameEditText.getText().toString().trim();
+                if (!TextUtils.isEmpty(squareName)) {
+                    Marker m = createSquarePin(latLng, squareName);
+                    // Richiesta Volley POST per la creazione di piazze
+                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
+                    String ownerId = InSquareProfile.getUserId();
+                    createSquarePostRequest(squareName, lat, lon, m, ownerId);
+                    mDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    private void createSquarePostRequest(final String squareName,
+                                         final String latitude,
+                                         final String longitude,
+                                         final Marker marker,
+                                         final String ownerId) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "http://recapp-insquare.rhcloud.com/squares";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Create Square response: " + response);
+                        try {
+                            /*
+                                Devo recuperare ID della Square dal responso del server
+                                per poter mantenere coerenti le strutture dati della mappa
+                            */
+
+                            JSONObject o = new JSONObject(response);
+                            String squareId = o.getString("_id");
+                            String name = o.getString("name");
+                            double lat = Double.parseDouble(latitude);
+                            double lon = Double.parseDouble(longitude);
+                            String owner = o.getString("ownerId");
+                            Square s = new Square(squareId, name, lat, lon, "geo_point",owner);
+                            squareHashMap.put(marker, s);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CreateSquare Response", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", squareName);
+                params.put("lat", latitude);
+                params.put("lon", longitude);
+                params.put("ownerId",ownerId);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        initListeners();
+    }
+
+    private void initListeners() {
+        mGoogleMap.setOnMarkerClickListener(this);
+        mGoogleMap.setOnMapLongClickListener(this);
+        mGoogleMap.setOnInfoWindowClickListener(this);
+        mGoogleMap.setOnMapClickListener(this);
+        mGoogleMap.setOnCameraChangeListener(this);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        // TODO on secondo click start chat
+        marker.showInfoWindow();
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                400, // Tempo di spostamento in ms
+                null); // callback
+        Square currentSquare = squareHashMap.get(marker);
+
+        setSquareId(currentSquare.getId());
+        setSquareName(marker.getTitle());
+        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+
+        String text = marker.getTitle();
+        if(text.length() > MAX_SQUARENAME_LENGTH)
+        {
+            text = text.substring(0, MAX_SQUARENAME_LENGTH-3) + "...";
+        }
+        bottomSheetSquareName.setText("#" + text);
+        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(rootActivity, ChatActivity.class);
+                // [START FloatingButton_event]
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("MapActivity")
+                        .setAction("FloatingButton")
+                        .build());
+                // [END FloatingButton_event]
+                intent.putExtra(SQUARE_ID_TAG, mSquareId);
+                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
+                startActivity(intent);
+            }
+        });
+
+
+        return true;
+    }
+
+    // Questo e il prossimo metodo mantengono il riferimento al marker che viene cliccato
+    public void setSquareName(String squareName) {
+        this.mSquareName = squareName;
+    }
+
+    //
+    public void setSquareId(String mSquareId) {
+        this.mSquareId = mSquareId;
     }
 }
