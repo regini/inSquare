@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -43,6 +44,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
@@ -52,6 +54,7 @@ import com.nsqre.insquare.Utilities.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +86,8 @@ public class LoginActivity extends AppCompatActivity
     // ============
 
     private Tracker mTracker;
+    private GoogleCloudMessaging gcm;
+    private String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +146,7 @@ public class LoginActivity extends AppCompatActivity
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getRegId();
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
@@ -164,6 +170,7 @@ public class LoginActivity extends AppCompatActivity
         gLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getRegId();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
@@ -239,6 +246,28 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
+    }
+
+    public void getRegId(){
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    regid = gcm.register(getString(R.string.google_project_number));
+                    msg = "Device registered, registration ID=" + regid;
+                    Log.i("GCM",  msg);
+
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
     }
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity

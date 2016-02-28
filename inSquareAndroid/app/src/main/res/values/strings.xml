@@ -4,6 +4,7 @@
     <string name="google_api_key">AIzaSyDqLoMQ7XqXUtffExOJlsSZJ23P1lSxu5Q</string>
     <string name="server_client_id">231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com</string>
     <string name="facebook_app_id">743420882424724</string>
+    <string name="google_project_number">231545488769</string>
 
     <string name="google_login_string">Google Login</string>
     <string name="google_logout_string">Google Logout</string>
