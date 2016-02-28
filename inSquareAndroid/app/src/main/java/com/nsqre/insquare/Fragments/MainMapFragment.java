@@ -213,11 +213,19 @@ public class MainMapFragment extends Fragment
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            handlePermissions();
+            this.requestPermissions(PERMISSIONS,
+                    REQUEST_COARSE_LOCATION);
+
+            this.requestPermissions(PERMISSIONS,
+                    REQUEST_FINE_LOCATION);
+
             return;
         }
-        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        setupLocation();
+    }
 
+    private void setupLocation()
+    {
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if(mCurrentLocation == null)
@@ -294,25 +302,20 @@ public class MainMapFragment extends Fragment
         }
     }
 
-    private void handlePermissions() {
-        ActivityCompat.requestPermissions(getActivity(),
-                PERMISSIONS, REQUEST_FINE_LOCATION);
-
-        ActivityCompat.requestPermissions(getActivity(),
-                PERMISSIONS, REQUEST_COARSE_LOCATION);
-    }
-
     // Permessi di locazioni richiesti
     // Gestione di ritorno dalla richiesta
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: permessi richiesti: " + permissions.toString());
+        Log.d(TAG, "onRequestPermissionsResult: permessi richiesti: " + grantResults.toString());
         switch (requestCode)
         {
             case REQUEST_COARSE_LOCATION:
             case REQUEST_FINE_LOCATION:
                 if(grantResults.length>0)
                 {
-                    initCamera(mCurrentLocation);
+                    setupLocation();
+                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(getContext(),
@@ -325,12 +328,6 @@ public class MainMapFragment extends Fragment
 
     private void initCamera(Location mCurrentLocation) {
 
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            handlePermissions();
-            return;
-        }
         CameraPosition position = CameraPosition.builder()
                 .target(new LatLng(mCurrentLocation.getLatitude(),
                         mCurrentLocation.getLongitude()))
