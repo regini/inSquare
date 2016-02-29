@@ -185,6 +185,10 @@ public class InSquareProfile {
         return null;
     }
 
+    public static String getPictureUrl() {
+        return pictureUrl;
+    }
+
     public static boolean hasLoginData() {
         return userId!= null && username!= null && email != null;
     }

@@ -26,8 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -40,6 +42,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
@@ -47,11 +51,15 @@ import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
 import com.nsqre.insquare.Utilities.NavItem;
+import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.SquareDeserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,19 +85,33 @@ public class MapActivity extends AppCompatActivity
     RelativeLayout mDrawerPane;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
-    ProfileFragment profileFragment;
-    RecentSquaresFragment recentSquaresFragment;
-    MainMapFragment mapFragment;
+    private ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+    private ProfileFragment profileFragment;
+    private RecentSquaresFragment recentSquaresFragment;
+    private MainMapFragment mainMapFragment;
+    private ImageView drawerImage;
+    private TextView drawerUsername;
+    private InSquareProfile userProfile;
+    private ArrayList<Square> ownedSquaresList, favouriteSquaresList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        userProfile = InSquareProfile.getInstance(getApplicationContext());
+        getOwnedSquares();
+        getFavouriteSquares();
 
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+
+        //IMMAGINE
+        drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
+        drawerUsername = (TextView) findViewById(R.id.drawer_userName);
+        new DownloadImageTask(drawerImage)
+                .execute(userProfile.getPictureUrl());
+        drawerUsername.setText(userProfile.getUsername());
 
         mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps));
         mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended));
@@ -131,7 +153,7 @@ public class MapActivity extends AppCompatActivity
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
-        mapFragment = new MainMapFragment();
+        mainMapFragment = new MainMapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
@@ -386,7 +408,7 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContent, mapFragment, "MAPPA")
+                        .replace(R.id.mainContent, mainMapFragment, "MAPPA")
                         .commit();
 //                mapFab.show();
 //                linearLayout.setVisibility(View.VISIBLE);
@@ -413,6 +435,73 @@ public class MapActivity extends AppCompatActivity
         // Close the drawer
         mDrawerLayout.closeDrawer(mDrawerPane);
     }
+
+    private void getOwnedSquares() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
+                userProfile.getUserId());
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        GsonBuilder b = new GsonBuilder();
+                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square[] squares = gson.fromJson(response, Square[].class);
+                        ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("GETOWNEDSQUARES", error.toString());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    private void getFavouriteSquares() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        String url = String.format("http://recapp-insquare.rhcloud.com/favouritesquares/%1$s",
+                userProfile.getUserId());
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        GsonBuilder b = new GsonBuilder();
+                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square[] squares = gson.fromJson(response, Square[].class);
+                        favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("GETFAVOURITESQUARES", error.toString());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    public ArrayList<Square> getOwnedSquaresList() {
+        return ownedSquaresList;
+    }
+
+    public ArrayList<Square> getFavouriteSquaresList() {
+        return favouriteSquaresList;
+    }
+
+    public ProfileFragment getProfileFragment() {
+        return profileFragment;
+    }
+
     @Override
     // Called when invalidateOptionsMenu() is invoked
     public boolean onPrepareOptionsMenu(Menu menu) {

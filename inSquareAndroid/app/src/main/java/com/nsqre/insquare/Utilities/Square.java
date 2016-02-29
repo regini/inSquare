@@ -1,6 +1,14 @@
 package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 6/2/16  */
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class Square implements Serializable {
 
@@ -9,6 +17,12 @@ public class Square implements Serializable {
     private double lat, lon;
     private String type;
     private String ownerId;
+    private long favouredBy, views;
+    private SquareState squareState;
+    private Calendar lastMessageDate;
+    private String lastMessageDateString;
+
+
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
@@ -19,9 +33,48 @@ public class Square implements Serializable {
         this.ownerId = ownerId;
     }
 
+    public Square(String id, String name, String geoloc, String ownerId, String favouredBy, String views, String state, String lastMessageDate, Locale l) {
+        this.id = id;
+        this.name = name;
+
+        String[] parts = geoloc.split(",", 2);
+        lat = Double.parseDouble(parts[0]);
+        lon = Double.parseDouble(parts[1]);
+
+        this.ownerId = ownerId;
+        this.favouredBy = Long.parseLong(favouredBy);
+        this.views = Long.parseLong(views);
+
+        switch (state) {
+            case "asleep":
+                this.squareState = SquareState.asleep;
+                break;
+            case "awoken":
+                this.squareState = SquareState.awoken;
+                break;
+            case "caffeinated":
+                this.squareState = SquareState.caffeinated;
+                break;
+            default:
+                break;
+        }
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
+        try {
+            Date d = df.parse(lastMessageDate);
+            this.lastMessageDate = Calendar.getInstance();
+            this.lastMessageDate.setTime(d);
+
+            this.lastMessageDateString = df.format(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.d("NEWSQUARE", this.toString());
+    }
+
     @Override
     public String toString() {
-        return id + " -- Name: " + name + "; Loc: " + lat + "," + lon;
+        return id + " -- Name: " + name + "; Loc: " + lat + "," + lon
+                + "; favouredby: " + favouredBy + "; views: " + views;
     }
 
     @Override
