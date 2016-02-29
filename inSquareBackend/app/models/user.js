@@ -14,7 +14,8 @@ var userSchema = mongoose.Schema({
 		id: String,
 		token: String,
 		email: String,
-		name: String
+		name: String,
+		profilePhoto: String
 	},
 	twitter : {
 		id: String,
@@ -26,12 +27,14 @@ var userSchema = mongoose.Schema({
 		id: String,
 		token: String,
 		email: String,
-		name: String
+		name: String,
+		profilePhoto: String
 	},
 	messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message',
   	es_schema: Message}],
 	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Square',
-		es_schema: Square}]
+		es_schema: Square}],
+	gcmToken: String
 });
 
 // methods

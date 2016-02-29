@@ -23,6 +23,7 @@
     "npm": ">= 1.0.0"
   },
   "dependencies": {
+    "async": "^1.5.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.14.2",
     "connect": "^3.4.1",
@@ -31,6 +32,7 @@
     "ejs": "^2.3.4",
     "elasticsearch": "^10.0.1",
     "elmongo": "^0.1.9",
+    "enum": "^2.3.0",
     "express": "^4.10.2",
     "express-session": "^1.13.0",
     "googleapis": "^2.1.7",
@@ -40,6 +42,7 @@
     "mongoose": "^4.3.5",
     "mongoose-findorcreate": "^0.1.2",
     "morgan": "^1.6.1",
+    "node-gcm": "^0.14.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.0.0",
     "passport-facebook-token": "^3.1.0",

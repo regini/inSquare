@@ -1,6 +1,7 @@
 var Square = require('./models/square');
 var Message = require('./models/message');
 var User = require('./models/user');
+var async = require('async');
 var fs = require('fs');
 
 module.exports = function(router, passport)
@@ -35,6 +36,7 @@ module.exports = function(router, passport)
       var latitude = parseFloat(req.body.lat);
       var longitude = parseFloat(req.body.lon);
       var ownerId = req.body.ownerId;
+      var description = req.body.description;
 
       if(squareName == undefined)
       {
@@ -51,9 +53,16 @@ module.exports = function(router, passport)
         res.send("Bisogna specificare delle coordinate valide!");
       }
 
-      var square = createSquare(squareName, latitude, longitude, ownerId);
-      res.json(square);
-
+      createSquare(squareName, latitude, longitude, description, ownerId, function(square) {
+        User.findById(ownerId, function(err,user) {
+          if(err) throw err;
+          user.favourites.push(square);
+          user.save(function(err) {
+            if(err) throw err;
+          });
+          res.json(square);
+        });
+      }.bind({res:res}));
     });
 
     //solo per aggiornamento dei modelli
@@ -62,12 +71,12 @@ module.exports = function(router, passport)
         Square.find({}, function(err,squares) {
           if(err) throw err;
           for(var i = 0; i<squares.length; i++) {
-            if(squares[i].name != undefined) {
-              squares[i].searchName = squares[i].name;
-              console.log(squares[i]);
-              squares[i].save(function(err) {
+            if(squares[i].messages.length != 0) {
+              Message.findById(squares[i].messages[(squares[i].messages.length)-1], function(err,mes) {
                 if(err) throw err;
-              });
+                this.sqr.lastMessageDate = mes.createdAt;
+                this.sqr.save();
+              }.bind({sqr : squares[i]}))
             }
           }
         })
@@ -75,53 +84,90 @@ module.exports = function(router, passport)
       res.send('done');
     })
 
+    router.get('/favouritesquares/:id', function(req, res) {
+      var userId = req.params.id;
+      if(userId!=null && userId != "" && userId != undefined){
+        User.findById(userId, function(err, usr){
+          if (err) console.log(err);
+          Square.search({
+            filtered:{
+              filter:{
+                terms:{
+                  _id: usr.favourites
+                }
+              }
+            }
+          },function(err, squares){
+              res.json(squares.hits.hits);
+          });
+        });
+      }
+    })
+
     router.post('/favouritesquares', function(req, res) {
-        var squareId = req.body.squareId;
-        if(squareId != null && squareId != undefined && squareId != ""){
-          var userId = req.body.userId;
-          if(userId != null && userId != undefined && userId != ""){
-            Square.findById(squareId, function (err, sqr) {
-                if (err) throw err;
-                User.findById(userId, function(err, usr) {
-                  usr.favourites.push(sqr);
-                  usr.save(function(err){
-                    if(err) throw err;
-                    console.log(usr);
-                  })
-                });
-              });
+      var squareId = req.body.squareId;
+      if(squareId != null && squareId != undefined && squareId != ""){
+        var userId = req.body.userId;
+        if(userId != null && userId != undefined && userId != ""){
+          Square.findById(squareId, function (err, sqr) {
+            if(err) throw err;
+            User.findById(userId, function(err, usr) {
+              usr.favourites.push(sqr);
+              usr.save(function(err) {
+                if(err) throw err;
+                console.log(usr);
+              })
+            })
+            sqr.favouredBy = sqr.favouredBy+1;
+            sqr.save(function(err) {
+              if(err) throw err;
+              console.log(sqr)
+            });
+          });
         }
       }
-        res.send("La square è stata aggiunta come preferita");
+      res.send("La square è stata aggiunta come preferita");
     });
 
 
     router.delete('/favouritesquares', function(req, res) {
-        console.log(req.body.squareId + "  " + req.body.userId);
-        var squareId = req.body.squareId;
-        if(squareId != null && squareId != undefined && squareId != ""){
-          var userId = req.body.userId;
-          if(userId != null && userId != undefined && userId != ""){
-                User.findById(userId, function(err, usr){
-                  if(err) throw err;
-                  var index = (usr.favourites).indexOf(squareId);
-                  (usr.favourites).splice(index,1);
-                  usr.save(function(err){
-                    if(err) throw err;
-                    console.log(usr);
-                  });
-                });
-            }
-          }
-        res.send("La square è stata eliminata dai preferiti");
+      console.log(req.body.squareId + "  " + req.body.userId);
+      var squareId = req.body.squareId;
+      if(squareId != null && squareId != undefined && squareId != ""){
+        Square.findById(squareId, function(err, sqr) {
+          sqr.favouredBy = sqr.favouredBy-1;
+          sqr.save(function(err) {
+            if(err) throw err;
+            console.log(sqr);
+          });
+        });
+        var userId = req.body.userId;
+        if(userId != null && userId != undefined && userId != ""){
+          User.findById(userId, function(err, usr){
+            if(err) throw err;
+            var index = usr.favourites.indexOf(squareId);
+            usr.favourites.splice(index,1);
+            usr.save(function(err){
+              if(err) throw err;
+              console.log(usr);
+            });
+          });
+        }
+      }
+      res.send("La square è stata eliminata dai preferiti");
     });
 
 
     router.get('/squares/:id', function(req,res) {
-      Square.findOne({'_id' : req.params.id}, function(err,square) {
-        if(err) throw err;
-        res.json(square);
-      })
+      Square.findById(req.params.id, function(err,square) {
+        getCurrentState(req.params.id, function(state) {
+          square.state = state;
+          square.save(function(err) {
+            if(err) throw err;
+            res.json(square);
+          })
+        });
+      });
     });
 
     router.delete('/squares?', function(req,res) {
@@ -131,32 +177,126 @@ module.exports = function(router, passport)
     });
 
     router.get('/squares?', function(req,res) {
-      if(req.query.autocomplete && req.query.name != undefined) {
-        var splitted = req.query.name.split(" ");
+      if(req.query.ownerId && req.query.byOwner){
         Square.search({
-          bool : {
-            should : [
-              {
-                match : {
-                  name : {
-                    query : req.query.name,
-                    fuzziness : 'AUTO'
-                  }
+          bool:{
+            must:{
+              query_string:{
+                default_field : "square.ownerId",
+                query: req.query.ownerId
+              }
+            }
+          }
+        },
+        {
+          sort: [
+            {
+              createdAt : {
+                order : "desc"
+              }
+            },
+            {
+              lastMessageDate : {
+                order : "desc"
+              }
+            }
+          ]
+          }, function(err, squares){
+          if (err) console.log(err);
+            res.json(squares.hits.hits);
+        });
+      }
+      else if(req.query.autocomplete) {
+        if(req.query.name != '' && req.query.name != undefined && req.query.name != null) {
+          var name = req.query.name;
+          if(req.query.lat != '' && req.query.lat != undefined && req.query.lon != null) {
+            var lat = req.query.lat;
+            if(req.query.lon != '' && req.query.lon != undefined && req.query.lon != null) {
+              var splitted = req.query.name.split(" ");
+              Square.search({
+                bool : {
+                  should : [
+                    {
+                      match : {
+                        name : {
+                          query : req.query.name,
+                          fuzziness : 'AUTO'
+                        }
+                      }
+                    },
+                    {
+                      prefix : {
+                        name : splitted[splitted.length-1]
+                      }
+                    }
+                  ]
                 }
               },
               {
-                prefix : {
-                  name : splitted[splitted.length-1]
+                sort : [
+                  {
+                    _geo_distance : {
+                      geo_loc : req.query.lat + ',' + req.query.lon,
+                      order : "asc",
+                      unit : "km"
+                    }
+                  }
+                ],
+                size : 5
+              }, function(err,squares) {
+                if(err) throw err;
+                res.json(squares.hits.hits);
+              })
+            }
+          }
+        }
+      }
+      //RICERCA PER TOPIC
+      //TODO MESSAGGI RECENTI IN ORDINE DI CREATED BY
+      else if(req.query.topic && req.query.name!=undefined &&
+            req.query.lat != undefined && req.query.lon != undefined){
+          Message.search({
+            bool:{
+              should:
+              [
+                {
+                  fuzzy:{
+                    text:{
+                      value: req.query.name
+                    }
+                  }
+                },
+                {
+                  range : {
+                    createdAt : {
+                      gte : "now-7d",
+                      lte : "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            aggs:{
+              'names' :{
+                'terms':{
+                  'field': "squareId",
+                  'size' : 10000
                 }
               }
-            ]
-          }
-        }, {size : 5}, function(err,squares) {
-          if(err) throw err;
-          res.json(squares.hits.hits);
-        })
+            },
+            size : 10000
+          }, function(err, result){
+            //TODO SQUARES VICINO A ME IN ORDINE DI DISTANZA
+              if (err) console.log("Error while searching for topic: " + err);
+              findSquares(result.aggregations.names.buckets, req.query.lat, req.query.lon,
+                function(err, configs){
+              res.json(configs);
+              });
+            });
       }
-      else if(req.query.name) {
+      else if(req.query.name!=undefined) {
         console.log("REQ QUERY NAME:\n" + req.query.name);
         Square.findOne({ 'name' : req.query.name }, function(err,square) {
             if(err) res.send(err);
@@ -212,20 +352,24 @@ function isLoggedIn(req, res, next)
 }
 
 //Aggiunto ownerID
-function createSquare(squareName, latitude, longitude, ownerId) {
+function createSquare(squareName, latitude, longitude, description, ownerId, callback) {
 	var square = new Square();
 
     // TODO aggiungere la ricerca di una piazza gia' esistente (o farlo tramite validation)
 	square.name = squareName;
   square.searchName = squareName;
+  square.createdAt = (new Date()).getTime();
 	square.geo_loc = latitude + ',' + longitude;
   square.ownerId = ownerId;
-	square.save(function(err) {
+  square.description = description;
+  square.favouredBy = square.favouredBy+1;
+  square.save(function(err) {
 		if(err) throw err;
-		console.log("Created square ====\n" + square + "\n====");
-	});
-  return square;
-
+    Square.findOne({'name' : squareName}, function(err,sqr) {
+      if(err) throw err;
+      callback(sqr);
+    })
+	}.bind({callback : callback}));
 }
 
 function deleteSquare(squareName, userId) {
@@ -242,5 +386,113 @@ function deleteSquare(squareName, userId) {
     mySquare.remove(function(err, square) {
       if(err) throw err;
 	  });
+    forgetSquare(mySquare.id);
   });
+}
+
+function forgetSquare(squareId) {
+  User.find({'favourites' : squareId}, function(err,users) {
+    console.log(users);
+    for(var i = 0; i<users.length; i++) {
+      var index = users[i].favourites.indexOf(squareId);
+      users[i].favourites.splice(index, 1);
+      users[i].save(function(err) {
+        if(err) throw err;
+      })
+    }
+  })
+}
+
+function findSquares(squares, lat, lon, callback){
+  var keys = [];
+  async.forEachOf(squares, function(item, k, callback){
+    keys.push(item.key);
+    callback();
+  }, function(err){
+    if(err) console.log(err)
+    Square.search({
+      filtered:{
+        filter:{
+          terms:{
+            _id: keys
+          }
+        }
+      }
+    },
+    {
+      sort : [
+        {
+        state: {
+          order: "desc"
+        }
+      },
+        {
+          _geo_distance : {
+            geo_loc : lat + ',' + lon,
+            order : "asc",
+            unit : "km"
+          }
+        }
+      ],
+      from : 0,
+      size : 10000
+    }, function(err, result){
+      callback(null,result);
+    }.bind({ callback : callback }));
+  });
+}
+
+
+setInterval(updateSquareState, 600000);
+
+function updateSquareState() {
+  console.log("Updating states");
+  Square.find({}, function(err,squares) {
+    if(err) throw err;
+    for(var i = 0; i<squares.length; i++) {
+      getCurrentState(squares[i].id, function(state) {
+        this.square.state = state;
+        this.square.save();
+      }.bind({square : squares[i]}))
+    }
+  })
+}
+
+function getCurrentState(square, callback) {
+  Message.esCount({
+    bool : {
+      must : [
+        {
+          match : {
+            squareId : square
+          }
+        },
+        {
+          range : {
+            createdAt : {
+              gte : "now-1d",
+              lte : "now"
+            }
+          }
+        }
+      ]
+    }
+  }, function(err,response) {
+    if(err) throw err;
+    getState(response.count, function(state) {
+      callback(state);
+    });
+  })
+}
+
+function getState(count, callback) {
+  if(count == 0) {
+    callback("asleep");
+  }
+  else if(count > 10) {
+    callback("caffeinated");
+  }
+  else {
+    callback("awoken");
+  }
 }

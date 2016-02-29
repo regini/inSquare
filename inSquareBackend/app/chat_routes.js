@@ -3,6 +3,7 @@ var Square = require('./models/square');
 var User = require('./models/user');
 var http = require('http');
 var request = require('request');
+var gcm = require('node-gcm');
 
 module.exports = function(router, passport, squares)
 {
@@ -32,13 +33,20 @@ module.exports = function(router, passport, squares)
 				serverMessage.contents = data.username + " is now connected";
 
 				socket.join(data.room);
+				Square.findById(data.room, function(err, sqr) {
+					if (err) throw err;
+					sqr.views = sqr.views+1;
+					sqr.save(function(err) {
+						if(err) throw err;
+					});
+				});
 
 				//socket.to(data.room).broadcast.emit('newMessage', serverMessage);
 			}
 		});
 
 		socket.on('pong', function(data){
-			console.log("Pong received from client");
+
 		});
 
 		socket.on('tellRoom', function( msg, roomName ) {
@@ -64,6 +72,8 @@ module.exports = function(router, passport, squares)
 				socket.to(room).broadcast.emit('newMessage', message);
 
 				sendMessage(msg.message, msg.userid, room);
+
+				/*  VECCHIA POST PER PUSH
 				request({
 					method: 'POST',
     			uri: 'https://android.googleapis.com/gcm/send',
@@ -80,7 +90,20 @@ module.exports = function(router, passport, squares)
 						if(error) console.log(error);
     			}
   			)
-			};
+				*/
+
+				// Nuova versione push
+				var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+				var message = new gcm.Message();
+				message.addData("message", msg.message);
+
+				sender.sendNoRetry(message, {topic: '/topics/global'}, function(err, response){
+					if (err)
+						console.log(err);
+					console.log(response);
+				});
+
+			}
 		});
 
 		socket.on('disconnect', function()
@@ -124,6 +147,20 @@ module.exports = function(router, passport, squares)
 
 			res.send(req.user + " created a new message!");
     });
+
+		router.post('/gcmToken', function(req, res){
+			console.log("GCM: " + req.body.gcm + "userId: " + req.body.userId);
+			if(req.body.gcm && req.body.userId){
+				User.findById(req.body.userId, function(err, usr){
+					if (err) console.log(err)
+					usr.gcmToken = req.body.gcm;
+					usr.save(function(err){
+						if (err) console.log(err);
+						res.send("GCM TOKEN on Server");
+					})
+				})
+			}
+		});
 
     router.get('/get_messages', isLoggedIn, function(req, res)
     {
@@ -301,6 +338,7 @@ function sendMessage(text, user, square)
 	Square.findOne({'_id' : square}, function(err, sqr) {
 		if(err) throw err;
 		sqr.messages.push(mes);
+		sqr.lastMessageDate = mes.createdAt;
 		sqr.save();
 	});
 
@@ -339,3 +377,17 @@ function findMessages(params)
 	var vals = 	Message.find(params);
 	return vals;
 }
+
+/*
+function findPushTokenByFavouriteSquares(squareId){
+	User.search({
+		"bool":{
+			"must":[{
+					"term":{
+						"favourites": squareId
+					}
+				}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"aggs":{}
+	});
+
+}
+*/

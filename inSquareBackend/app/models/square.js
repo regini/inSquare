@@ -15,6 +15,7 @@ var squareSchema = mongoose.Schema({
     es_search_analyzer: 'simple',
     es_payloads: true
   },
+  createdAt: {type: Date},
   geo_loc: {
     type: String,
     es_type: 'geo_point'
@@ -22,7 +23,12 @@ var squareSchema = mongoose.Schema({
   messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message',
    es_schema: Message}],
   ownerId: {type: mongoose.Schema.Types.ObjectId, ref: 'User',
-   es_schema: User}
+   es_schema: User},
+  views: {type: Number, default: 0},
+  favouredBy: {type: Number, default: 0},
+  description: {type: String},
+  state: {type: String},
+  lastMessageDate: {type: Date}
 });
 
 
