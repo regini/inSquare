@@ -32,6 +32,14 @@
           }
         },
         {
+          "client_id": "231545488769-eibkovoivh75lcpidjt6hafcbjmqrj2v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsqre.insquare",
+            "certificate_hash": "21E7D9C524DE0E19F4B47669580E6D3187C59D81"
+          }
+        },
+        {
           "client_id": "231545488769-deajtp2j0a5fgvpf5ch9333ln8114hrm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -77,7 +85,7 @@
           }
         },
         "cloud_messaging_service": {
-          "status": 1,
+          "status": 2,
           "apns_config": []
         },
         "appinvite_service": {

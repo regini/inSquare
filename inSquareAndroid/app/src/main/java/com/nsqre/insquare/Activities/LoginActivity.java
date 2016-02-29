@@ -42,6 +42,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -49,6 +50,7 @@ import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.RegistrationIntentService;
 import com.nsqre.insquare.Utilities.User;
 
 import org.json.JSONException;
@@ -66,6 +68,7 @@ public class LoginActivity extends AppCompatActivity
 {
 
     private static final String TAG = "LoginActivity";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private User user;
     private InSquareProfile profile;
 
@@ -86,8 +89,6 @@ public class LoginActivity extends AppCompatActivity
     // ============
 
     private Tracker mTracker;
-    private GoogleCloudMessaging gcm;
-    private String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +147,6 @@ public class LoginActivity extends AppCompatActivity
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRegId();
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
@@ -170,7 +170,6 @@ public class LoginActivity extends AppCompatActivity
         gLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRegId();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
@@ -186,6 +185,12 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "onCreate: Facebook is already logged in!");
             //fbLoginButton.setText(R.string.fb_logout_string);
             facebookPostRequest();
+        }
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
         }
     }
 
@@ -246,28 +251,6 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
-    }
-
-    public void getRegId(){
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-                    }
-                    regid = gcm.register(getString(R.string.google_project_number));
-                    msg = "Device registered, registration ID=" + regid;
-                    Log.i("GCM",  msg);
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-
-                }
-                return msg;
-            }
-        }.execute(null, null, null);
     }
 
     //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity
@@ -531,5 +514,26 @@ public class LoginActivity extends AppCompatActivity
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }

@@ -61,7 +61,9 @@ module.exports = function(router, passport)
 			res.json({
 				id : req.user.id,
 				name : req.user.facebook.name,
-				email : req.user.facebook.email});
+				email : req.user.facebook.email,
+				picture : req.user.facebook.profilePhoto
+			});
   	});
 
 	router.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
@@ -97,7 +99,9 @@ module.exports = function(router, passport)
 		res.json({
 			id : req.user.id,
 			name : req.user.google.name,
-			email : req.user.google.email});
+			email : req.user.google.email,
+			picture : req.user.google.profilePhoto
+			});
 		});
 
 	router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));

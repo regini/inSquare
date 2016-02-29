@@ -161,6 +161,7 @@ module.exports = function(passport)
                     user.facebook.token = accessToken;
                     user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
                     user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+										user.facebook.profilePhoto = profile.photos[0].value;
 
                     user.save(function(err) {
                     	if (err)
@@ -176,6 +177,7 @@ module.exports = function(passport)
 	                  newUser.facebook.token = accessToken; // we will save the token that facebook provides to the user
 										newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
 	                  newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+										newUser.facebook.profilePhoto = profile.photos[0].value;
 
 	                  // save our user to the database
 	                  newUser.save(function(err) {
@@ -419,6 +421,7 @@ module.exports = function(passport)
 						user.google.token = idToken.body.access_token;
 						user.google.name  = parsedToken.payload.name;
 						user.google.email = (parsedToken.payload.email).toLowerCase();
+						user.google.profilePhoto = parsedToken.payload.picture;
 						user.save(function(err) {
 							if (err)
 								return done(err);
@@ -433,7 +436,7 @@ module.exports = function(passport)
 							newUser.google.token = idToken.body.access_token; // we will save the token that facebook provides to the user
 							newUser.google.name  = parsedToken.payload.name;
 							newUser.google.email = (parsedToken.payload.email).toLowerCase();
-
+							newUser.google.profilePhoto = parsedToken.payload.picture;
 							// save our user to the database
 							newUser.save(function(err) {
 									if (err)
