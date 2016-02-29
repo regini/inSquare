@@ -187,11 +187,6 @@ public class LoginActivity extends AppCompatActivity
             facebookPostRequest();
         }
 
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
     }
 
     @Override
@@ -263,6 +258,10 @@ public class LoginActivity extends AppCompatActivity
         profile.email = user.getEmail();
         profile.pictureUrl = user.getPicture();
         profile.save(getApplicationContext());
+        if (checkPlayServices()) {
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
         launchInSquare();
     }
 

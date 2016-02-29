@@ -23,18 +23,29 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
 import java.io.IOException;import java.lang.Exception;import java.lang.Override;import java.lang.String;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
+
+    private InSquareProfile userProfile;
 
     public RegistrationIntentService() {
         super(TAG);
@@ -42,6 +53,7 @@ public class RegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        userProfile = InSquareProfile.getInstance(getApplicationContext());
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
@@ -57,7 +69,6 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
 
             // Subscribe to topic channels
@@ -87,8 +98,31 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
-        // Add custom implementation, as needed.
+    private void sendRegistrationToServer(final String token) {
+        RequestQueue queue = Volley.newRequestQueue(RegistrationIntentService.this);
+        String url = "http://recapp-insquare.rhcloud.com/gcmToken";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Response is: " + response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("gcm", token);
+                params.put("userId", userProfile.getUserId());
+                return params;
+            }
+        };
+        queue.add(stringRequest);
     }
 
     /**
