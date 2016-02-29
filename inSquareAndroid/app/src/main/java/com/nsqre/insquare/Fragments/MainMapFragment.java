@@ -77,7 +77,6 @@ public class MainMapFragment extends Fragment
 
     private SupportMapFragment mainMapFragment;
     public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
-    public static final int MAX_SQUARENAME_LENGTH = 40;
 
     private static final String TAG = "MainMapFragment";
     private GoogleApiClient mGoogleApiClient;
@@ -157,7 +156,7 @@ public class MainMapFragment extends Fragment
         bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
         bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
 
-        FrameLayout bottomSheet = (FrameLayout) bottomSheetList.getParent().getParent();
+        FrameLayout bottomSheet = (FrameLayout) bottomSheetList.getParent().getParent().getParent();
         BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
 
         bottomSheetButton.setOnClickListener(new View.OnClickListener() {
@@ -215,10 +214,8 @@ public class MainMapFragment extends Fragment
 
             this.requestPermissions(PERMISSIONS,
                     REQUEST_COARSE_LOCATION);
-
             this.requestPermissions(PERMISSIONS,
                     REQUEST_FINE_LOCATION);
-
             return;
         }
         setupLocation();
@@ -582,11 +579,8 @@ public class MainMapFragment extends Fragment
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
         String text = marker.getTitle();
-        if(text.length() > MAX_SQUARENAME_LENGTH)
-        {
-            text = text.substring(0, MAX_SQUARENAME_LENGTH-3) + "...";
-        }
-        bottomSheetSquareName.setText("#" + text);
+
+        bottomSheetSquareName.setText(text);
         bottomSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

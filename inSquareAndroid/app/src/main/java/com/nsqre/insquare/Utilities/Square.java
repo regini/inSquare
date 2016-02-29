@@ -12,6 +12,11 @@ import java.util.Locale;
 
 public class Square implements Serializable {
 
+    public enum ActivityState
+    {
+        ASLEEP, AWOKEN, CAFFEINATED
+    }
+
     private String id;
     private String name;
     private double lat, lon;
@@ -21,8 +26,6 @@ public class Square implements Serializable {
     private SquareState squareState;
     private Calendar lastMessageDate;
     private String lastMessageDateString;
-
-
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
