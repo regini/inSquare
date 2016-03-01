@@ -1,10 +1,11 @@
 package com.nsqre.insquare.Fragments;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
+
+    private static final String TAG = "ProfileFragment";
+
     private ListView ownedSquares, favouriteSquares, recentSquares;
     private SquareAdapter adapterOwned, adapterFavourite, adapterRecents;
     private ImageView profileImage;
@@ -37,7 +41,7 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ProfileFragment newInstance(String param1, String param2) {
+    public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
         return fragment;
     }
@@ -47,7 +51,6 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         rootActivity = (MapActivity) getActivity();
         userProfile = InSquareProfile.getInstance(rootActivity.getApplicationContext());
-
     }
 
     @Override
@@ -125,5 +128,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
     }
 }

@@ -49,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.ChatActivity;
+import com.nsqre.insquare.Activities.MainActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
@@ -101,7 +102,8 @@ public class MainMapFragment extends Fragment
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
-    private MapActivity rootActivity;
+    private MapActivity rootMapActivity;
+    private MainActivity rootMainActivity;
 
     private TextView bottomSheetSquareName;
     private ImageButton bottomSheetButton;
@@ -119,10 +121,8 @@ public class MainMapFragment extends Fragment
         // Required empty public constructor
     }
 
-    public static MainMapFragment newInstance(String param1, String param2) {
-        MainMapFragment fragment = new MainMapFragment();
-        Bundle args = new Bundle();
-        return fragment;
+    public static MainMapFragment newInstance() {
+        return new MainMapFragment();
     }
 
     @Override
@@ -142,30 +142,23 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
-        rootActivity = (MapActivity) getActivity();
+        rootMapActivity = (MapActivity) getActivity();
+//        rootMainActivity = (MainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_main_map, container, false);
+        View v = inflater.inflate(R.layout.fragment_main_map_copy, container, false);
 
         // Recuperiamo un po' di riferimenti ai layout
         bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
         bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
-        bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
+//        bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
 
-        FrameLayout bottomSheet = (FrameLayout) bottomSheetList.getParent().getParent().getParent();
+        FrameLayout bottomSheet = (FrameLayout) bottomSheetSquareName.getParent().getParent().getParent();
         BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
-
-        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO implementare la funzionalità del tasto
-                Log.d(TAG, "Button has been clicked!");
-            }
-        });
 
         return v;
     }
@@ -175,17 +168,9 @@ public class MainMapFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
 
-        mainMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.main_map);
+        mainMapFragment = SupportMapFragment.newInstance();
+        getChildFragmentManager().beginTransaction().replace(R.id.main_map_container, mainMapFragment).commit();
         mainMapFragment.getMapAsync(this);
-
-        if(mainMapFragment != null)
-        {
-            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            if(locationManager != null && mainMapFragment.getMap() != null)
-            {
-                mGoogleMap = mainMapFragment.getMap();
-            }
-        }
 
         if(mGoogleApiClient == null)
         {
@@ -193,7 +178,12 @@ public class MainMapFragment extends Fragment
         }
 
         mGoogleApiClient.connect();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
     }
 
     @Override
@@ -204,6 +194,7 @@ public class MainMapFragment extends Fragment
         {
             mGoogleApiClient.disconnect();
         }
+        Log.d(TAG, "onStop: I've just stopped!");
     }
 
     @Override
@@ -266,6 +257,9 @@ public class MainMapFragment extends Fragment
                             + "; Lon: "
                             + location.getLongitude() + ")");
                     mCurrentLocation = location;
+                }else
+                {
+                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
                 }
 
             }else if(locationManager.isProviderEnabled(NETWORK))
@@ -282,6 +276,9 @@ public class MainMapFragment extends Fragment
                             + "; Lon: "
                             + location.getLongitude() + ")");
                     mCurrentLocation = location;
+                }else
+                {
+                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
                 }
             }else
             {
@@ -303,8 +300,6 @@ public class MainMapFragment extends Fragment
     // Gestione di ritorno dalla richiesta
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: permessi richiesti: " + permissions.toString());
-        Log.d(TAG, "onRequestPermissionsResult: permessi richiesti: " + grantResults.toString());
         switch (requestCode)
         {
             case REQUEST_COARSE_LOCATION:
@@ -553,6 +548,15 @@ public class MainMapFragment extends Fragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if(mainMapFragment != null)
+        {
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            if(locationManager != null && googleMap != null)
+            {
+                mGoogleMap = googleMap;
+            }
+        }
+
         initListeners();
     }
 
@@ -584,7 +588,7 @@ public class MainMapFragment extends Fragment
         bottomSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(rootActivity, ChatActivity.class);
+                Intent intent = new Intent(rootMapActivity, ChatActivity.class);
                 // [START FloatingButton_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("MapActivity")
@@ -597,6 +601,7 @@ public class MainMapFragment extends Fragment
             }
         });
 
+        bottomSheetButton.setVisibility(View.VISIBLE);
 
         return true;
     }

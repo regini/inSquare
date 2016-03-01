@@ -14,7 +14,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_fab">#inSquare</string>
+    <string name="title_activity_fab">InSquare</string>
 
     <string name="error_connect">Connessione fallita</string>
     <string name="message_user_joined">%s si è unito</string>
@@ -30,7 +30,7 @@
     <string name="thanks_feedback">Grazie per il feedback!</string>
     <string name="error_feedback">Qualcosa è andato storto :(</string>
     <string name="connFail">Connessione fallita.</string>
-    <string name="square_placeholder">Select a #Square on the map</string>
+    <string name="square_placeholder">Select a Square on the map</string>
     <string name="hint_cerca_squares">Cerca un luogo</string>
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>
@@ -46,4 +46,5 @@
     <string name="token_error_message">An error occurred while either fetching the InstanceID token,
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

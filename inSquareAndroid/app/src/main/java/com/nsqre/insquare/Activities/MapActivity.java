@@ -1,15 +1,11 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,8 +18,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -150,6 +144,7 @@ public class MapActivity extends AppCompatActivity
                 invalidateOptionsMenu();
             }
         };
+        // TODO rimpiazzare metodo deprecato
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
@@ -157,7 +152,7 @@ public class MapActivity extends AppCompatActivity
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
-        selectItemFromDrawer(0);
+        selectItemFromDrawer(1);
     }
 
     @Override
@@ -204,25 +199,26 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_map_actions, menu);
+//        inflater.inflate(R.menu.activity_map_actions, menu);
+        inflater.inflate(R.menu.activity_main_actions, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
-
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(getString(R.string.hint_cerca_squares));
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        AutoCompleteTextView searchTextView =
-                (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-        searchTextView.setHintTextColor(ContextCompat.getColor(this, R.color.light_grey));
-        searchTextView.setTextColor(ContextCompat.getColor(this, R.color.white));
-
-        ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, R.layout.drop_down_entry);
-        searchTextView.setAdapter(adapter);
-
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(this);
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
+//
+//        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        searchView.setQueryHint(getString(R.string.hint_cerca_squares));
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//
+//        AutoCompleteTextView searchTextView =
+//                (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+//        searchTextView.setHintTextColor(ContextCompat.getColor(this, R.color.light_grey));
+//        searchTextView.setTextColor(ContextCompat.getColor(this, R.color.white));
+//
+//        ArrayAdapter<Address> adapter = new ArrayAdapter<Address>(this, R.layout.drop_down_entry);
+//        searchTextView.setAdapter(adapter);
+//
+//        searchView.setIconifiedByDefault(false);
+//        searchView.setOnQueryTextListener(this);
         return true;
     }
 
@@ -408,24 +404,18 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContent, mainMapFragment, "MAPPA")
+                        .replace(R.id.main_content_layout, mainMapFragment, "MAPPA")
                         .commit();
-//                mapFab.show();
-//                linearLayout.setVisibility(View.VISIBLE);
                 break;
             case 1:  //caso recenti
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.mainContent, recentSquaresFragment, "RECENTS")
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_content_layout, recentSquaresFragment, "RECENTS")
                         .commit();
-//                mapFab.hide();
-//                linearLayout.setVisibility(View.INVISIBLE);
                 break;
             case 2:  //caso profilo
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.mainContent, profileFragment, "PROFILE")
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_content_layout, profileFragment, "PROFILE")
                         .commit();
-//                mapFab.hide();
-//                linearLayout.setVisibility(View.INVISIBLE);
                 break;
             default:
                 break;
