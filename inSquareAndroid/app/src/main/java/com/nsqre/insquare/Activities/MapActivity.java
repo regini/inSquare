@@ -152,7 +152,7 @@ public class MapActivity extends AppCompatActivity
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
-        selectItemFromDrawer(1);
+        selectItemFromDrawer(0);
     }
 
     @Override

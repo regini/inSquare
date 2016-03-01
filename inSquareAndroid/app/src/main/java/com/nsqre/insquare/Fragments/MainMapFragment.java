@@ -346,12 +346,16 @@ public class MainMapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-//        double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
-//        if (!waitingDelay)
-//            downloadAndInsertPins(30.0f,cameraPosition.target);
-        if( distance > PIN_DOWNLOAD_RADIUS*0.9f)
+        if(distance > PIN_DOWNLOAD_RADIUS*0.9f)
         {
-            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
+            if(cameraPosition.zoom < 9) //Camera molto elevata
+            {
+                double rad = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
+                downloadAndInsertPins(rad, cameraPosition.target);
+            }else{
+                // I'm closer
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
+            }
             Log.d(TAG, "Downloading From: " + cameraPosition.target.toString());
         }
     }
