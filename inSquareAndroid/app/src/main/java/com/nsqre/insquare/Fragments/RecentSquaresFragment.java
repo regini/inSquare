@@ -1,9 +1,9 @@
 package com.nsqre.insquare.Fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,20 +12,13 @@ import com.nsqre.insquare.R;
 
 public class RecentSquaresFragment extends Fragment {
 
+    private static final String TAG = "RecentSquaresFragment";
+
     public RecentSquaresFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecentSquaresFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecentSquaresFragment newInstance(String param1, String param2) {
+    public static RecentSquaresFragment newInstance() {
         RecentSquaresFragment fragment = new RecentSquaresFragment();
 
         return fragment;
@@ -43,10 +36,6 @@ public class RecentSquaresFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_recent_squares, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -55,5 +44,11 @@ public class RecentSquaresFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
     }
 }

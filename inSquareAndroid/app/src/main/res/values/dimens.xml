@@ -18,4 +18,5 @@
     <dimen name="bubble_horizontal_margin">8dp</dimen>
     <dimen name="bubble_big_margin">16dp</dimen>
     <dimen name="bubble_min_width">100dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

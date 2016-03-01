@@ -195,7 +195,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         super.onStart();
 
 
-        setTitle("#" + mSquareName);
+        setTitle(mSquareName);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
