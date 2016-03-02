@@ -637,10 +637,10 @@ public class MainMapFragment extends Fragment
                                 break;
                             case Request.Method.POST:
                                 bottomSheetButton.setImageResource(R.drawable.heart_black);
-                                InSquareProfile.favouriteSquaresList.remove(square);
+                                InSquareProfile.favouriteSquaresList.add(square);
                                 break;
                         }
-                        Log.d(TAG, "FAVOURITE response => " + response);
+//                        Log.d(TAG, "FAVOURITE response => " + response);
                     }
                 },
                 new Response.ErrorListener()
