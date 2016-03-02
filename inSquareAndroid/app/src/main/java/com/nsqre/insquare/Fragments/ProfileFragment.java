@@ -25,8 +25,8 @@ public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
 
-    private ListView ownedSquares, favouriteSquares, recentSquares;
-    private SquareAdapter adapterOwned, adapterFavourite, adapterRecents;
+    private ListView ownedSquares, favouriteSquares;
+    private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
     private InSquareProfile userProfile;
     private MapActivity rootActivity;
@@ -86,31 +86,11 @@ public class ProfileFragment extends Fragment {
 
         ownedSquares = (ListView) v.findViewById(R.id.squares_owned);
         favouriteSquares = (ListView) v.findViewById(R.id.squares_preferred);
-        //recentSquares = (ListView) v.findViewById(R.id.squares_recents);
         profileImage = (ImageView) v.findViewById(R.id.user_avatar);
         username = (TextView) v.findViewById(R.id.userName);
         textOwnedSquares = (TextView) v.findViewById(R.id.text_owned_squares);
         textFavouriteSquares = (TextView) v.findViewById(R.id.text_favourite_squares);
         return v;
-    }
-
-    public void resetAdapters() {
-        ownedSquares.setAdapter(null);
-        favouriteSquares.setAdapter(null);
-        if (!InSquareProfile.ownedSquaresList.isEmpty()) {
-            adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
-            ownedSquares.setAdapter(adapterOwned);
-            textOwnedSquares.setVisibility(View.VISIBLE);
-        } else {
-            textOwnedSquares.setVisibility(View.INVISIBLE);
-        }
-        if (!InSquareProfile.favouriteSquaresList.isEmpty()) {
-            adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
-            favouriteSquares.setAdapter(adapterFavourite);
-            textFavouriteSquares.setVisibility(View.VISIBLE);
-        } else {
-            textFavouriteSquares.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override

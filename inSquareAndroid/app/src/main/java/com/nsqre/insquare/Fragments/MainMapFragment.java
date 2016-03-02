@@ -123,10 +123,7 @@ public class MainMapFragment extends Fragment
     private Tracker mTracker;
 
     // Variabili per l'inizializzazione della Chat
-    public static final String SQUARE_ID_TAG = "SQUARE_URL";
-    public static final String SQUARE_NAME_TAG = "SQUARE_NAME";
-    private String mSquareId;
-    private String mSquareName;
+    public static final String SQUARE_TAG = "SQUARE_TAG";
 
     public MainMapFragment() {
         // Required empty public constructor
@@ -477,8 +474,7 @@ public class MainMapFragment extends Fragment
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
-        intent.putExtra(SQUARE_ID_TAG, s.getId());
-        intent.putExtra(SQUARE_NAME_TAG, s.getName());
+        intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);
     }
 
@@ -617,8 +613,6 @@ public class MainMapFragment extends Fragment
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
 
-        setSquareId(currentSquare.getId());
-        setSquareName(text);
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
         bottomSheetSquareName.setText(text);
@@ -628,7 +622,7 @@ public class MainMapFragment extends Fragment
         bottomSheetSquareActivity.setText(lastActivity);
 
         // Controllo sulla lista dell'utente
-        if(InSquareProfile.isFavourite(mSquareId))
+        if(InSquareProfile.isFavourite(currentSquare.getId()))
             bottomSheetButton.setImageResource(R.drawable.heart_black);
         else
             bottomSheetButton.setImageResource(R.drawable.heart_border_black);
@@ -638,7 +632,7 @@ public class MainMapFragment extends Fragment
             public void onClick(View v) {
                 final int method;
 
-                if(InSquareProfile.isFavourite(mSquareId))
+                if(InSquareProfile.isFavourite(currentSquare.getId()))
                 {
                     method = Request.Method.DELETE;
                 }else
@@ -688,7 +682,7 @@ public class MainMapFragment extends Fragment
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
-        url += "squareId=" + mSquareId;
+        url += "squareId=" + square.getId();
         url += "&userId=" + InSquareProfile.getUserId();
         Log.d(TAG, "favouriteSquare: " + url);
         StringRequest postRequest = new StringRequest(method, url,
@@ -719,15 +713,5 @@ public class MainMapFragment extends Fragment
                 }
         );
         queue.add(postRequest);
-    }
-
-    // Questo e il prossimo metodo mantengono il riferimento al marker che viene cliccato
-    public void setSquareName(String squareName) {
-        this.mSquareName = squareName;
-    }
-
-    //
-    public void setSquareId(String mSquareId) {
-        this.mSquareId = mSquareId;
     }
 }
