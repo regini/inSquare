@@ -8,8 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.Locale;
 
@@ -18,6 +16,7 @@ import java.util.Locale;
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
 
+    private static final String TAG = "SquareDeserializer";
     private Locale locale;
 
     public SquareDeserializer(Locale l)
@@ -53,12 +52,20 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
        ==============
          */
 
+        Log.d(TAG, "deserialize: " + json.toString());
+
         final JsonObject jsonObject = json.getAsJsonObject();
         final String id = jsonObject.get("_id").getAsString();
         final JsonObject source = jsonObject.get("_source").getAsJsonObject();
         final String name = source.get("name").getAsString();
         final String geoloc = source.get("geo_loc").getAsString();
-        final String ownerid = source.get("ownerId").getAsString();
+        final String ownerid;
+        if(source.get("ownerId") != null){
+            ownerid = source.get("ownerId").getAsString();
+        }
+        else {
+            ownerid = "";
+        }
         final String favouredby = source.get("favouredBy").getAsString();
         final String views = source.get("views").getAsString();
         final String state = source.get("state").getAsString();
@@ -68,6 +75,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
             lmd = lastMessageDate;
         }
         catch (Exception e) {
+            e.printStackTrace();
         }
         final Square square = new Square(id, name, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
         return square;

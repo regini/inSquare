@@ -573,41 +573,85 @@ public class MainMapFragment extends Fragment
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick(final Marker marker) {
 
         // TODO on secondo click start chat
         marker.showInfoWindow();
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
                 null); // callback
-        Square currentSquare = squareHashMap.get(marker);
-
-        setSquareId(currentSquare.getId());
-        setSquareName(marker.getTitle());
-        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
-
+        final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
 
+        setSquareId(currentSquare.getId());
+        setSquareName(text);
+        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+
         bottomSheetSquareName.setText(text);
+
+        // Controllo sulla lista dell'utente
+        if(InSquareProfile.isFavourite(mSquareId))
+            bottomSheetButton.setImageResource(R.drawable.heart_black);
+        else
+            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+
         bottomSheetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(rootMapActivity, ChatActivity.class);
-                // [START FloatingButton_event]
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("MapActivity")
-                        .setAction("FloatingButton")
-                        .build());
-                // [END FloatingButton_event]
-                intent.putExtra(SQUARE_ID_TAG, mSquareId);
-                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
-                startActivity(intent);
+                final int method;
+
+                if(InSquareProfile.isFavourite(mSquareId))
+                {
+                    method = Request.Method.DELETE;
+                }else
+                {
+                    method = Request.Method.POST;
+                }
+
+                favouriteSquare(method,currentSquare);
             }
         });
 
         bottomSheetButton.setVisibility(View.VISIBLE);
 
         return true;
+    }
+
+    public void favouriteSquare(final int method, final Square square) {
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
+        url += "squareId=" + mSquareId;
+        url += "&userId=" + InSquareProfile.getUserId();
+        Log.d(TAG, "favouriteSquare: " + url);
+        StringRequest postRequest = new StringRequest(method, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (method)
+                        {
+                            case Request.Method.DELETE:
+                                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+                                InSquareProfile.favouriteSquaresList.remove(square);
+                                break;
+                            case Request.Method.POST:
+                                bottomSheetButton.setImageResource(R.drawable.heart_black);
+                                InSquareProfile.favouriteSquaresList.remove(square);
+                                break;
+                        }
+                        Log.d(TAG, "FAVOURITE response => " + response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "FAVOURITE error => "+ error.toString());
+                    }
+                }
+        );
+        queue.add(postRequest);
     }
 
     // Questo e il prossimo metodo mantengono il riferimento al marker che viene cliccato

@@ -75,24 +75,25 @@ public class MapActivity extends AppCompatActivity
     private SearchView searchView;
     private SimpleCursorAdapter mSearchAdapter;
 
+    // Hamburger Menu
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+    // ==================
+    // Fragments del menu
     private ProfileFragment profileFragment;
     private RecentSquaresFragment recentSquaresFragment;
     private MainMapFragment mainMapFragment;
+    // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
-    private InSquareProfile userProfile;
-    private ArrayList<Square> ownedSquaresList, favouriteSquaresList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        userProfile = InSquareProfile.getInstance(getApplicationContext());
         getOwnedSquares();
         getFavouriteSquares();
 
@@ -104,8 +105,8 @@ public class MapActivity extends AppCompatActivity
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
         drawerUsername = (TextView) findViewById(R.id.drawer_userName);
         new DownloadImageTask(drawerImage)
-                .execute(userProfile.getPictureUrl());
-        drawerUsername.setText(userProfile.getUsername());
+                .execute(InSquareProfile.getPictureUrl());
+        drawerUsername.setText(InSquareProfile.getUsername());
 
         mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps));
         mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended));
@@ -273,7 +274,7 @@ public class MapActivity extends AppCompatActivity
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        Log.d("VOLLEY","ServerResponse: "+response);
+                                        Log.d(TAG,"VOLLEY ServerResponse: "+response);
                                         CharSequence text = getString(R.string.thanks_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -282,7 +283,7 @@ public class MapActivity extends AppCompatActivity
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.d("VOLLEY", error.toString());
+                                Log.d(TAG, "VOLLEY " + error.toString());
                                 CharSequence text = getString(R.string.error_feedback);
                                 int duration = Toast.LENGTH_SHORT;
                                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -310,21 +311,9 @@ public class MapActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
-        //TODO ORA QUESTI ELEMENTI SONO IN MAP FRAGMENT
-        /*
-        if(linearLayout.getVisibility() == View.VISIBLE)
-        {
-            linearLayout.startAnimation(animationDown);
-            linearLayout.setVisibility(View.GONE);
-            mapFab.setVisibility(View.GONE);
-            return;
-        }else
-        {
-        */
-            // Termina l'activity quando viene premuto BACK
-            this.finishAffinity();
-        //}
+    public void onBackPressed()
+    {
+        this.finishAffinity();
         super.onBackPressed();
     }
 
@@ -430,7 +419,7 @@ public class MapActivity extends AppCompatActivity
         RequestQueue queue = Volley.newRequestQueue(this);
 
         String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
-                userProfile.getUserId());
+                InSquareProfile.getUserId());
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -442,12 +431,14 @@ public class MapActivity extends AppCompatActivity
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
-                        ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        InSquareProfile.ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
+                        Log.d(TAG, "onResponse: " + InSquareProfile.ownedSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("GETOWNEDSQUARES", error.toString());
+                Log.d(TAG, "GETOWNEDSQUARES" + error.toString());
             }
         });
         queue.add(stringRequest);
@@ -456,8 +447,11 @@ public class MapActivity extends AppCompatActivity
     private void getFavouriteSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
+
         String url = String.format("http://recapp-insquare.rhcloud.com/favouritesquares/%1$s",
-                userProfile.getUserId());
+                InSquareProfile.getUserId());
+
+        Log.d(TAG, "getFavouriteSquares: " + url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -466,26 +460,21 @@ public class MapActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
                         // MessageDeserializer specifica come popolare l'oggetto Message fromJson
+                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
-                        favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        InSquareProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        Log.d(TAG, "onResponse: ho ottenuto FAVS con successo!");
+                        Log.d(TAG, "onResponse: " + InSquareProfile.favouriteSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("GETFAVOURITESQUARES", error.toString());
+                Log.d(TAG, "GETFAVOURITESQUARES " + error.toString());
             }
         });
         queue.add(stringRequest);
-    }
-
-    public ArrayList<Square> getOwnedSquaresList() {
-        return ownedSquaresList;
-    }
-
-    public ArrayList<Square> getFavouriteSquaresList() {
-        return favouriteSquaresList;
     }
 
     public ProfileFragment getProfileFragment() {

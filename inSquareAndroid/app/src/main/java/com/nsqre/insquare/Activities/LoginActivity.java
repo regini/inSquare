@@ -100,13 +100,12 @@ public class LoginActivity extends AppCompatActivity
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-
         // Profilo statico perche' non puo' cambiare.
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
 
-        Log.d("DATILOGIN", "is: " + profile.hasLoginData());
-        Log.d("NETWORK", "is "+ isNetworkAvailable());
+        Log.d(TAG, "DATILOGIN is: " + profile.hasLoginData());
+        Log.d(TAG, "NETWORK is "+ isNetworkAvailable());
         if (profile.hasLoginData() && isNetworkAvailable()) {
             launchInSquare();
         }
@@ -118,7 +117,7 @@ public class LoginActivity extends AppCompatActivity
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Log.d("Success", "Login");
+                        Log.d(TAG, "Success Login");
                         requestFacebookData();  //fa la post
                         //fbLoginButton.setText(R.string.fb_logout_string);
                     }
@@ -277,13 +276,13 @@ public class LoginActivity extends AppCompatActivity
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("ServerResponse", response);
+                        Log.d(TAG, "ServerResponse " + response);
                         json2login(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("ServerResponse", error.toString());
+                Log.d(TAG, "ServerResponse" + error.toString());
             }
         }) {
             //TOKEN messo nei parametri della query
@@ -308,13 +307,13 @@ public class LoginActivity extends AppCompatActivity
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("google+response", "Response is: " + response);
+                        Log.d(TAG, "Google+ Response: " + response);
                         json2login(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("GOOGLE+Response", error.toString());
+                Log.d(TAG, "Google+ Error Response: " + error.toString());
             }
         }) {
             @Override
@@ -415,14 +414,14 @@ public class LoginActivity extends AppCompatActivity
             if(token != null)
             {
                 fbAccessToken = token.getToken();
-                Log.d("token", fbAccessToken);
+                Log.d(TAG, "FB Token: " + fbAccessToken);
                 return true;
             }
 
             return false;
         }
         catch (Exception e) {
-            Log.d("token", e.toString());
+            Log.d(TAG, "FB token error: " + e.toString());
         }
         return false;
     }
@@ -476,7 +475,7 @@ public class LoginActivity extends AppCompatActivity
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        Log.d("VOLLEY", "ServerResponse: " + response);
+                                        Log.d(TAG, "VOLLEY ServerResponse: " + response);
                                         CharSequence text = getString(R.string.thanks_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -485,7 +484,7 @@ public class LoginActivity extends AppCompatActivity
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.d("VOLLEY", error.toString());
+                                Log.d(TAG, "VOLLEY Error: " + error.toString());
                                 CharSequence text = getString(R.string.error_feedback);
                                 int duration = Toast.LENGTH_SHORT;
                                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);

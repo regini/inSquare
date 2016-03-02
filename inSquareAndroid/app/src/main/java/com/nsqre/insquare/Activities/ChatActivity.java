@@ -182,7 +182,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("GETRECENTI", error.toString());
+                Log.d(TAG, "GETRECENTI Error: " + error.toString());
             }
         });
         queue.add(stringRequest);
@@ -300,7 +300,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             e.printStackTrace();
         }
 
-        Log.d("profilo", InSquareProfile.getInstance(getApplicationContext()).toString());
+        Log.d(TAG, "profilo " + InSquareProfile.getInstance(getApplicationContext()).toString());
         //This is the callback that socket.io uses to understand that an event has been triggered
         mSocket.emit("sendMessage", data);
     }
@@ -432,7 +432,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        Log.d("VOLLEY","ServerResponse: "+response);
+                                        Log.d(TAG, "VOLLEY ServerResponse: "+response);
                                         CharSequence text = getString(R.string.thanks_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -441,7 +441,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                                 }, new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Log.d("VOLLEY", error.toString());
+                                        Log.d(TAG, "VOLLEY " + error.toString());
                                         CharSequence text = getString(R.string.error_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);

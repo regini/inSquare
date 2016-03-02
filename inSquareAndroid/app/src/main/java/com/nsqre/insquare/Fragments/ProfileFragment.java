@@ -18,10 +18,7 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
-import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareAdapter;
-
-import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
@@ -34,7 +31,6 @@ public class ProfileFragment extends Fragment {
     private InSquareProfile userProfile;
     private MapActivity rootActivity;
     private TextView username;
-    private ArrayList<Square> ownedSquaresList, favouriteSquaresList;
     private TextView textOwnedSquares, textFavouriteSquares;
 
     public ProfileFragment() {
@@ -64,16 +60,15 @@ public class ProfileFragment extends Fragment {
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        ownedSquaresList = rootActivity.getOwnedSquaresList();
-        favouriteSquaresList = rootActivity.getFavouriteSquaresList();
-        if (!ownedSquaresList.isEmpty()) {
-            adapterOwned = new SquareAdapter(getActivity(), ownedSquaresList);
+
+        if (InSquareProfile.ownedSquaresList.isEmpty()) {
+            adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
             ownedSquares.setAdapter(adapterOwned);
         } else {
             textOwnedSquares.setVisibility(View.INVISIBLE);
         }
-        if (!favouriteSquaresList.isEmpty()) {
-            adapterFavourite = new SquareAdapter(getActivity(), favouriteSquaresList);
+        if (!InSquareProfile.favouriteSquaresList.isEmpty()) {
+            adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
             favouriteSquares.setAdapter(adapterFavourite);
         } else {
             textFavouriteSquares.setVisibility(View.INVISIBLE);
@@ -100,19 +95,17 @@ public class ProfileFragment extends Fragment {
     }
 
     public void resetAdapters() {
-        ownedSquaresList = rootActivity.getOwnedSquaresList();
-        favouriteSquaresList = rootActivity.getFavouriteSquaresList();
         ownedSquares.setAdapter(null);
         favouriteSquares.setAdapter(null);
-        if (!ownedSquaresList.isEmpty()) {
-            adapterOwned = new SquareAdapter(getActivity(), ownedSquaresList);
+        if (!InSquareProfile.ownedSquaresList.isEmpty()) {
+            adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
             ownedSquares.setAdapter(adapterOwned);
             textOwnedSquares.setVisibility(View.VISIBLE);
         } else {
             textOwnedSquares.setVisibility(View.INVISIBLE);
         }
-        if (!favouriteSquaresList.isEmpty()) {
-            adapterFavourite = new SquareAdapter(getActivity(), favouriteSquaresList);
+        if (!InSquareProfile.favouriteSquaresList.isEmpty()) {
+            adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
             favouriteSquares.setAdapter(adapterFavourite);
             textFavouriteSquares.setVisibility(View.VISIBLE);
         } else {
