@@ -394,7 +394,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_chat_actions, menu);
+
+        //TODO
+        //se non è tra i preferiti
+        menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+        //else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
 
         return true;
     }
@@ -462,6 +467,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         d.dismiss();
                     }
                 });
+            case R.id.favourite_square_action:
+                //TODO rendi la square preferita
             default:
                 return super.onOptionsItemSelected(item);
         }

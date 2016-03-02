@@ -20,6 +20,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,12 +28,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.nsqre.insquare.Activities.LoginActivity;
-
+import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
-
-
-import java.lang.Override;import java.lang.String;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -49,6 +46,7 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
+        String squareName = data.getString("squareName");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
@@ -70,7 +68,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(message, squareName);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -80,19 +78,21 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, LoginActivity.class);
+    private void sendNotification(String message, String squareName) {
+        Intent intent = new Intent(this, MapActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-
+        
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.nsqre_map_pin)
-                .setContentTitle("GCM Message")
+                .setSmallIcon(R.drawable.map_marker_radius)
+                .setContentTitle(squareName)
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
+                .setVibrate(new long[] { 500, 500, 500, 500, 500 })
+                .setLights(Color.RED, 1000, 3000)
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
