@@ -48,6 +48,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MainActivity;
 import com.nsqre.insquare.Activities.MapActivity;
@@ -56,12 +58,20 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.SquareDeserializer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -107,7 +117,8 @@ public class MainMapFragment extends Fragment
 
     private TextView bottomSheetSquareName;
     private ImageButton bottomSheetButton;
-    private RecyclerView bottomSheetList;
+//    private RecyclerView bottomSheetList;
+    private TextView bottomSheetSquareActivity;
 
     private Tracker mTracker;
 
@@ -150,14 +161,16 @@ public class MainMapFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_main_map_copy, container, false);
+        View v = inflater.inflate(R.layout.fragment_main_map_full, container, false);
 
         // Recuperiamo un po' di riferimenti ai layout
         bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
         bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
+        bottomSheetSquareActivity = (TextView) v.findViewById(R.id.bottom_sheet_last_activity);
+        bottomSheetSquareActivity.setVisibility(View.GONE);
 //        bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
 
-        FrameLayout bottomSheet = (FrameLayout) bottomSheetSquareName.getParent().getParent().getParent();
+        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
         BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
 
         return v;
@@ -369,38 +382,59 @@ public class MainMapFragment extends Fragment
         //TODO check sul centro del mondo
         if(position != null)
         {
-            dcs = new DownloadClosestSquares(d,
-                    position.latitude,
-                    position.longitude);
+
+            getClosestSquares(d, position.latitude, position.longitude);
         }
         else
         {
-            dcs = new DownloadClosestSquares(d, 0, 0);
+            getClosestSquares(d, 0, 0);
             Log.d(TAG, "downloadAndInsertPins: downloading at the center of the world..?");
         }
 
+        mLastUpdateLocation = position;
+    }
 
-        try {
-            // Update con l'ultima posizione a cui ho effettuato l'aggiornamento
-            mLastUpdateLocation = position;
+    private void getClosestSquares(String distance, double lat, double lon) {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://recapp-insquare.rhcloud.com/squares?";
+        url += "distance=" + distance;
+        url += "&lat=" + lat;
+        url += "&lon=" + lon;
 
-            HashMap<String, Square> squarePins = dcs.execute().get();
+        Log.d(TAG, "getClosestSquares: " + url);
 
-            // Rimuovi le Squares di troppo
-            for (Square closeSquare : squarePins.values()) {
-                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                Marker m = createSquarePin(coords, closeSquare.getName());
-                squareHashMap.put(m, closeSquare);
-                if(squareHashMap.size() > SQUARE_DOWNLOAD_LIMIT) {
-                    Marker key = squareHashMap.entrySet().iterator().next().getKey();
-                    key.remove();
-                    squareHashMap.remove(key);
-                }
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        GsonBuilder b = new GsonBuilder();
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+                        Log.d(TAG, "onResponse: " + response);
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square[] squares = gson.fromJson(response, Square[].class);
+
+                        HashMap<String, Square> squarePins = new HashMap<>();
+                        for(Square s: squares)
+                        {
+                            squarePins.put(s.getId(), s);
+                        }
+                        // Rimuovere quelle di troppo
+                        for(Square closeSquare: squarePins.values())
+                        {
+                            LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                            Marker m = createSquarePin(coords, closeSquare.getName());
+                            squareHashMap.put(m, closeSquare);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "GetClosestSquares " + error.toString());
             }
-            Log.d(TAG, "downloadAndInsertPins: squareHashMapSize: " + squareHashMap.size());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        });
+        queue.add(stringRequest);
     }
 
     // Con due locazioni restituisce il valore in km di distanza
@@ -588,6 +622,10 @@ public class MainMapFragment extends Fragment
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
         bottomSheetSquareName.setText(text);
+        bottomSheetSquareActivity.setVisibility(View.VISIBLE);
+        String lastActivity = formatTime(currentSquare);
+        Log.d(TAG, "onMarkerClick: " + lastActivity);
+        bottomSheetSquareActivity.setText(lastActivity);
 
         // Controllo sulla lista dell'utente
         if(InSquareProfile.isFavourite(mSquareId))
@@ -615,6 +653,35 @@ public class MainMapFragment extends Fragment
         bottomSheetButton.setVisibility(View.VISIBLE);
 
         return true;
+    }
+
+    private String formatTime(Square selectedSquare)
+    {
+        String timetoShow = "";
+        Calendar c = Calendar.getInstance();
+        int tYear = c.get(Calendar.YEAR);
+        int tDay = c.get(Calendar.DAY_OF_MONTH);
+
+        Calendar msgCal = selectedSquare.getLastMessageDate();
+        int mYear = msgCal.get(Calendar.YEAR);
+        int mDay = msgCal.get(Calendar.DAY_OF_MONTH);
+
+        Locale l = getContext().getResources().getConfiguration().locale;
+        DateFormat df;
+        if(mYear != tYear)
+        {
+            df = new SimpleDateFormat("MMM d, ''yy, HH:mm", l);
+        }else if(mDay != tDay)
+        {
+            df = new SimpleDateFormat("MMM d, HH:mm", l);
+        }else
+        {
+            df = new SimpleDateFormat("HH:mm", l);
+        }
+
+        timetoShow = df.format(msgCal.getTime());
+        Log.d(TAG, "formatTime: " + timetoShow);
+        return "Attiva: " + timetoShow;
     }
 
     public void favouriteSquare(final int method, final Square square) {

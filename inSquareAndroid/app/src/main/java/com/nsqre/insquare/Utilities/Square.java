@@ -128,4 +128,24 @@ public class Square implements Serializable {
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
+
+    public long getFavouredBy() {
+        return favouredBy;
+    }
+
+    public long getViews() {
+        return views;
+    }
+
+    public SquareState getSquareState() {
+        return squareState;
+    }
+
+    public String getLastMessageDateString() {
+        return lastMessageDateString;
+    }
+
+    public Calendar getLastMessageDate() {
+        return lastMessageDate;
+    }
 }
