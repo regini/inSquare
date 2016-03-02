@@ -40,7 +40,7 @@
         android:id="@+id/square_star_icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/star_icon_empty"
+        android:src="@drawable/heart_border_black"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
         android:layout_marginTop="5dp"

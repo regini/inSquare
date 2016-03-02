@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.nsqre.insquare.Utilities.Square;
+
+import java.util.ArrayList;
+
 public class InSquareProfile {
 
     private static final String TAG = "InSquareProfile";
@@ -19,15 +23,29 @@ public class InSquareProfile {
     private static final String FACEBOOK_EMAIL_KEY = "FACEBOOK_EMAIL_KEY";
     private static final String FACEBOOK_NAME_KEY = "FACEBOOK_NAME_KEY";
 
-    private static final String TWITTER_ID_KEY = "TWITTER_ID_KEY";
-    private static final String TWITTER_TOKEN_KEY = "TWITTER_TOKEN_KEY";
-    private static final String TWITTER_NAME_KEY = "TWITTER_NAME_KEY";
-    private static final String TWITTER_USERNAME_KEY = "TWITTER_USERNAME_KEY";
-
     private static final String GOOGLE_ID_KEY = "GOOGLE_ID_KEY";
     private static final String GOOGLE_TOKEN_KEY = "GOOGLE_TOKEN_KEY";
     private static final String GOOGLE_EMAIL_KEY = "GOOGLE_EMAIL_KEY";
     private static final String GOOGLE_NAME_KEY = "GOOGLE_NAME_KEY";
+
+
+    public static ArrayList<Square> ownedSquaresList;
+    public static ArrayList<Square> favouriteSquaresList;
+
+    public static String userId;
+    public static String username;
+    public static String email;
+    public static String pictureUrl;
+
+    public static String facebookId;
+    public static String facebookToken;
+    public static String facebookEmail;
+    public static String facebookName;
+
+    public static String googleId;
+    public static String googleToken;
+    public static String googleEmail;
+    public static String googleName;
 
     private static InSquareProfile profile;
 
@@ -44,7 +62,6 @@ public class InSquareProfile {
             return profile;
         }
 
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
         userId = prefs.getString(USER_ID_KEY, null);
         username = prefs.getString(USERNAME_KEY, null);
@@ -56,59 +73,16 @@ public class InSquareProfile {
         facebookEmail = prefs.getString(FACEBOOK_EMAIL_KEY, null);
         facebookName = prefs.getString(FACEBOOK_NAME_KEY, null);
 
-        twitterId       = prefs.getString(TWITTER_ID_KEY, null);
-        twitterToken    = prefs.getString(TWITTER_TOKEN_KEY, null);
-        twitterDisplayName = prefs.getString(TWITTER_NAME_KEY, null);
-        twitterUsername = prefs.getString(TWITTER_USERNAME_KEY, null);
-
         googleId    = prefs.getString(GOOGLE_ID_KEY, null);
         googleToken = prefs.getString(GOOGLE_TOKEN_KEY, null);
         googleEmail = prefs.getString(GOOGLE_EMAIL_KEY, null);
         googleName  = prefs.getString(GOOGLE_NAME_KEY, null);
 
-        Log.d(TAG, "==== USER  ====" +
-                "\nID: " + userId +
-                "\nUsername: " + username +
-                "\nEmail: " + email +
-                "\nPicture URL: " + pictureUrl +
-                "\n==== FACEBOOK  ====" +
-                "\nID: " + facebookId +
-                "\nEmail: " + facebookEmail +
-                "\nName : " + facebookName +
-                "\n==== TWITTER ====" +
-                "\nID: " + twitterId +
-                "\nUsername: " + twitterUsername +
-                "\n==== GOOGLE ====" +
-                "\nID: " + googleId +
-                "\nEmail: " + googleEmail +
-                "\nName: " + googleEmail);
-
         return new InSquareProfile();
     }
 
-    public static String userId;
-    public static String username;
-    public static String email;
-    public static String pictureUrl;
-
-    public static String facebookId;
-    public static String facebookToken;
-    public static String facebookEmail;
-    public static String facebookName;
-
-    public static String twitterId;
-    public static String twitterToken;
-    public static String twitterDisplayName;
-    public static String twitterUsername;
-
-    public static String googleId;
-    public static String googleToken;
-    public static String googleEmail;
-    public static String googleName;
-
     public void save(Context c)
     {
-        // TODO save data to disk
         String NAME = c.getString(R.string.app_name);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(c).edit();
 
@@ -121,11 +95,6 @@ public class InSquareProfile {
         editor.putString(FACEBOOK_TOKEN_KEY, facebookToken);
         editor.putString(FACEBOOK_EMAIL_KEY, facebookEmail);
         editor.putString(FACEBOOK_NAME_KEY, facebookName);
-
-        editor.putString(TWITTER_ID_KEY, twitterId);
-        editor.putString(TWITTER_TOKEN_KEY, twitterToken);
-        editor.putString(TWITTER_NAME_KEY, twitterDisplayName);
-        editor.putString(TWITTER_USERNAME_KEY, twitterUsername);
 
         editor.putString(GOOGLE_ID_KEY, googleId);
         editor.putString(GOOGLE_TOKEN_KEY, googleToken);
@@ -150,9 +119,6 @@ public class InSquareProfile {
         else if(facebookName != null)
         {
             return facebookName;
-        }else if(twitterUsername != null)
-        {
-            return twitterUsername;
         }
 
         Log.d(TAG, "getUsername: Current username is empty");
@@ -174,10 +140,6 @@ public class InSquareProfile {
         {
             Log.d(TAG, "getUserId: facebook id!");
             return facebookId;
-        }else if(twitterId != null)
-        {
-            Log.d(TAG, "getUserId: twitter id!");
-            return twitterId;
         }
 
         Log.d(TAG, "getUserId: Current username is empty");
@@ -204,13 +166,19 @@ public class InSquareProfile {
                 "\nID: " + facebookId +
                 "\nEmail: " + facebookEmail +
                 "\nName : " + facebookName +
-                "\n==== TWITTER ====" +
-                "\nID: " + twitterId +
-                "\nUsername: " + twitterUsername +
                 "\n==== GOOGLE ====" +
                 "\nID: " + googleId +
                 "\nEmail: " + googleEmail +
                 "\nName: " + googleEmail;
 
+    }
+
+    public static boolean isFavourite(String mSquareId) {
+        for(Square s: favouriteSquaresList)
+        {
+            if(s.getId().equals(mSquareId))
+                return true;
+        }
+        return false;
     }
 }

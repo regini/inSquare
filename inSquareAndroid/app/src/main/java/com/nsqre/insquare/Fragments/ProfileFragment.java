@@ -18,23 +18,19 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
-import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareAdapter;
-
-import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
 
     private static final String TAG = "ProfileFragment";
 
-    private ListView ownedSquares, favouriteSquares, recentSquares;
-    private SquareAdapter adapterOwned, adapterFavourite, adapterRecents;
+    private ListView ownedSquares, favouriteSquares;
+    private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
     private InSquareProfile userProfile;
     private MapActivity rootActivity;
     private TextView username;
-    private ArrayList<Square> ownedSquaresList, favouriteSquaresList;
     private TextView textOwnedSquares, textFavouriteSquares;
 
     public ProfileFragment() {
@@ -64,16 +60,15 @@ public class ProfileFragment extends Fragment {
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        ownedSquaresList = rootActivity.getOwnedSquaresList();
-        favouriteSquaresList = rootActivity.getFavouriteSquaresList();
-        if (!ownedSquaresList.isEmpty()) {
-            adapterOwned = new SquareAdapter(getActivity(), ownedSquaresList);
+
+        if (InSquareProfile.ownedSquaresList.isEmpty()) {
+            adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
             ownedSquares.setAdapter(adapterOwned);
         } else {
             textOwnedSquares.setVisibility(View.INVISIBLE);
         }
-        if (!favouriteSquaresList.isEmpty()) {
-            adapterFavourite = new SquareAdapter(getActivity(), favouriteSquaresList);
+        if (!InSquareProfile.favouriteSquaresList.isEmpty()) {
+            adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
             favouriteSquares.setAdapter(adapterFavourite);
         } else {
             textFavouriteSquares.setVisibility(View.INVISIBLE);
@@ -91,33 +86,11 @@ public class ProfileFragment extends Fragment {
 
         ownedSquares = (ListView) v.findViewById(R.id.squares_owned);
         favouriteSquares = (ListView) v.findViewById(R.id.squares_preferred);
-        //recentSquares = (ListView) v.findViewById(R.id.squares_recents);
         profileImage = (ImageView) v.findViewById(R.id.user_avatar);
         username = (TextView) v.findViewById(R.id.userName);
         textOwnedSquares = (TextView) v.findViewById(R.id.text_owned_squares);
         textFavouriteSquares = (TextView) v.findViewById(R.id.text_favourite_squares);
         return v;
-    }
-
-    public void resetAdapters() {
-        ownedSquaresList = rootActivity.getOwnedSquaresList();
-        favouriteSquaresList = rootActivity.getFavouriteSquaresList();
-        ownedSquares.setAdapter(null);
-        favouriteSquares.setAdapter(null);
-        if (!ownedSquaresList.isEmpty()) {
-            adapterOwned = new SquareAdapter(getActivity(), ownedSquaresList);
-            ownedSquares.setAdapter(adapterOwned);
-            textOwnedSquares.setVisibility(View.VISIBLE);
-        } else {
-            textOwnedSquares.setVisibility(View.INVISIBLE);
-        }
-        if (!favouriteSquaresList.isEmpty()) {
-            adapterFavourite = new SquareAdapter(getActivity(), favouriteSquaresList);
-            favouriteSquares.setAdapter(adapterFavourite);
-            textFavouriteSquares.setVisibility(View.VISIBLE);
-        } else {
-            textFavouriteSquares.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override

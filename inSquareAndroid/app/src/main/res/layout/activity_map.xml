@@ -43,14 +43,16 @@
                 android:id="@+id/drawer_userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nome Cognome"
                 android:layout_gravity="center"
+                android:layout_toRightOf="@+id/drawer_avatar"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"
+                android:text="Nome Cognome"
                 android:textColor="#fff"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_toRightOf="@+id/drawer_avatar"
                 android:maxLines="2"
-                android:layout_marginTop="30dp" />
+                android:fontFamily="sans-serif-condensed"
+                />
         </RelativeLayout>
 
         <!-- List of Actions (pages) -->

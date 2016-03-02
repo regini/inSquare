@@ -19,24 +19,23 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
+import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by emanu on 25/02/2016.
  */
 public class SquareAdapter extends BaseAdapter {
 
+    private static final String TAG = "SquareAdapter";
     private MapActivity activity;
     private ArrayList data;
     private static LayoutInflater inflater = null;
     int i = 0;
-    private InSquareProfile userProfile;
 
     public SquareAdapter(Activity a, ArrayList d) {
 
@@ -45,14 +44,9 @@ public class SquareAdapter extends BaseAdapter {
 
         inflater = (LayoutInflater) activity.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        userProfile.getInstance(a.getApplicationContext());
     }
 
     public int getCount() {
-
-        if (data.size() <= 0)
-            return 1;
         return data.size();
     }
 
@@ -81,25 +75,23 @@ public class SquareAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(activity, ChatActivity.class);
-                    intent.putExtra(MapFragment.SQUARE_ID_TAG, square.getId());
-                    intent.putExtra(MapFragment.SQUARE_NAME_TAG, square.getName());
+                    intent.putExtra(MainMapFragment.SQUARE_TAG, square);
                     activity.startActivity(intent);
                 }
             });
 
             final ImageView star = (ImageView) vi.findViewById(R.id.square_star_icon);
             //icona gialla se è preferita
-            if (activity.getFavouriteSquaresList().contains(square)) {
-                star.setImageResource(R.drawable.star_icon_yellow);
+            if (InSquareProfile.favouriteSquaresList.contains(square)) {
+                star.setImageResource(R.drawable.heart_black);
             }
             //click sulla stella
             star.setOnClickListener(new View.OnClickListener() {
                 //sul click rimuove o aggiunge ai preferiti
                 @Override
                 public void onClick(View v) {
-                    if (activity.getFavouriteSquaresList().contains(square)) {
+                    if (InSquareProfile.favouriteSquaresList.contains(square)) {
                         favouriteSquare(Request.Method.DELETE, square);
-
                     } else {
                         favouriteSquare(Request.Method.POST, square);
                     }
@@ -132,46 +124,45 @@ public class SquareAdapter extends BaseAdapter {
     public void favouriteSquare(final int method, final Square square) {
         RequestQueue queue = Volley.newRequestQueue(activity);
         final String squareId = square.getId();
-        final String userId = userProfile.getUserId();
-        String url = "http://recapp-insquare.rhcloud.com/favouritesquares";
+        final String userId = InSquareProfile.getUserId();
+        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
+        url += "squareId=" + squareId;
+        url += "&userId=" + userId;
+        Log.d(TAG, "favouriteSquare: " + url);
         StringRequest postRequest = new StringRequest(method, url,
                 new Response.Listener<String>()
                 {
                     @Override
                     public void onResponse(String response) {
                         updateView(method, square);
-                        Log.d("FAVOURITE", "response => " + response);
+                        Log.d(TAG, "FAVOURITE response => " + response);
                     }
                 },
                 new Response.ErrorListener()
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("FAVOURITE","error => "+error.toString());
+                        Log.d(TAG, "FAVOURITE error => "+error.toString());
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("squareId", squareId);
-                params.put("userId", userId);
-                return params;
-            }
-        };
+        );
         queue.add(postRequest);
     }
 
     public void updateView (int method, Square square) {
+        // Checking the house is not empty!
+        if(InSquareProfile.favouriteSquaresList == null)
+        {
+            Log.d(TAG, "updateView: lista fav era null!");
+            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
+        }
+
         if (method == Request.Method.DELETE) {
-            //star.setImageResource(R.drawable.star_icon_empty);
-            activity.getFavouriteSquaresList().remove(square);
-            activity.getProfileFragment().resetAdapters();
+            InSquareProfile.favouriteSquaresList.remove(square);
+            notifyDataSetChanged();
         } else {
-            //star.setImageResource(R.drawable.star_icon_yellow);
-            activity.getFavouriteSquaresList().add(square);
-            activity.getProfileFragment().resetAdapters();
+            InSquareProfile.favouriteSquaresList.add(square);
+            notifyDataSetChanged();
         }
     }
 

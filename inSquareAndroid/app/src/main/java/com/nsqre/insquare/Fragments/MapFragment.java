@@ -122,10 +122,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     private FloatingActionButton mapFab;
     private Animation animationUp, animationDown;
     // Variabili per l'inizializzazione della Chat
-    public static final String SQUARE_ID_TAG = "SQUARE_URL";
-    public static final String SQUARE_NAME_TAG = "SQUARE_NAME";
-    private String mSquareId;
-    private String mSquareName;
+    public static final String SQUARE_TAG = "SQUARE_TAG";
+    private Square mSquare;
 
     public MapFragment() {
         // Required empty public constructor
@@ -179,8 +177,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                         .setAction("FloatingButton")
                         .build());
                 // [END FloatingButton_event]
-                intent.putExtra(SQUARE_ID_TAG, mSquareId);
-                intent.putExtra(SQUARE_NAME_TAG, mSquareName);
+                intent.putExtra(SQUARE_TAG, mSquare);
                 startActivity(intent);
             }
         });
@@ -500,18 +497,10 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                 null); // callback
         Square currentSquare = squareHashMap.get(marker);
 
-        setSquareId(currentSquare.getId());
-        setSquareName(marker.getTitle());
+        mSquare = currentSquare;
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
         return true;
-    }
-
-    public void setSquareName(String squareName) {
-        this.mSquareName = squareName;
-    }
-    public void setSquareId(String mSquareId) {
-        this.mSquareId = mSquareId;
     }
 
     @Override
@@ -530,8 +519,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
-        intent.putExtra(SQUARE_ID_TAG, s.getId());
-        intent.putExtra(SQUARE_NAME_TAG, s.getName());
+        intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);
     }
 

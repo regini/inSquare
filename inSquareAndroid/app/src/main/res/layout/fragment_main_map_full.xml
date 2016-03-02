@@ -35,28 +35,17 @@
                 />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
                 android:paddingLeft="@dimen/input_margin_side"
                 android:paddingStart="@dimen/input_margin_side"
                 android:paddingRight="@dimen/input_margin_side"
                 android:paddingEnd="@dimen/input_margin_side"
                 android:orientation="horizontal"
                 android:background="@color/white"
+                android:gravity="center_vertical"
                 >
 
-                <TextView
-                    android:id="@+id/bottom_sheet_square_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_weight="0.7"
-                    android:gravity="center_vertical"
-                    android:text="Seleziona un posto"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/colorAccent"
-                    android:fontFamily="sans-serif-condensed-light"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    />
+                <include layout="@layout/bottom_sheet_upper_text" />
 
                 <View
                     android:id="@+id/bottom_sheet_separator"

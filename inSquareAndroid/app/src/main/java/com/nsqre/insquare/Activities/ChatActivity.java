@@ -33,6 +33,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
@@ -40,11 +41,13 @@ import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Message;
 import com.nsqre.insquare.Utilities.MessageAdapter;
 import com.nsqre.insquare.Utilities.MessageDeserializer;
+import com.nsqre.insquare.Utilities.Square;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,6 +77,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private InSquareProfile mProfile;
 
+    private Menu mMenu;
+
+    private Square mSquare;
     private String mSquareId;
     private String mSquareName;
     private String mUsername;
@@ -147,8 +153,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Recuperiamo i dati passati dalla MapActivity
         Intent intent = getIntent();
 
-        mSquareId = intent.getStringExtra(MapFragment.SQUARE_ID_TAG);
-        mSquareName = intent.getStringExtra(MapFragment.SQUARE_NAME_TAG);
+        mSquare = (Square) intent.getSerializableExtra(MainMapFragment.SQUARE_TAG);
+        Log.d("CHAT", mSquare.toString());
+
+        mSquareId = mSquare.getId();
+        mSquareName = mSquare.getName();
 
         // Get Messaggi recenti
         getRecentMessages(RECENT_MESSAGES_NUM);
@@ -182,7 +191,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("GETRECENTI", error.toString());
+                Log.d(TAG, "GETRECENTI Error: " + error.toString());
             }
         });
         queue.add(stringRequest);
@@ -300,7 +309,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             e.printStackTrace();
         }
 
-        Log.d("profilo", InSquareProfile.getInstance(getApplicationContext()).toString());
+        Log.d(TAG, "profilo " + InSquareProfile.getInstance(getApplicationContext()).toString());
         //This is the callback that socket.io uses to understand that an event has been triggered
         mSocket.emit("sendMessage", data);
     }
@@ -396,10 +405,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_chat_actions, menu);
 
-        //TODO
-        //se non è tra i preferiti
-        menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
-        //else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
+        mMenu = menu;
+
+        if (mProfile.favouriteSquaresList.contains(mSquare))
+            menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
+        else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
 
         return true;
     }
@@ -437,7 +447,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        Log.d("VOLLEY","ServerResponse: "+response);
+                                        Log.d(TAG, "VOLLEY ServerResponse: "+response);
                                         CharSequence text = getString(R.string.thanks_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -446,7 +456,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                                 }, new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Log.d("VOLLEY", error.toString());
+                                        Log.d(TAG, "VOLLEY " + error.toString());
                                         CharSequence text = getString(R.string.error_feedback);
                                         int duration = Toast.LENGTH_SHORT;
                                         Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -468,9 +478,60 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     }
                 });
             case R.id.favourite_square_action:
-                //TODO rendi la square preferita
+                if (mProfile.favouriteSquaresList.contains(mSquare)) {
+                    favouriteSquare(Request.Method.DELETE, mSquare);
+                } else {
+                    favouriteSquare(Request.Method.POST, mSquare);
+                }
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    public void favouriteSquare(final int method, final Square square) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        final String squareId = square.getId();
+        final String userId = InSquareProfile.getUserId();
+        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
+        url += "squareId=" + squareId;
+        url += "&userId=" + userId;
+        Log.d(TAG, "favouriteSquare: " + url);
+        StringRequest postRequest = new StringRequest(method, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        updateList(method, square);
+                        Log.d(TAG, "FAVOURITE response => " + response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "FAVOURITE error => "+error.toString());
+                    }
+                }
+        );
+        queue.add(postRequest);
+    }
+
+    public void updateList (int method, Square square) {
+        // Checking the house is not empty!
+        if(InSquareProfile.favouriteSquaresList == null)
+        {
+            Log.d(TAG, "updateView: lista fav era null!");
+            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
+        }
+
+        if (method == Request.Method.DELETE) {
+            InSquareProfile.favouriteSquaresList.remove(square);
+            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+
+        } else {
+            InSquareProfile.favouriteSquaresList.add(square);
+            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
         }
     }
 

@@ -12,11 +12,6 @@ import java.util.Locale;
 
 public class Square implements Serializable {
 
-    public enum ActivityState
-    {
-        ASLEEP, AWOKEN, CAFFEINATED
-    }
-
     private String id;
     private String name;
     private double lat, lon;
@@ -76,8 +71,19 @@ public class Square implements Serializable {
 
     @Override
     public String toString() {
-        return id + " -- Name: " + name + "; Loc: " + lat + "," + lon
-                + "; favouredby: " + favouredBy + "; views: " + views;
+        return "Square{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", type='" + type + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", favouredBy=" + favouredBy +
+                ", views=" + views +
+                ", squareState=" + squareState +
+                ", lastMessageDate=" + lastMessageDate +
+                ", lastMessageDateString='" + lastMessageDateString + '\'' +
+                '}';
     }
 
     @Override
@@ -132,5 +138,25 @@ public class Square implements Serializable {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public long getFavouredBy() {
+        return favouredBy;
+    }
+
+    public long getViews() {
+        return views;
+    }
+
+    public SquareState getSquareState() {
+        return squareState;
+    }
+
+    public String getLastMessageDateString() {
+        return lastMessageDateString;
+    }
+
+    public Calendar getLastMessageDate() {
+        return lastMessageDate;
     }
 }
