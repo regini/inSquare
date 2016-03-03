@@ -7,12 +7,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.nsqre.insquare.Activities.MapActivity;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.SquareAdapter;
 
 public class RecentSquaresFragment extends Fragment {
 
     private static final String TAG = "RecentSquaresFragment";
+
+    private InSquareProfile userProfile;
+    private MapActivity rootActivity;
+    private ListView listRecent;
+    private SquareAdapter adapterRecents;
 
     public RecentSquaresFragment() {
         // Required empty public constructor
@@ -27,13 +36,24 @@ public class RecentSquaresFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rootActivity = (MapActivity) getActivity();
+        userProfile = InSquareProfile.getInstance(rootActivity.getApplicationContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recent_squares, container, false);
+        View v = inflater.inflate(R.layout.fragment_recent_squares, container, false);
+        listRecent = (ListView) v.findViewById(R.id.squares_recents);
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapterRecents = new SquareAdapter(rootActivity, userProfile.recentSquaresList);
+        listRecent.setAdapter(adapterRecents);
     }
 
     @Override
