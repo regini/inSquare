@@ -102,9 +102,6 @@ public class LoginActivity extends AppCompatActivity
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        sharedPreferences.edit().putInt("notificationCount", 0).apply();
-
         // Profilo statico perche' non puo' cambiare.
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());

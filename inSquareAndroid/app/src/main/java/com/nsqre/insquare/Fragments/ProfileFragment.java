@@ -2,6 +2,7 @@ package com.nsqre.insquare.Fragments;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -53,6 +54,8 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         super.onCreate(savedInstanceState);
         rootActivity = (MapActivity) getActivity();
         userProfile = InSquareProfile.getInstance(rootActivity.getApplicationContext());
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+        sharedPreferences.edit().clear().apply();
     }
 
     @Override

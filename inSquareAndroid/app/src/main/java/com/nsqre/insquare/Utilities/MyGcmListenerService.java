@@ -55,6 +55,7 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
         String squareName = data.getString("squareName");
+        String squareId = data.getString("squareId");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
@@ -64,7 +65,7 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-        sendNotification(message, squareName);
+        sendNotification(message, squareName, squareId);
 
     }
     // [END receive_message]
@@ -74,21 +75,40 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message, String squareName) {
+    private void sendNotification(String message, String squareName, String squareId) {
         Intent intent = new Intent(this, MapActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("profile", 2);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int notificationCount = sharedPreferences.getInt("notificationCount", 1) + 1;
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        int notificationCount = 0;
+        int squareCount;
+
+        squareCount = sharedPreferences.getInt("squareCount", 0);
+
+        if(!sharedPreferences.contains(squareId)) {
+            sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
+        }
+        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
+
+        for(String square : sharedPreferences.getAll().keySet()) {
+            if(!square.equals("squareCount")) {
+                notificationCount += sharedPreferences.getInt(square, 0);
+            }
+        }
+
+        squareCount = sharedPreferences.getInt("squareCount", 0);
+
+        Log.d(TAG, sharedPreferences.getAll().toString());
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.nsqre_map_pin)
                 .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
-                .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi!" : message)
+                .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi in " + squareCount
+                        + " piazze" : message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setVibrate(new long[] { 300, 300, 300, 300, 300 })
@@ -97,8 +117,6 @@ public class MyGcmListenerService extends GcmListenerService {
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        sharedPreferences.edit().putInt("notificationCount", notificationCount).apply();
 
         notificationManager.notify(0, notificationBuilder.build());
     }
