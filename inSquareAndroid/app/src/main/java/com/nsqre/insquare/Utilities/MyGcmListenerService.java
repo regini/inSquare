@@ -69,6 +69,7 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotification(String message, String squareName) {
         Intent intent = new Intent(this, MapActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("profile", 2);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

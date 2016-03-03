@@ -153,6 +153,10 @@ public class MapActivity extends AppCompatActivity
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
+        if(getIntent().getExtras() != null) {
+            selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+        }
+
         selectItemFromDrawer(0);
     }
 
