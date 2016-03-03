@@ -12,6 +12,7 @@ import java.util.Locale;
 
 public class Square implements Serializable {
 
+    private static final String TAG = "Square";
     private String id;
     private String name;
     private double lat, lon;
@@ -66,7 +67,7 @@ public class Square implements Serializable {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Log.d("NEWSQUARE", this.toString());
+        Log.d(TAG, "NEWSQUARE" + this.toString());
     }
 
     @Override
