@@ -15,6 +15,7 @@ public class Square implements Serializable {
     private static final String TAG = "Square";
     private String id;
     private String name;
+    private String description;
     private double lat, lon;
     private String type;
     private String ownerId;
@@ -32,9 +33,10 @@ public class Square implements Serializable {
         this.ownerId = ownerId;
     }
 
-    public Square(String id, String name, String geoloc, String ownerId, String favouredBy, String views, String state, String lastMessageDate, Locale l) {
+    public Square(String id, String name, String description, String geoloc, String ownerId, String favouredBy, String views, String state, String lastMessageDate, Locale l) {
         this.id = id;
         this.name = name;
+        this.description = description;
 
         String[] parts = geoloc.split(",", 2);
         lat = Double.parseDouble(parts[0]);
@@ -72,8 +74,19 @@ public class Square implements Serializable {
 
     @Override
     public String toString() {
-        return id + " -- Name: " + name + "; Loc: " + lat + "," + lon
-                + "; favouredby: " + favouredBy + "; views: " + views;
+        return "Square{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", type='" + type + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", favouredBy=" + favouredBy +
+                ", views=" + views +
+                ", squareState=" + squareState +
+                ", lastMessageDate=" + lastMessageDate +
+                ", lastMessageDateString='" + lastMessageDateString + '\'' +
+                '}';
     }
 
     @Override
@@ -96,6 +109,14 @@ public class Square implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public double getLat() {

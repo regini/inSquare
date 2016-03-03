@@ -81,7 +81,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+<<<<<<< HEAD
+            android:scrollbars="vertical"
+            android:layout_below="@+id/user_profile">
+            <TextView
+                android:id="@+id/text_owned_squares"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="Squares create"
+                android:textSize="22dp"
+                android:textColor="#000000"
+                android:fontFamily="sans-serif-condensed"
+                />
+=======
             android:layout_below="@+id/profile_tab_layout">
+>>>>>>> 7501e406eddffa61a31fb95ba7c78864b2869d78
             <ListView
                 android:id="@+id/squares_list"
                 android:layout_width="match_parent"
@@ -90,6 +106,22 @@
                 android:id="@+id/profile_text_empty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+<<<<<<< HEAD
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@+id/squares_owned"
+                android:text="Squares preferite"
+                android:textSize="22dp"
+                android:textColor="#000000"
+                android:fontFamily="sans-serif-condensed"
+
+                />
+            <ListView
+                android:id="@+id/squares_preferred"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_favourite_squares"/>
+=======
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
                 android:textColor="#000"
@@ -97,6 +129,7 @@
                 android:textStyle="bold"
                 android:textAlignment="center"
                 android:visibility="invisible"/>
+>>>>>>> 7501e406eddffa61a31fb95ba7c78864b2869d78
         </RelativeLayout>
         -->
     </RelativeLayout>

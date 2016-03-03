@@ -1,11 +1,13 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -47,6 +49,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
+import com.nsqre.insquare.Utilities.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
@@ -95,6 +98,7 @@ public class MapActivity extends AppCompatActivity
         setContentView(R.layout.activity_map);
         getOwnedSquares();
         getFavouriteSquares();
+        getRecentSquares();
 
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -152,7 +156,15 @@ public class MapActivity extends AppCompatActivity
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
-        selectItemFromDrawer(0);
+        if(getIntent().getExtras() != null) {
+            selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+        }
+        else {
+            selectItemFromDrawer(0);
+        }
+
+        Intent idService = new Intent(this, MyInstanceIDListenerService.class);
+        startService(idService);
     }
 
     @Override
@@ -458,7 +470,7 @@ public class MapActivity extends AppCompatActivity
                     @Override
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
-                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
                         Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
@@ -471,6 +483,39 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "GETFAVOURITESQUARES " + error.toString());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    private void getRecentSquares() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+
+        String url = String.format("http://recapp-insquare.rhcloud.com/recentSquares/%1$s",
+                InSquareProfile.getUserId());
+
+        Log.d(TAG, "getRecentSquares: " + url);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        GsonBuilder b = new GsonBuilder();
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+                        Log.d(TAG, "onResponse: " + response);
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square[] squares = gson.fromJson(response, Square[].class);
+                        InSquareProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        Log.d(TAG, "onResponse: ho ottenuto RECENTS con successo!");
+                        Log.d(TAG, "onResponse: " + InSquareProfile.recentSquaresList.toString());
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "GETRECENTQUARES " + error.toString());
             }
         });
         queue.add(stringRequest);

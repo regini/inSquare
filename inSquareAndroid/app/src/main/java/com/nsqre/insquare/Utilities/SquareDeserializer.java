@@ -37,6 +37,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         "_score": null,
         "_source": {
           "name": "Prova",
+          "description": "cose",
           "searchName": "Prova",
           "geo_loc": "41.566872185995614,12.440877668559551",
           "messages": [
@@ -58,6 +59,13 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         final String id = jsonObject.get("_id").getAsString();
         final JsonObject source = jsonObject.get("_source").getAsJsonObject();
         final String name = source.get("name").getAsString();
+        final String description;
+        if(source.get("description") != null){
+            description = source.get("description").getAsString();
+        }
+        else {
+            description = "";
+        }
         final String geoloc = source.get("geo_loc").getAsString();
         final String ownerid;
         if(source.get("ownerId") != null){
@@ -77,7 +85,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         catch (Exception e) {
             e.printStackTrace();
         }
-        final Square square = new Square(id, name, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
+        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
         return square;
     }
 }

@@ -20,16 +20,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.nsqre.insquare.Activities.MainActivity;
 import com.nsqre.insquare.Activities.MapActivity;
+import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.R;
+
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -56,20 +64,8 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         sendNotification(message, squareName);
-        // [END_EXCLUDE]
+
     }
     // [END receive_message]
 
@@ -81,23 +77,29 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotification(String message, String squareName) {
         Intent intent = new Intent(this, MapActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("profile", 2);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-        
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int notificationCount = sharedPreferences.getInt("notificationCount", 1) + 1;
+
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.map_marker_radius)
-                .setContentTitle(squareName)
-                .setContentText(message)
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.nsqre_map_pin)
+                .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
+                .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi!" : message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setVibrate(new long[] { 500, 500, 500, 500, 500 })
+                .setVibrate(new long[] { 300, 300, 300, 300, 300 })
                 .setLights(Color.RED, 1000, 3000)
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        sharedPreferences.edit().putInt("notificationCount", notificationCount).apply();
+
+        notificationManager.notify(0, notificationBuilder.build());
     }
 }
