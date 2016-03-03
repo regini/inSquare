@@ -2,6 +2,7 @@ package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
@@ -161,6 +162,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         // Get Messaggi recenti
         getRecentMessages(RECENT_MESSAGES_NUM);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        if(sharedPreferences.contains(mSquareId)) {
+            sharedPreferences.edit().putInt(mSquareId, 0).apply();
+            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+        }
     }
 
     private void getRecentMessages(int quantity) {
