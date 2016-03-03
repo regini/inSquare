@@ -64,7 +64,6 @@ import java.util.Map;
 public class MapActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener
 {
-
     private static final String TAG = "MapActivity";
 
     private float startTouchY;
