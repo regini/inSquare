@@ -22,19 +22,30 @@
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/square_avatar"
+        android:layout_toLeftOf="@+id/counter"
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold" />
     <TextView
+        android:id="@+id/square_item_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/square_item_id"
         android:layout_marginLeft="5dp"
-        android:text="Nome del creatore"
         android:layout_below="@+id/square_item_name"
         android:layout_toRightOf="@+id/square_avatar"
+        android:layout_toLeftOf="@+id/counter"
+        android:text="Nome del creatore"
         android:textColor="#000000"
         android:textSize="10sp" />
+
+    <TextView android:id="@+id/counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/square_star_icon"
+        android:background="@drawable/counter_bg"
+        android:textColor="#000"/>
 
     <ImageView
         android:id="@+id/square_star_icon"

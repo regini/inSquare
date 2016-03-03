@@ -31,6 +31,7 @@ public class InSquareProfile {
 
     public static ArrayList<Square> ownedSquaresList;
     public static ArrayList<Square> favouriteSquaresList;
+    public static ArrayList<Square> recentSquaresList;
 
     public static String userId;
     public static String username;

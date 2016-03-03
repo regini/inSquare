@@ -3,6 +3,8 @@ package com.nsqre.insquare.Utilities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,6 +103,18 @@ public class SquareAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.name = (TextView) vi.findViewById(R.id.square_item_name);
             holder.id = (TextView) vi.findViewById(R.id.square_item_id);
+
+            //contatore di nuovi messaggi
+            TextView txtCount = (TextView) vi.findViewById(R.id.counter);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+            //se non trova la chiave ritorna 0
+            int squaresNewMessages = sharedPreferences.getInt("chiave", 0); //TODO usare la chiave di stefano
+            if (squaresNewMessages == 0) {
+                txtCount.setVisibility(View.INVISIBLE);
+            } else {
+                txtCount.setText(squaresNewMessages);
+            }
+
 
             /************  Set holder with LayoutInflater ************/
             vi.setTag(holder);
