@@ -503,18 +503,20 @@ public class MainMapFragment extends Fragment
         mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
+        final EditText descriptionEditText = (EditText) mDialog.findViewById((R.id.descr_square));
         TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
         Button crea = (Button) mDialog.findViewById(R.id.button_crea);
         crea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String squareName = usernameEditText.getText().toString().trim();
+                String squareDescr = descriptionEditText.getText().toString().trim();
                 if (!TextUtils.isEmpty(squareName)) {
                     Marker m = createSquarePin(latLng, squareName);
                     // Richiesta Volley POST per la creazione di piazze
                     // Si occupa anche di creare e aggiungere la nuova Square al HashMap
                     String ownerId = InSquareProfile.getUserId();
-                    createSquarePostRequest(squareName, lat, lon, m, ownerId);
+                    createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
                     mDialog.dismiss();
                 }
             }
@@ -522,6 +524,7 @@ public class MainMapFragment extends Fragment
     }
 
     private void createSquarePostRequest(final String squareName,
+                                         final String squareDescr,
                                          final String latitude,
                                          final String longitude,
                                          final Marker marker,
@@ -566,6 +569,7 @@ public class MainMapFragment extends Fragment
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("name", squareName);
+                params.put("description", squareDescr);
                 params.put("lat", latitude);
                 params.put("lon", longitude);
                 params.put("ownerId",ownerId);
