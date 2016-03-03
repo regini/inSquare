@@ -80,7 +80,7 @@ public class MyGcmListenerService extends GcmListenerService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setVibrate(new long[] { 500, 500, 500, 500, 500 })
+                .setVibrate(new long[] { 300, 300, 300, 300, 300 })
                 .setLights(Color.RED, 1000, 3000)
                 .setContentIntent(pendingIntent);
 

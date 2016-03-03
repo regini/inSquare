@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
@@ -47,6 +48,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
+import com.nsqre.insquare.Utilities.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
@@ -156,8 +158,12 @@ public class MapActivity extends AppCompatActivity
         if(getIntent().getExtras() != null) {
             selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
         }
+        else {
+            selectItemFromDrawer(0);
+        }
 
-        selectItemFromDrawer(0);
+        Intent idService = new Intent(this, MyInstanceIDListenerService.class);
+        startService(idService);
     }
 
     @Override
