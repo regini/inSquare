@@ -417,7 +417,11 @@ public class MainMapFragment extends Fragment
                         {
                             squarePins.put(s.getId(), s);
                         }
-                        // Rimuovere quelle di troppo
+                        for(Marker m : squareHashMap.keySet())
+                        {
+                            m.remove();
+                        }
+                        squareHashMap.clear();
                         for(Square closeSquare: squarePins.values())
                         {
                             LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
