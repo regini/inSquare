@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:hint="@string/nome_square"
+            android:textColor="#000"
             android:ems="30"
             android:singleLine="true"
             />
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:hint="@string/descrizione_square"
+            android:textColor="#000"
             android:ems="30"
             />
     </android.support.design.widget.TextInputLayout>
