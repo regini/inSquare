@@ -46,14 +46,14 @@ public class RecentSquaresFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recent_squares, container, false);
         listRecent = (ListView) v.findViewById(R.id.squares_recents);
+        adapterRecents = new SquareAdapter(rootActivity, userProfile.recentSquaresList);
+        listRecent.setAdapter(adapterRecents);
         return v;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        adapterRecents = new SquareAdapter(rootActivity, userProfile.recentSquaresList);
-        listRecent.setAdapter(adapterRecents);
     }
 
     @Override

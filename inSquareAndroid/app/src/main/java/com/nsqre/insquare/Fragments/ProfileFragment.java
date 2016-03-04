@@ -97,8 +97,10 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
 
         //gestisce il caso in cui non ho piazze create
         //tablayout.gettab con l'index e poi .select(), non triggera onTabSelected
-        if (!InSquareProfile.ownedSquaresList.isEmpty()) {
-            squaresList.setAdapter(adapterOwned);
+        if (!InSquareProfile.favouriteSquaresList.isEmpty()) {
+//        if (!InSquareProfile.ownedSquaresList.isEmpty()) {
+            squaresList.setAdapter(adapterFavourite);
+//            squaresList.setAdapter(adapterOwned);
             emptyText.setVisibility(View.INVISIBLE);
         } else {
             emptyText.setVisibility(View.VISIBLE);
