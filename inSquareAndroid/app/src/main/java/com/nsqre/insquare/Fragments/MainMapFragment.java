@@ -539,23 +539,13 @@ public class MainMapFragment extends Fragment
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "Create Square response: " + response);
-                        try {
-                            /*
-                                Devo recuperare ID della Square dal responso del server
-                                per poter mantenere coerenti le strutture dati della mappa
-                            */
-
-                            JSONObject o = new JSONObject(response);
-                            String squareId = o.getString("_id");
-                            String name = o.getString("name");
-                            double lat = Double.parseDouble(latitude);
-                            double lon = Double.parseDouble(longitude);
-                            String owner = o.getString("ownerId");
-                            Square s = new Square(squareId, name, lat, lon, "geo_point",owner);
-                            squareHashMap.put(marker, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        GsonBuilder b = new GsonBuilder();
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+                        Log.d(TAG, "onResponse: " + response);
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square s = gson.fromJson(response, Square.class);
+                        squareHashMap.put(marker, s);
 
                         Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
                     }

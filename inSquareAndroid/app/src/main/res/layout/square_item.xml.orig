@@ -26,7 +26,11 @@
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/square_avatar"
+<<<<<<< HEAD
+        android:text="#Nome della piazza"
+=======
         android:layout_toLeftOf="@+id/counter"
+>>>>>>> 7501e406eddffa61a31fb95ba7c78864b2869d78
         android:textColor="#000000"
         android:textSize="18sp"
         android:fontFamily="sans-serif-condensed"
@@ -38,8 +42,13 @@
         android:layout_marginLeft="5dp"
         android:layout_below="@+id/square_item_name"
         android:layout_toRightOf="@+id/square_avatar"
+<<<<<<< HEAD
+        android:text="Nome del creatore"
+        android:textSize="10sp"
+=======
         android:layout_toLeftOf="@+id/counter"
         android:text="Nome del creatore"
+>>>>>>> 7501e406eddffa61a31fb95ba7c78864b2869d78
         android:textColor="#000000"
         android:fontFamily="sans-serif-condensed-light"
         />
