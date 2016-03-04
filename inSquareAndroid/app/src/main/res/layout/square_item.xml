@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_centerVertical="true"
-    android:paddingLeft="16dp"
-    android:padding="10dp"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/activity_horizontal_margin"
     android:background="@color/colorAccentLightest"
     >
 
@@ -12,55 +10,55 @@
         android:id="@+id/square_avatar"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_marginRight="10dp"
         android:background="@drawable/nsqre_map_pin"
+        android:layout_centerVertical="true"
         />
 
-    <TextView
-        android:id="@+id/square_item_name"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/square_avatar"
-        android:layout_toLeftOf="@+id/counter"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif-condensed"
-        />
-    <TextView
-        android:id="@+id/square_item_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_below="@+id/square_item_name"
-        android:layout_toRightOf="@+id/square_avatar"
-        android:layout_toLeftOf="@+id/counter"
-        android:text="Nome del creatore"
-        android:textColor="#000000"
-        android:fontFamily="sans-serif-condensed-light"
-        />
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/square_avatar"
+        android:layout_centerVertical="true"
+        >
+        <TextView
+            android:id="@+id/square_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Square Name"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-condensed"
+            />
+        <TextView
+            android:id="@+id/square_item_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ultima attivita'"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif-condensed-light"
+            />
+    </LinearLayout>
 
     <TextView android:id="@+id/counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/square_fav_icon"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@+id/square_star_icon"
+        android:layout_centerVertical="true"
         android:background="@drawable/counter_bg"
-        android:textColor="#000"/>
+        android:textColor="@color/white"
+        android:text="1"
+        />
 
     <ImageView
-        android:id="@+id/square_star_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/heart_border_black"
+        android:id="@+id/square_fav_icon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="5dp"
+        android:src="@drawable/heart_border_black"
         />
 
 </RelativeLayout>

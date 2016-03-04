@@ -23,6 +23,7 @@ public class Square implements Serializable {
     private SquareState squareState;
     private Calendar lastMessageDate;
     private String lastMessageDateString;
+    private Locale myLocale;
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
@@ -69,7 +70,8 @@ public class Square implements Serializable {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "NEWSQUARE" + this.toString());
+        this.myLocale = l;
+//        Log.d(TAG, "NEWSQUARE:\n" + this.toString());
     }
 
     @Override
@@ -169,5 +171,34 @@ public class Square implements Serializable {
 
     public Calendar getLastMessageDate() {
         return lastMessageDate;
+    }
+
+    public String formatTime()
+    {
+        String timetoShow = "";
+        Calendar c = Calendar.getInstance();
+        int tYear = c.get(Calendar.YEAR);
+        int tDay = c.get(Calendar.DAY_OF_MONTH);
+
+        Calendar msgCal = this.getLastMessageDate();
+        int mYear = msgCal.get(Calendar.YEAR);
+        int mDay = msgCal.get(Calendar.DAY_OF_MONTH);
+
+        DateFormat df;
+        if(mYear != tYear)
+        {
+            df = new SimpleDateFormat("MMM d, ''yy, HH:mm", this.myLocale);
+        }else if(mDay != tDay)
+        {
+            df = new SimpleDateFormat("MMM d, HH:mm", this.myLocale);
+        }else
+        {
+            df = new SimpleDateFormat("HH:mm", this.myLocale);
+            timetoShow += "Oggi, ";
+        }
+
+        timetoShow += df.format(msgCal.getTime());
+        Log.d(TAG, "formatTime: " + timetoShow);
+        return "Ultimo messaggio: " + timetoShow;
     }
 }

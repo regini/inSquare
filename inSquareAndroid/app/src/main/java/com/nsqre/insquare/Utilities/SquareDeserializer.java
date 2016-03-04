@@ -1,7 +1,5 @@
 package com.nsqre.insquare.Utilities;
 
-import android.util.Log;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -53,7 +51,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
        ==============
          */
 
-        Log.d(TAG, "deserialize: " + json.toString());
+//        Log.d(TAG, "deserialize: " + json.toString());
 
         final JsonObject jsonObject = json.getAsJsonObject();
         final String id = jsonObject.get("_id").getAsString();

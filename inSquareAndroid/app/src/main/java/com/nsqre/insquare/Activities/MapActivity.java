@@ -487,7 +487,7 @@ public class MapActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
-    private void getRecentSquares() {
+    public void getRecentSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
 
@@ -508,8 +508,6 @@ public class MapActivity extends AppCompatActivity
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
                         InSquareProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        Log.d(TAG, "onResponse: ho ottenuto RECENTS con successo!");
-                        Log.d(TAG, "onResponse: " + InSquareProfile.recentSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override

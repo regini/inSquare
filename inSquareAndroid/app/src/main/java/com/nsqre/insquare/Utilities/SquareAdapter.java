@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.android.volley.toolbox.Volley;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.MainMapFragment;
-import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
@@ -82,7 +80,7 @@ public class SquareAdapter extends BaseAdapter {
                 }
             });
 
-            final ImageView star = (ImageView) vi.findViewById(R.id.square_star_icon);
+            final ImageView star = (ImageView) vi.findViewById(R.id.square_fav_icon);
             //icona gialla se è preferita
             if (InSquareProfile.favouriteSquaresList.contains(square)) {
                 star.setImageResource(R.drawable.heart_black);
@@ -106,7 +104,7 @@ public class SquareAdapter extends BaseAdapter {
 
             //contatore di nuovi messaggi
             TextView txtCount = (TextView) vi.findViewById(R.id.counter);
-            SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP",Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
             //se non trova la chiave ritorna 0
             int squaresNewMessages = sharedPreferences.getInt(square.getId(), 0);
             if (squaresNewMessages == 0) {
@@ -130,7 +128,7 @@ public class SquareAdapter extends BaseAdapter {
             Square s = (Square)data.get(position);
             /************  Set Model values in Holder elements ***********/
             holder.name.setText( s.getName() );
-            holder.id.setText( s.getOwnerId());
+            holder.id.setText( s.formatTime() );
         }
         return vi;
     }

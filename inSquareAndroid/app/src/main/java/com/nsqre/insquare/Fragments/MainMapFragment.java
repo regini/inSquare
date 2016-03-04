@@ -13,7 +13,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,20 +60,9 @@ import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class MainMapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -115,13 +104,15 @@ public class MainMapFragment extends Fragment
     private MapActivity rootMapActivity;
     private MainActivity rootMainActivity;
 
+    private View bottomSheetSeparator;
     private TextView bottomSheetSquareName;
     private ImageButton bottomSheetButton;
+    private LinearLayout bottomSheetUpperLinearLayout;
+    private LinearLayout bottomSheetLowerLinearLayout;
+
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
-
     private Tracker mTracker;
-
     // Variabili per l'inizializzazione della Chat
     public static final String SQUARE_TAG = "SQUARE_TAG";
 
@@ -162,10 +153,26 @@ public class MainMapFragment extends Fragment
 
         // Recuperiamo un po' di riferimenti ai layout
         bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
+        bottomSheetButton.setVisibility(View.GONE);
+
+        bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
+        bottomSheetSeparator.setVisibility(View.GONE);
+
         bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
+
         bottomSheetSquareActivity = (TextView) v.findViewById(R.id.bottom_sheet_last_activity);
         bottomSheetSquareActivity.setVisibility(View.GONE);
-//        bottomSheetList = (RecyclerView) v.findViewById(R.id.bottom_sheet_list);
+
+        bottomSheetUpperLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_upper_ll);
+
+        bottomSheetLowerLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_lower_ll);
+        bottomSheetLowerLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Click listener che intercetta i click sul bottom sliding drawer
+                Log.d(TAG, "onClick: Clicky");
+            }
+        });
 
         FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
         BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
@@ -407,7 +414,7 @@ public class MainMapFragment extends Fragment
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "onResponse: " + response);
+//                        Log.d(TAG, "Get Closest Squares onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
@@ -541,7 +548,7 @@ public class MainMapFragment extends Fragment
                         Log.d(TAG, "Create Square response: " + response);
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "onResponse: " + response);
+                        Log.d(TAG, "Creat Post onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square s = gson.fromJson(response, Square.class);
@@ -611,9 +618,8 @@ public class MainMapFragment extends Fragment
 
         bottomSheetSquareName.setText(text);
         bottomSheetSquareActivity.setVisibility(View.VISIBLE);
-        String lastActivity = formatTime(currentSquare);
-        Log.d(TAG, "onMarkerClick: " + lastActivity);
-        bottomSheetSquareActivity.setText(lastActivity);
+        Log.d(TAG, "onMarkerClick: " + currentSquare.formatTime());
+        bottomSheetSquareActivity.setText(currentSquare.formatTime());
 
         // Controllo sulla lista dell'utente
         if(InSquareProfile.isFavourite(currentSquare.getId()))
@@ -637,39 +643,17 @@ public class MainMapFragment extends Fragment
                 favouriteSquare(method,currentSquare);
             }
         });
-
         bottomSheetButton.setVisibility(View.VISIBLE);
+        bottomSheetSeparator.setVisibility(View.VISIBLE);
+
+        bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChatActivity(marker);
+            }
+        });
 
         return true;
-    }
-
-    private String formatTime(Square selectedSquare)
-    {
-        String timetoShow = "";
-        Calendar c = Calendar.getInstance();
-        int tYear = c.get(Calendar.YEAR);
-        int tDay = c.get(Calendar.DAY_OF_MONTH);
-
-        Calendar msgCal = selectedSquare.getLastMessageDate();
-        int mYear = msgCal.get(Calendar.YEAR);
-        int mDay = msgCal.get(Calendar.DAY_OF_MONTH);
-
-        Locale l = getContext().getResources().getConfiguration().locale;
-        DateFormat df;
-        if(mYear != tYear)
-        {
-            df = new SimpleDateFormat("MMM d, ''yy, HH:mm", l);
-        }else if(mDay != tDay)
-        {
-            df = new SimpleDateFormat("MMM d, HH:mm", l);
-        }else
-        {
-            df = new SimpleDateFormat("HH:mm", l);
-        }
-
-        timetoShow = df.format(msgCal.getTime());
-        Log.d(TAG, "formatTime: " + timetoShow);
-        return "Attiva: " + timetoShow;
     }
 
     public void favouriteSquare(final int method, final Square square) {
