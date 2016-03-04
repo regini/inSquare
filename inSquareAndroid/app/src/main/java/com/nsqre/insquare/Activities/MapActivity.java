@@ -425,7 +425,7 @@ public class MapActivity extends AppCompatActivity
         mDrawerLayout.closeDrawer(mDrawerPane);
     }
 
-    private void getOwnedSquares() {
+    public void getOwnedSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
@@ -442,8 +442,8 @@ public class MapActivity extends AppCompatActivity
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
                         InSquareProfile.ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
-                        Log.d(TAG, "onResponse: " + InSquareProfile.ownedSquaresList.toString());
+//                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
+                        Log.d(TAG, "onResponse Owned: " + InSquareProfile.ownedSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -454,7 +454,7 @@ public class MapActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
-    private void getFavouriteSquares() {
+    public void getFavouriteSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
 
@@ -470,13 +470,12 @@ public class MapActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "onResponse: " + response);
+//                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
                         InSquareProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        Log.d(TAG, "onResponse: ho ottenuto FAVS con successo!");
-                        Log.d(TAG, "onResponse: " + InSquareProfile.favouriteSquaresList.toString());
+                        Log.d(TAG, "onResponse Favourites: " + InSquareProfile.favouriteSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -490,7 +489,6 @@ public class MapActivity extends AppCompatActivity
     public void getRecentSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-
         String url = String.format("http://recapp-insquare.rhcloud.com/recentSquares/%1$s",
                 InSquareProfile.getUserId());
 
@@ -503,11 +501,12 @@ public class MapActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "onResponse: " + response);
+//                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
                         InSquareProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        Log.d(TAG, "onResponse Recents: " + InSquareProfile.recentSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override

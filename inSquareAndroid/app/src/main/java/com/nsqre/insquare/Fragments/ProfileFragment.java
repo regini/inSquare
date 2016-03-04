@@ -1,8 +1,6 @@
 package com.nsqre.insquare.Fragments;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.nsqre.insquare.Activities.MapActivity;
@@ -61,17 +58,7 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         super.onStart();
         //TODO sostituire con un placeholder del profilo
         //setta il placeholder, mentre attende il download dell'immagine
-        Bitmap icon = BitmapFactory.decodeResource(rootActivity.getResources(),
-                R.drawable.logo_icon_96);
-        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
-        profileImage.setImageBitmap(circularBitmap);
-
-        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
-        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
-
-        new DownloadImageTask(profileImage)
-                .execute(userProfile.getPictureUrl());
-        username.setText(userProfile.getUsername());
+        setupTabLayout();
     }
 
     @Override
@@ -85,15 +72,29 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         username = (TextView) v.findViewById(R.id.userName);
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
-        setupTabLayout();
+
+        Bitmap icon = BitmapFactory.decodeResource(rootActivity.getResources(),
+                R.drawable.logo_icon_96);
+        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
+        profileImage.setImageBitmap(circularBitmap);
+
+        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
+        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
+
+        new DownloadImageTask(profileImage)
+                .execute(userProfile.getPictureUrl());
+        username.setText(userProfile.getUsername());
+
+
         return v;
     }
 
     private void setupTabLayout() {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.addTab(tabLayout.newTab().setText(TAB_OWNED));
         tabLayout.addTab(tabLayout.newTab().setText(TAB_FAVOURITE));
+        tabLayout.addTab(tabLayout.newTab().setText(TAB_OWNED));
         tabLayout.setOnTabSelectedListener(this);
+
         //gestisce il caso in cui non ho piazze create
         //tablayout.gettab con l'index e poi .select(), non triggera onTabSelected
         if (!InSquareProfile.ownedSquaresList.isEmpty()) {
@@ -125,7 +126,8 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
     public void onTabSelected(TabLayout.Tab tab) {
         Log.d(TAG, "onTabSelected: I've selected " + tab.getText());
 
-        squaresList.setAdapter(null);
+        adapterFavourite.notifyDataSetChanged();
+        adapterOwned.notifyDataSetChanged();
 
         if (tab.getText() == TAB_OWNED) {
             if (!InSquareProfile.ownedSquaresList.isEmpty()) {
@@ -155,6 +157,6 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-
+        onTabSelected(tab);
     }
 }

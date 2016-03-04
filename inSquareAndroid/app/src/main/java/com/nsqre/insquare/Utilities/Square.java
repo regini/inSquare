@@ -1,7 +1,5 @@
 package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 6/2/16  */
 
-import android.util.Log;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -198,7 +196,7 @@ public class Square implements Serializable {
         }
 
         timetoShow += df.format(msgCal.getTime());
-        Log.d(TAG, "formatTime: " + timetoShow);
+
         return "Ultimo messaggio: " + timetoShow;
     }
 }

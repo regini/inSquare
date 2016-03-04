@@ -68,6 +68,7 @@
             />
 
         <RelativeLayout
+            android:id="@+id/profile_main_content_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profile_tab_layout"
