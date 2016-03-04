@@ -58,7 +58,8 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         super.onStart();
         //TODO sostituire con un placeholder del profilo
         //setta il placeholder, mentre attende il download dell'immagine
-        setupTabLayout();
+        if(tabLayout.getTabCount() == 0)
+            setupTabLayout();
     }
 
     @Override

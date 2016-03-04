@@ -110,7 +110,7 @@ public class SquareAdapter extends BaseAdapter {
             if (squaresNewMessages == 0) {
                 txtCount.setVisibility(View.INVISIBLE);
             } else {
-                txtCount.setText(squaresNewMessages);
+                txtCount.setText(String.valueOf(squaresNewMessages));
             }
 
 
