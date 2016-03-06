@@ -251,11 +251,7 @@ public class LoginActivity extends AppCompatActivity
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
-        if(!user.getPicture().equals("")) {
-            profile.pictureUrl = user.getPicture();
-        } else {
-            profile.pictureUrl = "";
-        }
+        profile.pictureUrl = user.getPicture();
         profile.save(getApplicationContext());
         if (checkPlayServices()) {
             Intent intent = new Intent(this, RegistrationIntentService.class);
