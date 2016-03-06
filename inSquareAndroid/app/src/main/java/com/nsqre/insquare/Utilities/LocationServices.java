@@ -137,8 +137,9 @@ public class LocationServices extends Service
     }
 
     private void sendLocationToServer(final Location lastLocation) {
+        userProfile.getInstance(getApplicationContext());
         RequestQueue queue = Volley.newRequestQueue(LocationServices.this);
-        String url = (getString(R.string.userLocationUrl));
+        String url = getString(R.string.userUrl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.PATCH, url,
                 new Response.Listener<String>() {

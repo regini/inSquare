@@ -40,7 +40,7 @@
 
 
     <string name="chatUrl">http://recapp-insquare.rhcloud.com/squares</string>
-    <string name="userLocationUrl">http://recapp-insquare.rhcloud.com/user</string>
+    <string name="userUrl">http://recapp-insquare.rhcloud.com/user</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
