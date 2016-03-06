@@ -30,6 +30,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
         "createdAt": "2016-02-25T14:16:37.757Z",
         "msg_id": "56cf0cc54b055cfe68327c5c",
         "from": "56c094748b4cc88bba9b32c7"
+        "userSpot": "true"
        }
        ==============
          */
@@ -40,8 +41,9 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
         final String createdAt = jsonObject.get("createdAt").getAsString();
         final String msg_id = jsonObject.get("msg_id").getAsString();
         final String senderId = jsonObject.get("from").getAsString();
+        final Boolean userSpot = jsonObject.get("userSpot").getAsBoolean();
 
-        final Message msg = new Message(msg_id, text, sender, senderId,createdAt, this.locale);
+        final Message msg = new Message(msg_id, text, sender, senderId, createdAt, userSpot, this.locale);
         return msg;
     }
 }

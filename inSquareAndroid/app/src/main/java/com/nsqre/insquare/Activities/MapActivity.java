@@ -48,6 +48,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
+import com.nsqre.insquare.Utilities.LocationServices;
 import com.nsqre.insquare.Utilities.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Utilities.Square;
@@ -164,6 +165,8 @@ public class MapActivity extends AppCompatActivity
 
         Intent idService = new Intent(this, MyInstanceIDListenerService.class);
         startService(idService);
+        Intent locationService = new Intent(this, LocationServices.class);
+        startService(locationService);
     }
 
     @Override

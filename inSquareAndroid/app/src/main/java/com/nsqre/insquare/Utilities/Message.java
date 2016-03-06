@@ -16,6 +16,7 @@ public class Message {
     private String from;
     private String createdAt;
     private Calendar calendar;
+    private Boolean userSpot;
 
     public Message(String m, String username, String userId, Locale l)
     {
@@ -29,12 +30,13 @@ public class Message {
         this.createdAt = df.format(this.calendar.getTime());
     }
 
-    public Message(String mes_id, String contents, String username, String userId, String date, Locale l)
+    public Message(String mes_id, String contents, String username, String userId, String date, Boolean userSpot, Locale l)
     {
         this.msg_id = mes_id;
         this.text = contents;
         this.name = username;
         this.from = userId;
+        this.userSpot = userSpot;
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         try {
@@ -70,6 +72,10 @@ public class Message {
 
     public Calendar getCalendar() {
         return calendar;
+    }
+
+    public Boolean getUserSpot() {
+        return userSpot;
     }
 
     @Override
