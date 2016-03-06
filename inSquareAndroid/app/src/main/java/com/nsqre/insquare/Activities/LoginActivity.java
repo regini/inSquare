@@ -251,7 +251,7 @@ public class LoginActivity extends AppCompatActivity
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
-        if(user.getPicture() != null) {
+        if(!user.getPicture().equals("")) {
             profile.pictureUrl = user.getPicture();
         } else {
             profile.pictureUrl = "";
