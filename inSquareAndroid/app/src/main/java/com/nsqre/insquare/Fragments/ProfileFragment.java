@@ -82,8 +82,8 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
         adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
 
-        new DownloadImageTask(profileImage)
-                .execute(userProfile.getPictureUrl());
+        if(!userProfile.getPictureUrl().equals(""))
+            new DownloadImageTask(profileImage).execute(userProfile.getPictureUrl());
         username.setText(userProfile.getUsername());
 
 

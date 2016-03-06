@@ -4,11 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -253,7 +251,11 @@ public class LoginActivity extends AppCompatActivity
         profile.userId = user.getId();
         profile.username = user.getName();
         profile.email = user.getEmail();
-        profile.pictureUrl = user.getPicture();
+        if(user.getPicture() != null) {
+            profile.pictureUrl = user.getPicture();
+        } else {
+            profile.pictureUrl = "";
+        }
         profile.save(getApplicationContext());
         if (checkPlayServices()) {
             Intent intent = new Intent(this, RegistrationIntentService.class);

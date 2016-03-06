@@ -426,7 +426,8 @@ public class MainMapFragment extends Fragment
                         }
                         for(Marker m : squareHashMap.keySet())
                         {
-                            m.remove();
+                            if(!squarePins.containsValue(squareHashMap.get(m)))
+                                m.remove();
                         }
                         squareHashMap.clear();
                         for(Square closeSquare: squarePins.values())
