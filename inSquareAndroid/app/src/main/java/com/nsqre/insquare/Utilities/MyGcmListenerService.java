@@ -96,12 +96,12 @@ public class MyGcmListenerService extends GcmListenerService {
         squareCount = sharedPreferences.getInt("squareCount", 0);
 
         if(!sharedPreferences.contains(squareId)) {
-            sharedPreferences.edit().putInt("squareCount", squareCount + 1).commit();
+            sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
         }
-        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).commit();
+        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
 
         for(String square : sharedPreferences.getAll().keySet()) {
-            if(!square.equals("squareCount")) {
+            if(!"squareCount".equals(square)) {
                 notificationCount += sharedPreferences.getInt(square, 0);
             }
         }
