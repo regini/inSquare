@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class Square implements Serializable {
 
@@ -60,10 +61,10 @@ public class Square implements Serializable {
         }
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         try {
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date d = df.parse(lastMessageDate);
             this.lastMessageDate = Calendar.getInstance();
             this.lastMessageDate.setTime(d);
-
             this.lastMessageDateString = df.format(d);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -91,7 +92,7 @@ public class Square implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return this.name.equals(((Square)o).getName());
+        return this.id.equals(((Square)o).getId());
 //        return this.id.equals(((Square)o).getId());
     }
 
@@ -198,5 +199,10 @@ public class Square implements Serializable {
         timetoShow += df.format(msgCal.getTime());
 
         return "Ultimo messaggio: " + timetoShow;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

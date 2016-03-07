@@ -26,22 +26,19 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.nsqre.insquare.Activities.MainActivity;
 import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.Fragments.ProfileFragment;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
+    private InSquareProfile userProfile;
 
     /**
      * Called when message is received.
@@ -53,22 +50,33 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        String squareName = data.getString("squareName");
-        String squareId = data.getString("squareId");
         Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+        userProfile.getInstance(getApplicationContext());
 
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
+        if (from.startsWith("/topics/global")) {
+            String event = data.getString("event");
+            String userId = data.getString("userId");
+            Log.d(TAG, event);
+            if("creation".equals(event)&&!userProfile.getUserId().equals(userId)) {
+                updateMap();
+            }
+            if("deletion".equals(event)) {
+                updateMap();
+            }
         } else {
-            // normal downstream message.
+            String message = data.getString("message");
+            String squareName = data.getString("squareName");
+            String squareId = data.getString("squareId");
+            sendNotification(message, squareName, squareId);
         }
-
-        sendNotification(message, squareName, squareId);
-
     }
     // [END receive_message]
+
+    private void updateMap() {
+        Intent intent = new Intent("update_squares");
+        intent.putExtra("event", "update_squares");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 
     /**
      * Create and show a simple notification containing the received GCM message.

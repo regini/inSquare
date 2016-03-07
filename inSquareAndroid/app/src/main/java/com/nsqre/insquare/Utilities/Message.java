@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class Message {
 
@@ -40,6 +41,7 @@ public class Message {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         try {
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date d = df.parse(date);
             this.calendar = Calendar.getInstance();
             this.calendar.setTime(d);
