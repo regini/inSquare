@@ -164,8 +164,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         getRecentMessages(RECENT_MESSAGES_NUM);
 
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
-        if(sharedPreferences.getInt(mSquareId,0) != 0) {
-            sharedPreferences.edit().putInt(mSquareId, 0).apply();
+        if(sharedPreferences.contains(mSquareId)) {
+            sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
     }
