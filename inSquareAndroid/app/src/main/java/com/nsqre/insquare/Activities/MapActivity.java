@@ -149,7 +149,6 @@ public class MapActivity extends AppCompatActivity
         // TODO rimpiazzare metodo deprecato
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-
         mainMapFragment = new MainMapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
@@ -181,6 +180,9 @@ public class MapActivity extends AppCompatActivity
 
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        getOwnedSquares();
+        getFavouriteSquares();
+        getRecentSquares();
     }
 
     @Override
