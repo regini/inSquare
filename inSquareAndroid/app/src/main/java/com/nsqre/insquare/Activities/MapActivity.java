@@ -155,6 +155,7 @@ public class MapActivity extends AppCompatActivity
 
         if(getIntent().getExtras() != null) {
             selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+            getIntent().getExtras().clear();
         }
         else {
             selectItemFromDrawer(0);
@@ -180,9 +181,6 @@ public class MapActivity extends AppCompatActivity
 
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        getOwnedSquares();
-        getFavouriteSquares();
-        getRecentSquares();
     }
 
     @Override
@@ -438,9 +436,9 @@ public class MapActivity extends AppCompatActivity
 
     public void getOwnedSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-
+        final InSquareProfile userProfile = InSquareProfile.getInstance(getApplicationContext());
         String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
-                InSquareProfile.getUserId());
+                userProfile.getUserId());
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -452,7 +450,8 @@ public class MapActivity extends AppCompatActivity
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.ownedSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.save(getApplicationContext());
 //                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
                         Log.d(TAG, "onResponse Owned: " + InSquareProfile.ownedSquaresList.toString());
                     }
@@ -467,10 +466,10 @@ public class MapActivity extends AppCompatActivity
 
     public void getFavouriteSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-
+        final InSquareProfile userProfile = InSquareProfile.getInstance(getApplicationContext());
 
         String url = String.format("http://recapp-insquare.rhcloud.com/favouritesquares/%1$s",
-                InSquareProfile.getUserId());
+                userProfile.getUserId());
 
         Log.d(TAG, "getFavouriteSquares: " + url);
 
@@ -485,7 +484,8 @@ public class MapActivity extends AppCompatActivity
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.save(getApplicationContext());
                         Log.d(TAG, "onResponse Favourites: " + InSquareProfile.favouriteSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
@@ -499,9 +499,9 @@ public class MapActivity extends AppCompatActivity
 
     public void getRecentSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-
+        final InSquareProfile userProfile = InSquareProfile.getInstance(getApplicationContext());
         String url = String.format("http://recapp-insquare.rhcloud.com/recentSquares/%1$s",
-                InSquareProfile.getUserId());
+                userProfile.getUserId());
 
         Log.d(TAG, "getRecentSquares: " + url);
 
@@ -516,7 +516,8 @@ public class MapActivity extends AppCompatActivity
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
+                        userProfile.save(getApplicationContext());
                         Log.d(TAG, "onResponse Recents: " + InSquareProfile.recentSquaresList.toString());
                     }
                 }, new Response.ErrorListener() {
