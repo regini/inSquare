@@ -96,9 +96,7 @@ public class MapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        getOwnedSquares();
-        getFavouriteSquares();
-        getRecentSquares();
+
 
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -167,6 +165,14 @@ public class MapActivity extends AppCompatActivity
         startService(idService);
         Intent locationService = new Intent(this, LocationServices.class);
         startService(locationService);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getOwnedSquares();
+        getFavouriteSquares();
+        getRecentSquares();
     }
 
     @Override
