@@ -96,9 +96,9 @@ public class MyGcmListenerService extends GcmListenerService {
         squareCount = sharedPreferences.getInt("squareCount", 0);
 
         if(!sharedPreferences.contains(squareId)) {
-            sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
+            sharedPreferences.edit().putInt("squareCount", squareCount + 1).commit();
         }
-        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
+        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).commit();
 
         for(String square : sharedPreferences.getAll().keySet()) {
             if(!square.equals("squareCount")) {
@@ -112,8 +112,8 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.nsqre_map_pin)
+                .setSmallIcon(R.drawable.nsqre_map_pin_empty_inside)
+                .setColor(Color.RED)
                 .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
                 .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi in " + squareCount
                         + " piazze" : message)
