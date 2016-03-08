@@ -263,12 +263,12 @@ public class InSquareProfile {
         }
     }
 
-    public static void removeOwned(Square square)
+    public static void removeOwned(String square)
     {
         // trova la square da rimuovere
         for(Square s: ownedSquaresList)
         {
-            if(s.getId().equals(square.getId()))
+            if(s.getId().equals(square))
             {
                 ownedSquaresList.remove(s);
                 break;
@@ -306,12 +306,12 @@ public class InSquareProfile {
         }
     }
 
-    public static void removeFav(Square square)
+    public static void removeFav(String square)
     {
         // trova la square da rimuovere
         for(Square s: favouriteSquaresList)
         {
-            if(s.getId().equals(square.getId()))
+            if(s.getId().equals(square))
             {
                 favouriteSquaresList.remove(s);
                 break;
@@ -349,12 +349,12 @@ public class InSquareProfile {
         }
     }
 
-    public static void removeRecent(Square square)
+    public static void removeRecent(String square)
     {
         // trova la square da rimuovere
         for(Square s: recentSquaresList)
         {
-            if(s.getId().equals(square.getId()))
+            if(s.getId().equals(square))
             {
                 recentSquaresList.remove(s);
                 break;

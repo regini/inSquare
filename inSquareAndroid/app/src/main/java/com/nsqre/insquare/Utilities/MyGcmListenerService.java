@@ -52,12 +52,13 @@ public class MyGcmListenerService extends GcmListenerService {
         if (from.startsWith("/topics/global")) {
             String event = data.getString("event");
             String userId = data.getString("userId");
+            String squareId = data.getString("squareId");
             Log.d(TAG, event);
             if("creation".equals(event)) {
-                updateMap(userId);
+                updateSquares(userId, squareId);
             }
             if("deletion".equals(event)) {
-                updateMap(userId);
+                updateSquares(userId, squareId);
             }
         } else {
             String message = data.getString("message");
@@ -68,10 +69,11 @@ public class MyGcmListenerService extends GcmListenerService {
     }
     // [END receive_message]
 
-    private void updateMap(String userId) {
+    private void updateSquares(String userId, String squareId) {
         Intent intent = new Intent("update_squares");
         intent.putExtra("event", "update_squares");
         intent.putExtra("userId", userId);
+        intent.putExtra("squareId", squareId);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

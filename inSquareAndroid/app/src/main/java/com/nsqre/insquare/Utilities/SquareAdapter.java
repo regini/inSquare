@@ -174,7 +174,7 @@ public class SquareAdapter extends BaseAdapter {
 
         if (method == Request.Method.DELETE) {
 //            InSquareProfile.favouriteSquaresList.remove(square);
-            InSquareProfile.removeFav(square);
+            InSquareProfile.removeFav(square.getId());
             notifyDataSetChanged();
         } else {
             InSquareProfile.addFav(square);

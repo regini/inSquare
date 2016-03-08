@@ -761,7 +761,7 @@ public class MainMapFragment extends Fragment
                         {
                             case Request.Method.DELETE:
                                 bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-                                InSquareProfile.removeFav(square);
+                                InSquareProfile.removeFav(square.getId());
 //                                InSquareProfile.favouriteSquaresList.remove(square);
                                 break;
                             case Request.Method.POST:

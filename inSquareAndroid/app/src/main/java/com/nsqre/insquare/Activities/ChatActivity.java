@@ -535,7 +535,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         if (method == Request.Method.DELETE) {
 //            InSquareProfile.favouriteSquaresList.remove(square);
-            InSquareProfile.removeFav(square);
+            InSquareProfile.removeFav(square.getId());
             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
 
         } else {

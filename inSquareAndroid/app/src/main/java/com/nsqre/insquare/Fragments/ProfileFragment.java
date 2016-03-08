@@ -81,7 +81,17 @@ public class ProfileFragment extends Fragment implements
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
-            Log.d("receiver", "Got message: " + message);
+            Log.d(TAG, "Got message: " + message);
+            String squareId = intent.getExtras().getString("squareId");
+            if(InSquareProfile.isOwned(squareId)) {
+                InSquareProfile.removeOwned(squareId);
+            }
+            if(InSquareProfile.isFav(squareId)) {
+                InSquareProfile.removeFav(squareId);
+            }
+            if(InSquareProfile.isRecent(squareId)) {
+                InSquareProfile.removeRecent(squareId);
+            }
         }
     };
 
@@ -183,11 +193,13 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged!");
+        onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged!");
+        onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override
