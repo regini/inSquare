@@ -46,15 +46,15 @@ public class Square implements Serializable {
         this.favouredBy = Long.parseLong(favouredBy);
         this.views = Long.parseLong(views);
 
-        switch (state) {
+        switch (state.toLowerCase()) {
             case "asleep":
-                this.squareState = SquareState.asleep;
+                this.squareState = SquareState.ASLEEP;
                 break;
             case "awoken":
-                this.squareState = SquareState.awoken;
+                this.squareState = SquareState.AWOKEN;
                 break;
             case "caffeinated":
-                this.squareState = SquareState.caffeinated;
+                this.squareState = SquareState.CAFFEINATED;
                 break;
             default:
                 break;

@@ -184,8 +184,8 @@ public class MainMapFragment extends Fragment
         bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
         bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
 
-        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
-        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
+//        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
+//        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
 
         return v;
     }
@@ -703,15 +703,18 @@ public class MainMapFragment extends Fragment
         // ===== Fine Parte Superiore del Drawer
 
         // Parte Bassa del Drawer
+        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerFavs.setText("Favorita da " + currentSquare.getFavouredBy() + " persone");
+        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         String d = currentSquare.getDescription().trim();
-        if(!d.isEmpty())
-        {
-            bottomSheetLowerDescription.setText(d.trim());
-        }else
+        if(d.isEmpty())
         {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+        }else
+        {
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
+            bottomSheetLowerDescription.setText(d.trim());
         }
 
         SquareState currentState = currentSquare.getSquareState();
@@ -719,16 +722,17 @@ public class MainMapFragment extends Fragment
         switch(currentState)
         {
             default:
-            case asleep:
+            case ASLEEP:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
                 break;
-            case awoken:
+            case AWOKEN:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
                 break;
-            case caffeinated:
+            case CAFFEINATED:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
                 break;
         }
+        ((LinearLayout)bottomSheetLowerState.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerState.setBackgroundColor(stateColor);
         // ===== Fine Parte Bassa del Drawer
 
