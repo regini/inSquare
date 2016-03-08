@@ -18,6 +18,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/drawer_linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/drawer_icon"
@@ -41,4 +42,14 @@
             android:fontFamily="sans-serif-condensed-light"
             />
     </LinearLayout>
+    <TextView android:id="@+id/drawer_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/counter_bg"
+        android:textColor="@color/white"
+        android:text="1"
+        />
 </RelativeLayout>

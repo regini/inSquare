@@ -7,11 +7,13 @@ public class NavItem {
     private String mTitle;
     private String mSubtitle;
     private int mIcon;
+    private int mNotificationCounter;
 
-    public NavItem(String title, String subtitle, int icon) {
+    public NavItem(String title, String subtitle, int icon, int notificationCounter) {
         mTitle = title;
         mSubtitle = subtitle;
         mIcon = icon;
+        mNotificationCounter = notificationCounter;
     }
 
     public String getmTitle() {
@@ -36,5 +38,13 @@ public class NavItem {
 
     public void setmIcon(int mIcon) {
         this.mIcon = mIcon;
+    }
+
+    public int getmNotificationCounter() {
+        return mNotificationCounter;
+    }
+
+    public void setmNotificationCounter(int mNotificationCounter) {
+        this.mNotificationCounter = mNotificationCounter;
     }
 }

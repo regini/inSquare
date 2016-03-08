@@ -113,9 +113,10 @@ public class MapActivity extends AppCompatActivity
                 .execute(InSquareProfile.getPictureUrl());
         drawerUsername.setText(InSquareProfile.getUsername());
 
-        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps));
-        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended));
-        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle));
+
+        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
+        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, 0));  //TODO numero di messaggi recenti
+        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, 0));  //TODO somma dei messaggi tra piazze preferite e owned
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
