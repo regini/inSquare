@@ -263,6 +263,10 @@ public class LoginActivity extends AppCompatActivity
     //metodo che crea l'intent alla map activity
     private void launchInSquare() {
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+        if(getIntent().getExtras() != null) {
+            intent.putExtra("profile",getIntent().getExtras().getInt("profile"));
+            getIntent().getExtras().clear();
+        }
         startActivity(intent);
     }
 

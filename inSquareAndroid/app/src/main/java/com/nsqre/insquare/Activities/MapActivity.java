@@ -1,12 +1,16 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -173,7 +177,20 @@ public class MapActivity extends AppCompatActivity
         getOwnedSquares();
         getFavouriteSquares();
         getRecentSquares();
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            getOwnedSquares();
+            getFavouriteSquares();
+            getRecentSquares();
+        }
+    };
 
     @Override
     protected void onResume() {

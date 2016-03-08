@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Activities.ChatActivity;
+import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
@@ -116,6 +117,8 @@ public class MainMapFragment extends Fragment
     private TextView bottomSheetLowerDescription;
     private View bottomSheetLowerState;
 
+    private MapActivity rootActivity;
+
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
     private Tracker mTracker;
@@ -147,7 +150,7 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
-//        rootMainActivity = (MainActivity) getActivity();
+       rootActivity = (MapActivity) getActivity();
     }
 
     @Override
@@ -238,9 +241,11 @@ public class MainMapFragment extends Fragment
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d("receiver", "Got message: " + message);
-            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+                double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+                downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            }
         }
     };
 
@@ -588,12 +593,11 @@ public class MainMapFragment extends Fragment
                         Log.d(TAG, "Create Square response: " + response);
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "Creat Post onResponse: " + response);
+                        Log.d(TAG, "Create Post onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square s = gson.fromJson(response, Square.class);
                         squareHashMap.put(marker, s);
-
                         Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
