@@ -13,6 +13,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,14 +52,12 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.MainActivity;
-import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
+import com.nsqre.insquare.Utilities.SquareState;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -82,6 +81,7 @@ public class MainMapFragment extends Fragment
     private GoogleApiClient mGoogleApiClient;
     public Location mCurrentLocation;
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
+    private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
@@ -101,14 +101,16 @@ public class MainMapFragment extends Fragment
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
-    private MapActivity rootMapActivity;
-    private MainActivity rootMainActivity;
 
     private View bottomSheetSeparator;
     private TextView bottomSheetSquareName;
     private ImageButton bottomSheetButton;
     private LinearLayout bottomSheetUpperLinearLayout;
     private LinearLayout bottomSheetLowerLinearLayout;
+    private TextView bottomSheetLowerFavs;
+    private TextView bottomSheetLowerViews;
+    private TextView bottomSheetLowerDescription;
+    private View bottomSheetLowerState;
 
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
@@ -141,7 +143,6 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
-        rootMapActivity = (MapActivity) getActivity();
 //        rootMainActivity = (MainActivity) getActivity();
     }
 
@@ -173,6 +174,11 @@ public class MainMapFragment extends Fragment
                 Log.d(TAG, "onClick: Clicky");
             }
         });
+
+        bottomSheetLowerDescription = (TextView) v.findViewById(R.id.bottom_sheet_square_description);
+        bottomSheetLowerViews = (TextView) v.findViewById(R.id.bottom_sheet_square_views);
+        bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
+        bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
 
         FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
         BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
@@ -380,8 +386,6 @@ public class MainMapFragment extends Fragment
     private void downloadAndInsertPins(double distance, LatLng position)
     {
         String d = distance + "km";
-
-        DownloadClosestSquares dcs;
 
         //TODO check sul centro del mondo
         if(position != null)
@@ -610,19 +614,27 @@ public class MainMapFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        // TODO on secondo click start chat
         marker.showInfoWindow();
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
                 null); // callback
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
-
+        if(currentSquare.getId().equals(mLastSelectedSquareId))
+        {
+            Log.d(TAG, "onMarkerClick: Clicked twice?");
+            startChatActivity(marker);
+        }else
+        {
+            mLastSelectedSquareId = currentSquare.getId();
+        }
+        
         Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
 
+
+        // Parte superiore del drawer
         bottomSheetSquareName.setText(text);
         bottomSheetSquareActivity.setVisibility(View.VISIBLE);
-        Log.d(TAG, "onMarkerClick: " + currentSquare.formatTime());
         bottomSheetSquareActivity.setText(currentSquare.formatTime());
 
         // Controllo sulla lista dell'utente
@@ -656,6 +668,37 @@ public class MainMapFragment extends Fragment
                 startChatActivity(marker);
             }
         });
+        // ===== Fine Parte Superiore del Drawer
+
+        // Parte Bassa del Drawer
+        bottomSheetLowerFavs.setText("Favorita da " + currentSquare.getFavouredBy() + " persone");
+        bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
+        String d = currentSquare.getDescription().trim();
+        if(!d.isEmpty())
+        {
+            bottomSheetLowerDescription.setText(d.trim());
+        }else
+        {
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+        }
+
+        SquareState currentState = currentSquare.getSquareState();
+        int stateColor;
+        switch(currentState)
+        {
+            default:
+            case asleep:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                break;
+            case awoken:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                break;
+            case caffeinated:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                break;
+        }
+        bottomSheetLowerState.setBackgroundColor(stateColor);
+        // ===== Fine Parte Bassa del Drawer
 
         return true;
     }

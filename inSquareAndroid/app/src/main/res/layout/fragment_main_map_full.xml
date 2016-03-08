@@ -14,10 +14,10 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="61dp"
+        app:behavior_peekHeight="77dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
         >
 
@@ -68,8 +68,15 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/bottom_sheet_square_state"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:background="@color/state_asleep"
+                />
+
             <!-- Parte più bassa del bottom sheet  -->
-            <include layout="@layout/content_bottom_sheet" />
+            <include layout="@layout/bottom_sheet_lower_content" />
         </LinearLayout>
     </FrameLayout>
 

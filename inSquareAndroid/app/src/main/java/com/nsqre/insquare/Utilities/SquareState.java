@@ -1,6 +1,6 @@
 package com.nsqre.insquare.Utilities;
 
-    public enum SquareState {
+public enum SquareState {
     awoken,
     asleep,
     caffeinated

@@ -19,4 +19,7 @@
     <color name="light_grey">#e0e0e0</color>
     <color name="dark_blue_grey">#37474F</color>
 
+    <color name="state_awoken">#FFE0B2</color>
+    <color name="state_asleep">@color/colorAccentLight</color>
+    <color name="state_caffeinated">@color/colorPrimaryDark</color>
 </resources>

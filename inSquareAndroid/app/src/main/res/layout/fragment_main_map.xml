@@ -7,6 +7,6 @@
 
     <!-- Bottom sheet -->
     <include
-        layout="@layout/content_bottom_sheet"/>
+        layout="@layout/bottom_sheet_lower_content"/>
 
 </FrameLayout>
