@@ -82,7 +82,9 @@ public class SquareAdapter extends BaseAdapter {
 
             final ImageView star = (ImageView) vi.findViewById(R.id.square_fav_icon);
             //icona gialla se è preferita
-            if (InSquareProfile.favouriteSquaresList.contains(square)) {
+//            if (InSquareProfile.favouriteSquaresList.contains(square)) {
+            if(InSquareProfile.isFav(square.getId()))
+            {
                 star.setImageResource(R.drawable.heart_black);
             }
             //click sulla stella
@@ -90,7 +92,8 @@ public class SquareAdapter extends BaseAdapter {
                 //sul click rimuove o aggiunge ai preferiti
                 @Override
                 public void onClick(View v) {
-                    if (InSquareProfile.favouriteSquaresList.contains(square)) {
+//                    if (InSquareProfile.favouriteSquaresList.contains(square)) {
+                    if (InSquareProfile.isFav(square.getId())) {
                         favouriteSquare(Request.Method.DELETE, square);
                     } else {
                         favouriteSquare(Request.Method.POST, square);
@@ -163,17 +166,18 @@ public class SquareAdapter extends BaseAdapter {
 
     public void updateView (int method, Square square) {
         // Checking the house is not empty!
-        if(InSquareProfile.favouriteSquaresList == null)
-        {
-            Log.d(TAG, "updateView: lista fav era null!");
-            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
-        }
+//        if(InSquareProfile.favouriteSquaresList == null)
+//        {
+//            Log.d(TAG, "updateView: lista fav era null!");
+//            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
+//        }
 
         if (method == Request.Method.DELETE) {
-            InSquareProfile.favouriteSquaresList.remove(square);
+//            InSquareProfile.favouriteSquaresList.remove(square);
+            InSquareProfile.removeFav(square);
             notifyDataSetChanged();
         } else {
-            InSquareProfile.favouriteSquaresList.add(square);
+            InSquareProfile.addFav(square);
             notifyDataSetChanged();
         }
     }

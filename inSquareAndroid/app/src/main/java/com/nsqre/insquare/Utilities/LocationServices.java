@@ -30,7 +30,6 @@ public class LocationServices extends Service
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 15*60*1000;
     private static final float LOCATION_DISTANCE = 400f;
-    private InSquareProfile userProfile;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -137,7 +136,6 @@ public class LocationServices extends Service
     }
 
     private void sendLocationToServer(final Location lastLocation) {
-        userProfile.getInstance(getApplicationContext());
         RequestQueue queue = Volley.newRequestQueue(LocationServices.this);
         String url = getString(R.string.userUrl);
 
@@ -158,7 +156,7 @@ public class LocationServices extends Service
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("lat", String.valueOf(lastLocation.getLatitude()));
                 params.put("lon", String.valueOf(lastLocation.getLongitude()));
-                params.put("userId", userProfile.getUserId());
+                params.put("userId", InSquareProfile.getUserId());
                 params.put("updateLocation",String.valueOf(true));
                 return params;
             }

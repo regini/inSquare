@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -38,7 +37,6 @@ import com.nsqre.insquare.R;
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
-    private InSquareProfile userProfile;
 
     /**
      * Called when message is received.
@@ -51,13 +49,12 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "From: " + from);
-        userProfile.getInstance(getApplicationContext());
 
         if (from.startsWith("/topics/global")) {
             String event = data.getString("event");
             String userId = data.getString("userId");
             Log.d(TAG, event);
-            if("creation".equals(event)&&!userProfile.getUserId().equals(userId)) {
+            if("creation".equals(event)&&!InSquareProfile.getUserId().equals(userId)) {
                 updateMap();
             }
             if("deletion".equals(event)) {

@@ -24,7 +24,10 @@ import com.nsqre.insquare.Utilities.SquareAdapter;
 
 import java.util.ArrayList;
 
-public class ProfileFragment extends Fragment implements TabLayout.OnTabSelectedListener {
+public class ProfileFragment extends Fragment implements
+        TabLayout.OnTabSelectedListener,
+        InSquareProfile.InSquareProfileListener
+{
 
 
     private static final String TAG = "ProfileFragment";
@@ -35,7 +38,6 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
     private ListView squaresList;
     private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
-    private InSquareProfile userProfile;
     private MapActivity rootActivity;
     private TextView username, emptyText;
     private TabLayout tabLayout;
@@ -53,7 +55,7 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootActivity = (MapActivity) getActivity();
-        userProfile = InSquareProfile.getInstance(rootActivity.getApplicationContext());
+        InSquareProfile.addListener(this);
     }
 
     @Override
@@ -80,12 +82,12 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.ownedSquaresList);
-        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.favouriteSquaresList);
+        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
+        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
 
-        if(!userProfile.getPictureUrl().equals(""))
-            new DownloadImageTask(profileImage).execute(userProfile.getPictureUrl());
-        username.setText(userProfile.getUsername());
+        if(!InSquareProfile.getPictureUrl().equals(""))
+            new DownloadImageTask(profileImage).execute(InSquareProfile.getPictureUrl());
+        username.setText(InSquareProfile.getUsername());
 
         setupTabLayout();
 
@@ -122,11 +124,11 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
         Log.d(TAG, "onTabSelected: I've selected " + tab.getText());
 
         if (tab.getText() == TAB_OWNED) {
-            fillTab(InSquareProfile.ownedSquaresList, adapterOwned, getString(R.string.profile_empty_owned));
+            fillTab(InSquareProfile.getOwnedSquaresList(), adapterOwned, getString(R.string.profile_empty_owned));
         }
 
         if(tab.getText() == TAB_FAVOURITE) {
-            fillTab(InSquareProfile.favouriteSquaresList, adapterFavourite, getString(R.string.profile_empty_favourite));
+            fillTab(InSquareProfile.getFavouriteSquaresList(), adapterFavourite, getString(R.string.profile_empty_favourite));
         }
         adapterFavourite.notifyDataSetChanged();
         adapterOwned.notifyDataSetChanged();
@@ -155,5 +157,20 @@ public class ProfileFragment extends Fragment implements TabLayout.OnTabSelected
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
         onTabSelected(tab);
+    }
+
+    @Override
+    public void onOwnedChanged() {
+        Log.d(TAG, "onOwnedChanged!");
+    }
+
+    @Override
+    public void onFavChanged() {
+        Log.d(TAG, "onFavChanged!");
+    }
+
+    @Override
+    public void onRecentChanged() {
+        Log.d(TAG, "onRecentChanged!");
     }
 }

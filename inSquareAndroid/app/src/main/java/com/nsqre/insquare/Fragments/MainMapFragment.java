@@ -75,7 +75,8 @@ public class MainMapFragment extends Fragment
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraChangeListener,
-        OnMapReadyCallback
+        OnMapReadyCallback,
+        InSquareProfile.InSquareProfileListener
 {
 
     private SupportMapFragment mainMapFragment;
@@ -147,6 +148,7 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
+        InSquareProfile.addListener(this);
 //        rootMainActivity = (MainActivity) getActivity();
     }
 
@@ -670,7 +672,7 @@ public class MainMapFragment extends Fragment
         bottomSheetSquareActivity.setText(currentSquare.formatTime());
 
         // Controllo sulla lista dell'utente
-        if(InSquareProfile.isFavourite(currentSquare.getId()))
+        if(InSquareProfile.isFav(currentSquare.getId()))
             bottomSheetButton.setImageResource(R.drawable.heart_black);
         else
             bottomSheetButton.setImageResource(R.drawable.heart_border_black);
@@ -680,7 +682,7 @@ public class MainMapFragment extends Fragment
             public void onClick(View v) {
                 final int method;
 
-                if(InSquareProfile.isFavourite(currentSquare.getId()))
+                if(InSquareProfile.isFav(currentSquare.getId()))
                 {
                     method = Request.Method.DELETE;
                 }else
@@ -755,11 +757,13 @@ public class MainMapFragment extends Fragment
                         {
                             case Request.Method.DELETE:
                                 bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-                                InSquareProfile.favouriteSquaresList.remove(square);
+                                InSquareProfile.removeFav(square);
+//                                InSquareProfile.favouriteSquaresList.remove(square);
                                 break;
                             case Request.Method.POST:
                                 bottomSheetButton.setImageResource(R.drawable.heart_black);
-                                InSquareProfile.favouriteSquaresList.add(square);
+                                InSquareProfile.addFav(square);
+//                                InSquareProfile.favouriteSquaresList.add(square);
                                 break;
                         }
 //                        Log.d(TAG, "FAVOURITE response => " + response);
@@ -774,5 +778,20 @@ public class MainMapFragment extends Fragment
                 }
         );
         queue.add(postRequest);
+    }
+
+    @Override
+    public void onOwnedChanged() {
+        Log.d(TAG, "onOwnedChanged: Owned changed!");
+    }
+
+    @Override
+    public void onFavChanged() {
+        Log.d(TAG, "onFavChanged: Favs changed!");
+    }
+
+    @Override
+    public void onRecentChanged() {
+        Log.d(TAG, "onRecentChanged: Recent changed!");
     }
 }
