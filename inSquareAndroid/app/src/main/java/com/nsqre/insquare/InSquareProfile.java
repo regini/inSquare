@@ -250,6 +250,11 @@ public class InSquareProfile {
         Log.d(TAG, "addListener: " + listener.getClass().toString());
     }
 
+    public static void removeListener(InSquareProfileListener listener) {
+        listeners.remove(listener);
+        Log.d(TAG, "removeListener: " + listener.getClass().toString());
+    }
+
     public static void addOwned(Square square)
     {
         // Aggiungi in coda
@@ -393,13 +398,31 @@ public class InSquareProfile {
 
     public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
         InSquareProfile.ownedSquaresList = ownedSquaresList;
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onOwnedChanged();
+            Log.d(TAG, "removeOwned: notifying listeners!");
+        }
     }
 
     public static void setFavouriteSquaresList(ArrayList<Square> favouriteSquaresList) {
         InSquareProfile.favouriteSquaresList = favouriteSquaresList;
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onFavChanged();
+            Log.d(TAG, "removeFav: notifying listeners!");
+        }
     }
 
     public static void setRecentSquaresList(ArrayList<Square> recentSquaresList) {
         InSquareProfile.recentSquaresList = recentSquaresList;
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onRecentChanged();
+            Log.d(TAG, "addRecent: notifying listeners!");
+        }
     }
 }

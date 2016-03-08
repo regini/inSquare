@@ -59,7 +59,6 @@ public class ProfileFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootActivity = (MapActivity) getActivity();
-        InSquareProfile.addListener(this);
     }
 
     @Override
@@ -74,6 +73,11 @@ public class ProfileFragment extends Fragment implements
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
+        InSquareProfile.addListener(this);
+        if(tabLayout != null) {
+            onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
+        }
+
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -147,6 +151,7 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        InSquareProfile.removeListener(this);
         super.onPause();
     }
 

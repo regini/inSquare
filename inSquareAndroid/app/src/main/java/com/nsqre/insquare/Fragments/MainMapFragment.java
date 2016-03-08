@@ -11,7 +11,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -118,6 +116,8 @@ public class MainMapFragment extends Fragment
     private TextView bottomSheetLowerDescription;
     private View bottomSheetLowerState;
 
+    private Marker lastMarkerClicked;
+
     private MapActivity rootActivity;
 
 //    private RecyclerView bottomSheetList;
@@ -151,7 +151,6 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
-        InSquareProfile.addListener(this);
 //        rootMainActivity = (MainActivity) getActivity();
     }
 
@@ -215,6 +214,7 @@ public class MainMapFragment extends Fragment
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        InSquareProfile.removeListener(this);
         super.onPause();
         Log.d(TAG, "onPause: I've just paused!");
     }
@@ -235,6 +235,12 @@ public class MainMapFragment extends Fragment
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
+        InSquareProfile.addListener(this);
+        if(mGoogleMap != null) {
+            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+        }
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -449,7 +455,7 @@ public class MainMapFragment extends Fragment
                     public void onResponse(String response) {
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-//                        Log.d(TAG, "Get Closest Squares onResponse: " + response);
+                        // Log.d(TAG, "Get Closest Squares onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square[] squares = gson.fromJson(response, Square[].class);
@@ -476,7 +482,19 @@ public class MainMapFragment extends Fragment
                                 LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                                 Marker m = createSquarePin(coords, closeSquare.getName());
                                 squareHashMap.put(m, closeSquare);
+                            } else {
+                                for(Marker m : squareHashMap.keySet()) {
+                                    if(closeSquare.equals(squareHashMap.get(m))) {
+                                        squareHashMap.put(m, closeSquare);
+                                        break;
+                                    }
+                                }
                             }
+                        }
+                        if(lastMarkerClicked != null) {
+                            mLastSelectedSquareId = null;
+                            onMarkerClick(lastMarkerClicked);
+                            lastMarkerClicked = null;
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -653,9 +671,12 @@ public class MainMapFragment extends Fragment
     public boolean onMarkerClick(final Marker marker) {
 
         marker.showInfoWindow();
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
-                400, // Tempo di spostamento in ms
-                null); // callback
+        if(lastMarkerClicked == null) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                    400, // Tempo di spostamento in ms
+                    null); // callback
+        }
+        lastMarkerClicked = marker;
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
         if(currentSquare.getId().equals(mLastSelectedSquareId))
