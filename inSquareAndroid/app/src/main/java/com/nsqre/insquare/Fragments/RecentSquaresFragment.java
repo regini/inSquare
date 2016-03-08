@@ -18,7 +18,6 @@ public class RecentSquaresFragment extends Fragment {
 
     private static final String TAG = "RecentSquaresFragment";
 
-    private InSquareProfile userProfile;
     private MapActivity rootActivity;
     private ListView listRecent;
     private SquareAdapter adapterRecents;
@@ -37,7 +36,6 @@ public class RecentSquaresFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootActivity = (MapActivity) getActivity();
-        userProfile = InSquareProfile.getInstance(rootActivity.getApplicationContext());
     }
 
     @Override
@@ -46,7 +44,7 @@ public class RecentSquaresFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recent_squares, container, false);
         listRecent = (ListView) v.findViewById(R.id.squares_recents);
-        adapterRecents = new SquareAdapter(rootActivity, userProfile.recentSquaresList);
+        adapterRecents = new SquareAdapter(rootActivity, InSquareProfile.getRecentSquaresList());
         listRecent.setAdapter(adapterRecents);
         return v;
     }

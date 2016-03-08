@@ -14,6 +14,12 @@ import java.util.ArrayList;
 
 public class InSquareProfile {
 
+    public interface InSquareProfileListener {
+        void onOwnedChanged();
+        void onFavChanged();
+        void onRecentChanged();
+    }
+
     private static final String TAG = "InSquareProfile";
 
     private static final String USER_ID_KEY = "USER_ID_KEY";
@@ -34,10 +40,12 @@ public class InSquareProfile {
     private static final String GOOGLE_EMAIL_KEY = "GOOGLE_EMAIL_KEY";
     private static final String GOOGLE_NAME_KEY = "GOOGLE_NAME_KEY";
 
+    // Lista di ascoltatori che vengono notificati quando si modifica qualcosa nella lista
+    private static ArrayList<InSquareProfileListener> listeners;
 
-    public static ArrayList<Square> ownedSquaresList;
-    public static ArrayList<Square> favouriteSquaresList;
-    public static ArrayList<Square> recentSquaresList;
+    private static ArrayList<Square> ownedSquaresList;
+    private static ArrayList<Square> favouriteSquaresList;
+    private static ArrayList<Square> recentSquaresList;
 
     public static String userId;
     public static String username;
@@ -58,43 +66,59 @@ public class InSquareProfile {
 
     private InSquareProfile()
     {
-        // TODO: Check for data in SharedPrefs upon instantiation
-
     }
 
     public static InSquareProfile getInstance(Context c)
     {
         if(profile != null)
         {
+            Log.d(TAG, "getInstance: already instantiated!");
             return profile;
         }
+
+        Log.d(TAG, "getInstance: Instantiating profile!");
+        profile = new InSquareProfile();
 
         Gson gs = new Gson();
         Type type = new TypeToken<ArrayList<Square>>(){}.getType();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
-        userId = prefs.getString(USER_ID_KEY, null);
-        username = prefs.getString(USERNAME_KEY, null);
-        email = prefs.getString(EMAIL_KEY, null);
-        pictureUrl = prefs.getString(PICTURE_URL_KEY, null);
-        ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), type);
-        favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), type);
-        recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), type);
+        profile.userId = prefs.getString(USER_ID_KEY, null);
+        profile.username = prefs.getString(USERNAME_KEY, null);
+        profile.email = prefs.getString(EMAIL_KEY, null);
+        profile.pictureUrl = prefs.getString(PICTURE_URL_KEY, null);
 
-        facebookId = prefs.getString(FACEBOOK_ID_KEY, null);
-        facebookToken = prefs.getString(FACEBOOK_TOKEN_KEY, null);
-        facebookEmail = prefs.getString(FACEBOOK_EMAIL_KEY, null);
-        facebookName = prefs.getString(FACEBOOK_NAME_KEY, null);
+        profile.listeners = new ArrayList<>();
+        profile.ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), type);
+        if(profile.ownedSquaresList == null)
+        {
+            Log.d(TAG, "ownedSquaresList was null");
+        }
+        profile.favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), type);
+        if(profile.favouriteSquaresList == null)
+        {
+            Log.d(TAG, "favourtieSquaresList was null");
+        }
+        profile.recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), type);
+        if(profile.recentSquaresList == null)
+        {
+            Log.d(TAG, "recentSquaresList was null");
+        }
 
-        googleId    = prefs.getString(GOOGLE_ID_KEY, null);
-        googleToken = prefs.getString(GOOGLE_TOKEN_KEY, null);
-        googleEmail = prefs.getString(GOOGLE_EMAIL_KEY, null);
-        googleName  = prefs.getString(GOOGLE_NAME_KEY, null);
+        profile.facebookId = prefs.getString(FACEBOOK_ID_KEY, null);
+        profile.facebookToken = prefs.getString(FACEBOOK_TOKEN_KEY, null);
+        profile.facebookEmail = prefs.getString(FACEBOOK_EMAIL_KEY, null);
+        profile.facebookName = prefs.getString(FACEBOOK_NAME_KEY, null);
 
-        return new InSquareProfile();
+        profile.googleId    = prefs.getString(GOOGLE_ID_KEY, null);
+        profile.googleToken = prefs.getString(GOOGLE_TOKEN_KEY, null);
+        profile.googleEmail = prefs.getString(GOOGLE_EMAIL_KEY, null);
+        profile.googleName  = prefs.getString(GOOGLE_NAME_KEY, null);
+
+        return profile;
     }
 
-    public void save(Context c)
+    public static void save(Context c)
     {
         String NAME = c.getString(R.string.app_name);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(c).edit();
@@ -119,8 +143,21 @@ public class InSquareProfile {
         editor.putString(GOOGLE_NAME_KEY, googleName);
 
         editor.commit();
-
-        Log.d(TAG, this.toString());
+        /*
+        Log.d(TAG, "Save: " + "==== USER  ====" +
+                "\nID: " + userId +
+                "\nUsername: " + username +
+                "\nEmail: " + email +
+                "\nPicture URL: " + pictureUrl +
+                "\n==== FACEBOOK  ====" +
+                "\nID: " + facebookId +
+                "\nEmail: " + facebookEmail +
+                "\nName : " + facebookName +
+                "\n==== GOOGLE ====" +
+                "\nID: " + googleId +
+                "\nEmail: " + googleEmail +
+                "\nName: " + googleEmail);
+         */
     }
 
     public static String getUsername()
@@ -190,12 +227,179 @@ public class InSquareProfile {
 
     }
 
-    public static boolean isFavourite(String mSquareId) {
-        for(Square s: favouriteSquaresList)
+    public static String printProfile()
+    {
+        return "==== USER  ====" +
+                "\nID: " + userId +
+                "\nUsername: " + username +
+                "\nEmail: " + email +
+                "\nPicture URL: " + pictureUrl +
+                "\n==== FACEBOOK  ====" +
+                "\nID: " + facebookId +
+                "\nEmail: " + facebookEmail +
+                "\nName : " + facebookName +
+                "\n==== GOOGLE ====" +
+                "\nID: " + googleId +
+                "\nEmail: " + googleEmail +
+                "\nName: " + googleEmail;
+    }
+
+    public static void addListener(InSquareProfileListener listener)
+    {
+        listeners.add(listener);
+        Log.d(TAG, "addListener: " + listener.getClass().toString());
+    }
+
+    public static void addOwned(Square square)
+    {
+        // Aggiungi in coda
+        ownedSquaresList.add(square);
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl: listeners)
         {
-            if(s.getId().equals(mSquareId))
+            ispl.onOwnedChanged();
+            Log.d(TAG, "addOwned: notifying listeners!");
+        }
+    }
+
+    public static void removeOwned(Square square)
+    {
+        // trova la square da rimuovere
+        for(Square s: ownedSquaresList)
+        {
+            if(s.getId().equals(square.getId()))
+            {
+                ownedSquaresList.remove(s);
+                break;
+            }
+        }
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onOwnedChanged();
+            Log.d(TAG, "removeOwned: notifying listeners!");
+        }
+    }
+
+    public static boolean isOwned(String squareId)
+    {
+        for(Square s: ownedSquaresList)
+        {
+            if(s.getId().equals(squareId))
                 return true;
         }
         return false;
+    }
+
+    public static void addFav(Square square)
+    {
+        // Aggiungi in coda
+        favouriteSquaresList.add(square);
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl: listeners)
+        {
+            ispl.onFavChanged();
+            Log.d(TAG, "addFav: notifying listeners!");
+        }
+    }
+
+    public static void removeFav(Square square)
+    {
+        // trova la square da rimuovere
+        for(Square s: favouriteSquaresList)
+        {
+            if(s.getId().equals(square.getId()))
+            {
+                favouriteSquaresList.remove(s);
+                break;
+            }
+        }
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onFavChanged();
+            Log.d(TAG, "removeFav: notifying listeners!");
+        }
+    }
+
+    public static boolean isFav(String squareId)
+    {
+        for(Square s: favouriteSquaresList)
+        {
+            if(s.getId().equals(squareId))
+                return true;
+        }
+        return false;
+    }
+
+    public static void addRecent(Square square)
+    {
+        // Aggiungi in coda
+        recentSquaresList.add(square);
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl: listeners)
+        {
+            ispl.onRecentChanged();
+            Log.d(TAG, "addRecent: notifying listeners!");
+        }
+    }
+
+    public static void removeRecent(Square square)
+    {
+        // trova la square da rimuovere
+        for(Square s: recentSquaresList)
+        {
+            if(s.getId().equals(square.getId()))
+            {
+                recentSquaresList.remove(s);
+                break;
+            }
+        }
+
+        // Notifica gli ascoltatori
+        for(InSquareProfileListener ispl : listeners)
+        {
+            ispl.onRecentChanged();
+            Log.d(TAG, "addRecent: notifying listeners!");
+        }
+    }
+
+    public static boolean isRecent(String squareId)
+    {
+        for(Square s: recentSquaresList)
+        {
+            if(s.getId().equals(squareId))
+                return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Square> getOwnedSquaresList() {
+        return ownedSquaresList;
+    }
+
+    public static ArrayList<Square> getFavouriteSquaresList() {
+        return favouriteSquaresList;
+    }
+
+    public static ArrayList<Square> getRecentSquaresList() {
+        return recentSquaresList;
+    }
+
+    public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
+        InSquareProfile.ownedSquaresList = ownedSquaresList;
+    }
+
+    public static void setFavouriteSquaresList(ArrayList<Square> favouriteSquaresList) {
+        InSquareProfile.favouriteSquaresList = favouriteSquaresList;
+    }
+
+    public static void setRecentSquaresList(ArrayList<Square> recentSquaresList) {
+        InSquareProfile.recentSquaresList = recentSquaresList;
     }
 }

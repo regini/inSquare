@@ -45,7 +45,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
           "ownerId": "56bf62fb01469357eaabb167",
           "views": 50,
           "favouredBy": 0,
-          "state": "awoken",
+          "state": "AWOKEN",
           "lastMessageDate": "2016-02-28T17:57:44.357Z"
         }
        ==============

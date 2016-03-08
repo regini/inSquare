@@ -45,15 +45,12 @@ public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
 
-    private InSquareProfile userProfile;
-
     public RegistrationIntentService() {
         super(TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        userProfile = InSquareProfile.getInstance(getApplicationContext());
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
@@ -118,7 +115,7 @@ public class RegistrationIntentService extends IntentService {
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("gcm", token);
-                params.put("userId", userProfile.getUserId());
+                params.put("userId", InSquareProfile.getUserId());
                 return params;
             }
         };

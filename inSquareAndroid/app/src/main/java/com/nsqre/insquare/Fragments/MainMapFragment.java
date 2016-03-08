@@ -76,7 +76,8 @@ public class MainMapFragment extends Fragment
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraChangeListener,
-        OnMapReadyCallback
+        OnMapReadyCallback,
+        InSquareProfile.InSquareProfileListener
 {
 
     private SupportMapFragment mainMapFragment;
@@ -150,7 +151,8 @@ public class MainMapFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
 
-       rootActivity = (MapActivity) getActivity();
+        InSquareProfile.addListener(this);
+//        rootMainActivity = (MainActivity) getActivity();
     }
 
     @Override
@@ -187,8 +189,8 @@ public class MainMapFragment extends Fragment
         bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
         bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
 
-        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
-        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
+//        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
+//        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
 
         return v;
     }
@@ -674,7 +676,7 @@ public class MainMapFragment extends Fragment
         bottomSheetSquareActivity.setText(currentSquare.formatTime());
 
         // Controllo sulla lista dell'utente
-        if(InSquareProfile.isFavourite(currentSquare.getId()))
+        if(InSquareProfile.isFav(currentSquare.getId()))
             bottomSheetButton.setImageResource(R.drawable.heart_black);
         else
             bottomSheetButton.setImageResource(R.drawable.heart_border_black);
@@ -684,7 +686,7 @@ public class MainMapFragment extends Fragment
             public void onClick(View v) {
                 final int method;
 
-                if(InSquareProfile.isFavourite(currentSquare.getId()))
+                if(InSquareProfile.isFav(currentSquare.getId()))
                 {
                     method = Request.Method.DELETE;
                 }else
@@ -707,15 +709,18 @@ public class MainMapFragment extends Fragment
         // ===== Fine Parte Superiore del Drawer
 
         // Parte Bassa del Drawer
+        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerFavs.setText("Favorita da " + currentSquare.getFavouredBy() + " persone");
+        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         String d = currentSquare.getDescription().trim();
-        if(!d.isEmpty())
-        {
-            bottomSheetLowerDescription.setText(d.trim());
-        }else
+        if(d.isEmpty())
         {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+        }else
+        {
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
+            bottomSheetLowerDescription.setText(d.trim());
         }
 
         SquareState currentState = currentSquare.getSquareState();
@@ -723,16 +728,17 @@ public class MainMapFragment extends Fragment
         switch(currentState)
         {
             default:
-            case asleep:
+            case ASLEEP:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
                 break;
-            case awoken:
+            case AWOKEN:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
                 break;
-            case caffeinated:
+            case CAFFEINATED:
                 stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
                 break;
         }
+        ((LinearLayout)bottomSheetLowerState.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerState.setBackgroundColor(stateColor);
         // ===== Fine Parte Bassa del Drawer
 
@@ -755,11 +761,13 @@ public class MainMapFragment extends Fragment
                         {
                             case Request.Method.DELETE:
                                 bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-                                InSquareProfile.favouriteSquaresList.remove(square);
+                                InSquareProfile.removeFav(square);
+//                                InSquareProfile.favouriteSquaresList.remove(square);
                                 break;
                             case Request.Method.POST:
                                 bottomSheetButton.setImageResource(R.drawable.heart_black);
-                                InSquareProfile.favouriteSquaresList.add(square);
+                                InSquareProfile.addFav(square);
+//                                InSquareProfile.favouriteSquaresList.add(square);
                                 break;
                         }
 //                        Log.d(TAG, "FAVOURITE response => " + response);
@@ -774,5 +782,20 @@ public class MainMapFragment extends Fragment
                 }
         );
         queue.add(postRequest);
+    }
+
+    @Override
+    public void onOwnedChanged() {
+        Log.d(TAG, "onOwnedChanged: Owned changed!");
+    }
+
+    @Override
+    public void onFavChanged() {
+        Log.d(TAG, "onFavChanged: Favs changed!");
+    }
+
+    @Override
+    public void onRecentChanged() {
+        Log.d(TAG, "onRecentChanged: Recent changed!");
     }
 }

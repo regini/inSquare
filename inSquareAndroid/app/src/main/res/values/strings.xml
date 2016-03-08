@@ -52,4 +52,6 @@
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="avatarURL">https://raw.githubusercontent.com/regini/inSquare/master/inSquareBackend/avatar_square_grey_512dp.png</string>
 </resources>

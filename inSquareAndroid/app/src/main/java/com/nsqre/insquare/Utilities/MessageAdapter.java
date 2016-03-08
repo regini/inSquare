@@ -35,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public int getItemViewType(int position) {
         Message m = mDataset.get(position);
-        if(m.getFrom().equals(InSquareProfile.getInstance(this.context).getUserId()))
+        if(m.getFrom().equals(InSquareProfile.getUserId()))
         {
             return 1;
         }

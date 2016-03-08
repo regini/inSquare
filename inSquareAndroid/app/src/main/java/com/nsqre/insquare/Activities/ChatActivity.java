@@ -35,7 +35,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MainMapFragment;
-import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
@@ -48,7 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -316,7 +314,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             e.printStackTrace();
         }
 
-        Log.d(TAG, "profilo " + InSquareProfile.getInstance(getApplicationContext()).toString());
+        Log.d(TAG, "profilo " + InSquareProfile.printProfile());
         //This is the callback that socket.io uses to understand that an event has been triggered
         mSocket.emit("sendMessage", data);
     }
@@ -414,7 +412,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         mMenu = menu;
 
-        if (mProfile.favouriteSquaresList.contains(mSquare))
+//        if (mProfile.favouriteSquaresList.contains(mSquare))
+        if(InSquareProfile.isFav(mSquare.getId()))
             menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
         else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
 
@@ -485,7 +484,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     }
                 });
             case R.id.favourite_square_action:
-                if (mProfile.favouriteSquaresList.contains(mSquare)) {
+//                if (mProfile.favouriteSquaresList.contains(mSquare)) {
+                if(InSquareProfile.isFav(mSquare.getId()))
+                {
                     favouriteSquare(Request.Method.DELETE, mSquare);
                 } else {
                     favouriteSquare(Request.Method.POST, mSquare);
@@ -526,18 +527,20 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     public void updateList (int method, Square square) {
         // Checking the house is not empty!
-        if(InSquareProfile.favouriteSquaresList == null)
-        {
-            Log.d(TAG, "updateView: lista fav era null!");
-            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
-        }
+//        if(InSquareProfile.favouriteSquaresList == null)
+//        {
+//            Log.d(TAG, "updateView: lista fav era null!");
+//            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
+//        }
 
         if (method == Request.Method.DELETE) {
-            InSquareProfile.favouriteSquaresList.remove(square);
+//            InSquareProfile.favouriteSquaresList.remove(square);
+            InSquareProfile.removeFav(square);
             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
 
         } else {
-            InSquareProfile.favouriteSquaresList.add(square);
+//            InSquareProfile.favouriteSquaresList.add(square);
+            InSquareProfile.addFav(square);
             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
         }
     }
