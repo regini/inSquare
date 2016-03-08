@@ -55,10 +55,21 @@ public class DrawerListAdapter extends BaseAdapter {
         TextView titleView = (TextView) view.findViewById(R.id.drawer_title);
         TextView subtitleView = (TextView) view.findViewById(R.id.drawer_subTitle);
         ImageView iconView = (ImageView) view.findViewById(R.id.drawer_icon);
+        TextView counterView = (TextView) view.findViewById(R.id.drawer_counter);
 
-        titleView.setText( mNavItems.get(position).getmTitle() );
-        subtitleView.setText( mNavItems.get(position).getmSubtitle() );
-        iconView.setImageResource(mNavItems.get(position).getmIcon());
+        NavItem temp = mNavItems.get(position);
+
+        titleView.setText(temp.getmTitle());
+        subtitleView.setText(temp.getmSubtitle());
+        iconView.setImageResource(temp.getmIcon());
+
+        if (temp.getmNotificationCounter() == 0) {
+            counterView.setVisibility(View.INVISIBLE);
+        } else {
+            String counter = Integer.toString(temp.getmNotificationCounter());
+            counterView.setText(counter);
+        }
+
 
         return view;
     }
