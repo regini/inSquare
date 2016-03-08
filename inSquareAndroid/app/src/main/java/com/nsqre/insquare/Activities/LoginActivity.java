@@ -253,7 +253,7 @@ public class LoginActivity extends AppCompatActivity
         profile.email = user.getEmail();
         profile.pictureUrl = user.getPicture();
         if("undefined?sz=200".equals(profile.pictureUrl)){
-            profile.pictureUrl = "https://ssl.gstatic.com/images/branding/product/1x/avatar_square_grey_512dp.png";
+            profile.pictureUrl = getString(R.string.avatarURL);
         }
 
         profile.save(getApplicationContext());
