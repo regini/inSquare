@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
-            app:tabMode="scrollable"
+            app:tabMode="fixed"
             app:tabTextColor="@color/colorAccentLight"
             app:tabSelectedTextColor="@color/colorAccentLightest"
             app:tabIndicatorColor="@color/colorAccentLightest"

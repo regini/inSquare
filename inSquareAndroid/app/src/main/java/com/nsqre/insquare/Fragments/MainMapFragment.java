@@ -2,8 +2,10 @@ package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,6 +16,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,8 +62,9 @@ import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
 import com.nsqre.insquare.Utilities.SquareState;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainMapFragment extends Fragment
@@ -136,7 +140,7 @@ public class MainMapFragment extends Fragment
 
         mLastUpdateLocation = new LatLng(0,0);
 
-        squareHashMap = new LinkedHashMap<>();
+        squareHashMap = new HashMap<>();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -205,6 +209,7 @@ public class MainMapFragment extends Fragment
 
     @Override
     public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
         super.onPause();
         Log.d(TAG, "onPause: I've just paused!");
     }
@@ -219,6 +224,25 @@ public class MainMapFragment extends Fragment
         }
         Log.d(TAG, "onStop: I've just stopped!");
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract data included in the Intent
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+        }
+    };
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -428,16 +452,24 @@ public class MainMapFragment extends Fragment
                         {
                             squarePins.put(s.getId(), s);
                         }
+                        List<Marker> markersToRemove = new ArrayList<>();
                         for(Marker m : squareHashMap.keySet())
                         {
+                            if(!squarePins.containsValue(squareHashMap.get(m))) {
+                                markersToRemove.add(m);
+                            }
+                        }
+                        for(Marker m : markersToRemove) {
+                            squareHashMap.remove(m);
                             m.remove();
                         }
-                        squareHashMap.clear();
                         for(Square closeSquare: squarePins.values())
                         {
-                            LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                            Marker m = createSquarePin(coords, closeSquare.getName());
-                            squareHashMap.put(m, closeSquare);
+                            if(!squareHashMap.containsValue(closeSquare)) {
+                                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                                Marker m = createSquarePin(coords, closeSquare.getName());
+                                squareHashMap.put(m, closeSquare);
+                            }
                         }
                     }
                 }, new Response.ErrorListener() {

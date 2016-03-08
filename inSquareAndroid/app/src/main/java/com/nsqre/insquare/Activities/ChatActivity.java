@@ -165,7 +165,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         if(sharedPreferences.contains(mSquareId)) {
-            sharedPreferences.edit().putInt(mSquareId, 0).apply();
+            sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
     }
