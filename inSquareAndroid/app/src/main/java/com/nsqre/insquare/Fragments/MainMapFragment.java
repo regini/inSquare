@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -117,8 +118,6 @@ public class MainMapFragment extends Fragment
     private View bottomSheetLowerState;
 
     private Marker lastMarkerClicked;
-
-    private MapActivity rootActivity;
 
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
@@ -421,12 +420,16 @@ public class MainMapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-        float radius;
+        float radius = PIN_DOWNLOAD_RADIUS;
 
         if(cameraPosition.zoom < 9) {
+            radius = PIN_DOWNLOAD_RADIUS*8f;
+        }
+        if(cameraPosition.zoom < 5) {
+            radius = PIN_DOWNLOAD_RADIUS*15f;
+        }
+        if(cameraPosition.zoom < 3) {
             radius = PIN_DOWNLOAD_RADIUS*20f;
-        } else {
-            radius = PIN_DOWNLOAD_RADIUS;
         }
 
         if(distance > radius*0.9f)
@@ -564,6 +567,13 @@ public class MainMapFragment extends Fragment
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(s.getId())) {
+            sharedPreferences.edit().remove(s.getId()).apply();
+            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+            MapActivity rootActivity = (MapActivity) getActivity();
+            rootActivity.checkNotifications();
+        }
         intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);
     }
@@ -825,6 +835,13 @@ public class MainMapFragment extends Fragment
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged: Owned changed!");
+        if(InSquareProfile.isOwned(mLastSelectedSquareId)) {
+            for(Square s : InSquareProfile.getOwnedSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
+        }
     }
 
     @Override
@@ -833,6 +850,11 @@ public class MainMapFragment extends Fragment
         if(InSquareProfile.isFav(mLastSelectedSquareId))
         {
             bottomSheetButton.setImageResource(R.drawable.heart_black);
+            for(Square s : InSquareProfile.getFavouriteSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
         }else
         {
             bottomSheetButton.setImageResource(R.drawable.heart_border_black);
@@ -842,5 +864,12 @@ public class MainMapFragment extends Fragment
     @Override
     public void onRecentChanged() {
         Log.d(TAG, "onRecentChanged: Recent changed!");
+        if(InSquareProfile.isRecent(mLastSelectedSquareId)) {
+            for(Square s : InSquareProfile.getRecentSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
+        }
     }
 }

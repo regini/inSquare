@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
@@ -75,7 +74,6 @@ public class ProfileFragment extends Fragment implements
         if(tabLayout != null) {
             onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
         }
-
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -111,7 +109,7 @@ public class ProfileFragment extends Fragment implements
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
 
-        Bitmap icon = BitmapFactory.decodeResource(rootActivity.getResources(),
+        Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.logo_icon_96);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);

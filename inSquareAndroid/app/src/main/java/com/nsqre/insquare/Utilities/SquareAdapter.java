@@ -76,6 +76,12 @@ public class SquareAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(activity, ChatActivity.class);
                     intent.putExtra(MainMapFragment.SQUARE_TAG, square);
+                    SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+                    if(sharedPreferences.contains(square.getId())) {
+                        sharedPreferences.edit().remove(square.getId()).apply();
+                        sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+                        activity.checkNotifications();
+                    }
                     activity.startActivity(intent);
                 }
             });

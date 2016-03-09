@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
@@ -113,10 +114,24 @@ public class MapActivity extends AppCompatActivity
                 .execute(InSquareProfile.getPictureUrl());
         drawerUsername.setText(InSquareProfile.getUsername());
 
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        int recCount = 0;
+        int profCount = 0;
+        for(String id : sharedPreferences.getAll().keySet()) {
+            if(InSquareProfile.isOwned(id)) {
+                profCount++;
+            }
+            if(InSquareProfile.isFav(id)) {
+                profCount++;
+            }
+            if(InSquareProfile.isRecent(id)) {
+                recCount++;
+            }
+        }
 
         mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
-        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, 0));  //TODO numero di messaggi recenti
-        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, 0));  //TODO somma dei messaggi tra piazze preferite e owned
+        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
+        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, profCount));
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -189,13 +204,13 @@ public class MapActivity extends AppCompatActivity
             getOwnedSquares();
             getFavouriteSquares();
             getRecentSquares();
+            checkNotifications();
         }
     };
 
     @Override
     protected void onResume() {
         super.onResume();
-
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -569,4 +584,27 @@ public class MapActivity extends AppCompatActivity
         // Pass any configuration change to the drawer toggle
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
+    public void checkNotifications() {
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        int recCount = 0;
+        int profCount = 0;
+        for(String id : sharedPreferences.getAll().keySet()) {
+            if(InSquareProfile.isOwned(id)) {
+                profCount++;
+            }
+            if(InSquareProfile.isFav(id)) {
+                profCount++;
+            }
+            if(InSquareProfile.isRecent(id)) {
+                recCount++;
+            }
+        }
+
+        TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
+        TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
+        recents.setText(String.valueOf(recCount));
+        profile.setText(String.valueOf(profCount));
+    }
+
 }
