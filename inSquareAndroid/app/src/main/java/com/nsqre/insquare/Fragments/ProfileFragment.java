@@ -42,7 +42,6 @@ public class ProfileFragment extends Fragment implements
     private ListView squaresList;
     private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
-    private MapActivity rootActivity;
     private TextView username, emptyText;
     private TabLayout tabLayout;
 
@@ -58,7 +57,6 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rootActivity = (MapActivity) getActivity();
     }
 
     @Override

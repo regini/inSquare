@@ -108,13 +108,9 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if(squareCount == 1) {
-            
-        }
-
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.nsqre_map_pin_empty_inside)
-                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
                 .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
                 .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi in " + squareCount
                         + " piazze" : message)

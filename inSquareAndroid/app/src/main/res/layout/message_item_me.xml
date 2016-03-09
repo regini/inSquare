@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/bubble_min_width"
             android:text="Small Text"
+            android:gravity="end"
             android:textSize="18sp"
             android:fontFamily="sans-serif-condensed-light"
             android:autoLink="web"
