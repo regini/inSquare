@@ -92,10 +92,11 @@ public class SquareAdapter extends BaseAdapter {
                 //sul click rimuove o aggiunge ai preferiti
                 @Override
                 public void onClick(View v) {
-//                    if (InSquareProfile.favouriteSquaresList.contains(square)) {
                     if (InSquareProfile.isFav(square.getId())) {
                         favouriteSquare(Request.Method.DELETE, square);
+                        star.setImageResource(R.drawable.heart_border_black);
                     } else {
+                        star.setImageResource(R.drawable.heart_black);
                         favouriteSquare(Request.Method.POST, square);
                     }
                 }
@@ -165,15 +166,8 @@ public class SquareAdapter extends BaseAdapter {
     }
 
     public void updateView (int method, Square square) {
-        // Checking the house is not empty!
-//        if(InSquareProfile.favouriteSquaresList == null)
-//        {
-//            Log.d(TAG, "updateView: lista fav era null!");
-//            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
-//        }
 
         if (method == Request.Method.DELETE) {
-//            InSquareProfile.favouriteSquaresList.remove(square);
             InSquareProfile.removeFav(square.getId());
             notifyDataSetChanged();
         } else {

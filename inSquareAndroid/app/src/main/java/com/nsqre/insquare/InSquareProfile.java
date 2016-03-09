@@ -246,13 +246,29 @@ public class InSquareProfile {
 
     public static void addListener(InSquareProfileListener listener)
     {
-        listeners.add(listener);
-        Log.d(TAG, "addListener: " + listener.getClass().toString());
+        boolean exists = false;
+        for(InSquareProfileListener ispl : listeners)
+        {
+            if(ispl.getClass().toString().equals(listener.getClass().toString()))
+                exists = true;
+        }
+        if(!exists){
+            listeners.add(listener);
+            Log.d(TAG, "addListener: " + listener.getClass().toString());
+        }else
+            Log.d(TAG, "addListener: already there!");
     }
 
     public static void removeListener(InSquareProfileListener listener) {
-        listeners.remove(listener);
-        Log.d(TAG, "removeListener: " + listener.getClass().toString());
+        for(InSquareProfileListener ispl : listeners)
+        {
+            if(ispl.getClass().toString().equals(listener.getClass().toString()))
+            {
+                listeners.remove(ispl);
+                Log.d(TAG, "removeListener: " + listener.getClass().toString());
+                return;
+            }
+        }
     }
 
     public static void addOwned(Square square)

@@ -216,7 +216,6 @@ public class MainMapFragment extends Fragment
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
-        InSquareProfile.removeListener(this);
         super.onPause();
         Log.d(TAG, "onPause: I've just paused!");
     }
@@ -230,6 +229,13 @@ public class MainMapFragment extends Fragment
             mGoogleApiClient.disconnect();
         }
         Log.d(TAG, "onStop: I've just stopped!");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach: removing the fraggment from the system!");
+        InSquareProfile.removeListener(this);
     }
 
     @Override
@@ -507,11 +513,6 @@ public class MainMapFragment extends Fragment
                                     }
                                 }
                             }
-                        }
-                        if(lastMarkerClicked != null) {
-                            mLastSelectedSquareId = null;
-                            onMarkerClick(lastMarkerClicked);
-                            lastMarkerClicked = null;
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -829,6 +830,13 @@ public class MainMapFragment extends Fragment
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged: Favs changed!");
+        if(InSquareProfile.isFav(mLastSelectedSquareId))
+        {
+            bottomSheetButton.setImageResource(R.drawable.heart_black);
+        }else
+        {
+            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+        }
     }
 
     @Override
