@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="start"
     android:layout_margin="@dimen/bubble_vertical_margin"
+    android:paddingRight="@dimen/big_vertical_margin"
     >
 
     <RelativeLayout
