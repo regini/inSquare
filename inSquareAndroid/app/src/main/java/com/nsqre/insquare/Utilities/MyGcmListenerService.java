@@ -87,9 +87,11 @@ public class MyGcmListenerService extends GcmListenerService {
                 PendingIntent.FLAG_ONE_SHOT);
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
-        int squareCount;
+        int squareCount = sharedPreferences.getInt("squareCount", 0);
 
-        squareCount = sharedPreferences.getInt("squareCount", 0);
+        if(squareId.equals(sharedPreferences.getString("actualSquare",""))) {
+            return;
+        }
 
         if(!sharedPreferences.contains(squareId)) {
             sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
@@ -97,7 +99,7 @@ public class MyGcmListenerService extends GcmListenerService {
         sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
 
         for(String square : sharedPreferences.getAll().keySet()) {
-            if(!"squareCount".equals(square)) {
+            if(!"squareCount".equals(square) && !"actualSquare".equals(square)) {
                 notificationCount += sharedPreferences.getInt(square, 0);
             }
         }

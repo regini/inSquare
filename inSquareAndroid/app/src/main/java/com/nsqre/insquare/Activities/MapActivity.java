@@ -603,6 +603,16 @@ public class MapActivity extends AppCompatActivity
 
         TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
         TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
+        if(recCount == 0) {
+            recents.setVisibility(View.GONE);
+        } else {
+            recents.setVisibility(View.VISIBLE);
+        }
+        if(profCount == 0) {
+            profile.setVisibility(View.GONE);
+        } else {
+            profile.setVisibility(View.VISIBLE);
+        }
         recents.setText(String.valueOf(recCount));
         profile.setText(String.valueOf(profCount));
     }
