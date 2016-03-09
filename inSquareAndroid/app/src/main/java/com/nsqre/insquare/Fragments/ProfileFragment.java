@@ -64,6 +64,9 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
+        InSquareProfile.addListener(this);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
         //TODO sostituire con un placeholder del profilo
         //setta il placeholder, mentre attende il download dell'immagine
     }
@@ -71,9 +74,6 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
-                new IntentFilter("update_squares"));
-        InSquareProfile.addListener(this);
         if(tabLayout != null) {
             onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
         }
@@ -86,15 +86,17 @@ public class ProfileFragment extends Fragment implements
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d(TAG, "Got message: " + message);
-            String squareId = intent.getExtras().getString("squareId");
-            if(InSquareProfile.isOwned(squareId)) {
-                InSquareProfile.removeOwned(squareId);
-            }
-            if(InSquareProfile.isFav(squareId)) {
-                InSquareProfile.removeFav(squareId);
-            }
-            if(InSquareProfile.isRecent(squareId)) {
-                InSquareProfile.removeRecent(squareId);
+            if("deletion".equals(intent.getStringExtra("action"))) {
+                String squareId = intent.getExtras().getString("squareId");
+                if(InSquareProfile.isOwned(squareId)) {
+                    InSquareProfile.removeOwned(squareId);
+                }
+                if(InSquareProfile.isFav(squareId)) {
+                    InSquareProfile.removeFav(squareId);
+                }
+                if(InSquareProfile.isRecent(squareId)) {
+                    InSquareProfile.removeRecent(squareId);
+                }
             }
         }
     };
@@ -146,12 +148,12 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onDetach() {
         super.onDetach();
+        InSquareProfile.removeListener(this);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
-        InSquareProfile.removeListener(this);
         super.onPause();
     }
 
@@ -198,12 +200,14 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged!");
+        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged!");
+        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 

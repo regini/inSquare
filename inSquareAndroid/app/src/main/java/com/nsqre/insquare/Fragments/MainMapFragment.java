@@ -249,7 +249,14 @@ public class MainMapFragment extends Fragment
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d("receiver", "Got message: " + message);
-            if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+            if("creation".equals(intent.getStringExtra("action"))) {
+                if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                    VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+                    double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+                    downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+                }
+
+            } else {
                 VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
                 double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
                 downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
@@ -406,7 +413,15 @@ public class MainMapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-        if(distance > PIN_DOWNLOAD_RADIUS*0.9f)
+        float radius;
+
+        if(cameraPosition.zoom < 9) {
+            radius = PIN_DOWNLOAD_RADIUS*20f;
+        } else {
+            radius = PIN_DOWNLOAD_RADIUS;
+        }
+
+        if(distance > radius*0.9f)
         {
             if(cameraPosition.zoom < 9) //Camera molto elevata
             {

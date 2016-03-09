@@ -121,6 +121,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         notifyItemRemoved(position);
     }
 
+    public void clear() {
+        for(int i = 0; i<mDataset.size(); i++) {
+            removeItem(i);
+        }
+    }
+
     @Override
     public int getItemCount() {
         return mDataset.size();

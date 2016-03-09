@@ -1,11 +1,15 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -236,8 +240,31 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onResume() {
         super.onResume();
 
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            if("deletion".equals(intent.getStringExtra("action"))) {
+                if(mSquareId.equals(intent.getStringExtra("squareId"))) {
+                    messageAdapter.clear();
+                    findViewById(R.id.removed_text).setVisibility(View.VISIBLE);
+                    chatEditText.setFocusable(false);
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
     }
 
     @Override

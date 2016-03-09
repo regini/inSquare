@@ -18,6 +18,18 @@
         android:layout_marginBottom="?attr/actionBarSize"
         />
 
+    <TextView
+        android:id="@+id/removed_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="35sp"
+        android:fontFamily="sans-serif-condensed-light"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/square_removed"
+        android:textColor="#000"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
