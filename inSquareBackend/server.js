@@ -51,6 +51,13 @@ require('./config/passport')(passport);
 
 app.set('view engine', 'ejs');
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 var router = express.Router();
 
 // CONNESSIONE AL SERVER
@@ -78,5 +85,7 @@ require('./app/chat_routes.js')(router, passport, squares);
 require('./app/routes.js')(router, passport);
 
 require('./app/square_routes.js')(router, passport);
+
+require('./app/user_routes.js')(router, passport);
 
 app.use(router);

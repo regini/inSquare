@@ -34,7 +34,16 @@ var userSchema = mongoose.Schema({
   	es_schema: Message}],
 	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Square',
 		es_schema: Square}],
-	gcmToken: String
+	gcmToken: String,
+	lastLocation: {
+    type: String,
+    es_type: 'geo_point'
+  },
+	recents: [{
+		square: {type: mongoose.Schema.Types.ObjectId, ref: 'Square',
+			es_schema: Square},
+		lastUserMessage: {type: Date}
+	}]
 });
 
 // methods
