@@ -479,11 +479,15 @@ public class MapActivity extends AppCompatActivity
                         // MessageDeserializer specifica come popolare l'oggetto Message fromJson
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
-                        InSquareProfile.save(getApplicationContext());
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
+                            InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
+                            InSquareProfile.save(getApplicationContext());
 //                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
-                        Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+                        } catch (Exception ex) {
+                          ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -512,11 +516,15 @@ public class MapActivity extends AppCompatActivity
 //                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
+                            InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        InSquareProfile.save(getApplicationContext());
-                        Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
+                            InSquareProfile.save(getApplicationContext());
+                            Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -544,12 +552,16 @@ public class MapActivity extends AppCompatActivity
 //                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
 //                        userProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
+                            InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.save(getApplicationContext());
-                        InSquareProfile.save(getApplicationContext());
-                        Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
+                            InSquareProfile.save(getApplicationContext());
+                            Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
