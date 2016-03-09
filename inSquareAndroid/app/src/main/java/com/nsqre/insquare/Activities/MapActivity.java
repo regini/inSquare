@@ -591,13 +591,12 @@ public class MapActivity extends AppCompatActivity
         int profCount = 0;
         for(String id : sharedPreferences.getAll().keySet()) {
             if(InSquareProfile.isOwned(id)) {
-                profCount++;
-            }
-            if(InSquareProfile.isFav(id)) {
-                profCount++;
+                profCount += sharedPreferences.getInt(id, 0);
+            } else if(InSquareProfile.isFav(id)) {
+                profCount += sharedPreferences.getInt(id, 0);
             }
             if(InSquareProfile.isRecent(id)) {
-                recCount++;
+                recCount += sharedPreferences.getInt(id, 0);
             }
         }
 
