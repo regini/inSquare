@@ -17,7 +17,7 @@
         android:paddingTop="@dimen/bubble_vertical_margin"
         android:paddingBottom="@dimen/bubble_vertical_margin"
         android:paddingRight="@dimen/bubble_big_margin"
-        android:paddingLeft="@dimen/bubble_vertical_margin"
+        android:paddingLeft="@dimen/bubble_horizontal_margin"
         >
 
         <TextView
