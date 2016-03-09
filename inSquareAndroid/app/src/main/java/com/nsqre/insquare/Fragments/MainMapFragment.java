@@ -187,6 +187,8 @@ public class MainMapFragment extends Fragment
         bottomSheetLowerViews = (TextView) v.findViewById(R.id.bottom_sheet_square_views);
         bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
         bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
+        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+
 
 //        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
 //        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
@@ -686,11 +688,10 @@ public class MainMapFragment extends Fragment
     public boolean onMarkerClick(final Marker marker) {
 
         marker.showInfoWindow();
-        if(lastMarkerClicked == null) {
-            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
-                    400, // Tempo di spostamento in ms
-                    null); // callback
-        }
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                400, // Tempo di spostamento in ms
+                null); // callback
         lastMarkerClicked = marker;
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();

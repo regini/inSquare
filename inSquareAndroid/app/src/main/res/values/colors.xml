@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#BF360C</color>
-    <color name="colorPrimaryOld">#3F51B5</color>
-    <color name="colorPrimaryDark">#af310b</color>
-    <color name="colorPrimaryDark2">#303F9F</color>
-    <color name="colorAccent">#212121</color>
-    <color name="colorAccent2">#FF4081</color>
-    <color name="colorAccent3">#2c3e50</color>
-    <color name="colorAccentLight">#616161</color>
-    <color name="colorAccentLightest">#E0E0E0</color>
-    
+    <!-- Material Deep Orange 900 -->
+    <!--<color name="colorPrimary">#BF360C</color>-->
+    <!-- Not Material -->
+    <!--<color name="colorPrimaryDark">#af310b</color>-->
+    <!-- Material Grey 900 -->
+    <!--<color name="colorAccent">#212121</color>-->
+    <!-- Material Grey 700 -->
+    <!--<color name="colorAccentLight">#616161</color>-->
+    <!-- Material Grey 300 -->
+    <!--<color name="colorAccentLightest">#E0E0E0</color>-->
+
+    <color name="colorPrimary">#424242</color>
+    <color name="colorPrimaryLight">#BDBDBD</color>
+    <color name="colorPrimaryDark">#212121</color>
+    <color name="colorAccent">#af310b</color>
+    <color name="colorAccentLight">#D84315</color>
+    <color name="colorAccentLightest">#e57373</color>
+
+
     <color name="grey_background">#424242</color>
     <color name="blue_button">#0D47A1</color>
     <color name="blue_button_facebook">#4E92DF</color>
@@ -20,6 +29,6 @@
     <color name="dark_blue_grey">#37474F</color>
 
     <color name="state_awoken">#FFE0B2</color>
-    <color name="state_asleep">@color/colorAccentLight</color>
-    <color name="state_caffeinated">@color/colorPrimaryDark</color>
+    <color name="state_asleep">@color/colorPrimary</color>
+    <color name="state_caffeinated">@color/colorAccent</color>
 </resources>

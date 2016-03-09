@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.ChatActivity"
-    android:background="@color/colorAccentLightest"
+    android:background="@color/light_grey"
     >
 
     <android.support.v7.widget.RecyclerView
@@ -40,8 +40,9 @@
     <LinearLayout
         android:id="@+id/input_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:minHeight="?attr/actionBarSize"
         android:paddingLeft="@dimen/input_margin_side"
         android:paddingRight="@dimen/input_margin_side"
         android:orientation="horizontal"

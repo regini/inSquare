@@ -3,9 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_horizontal_margin"
-    android:background="@color/colorAccentLightest"
+    android:background="@color/light_grey"
     >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        >
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/square_avatar"
         android:layout_width="32dp"
@@ -60,5 +65,5 @@
         android:layout_alignParentRight="true"
         android:src="@drawable/heart_border_black"
         />
-
+    </RelativeLayout>
 </RelativeLayout>

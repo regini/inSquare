@@ -151,8 +151,7 @@ public class MapActivity extends AppCompatActivity
                 invalidateOptionsMenu();
             }
         };
-        // TODO rimpiazzare metodo deprecato
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         mainMapFragment = new MainMapFragment();
         recentSquaresFragment = new RecentSquaresFragment();

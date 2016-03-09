@@ -26,7 +26,7 @@
             android:id="@+id/profileBox"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/material_blue_grey_800"
+            android:background="@color/colorAccentLight"
             android:padding="8dp"
             >
 

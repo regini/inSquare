@@ -156,7 +156,7 @@ public class LocationServices extends Service
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("lat", String.valueOf(lastLocation.getLatitude()));
                 params.put("lon", String.valueOf(lastLocation.getLongitude()));
-                params.put("userId", InSquareProfile.getInstance(getApplicationContext()).getUserId());
+                params.put("userId", InSquareProfile.getUserId());
                 params.put("updateLocation",String.valueOf(true));
                 return params;
             }
