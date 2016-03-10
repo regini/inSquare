@@ -19,7 +19,7 @@
             android:id="@+id/user_profile"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/colorAccent"
+            android:background="@color/colorAccentLight"
             android:padding="8dp"
             >
 
@@ -46,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nome Cognome"
-                    android:textColor="@color/colorAccentLightest"
+                    android:textColor="@color/white"
                     android:textSize="22sp"
                     android:fontFamily="sans-serif-condensed"
                     android:layout_marginTop="6dp"
@@ -60,11 +60,11 @@
             android:layout_below="@+id/user_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
+            android:background="@color/colorAccentLight"
             app:tabMode="fixed"
-            app:tabTextColor="@color/colorAccentLight"
-            app:tabSelectedTextColor="@color/colorAccentLightest"
-            app:tabIndicatorColor="@color/colorAccentLightest"
+            app:tabTextColor="#ef9a9a"
+            app:tabSelectedTextColor="@color/white"
+            app:tabIndicatorColor="@color/light_grey"
             />
 
         <RelativeLayout

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Utilities.PushNotification;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -55,12 +55,7 @@ public class MyGcmListenerService extends GcmListenerService {
             String userId = data.getString("userId");
             String squareId = data.getString("squareId");
             Log.d(TAG, event);
-            if("creation".equals(event)) {
-                updateSquares(userId, squareId);
-            }
-            if("deletion".equals(event)) {
-                updateSquares(userId, squareId);
-            }
+            updateSquares(userId, squareId, event);
         } else {
             String message = data.getString("message");
             String squareName = data.getString("squareName");
@@ -70,9 +65,10 @@ public class MyGcmListenerService extends GcmListenerService {
     }
     // [END receive_message]
 
-    private void updateSquares(String userId, String squareId) {
+    private void updateSquares(String userId, String squareId, String event) {
         Intent intent = new Intent("update_squares");
         intent.putExtra("event", "update_squares");
+        intent.putExtra("action", event);
         intent.putExtra("userId", userId);
         intent.putExtra("squareId", squareId);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -91,9 +87,11 @@ public class MyGcmListenerService extends GcmListenerService {
                 PendingIntent.FLAG_ONE_SHOT);
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
-        int squareCount;
+        int squareCount = sharedPreferences.getInt("squareCount", 0);
 
-        squareCount = sharedPreferences.getInt("squareCount", 0);
+        if(squareId.equals(sharedPreferences.getString("actualSquare",""))) {
+            return;
+        }
 
         if(!sharedPreferences.contains(squareId)) {
             sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
@@ -101,7 +99,7 @@ public class MyGcmListenerService extends GcmListenerService {
         sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
 
         for(String square : sharedPreferences.getAll().keySet()) {
-            if(!"squareCount".equals(square)) {
+            if(!"squareCount".equals(square) && !"actualSquare".equals(square)) {
                 notificationCount += sharedPreferences.getInt(square, 0);
             }
         }
@@ -112,13 +110,9 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if(squareCount == 1) {
-            
-        }
-
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.nsqre_map_pin_empty_inside)
-                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
                 .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
                 .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi in " + squareCount
                         + " piazze" : message)
@@ -132,5 +126,13 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
+        updateSquares("","","update");
+    }
+
+    public static class QuickstartPreferences {
+
+        public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+        public static final String REGISTRATION_COMPLETE = "registrationComplete";
+
     }
 }

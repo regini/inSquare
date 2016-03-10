@@ -23,8 +23,8 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareAdapter;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareAdapter;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,6 @@ public class ProfileFragment extends Fragment implements
     private ListView squaresList;
     private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
-    private MapActivity rootActivity;
     private TextView username, emptyText;
     private TabLayout tabLayout;
 
@@ -58,12 +57,14 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rootActivity = (MapActivity) getActivity();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        InSquareProfile.addListener(this);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
         //TODO sostituire con un placeholder del profilo
         //setta il placeholder, mentre attende il download dell'immagine
     }
@@ -71,13 +72,9 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
-                new IntentFilter("update_squares"));
-        InSquareProfile.addListener(this);
         if(tabLayout != null) {
             onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
         }
-
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -86,15 +83,17 @@ public class ProfileFragment extends Fragment implements
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d(TAG, "Got message: " + message);
-            String squareId = intent.getExtras().getString("squareId");
-            if(InSquareProfile.isOwned(squareId)) {
-                InSquareProfile.removeOwned(squareId);
-            }
-            if(InSquareProfile.isFav(squareId)) {
-                InSquareProfile.removeFav(squareId);
-            }
-            if(InSquareProfile.isRecent(squareId)) {
-                InSquareProfile.removeRecent(squareId);
+            if("deletion".equals(intent.getStringExtra("action"))) {
+                String squareId = intent.getExtras().getString("squareId");
+                if(InSquareProfile.isOwned(squareId)) {
+                    InSquareProfile.removeOwned(squareId);
+                }
+                if(InSquareProfile.isFav(squareId)) {
+                    InSquareProfile.removeFav(squareId);
+                }
+                if(InSquareProfile.isRecent(squareId)) {
+                    InSquareProfile.removeRecent(squareId);
+                }
             }
         }
     };
@@ -111,16 +110,24 @@ public class ProfileFragment extends Fragment implements
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
 
-        Bitmap icon = BitmapFactory.decodeResource(rootActivity.getResources(),
-                R.drawable.logo_icon_96);
+        MapActivity mapActivity = (MapActivity) getActivity();
+
+        Bitmap icon = BitmapFactory.decodeResource(mapActivity.getResources(),
+                R.drawable.logo_icon_144);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
-        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
+        adapterOwned = new SquareAdapter(mapActivity, InSquareProfile.getOwnedSquaresList());
+        adapterFavourite = new SquareAdapter(mapActivity, InSquareProfile.getFavouriteSquaresList());
 
-        if(!InSquareProfile.getPictureUrl().equals(""))
-            new DownloadImageTask(profileImage).execute(InSquareProfile.getPictureUrl());
+        Bitmap bitmap = mapActivity.loadImageFromStorage();
+        if (bitmap == null) {
+            if (!InSquareProfile.getPictureUrl().equals(""))
+                new DownloadImageTask(profileImage, mapActivity).execute(InSquareProfile.getPictureUrl());
+        } else {
+            profileImage.setImageBitmap(bitmap);
+        }
+
         username.setText(InSquareProfile.getUsername());
 
         setupTabLayout();
@@ -146,12 +153,12 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onDetach() {
         super.onDetach();
+        InSquareProfile.removeListener(this);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
-        InSquareProfile.removeListener(this);
         super.onPause();
     }
 
@@ -198,12 +205,14 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged!");
+        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged!");
+        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 

@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 25/2/16  */
+package com.nsqre.insquare.Message;/* Created by umbertosonnino on 25/2/16  */
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

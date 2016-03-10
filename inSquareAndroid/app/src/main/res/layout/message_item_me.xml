@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/bubble_vertical_margin"
+    android:paddingLeft="@dimen/big_vertical_margin"
     >
 
     <RelativeLayout
@@ -15,8 +16,8 @@
         android:gravity="center_vertical"
         android:paddingTop="@dimen/bubble_vertical_margin"
         android:paddingBottom="@dimen/bubble_vertical_margin"
-        android:paddingLeft="@dimen/bubble_horizontal_margin"
         android:paddingRight="@dimen/bubble_big_margin"
+        android:paddingLeft="@dimen/bubble_horizontal_margin"
         >
 
         <TextView
@@ -24,11 +25,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/bubble_min_width"
-            android:text="Small Text"
             android:textSize="18sp"
+            android:text="MyText is beautiful"
+            android:textIsSelectable="true"
             android:fontFamily="sans-serif-condensed-light"
             android:autoLink="web"
-            android:textIsSelectable="true"
             />
         <TextView
             android:id="@+id/message_timestamp"

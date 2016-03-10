@@ -1,11 +1,15 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,14 +38,14 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.Message;
-import com.nsqre.insquare.Utilities.MessageAdapter;
-import com.nsqre.insquare.Utilities.MessageDeserializer;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Message.Message;
+import com.nsqre.insquare.Message.MessageAdapter;
+import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.Square.Square;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Recuperiamo i dati passati dalla MapActivity
         Intent intent = getIntent();
 
-        mSquare = (Square) intent.getSerializableExtra(MainMapFragment.SQUARE_TAG);
+        mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
         Log.d("CHAT", mSquare.toString());
 
         mSquareId = mSquare.getId();
@@ -166,6 +170,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
+        sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
     }
 
     private void getRecentMessages(int quantity) {
@@ -236,8 +241,33 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onResume() {
         super.onResume();
 
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            if("deletion".equals(intent.getStringExtra("action"))) {
+                if(mSquareId.equals(intent.getStringExtra("squareId"))) {
+                    messageAdapter.clear();
+                    findViewById(R.id.removed_text).setVisibility(View.VISIBLE);
+                    chatEditText.setFocusable(false);
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        sharedPreferences.edit().remove("actualSquare").apply();
     }
 
     @Override

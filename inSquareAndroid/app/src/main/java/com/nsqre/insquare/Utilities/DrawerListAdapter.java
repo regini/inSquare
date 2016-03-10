@@ -70,7 +70,6 @@ public class DrawerListAdapter extends BaseAdapter {
             counterView.setText(counter);
         }
 
-
         return view;
     }
 }

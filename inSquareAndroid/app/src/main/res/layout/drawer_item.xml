@@ -7,6 +7,12 @@
     android:background="@color/white"
     >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        >
+
     <ImageView
         android:id="@+id/drawer_icon"
         android:layout_width="28dp"
@@ -30,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="Line 1"
             android:textSize="18sp"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorPrimaryDark"
             android:fontFamily="sans-serif-condensed"
             />
 
@@ -38,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Line 2"
-            android:textColor="@color/colorAccentLight"
+            android:textColor="@color/colorPrimary"
             android:fontFamily="sans-serif-condensed-light"
             />
     </LinearLayout>
@@ -52,4 +58,5 @@
         android:textColor="@color/white"
         android:text="1"
         />
+    </RelativeLayout>
 </RelativeLayout>

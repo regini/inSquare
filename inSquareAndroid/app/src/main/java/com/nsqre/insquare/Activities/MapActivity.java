@@ -3,13 +3,18 @@ package com.nsqre.insquare.Activities;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -43,21 +48,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
 import com.nsqre.insquare.Utilities.LocationServices;
-import com.nsqre.insquare.Utilities.MyInstanceIDListenerService;
+import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareDeserializer;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,9 +75,12 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener
+        implements SearchView.OnQueryTextListener, InSquareProfile.InSquareProfileListener
 {
+    public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
     private static final String TAG = "MapActivity";
+    public static final String TAG_MAP_FRAGMENT = "MAPPA";
+    public static final String TAG_RECENT_FRAGMENT = "RECENTS";
 
     private float startTouchY;
 
@@ -91,7 +102,7 @@ public class MapActivity extends AppCompatActivity
     // Fragments del menu
     private ProfileFragment profileFragment;
     private RecentSquaresFragment recentSquaresFragment;
-    private MainMapFragment mainMapFragment;
+    private MapFragment mapFragment;
     // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
@@ -109,14 +120,31 @@ public class MapActivity extends AppCompatActivity
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
         drawerUsername = (TextView) findViewById(R.id.drawer_userName);
-        new DownloadImageTask(drawerImage)
-                .execute(InSquareProfile.getPictureUrl());
+        Bitmap bitmap = loadImageFromStorage();
+        if (bitmap == null) {
+            new DownloadImageTask(drawerImage, this).execute(InSquareProfile.getPictureUrl());
+        } else {
+             drawerImage.setImageBitmap(bitmap);
+        }
         drawerUsername.setText(InSquareProfile.getUsername());
 
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        int recCount = 0;
+        int profCount = 0;
+        for(String id : sharedPreferences.getAll().keySet()) {
+            if(InSquareProfile.isOwned(id)) {
+                profCount += sharedPreferences.getInt(id, 0);
+            } else if(InSquareProfile.isFav(id)) {
+                profCount += sharedPreferences.getInt(id, 0);
+            }
+            if(InSquareProfile.isRecent(id)) {
+                recCount += sharedPreferences.getInt(id, 0);
+            }
+        }
 
         mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
-        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, 0));  //TODO numero di messaggi recenti
-        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, 0));  //TODO somma dei messaggi tra piazze preferite e owned
+        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
+        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, profCount));
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -151,10 +179,9 @@ public class MapActivity extends AppCompatActivity
                 invalidateOptionsMenu();
             }
         };
-        // TODO rimpiazzare metodo deprecato
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mainMapFragment = new MainMapFragment();
+        mapFragment = new MapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
@@ -178,6 +205,7 @@ public class MapActivity extends AppCompatActivity
         getOwnedSquares();
         getFavouriteSquares();
         getRecentSquares();
+        InSquareProfile.addListener(this);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
     }
@@ -196,7 +224,6 @@ public class MapActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -224,6 +251,47 @@ public class MapActivity extends AppCompatActivity
         }
 
         return super.onTouchEvent(event);
+    }
+
+    public String saveToInternalStorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory,"profileImage.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    public Bitmap loadImageFromStorage()
+    {
+        Bitmap b = null;
+
+        try {
+            ContextWrapper cw = new ContextWrapper(getApplicationContext());
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+            File f=new File(directory, "profileImage.png");
+            b = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        return b;
     }
 
     public void setSquareName(String squareName) {
@@ -350,7 +418,14 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        this.finishAffinity();
+        Fragment mapFragment = getSupportFragmentManager().findFragmentByTag(TAG_MAP_FRAGMENT);
+        int backStackSize = getSupportFragmentManager().getBackStackEntryCount();
+        Log.d(TAG, "onBackPressed: " + backStackSize);
+        if(backStackSize < 2)
+        {
+            this.finishAffinity();
+        }
+
         super.onBackPressed();
     }
 
@@ -430,17 +505,20 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, mainMapFragment, "MAPPA")
+                        .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             case 1:  //caso recenti
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, recentSquaresFragment, "RECENTS")
+                        .replace(R.id.main_content_layout, recentSquaresFragment, TAG_RECENT_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             case 2:  //caso profilo
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, profileFragment, "PROFILE")
+                        .replace(R.id.main_content_layout, profileFragment, TAG_PROFILE_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             default:
@@ -466,11 +544,15 @@ public class MapActivity extends AppCompatActivity
                         // MessageDeserializer specifica come popolare l'oggetto Message fromJson
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
-                        InSquareProfile.save(getApplicationContext());
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
+                            InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
+                            InSquareProfile.save(getApplicationContext());
 //                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
-                        Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+                        } catch (Exception ex) {
+                          ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -499,11 +581,15 @@ public class MapActivity extends AppCompatActivity
 //                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
-                        InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
+                            InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        InSquareProfile.save(getApplicationContext());
-                        Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
+                            InSquareProfile.save(getApplicationContext());
+                            Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -531,12 +617,16 @@ public class MapActivity extends AppCompatActivity
 //                        Log.d(TAG, "onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
+                        try {
+                            Square[] squares = gson.fromJson(response, Square[].class);
 //                        userProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
-                        InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
+                            InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.save(getApplicationContext());
-                        InSquareProfile.save(getApplicationContext());
-                        Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
+                            InSquareProfile.save(getApplicationContext());
+                            Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -569,5 +659,53 @@ public class MapActivity extends AppCompatActivity
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggle
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void checkNotifications() {
+        //TODO contare i messaggi e non le piazze
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        int recCount = 0;
+        int prefCount = 0;
+        TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
+        TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
+        for(String id : sharedPreferences.getAll().keySet()) {
+            Log.d(TAG, "checkNotifications: " + id);
+            if(InSquareProfile.isOwned(id)) {
+                prefCount += sharedPreferences.getInt(id, 0);
+                Log.d(TAG, "checkNotifications: ");
+            } else if(InSquareProfile.isFav(id)) {
+                prefCount += sharedPreferences.getInt(id, 0);
+            }
+            if(InSquareProfile.isRecent(id)) {
+                recCount += sharedPreferences.getInt(id, 0);
+            }
+        }
+        if(recCount == 0) {
+            recents.setVisibility(View.GONE);
+        } else {
+            recents.setVisibility(View.VISIBLE);
+        }
+        if(prefCount == 0) {
+            profile.setVisibility(View.GONE);
+        } else {
+            profile.setVisibility(View.VISIBLE);
+        }
+        recents.setText(String.valueOf(recCount));
+        profile.setText(String.valueOf(prefCount));
+    }
+
+    @Override
+    public void onOwnedChanged() {
+        checkNotifications();
+    }
+
+    @Override
+    public void onFavChanged() {
+        checkNotifications();
+    }
+
+    @Override
+    public void onRecentChanged() {
+        checkNotifications();
     }
 }

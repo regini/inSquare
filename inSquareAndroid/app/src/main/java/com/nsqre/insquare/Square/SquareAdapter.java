@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Square;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.Fragments.MainMapFragment;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 
@@ -75,7 +75,13 @@ public class SquareAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(activity, ChatActivity.class);
-                    intent.putExtra(MainMapFragment.SQUARE_TAG, square);
+                    intent.putExtra(MapFragment.SQUARE_TAG, square);
+                    SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+                    if(sharedPreferences.contains(square.getId())) {
+                        sharedPreferences.edit().remove(square.getId()).apply();
+                        sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+                        activity.checkNotifications();
+                    }
                     activity.startActivity(intent);
                 }
             });
@@ -92,10 +98,11 @@ public class SquareAdapter extends BaseAdapter {
                 //sul click rimuove o aggiunge ai preferiti
                 @Override
                 public void onClick(View v) {
-//                    if (InSquareProfile.favouriteSquaresList.contains(square)) {
                     if (InSquareProfile.isFav(square.getId())) {
                         favouriteSquare(Request.Method.DELETE, square);
+                        star.setImageResource(R.drawable.heart_border_black);
                     } else {
+                        star.setImageResource(R.drawable.heart_black);
                         favouriteSquare(Request.Method.POST, square);
                     }
                 }
@@ -165,15 +172,8 @@ public class SquareAdapter extends BaseAdapter {
     }
 
     public void updateView (int method, Square square) {
-        // Checking the house is not empty!
-//        if(InSquareProfile.favouriteSquaresList == null)
-//        {
-//            Log.d(TAG, "updateView: lista fav era null!");
-//            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
-//        }
 
         if (method == Request.Method.DELETE) {
-//            InSquareProfile.favouriteSquaresList.remove(square);
             InSquareProfile.removeFav(square.getId());
             notifyDataSetChanged();
         } else {

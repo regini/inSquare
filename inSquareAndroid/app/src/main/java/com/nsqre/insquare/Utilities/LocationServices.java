@@ -138,6 +138,7 @@ public class LocationServices extends Service
     private void sendLocationToServer(final Location lastLocation) {
         RequestQueue queue = Volley.newRequestQueue(LocationServices.this);
         String url = getString(R.string.userUrl);
+        InSquareProfile.getInstance(getApplicationContext());
 
         StringRequest stringRequest = new StringRequest(Request.Method.PATCH, url,
                 new Response.Listener<String>() {
@@ -156,7 +157,7 @@ public class LocationServices extends Service
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("lat", String.valueOf(lastLocation.getLatitude()));
                 params.put("lon", String.valueOf(lastLocation.getLongitude()));
-                params.put("userId", InSquareProfile.getInstance(getApplicationContext()).getUserId());
+                params.put("userId", InSquareProfile.getUserId());
                 params.put("updateLocation",String.valueOf(true));
                 return params;
             }

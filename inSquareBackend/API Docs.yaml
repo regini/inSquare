@@ -1,0 +1,514 @@
+swagger: '2.0'
+info:
+  title: inSquare API
+  description: Geolocalized interactions through inSquare API
+  version: "1.0.0"
+host: recapp-insquare.rhcloud.com
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+# basePath: /
+produces:
+  - application/json
+paths:
+  /squares:
+    get: #DA RIVEDERE
+      description: Squares by ownerId, name or topic
+      parameters:
+        - name: byOwner
+          in: query
+          description: Execute a search by ownerId
+          required: false
+          type: string
+        - name: byTopic
+          in: query
+          description: Execute a search by a topic
+          required: false
+          type: string
+        - name: autocomplete
+          in: query
+          description: Owr backend tries to guess the square that match most.
+          required: false
+          type: string
+        - name: ownerId
+          in: query
+          description: The userID of the square's owner
+          required: false
+          type: string
+        - name: name
+          in: query
+          description: Name of the square or topic you want to search.
+          required: false
+          type: string
+        - name: lat
+          in: query
+          description: Latitude of the user.
+          required: false
+          type: string
+        - name: lon
+          in: query
+          description: Longitude of the user.
+          required: false
+          type: string
+      responses:
+        200:
+          description: The squares you searched ordered by distance from your location if provided. The query returns maximum 10000 squares.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Square'
+        default:
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/Error' 
+   
+    post:
+      description: Creates a new square. Duplicates are allowed
+      parameters:
+        - name: square
+          in: body
+          description: Square to add
+          required: true
+          schema: 
+            $ref: '#/definitions/NewSquare'
+      responses:
+        200:
+          description: square response
+          schema:
+            $ref: '#/definitions/Square'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    
+    patch:
+      description: Update the description of a specified square
+      parameters:
+        - name: squareId
+          in: query
+          description: Square ID
+          required: true
+          type: string
+        - name: description
+          in: query
+          description: Description to update
+          required: true
+          type: string
+      responses:
+        200:
+          description: La descrizione square è stata modificata
+          schema:
+            $ref: '#/definitions/StatusMessage'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    
+    delete:
+      summary: Delete a square by name and owner
+      parameters:
+         - name: name
+           in: query
+           description: The Square name. It is case sensitive.           
+           required: true
+           type: string
+         - name: ownerId
+           in: query
+           description: The user ID of the square owner          
+           required: true
+           type: string
+      responses:
+        200:
+          description: Square eliminata con successo!
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error' 
+            
+  /squaresNotOwned:
+    delete:
+      deprecated: true
+      description: Delete a square by name
+      parameters:
+         - name: name
+           in: query
+           description: The Square name. It is case sensitive.           
+           required: true
+           type: string  
+      responses:
+        200:
+          description: Square eliminata con successo!
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: Error if the square have a owner
+            schema:
+             $ref: '#/definitions/Error' 
+    
+  /squares/{id}:
+    get:
+      summary: Get square by id
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the square to fetch
+          required: true
+          type: string
+      responses:
+        200:
+          description: Square with the specified ID
+          schema:
+              $ref: '#/definitions/Square'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error' 
+            
+  /favouritesquares/{id}:
+    get:
+      summary: Favorite squares of a User
+      parameters:
+        - name: id
+          in: path
+          description: The user Id
+          required: true
+          type: string
+      responses:
+        200:
+          description: Favourite squares of a specified used
+          schema:
+              $ref: '#/definitions/Square'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error' 
+            
+  /favouritesquares:
+    post:
+      summary: Match a square with the Favourite Squares of a User
+      parameters:
+        - name: userId
+          in: query
+          description: The User ID            
+          required: true
+          type: string
+        - name: squareId
+          in: query
+          description: The new favourite square ID of the User            
+          required: true
+          type: string
+      responses:
+        200:
+          description: La square è stata aggiunta come preferita
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error' 
+    delete:
+      summary: Remove a Square from favourites squares of a User
+      parameters:
+         - name: userId
+           in: query
+           description: The User ID            
+           required: true
+           type: string
+         - name: squareId
+           in: query
+           description: The square you want to remove from a User Favourite          
+           required: true
+           type: string
+      responses:
+        200:
+          description: La square è stata aggiunta come preferita
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error' 
+             
+  /recentSquares/{userId}:
+    get:
+      summary: Recent squares of a User
+      parameters:
+        - name: userId
+          in: path
+          description: The user Id
+          required: true
+          type: string
+      responses:
+        200:
+          description: Recent squares of a specified used
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Square'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error' 
+  
+  /recentSquares:         
+    delete:
+      summary: Remove all recent Squares from a specfied User
+      parameters:
+         - name: userId
+           in: query
+           description: The User ID            
+           required: true
+           type: string
+      responses:
+        200:
+          description: Recenti eliminate
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: Recenti non eliminate, userId non valido
+            schema:
+             $ref: '#/definitions/Error' 
+  
+  /user:
+    patch:
+      summary: Update the current user's location
+      parameters: 
+         - name: user
+           in: body
+           description: The user
+           required: true
+           schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: User lastLocation update SUCCESSFUL
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: User lastLocation update NOT SUCCESSFUL
+            schema:
+             $ref: '#/definitions/Error'     
+    
+    get: #DA RIVEDERE
+      summary: Get users on the square or get the last location of a specified user
+      parameters: 
+        - name: byLocation
+          in: query
+          description: True if you want to get User last location
+          required: false
+          type: string
+        - name: userId
+          in: query
+          description: The id of the user you want to retrive the last location
+          required: false
+          type: string
+        - name: squareId
+          in: query
+          description: The square ID
+          required: false
+          type: string
+        - name: distance
+          in: query
+          description: The maximum distance from the square.
+          required: false
+          type: string
+      responses:
+        200:
+          description: Last location of a user or an array of users
+          schema:
+             $ref: '#/definitions/User' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'       
+             
+             
+  /gcmToken:
+    post:
+      summary: Post the user frontend GCM push token on server
+      parameters: 
+         - name: GCM
+           in: body
+           description: The user ID
+           required: true
+           schema:
+            $ref: "#/definitions/GCM"
+      responses:
+        200:
+          description: GCM TOKEN on Server
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'     
+             
+  /messages:
+    get:
+      summary: Get alist of messages from a square
+      parameters: 
+        - name: square
+          in: query
+          description: Square ID
+          required: true
+          type: string
+        - name: size
+          in: query
+          description: The maximum number of messages you want.
+          required: true
+          type: string
+        - name: recent
+          in: query
+          description: Must be true
+          required: true
+          type: string
+      responses:
+        200:
+          description: A list of messages on a square
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+        default:
+            description: Malformed query
+            schema:
+             $ref: '#/definitions/Error'   
+  
+  /profilePictures/{userId}:
+    get:
+      summary: Get the url of user's Profile Picture from Google or Facebook
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Photo Profile URL
+          schema:
+            type: string
+        default:
+            description: Malformed query
+            schema:
+             $ref: '#/definitions/Error'    
+    
+definitions:
+  Message:
+    allOf:
+      - $ref: '#/definitions/NewMessage'
+      - required:
+        - id
+        properties:
+          id:
+            type: string
+  
+  NewMessage:
+    required:
+      - text  
+      - createdAt
+      - senderId
+      - squareId
+    properties:
+      text:
+        type: string
+      createdAt:
+        type: string
+        format: date
+      senderId:
+        $ref: '#/definitions/User' #STRING???
+      squareId:
+        $ref: '#/definitions/Square'  #STRING???
+
+        
+  Square:
+    allOf:
+      - $ref: '#/definitions/NewSquare'
+      - required:
+        - id
+        properties:
+          id:
+            type: string
+  
+  NewSquare:
+    required:
+      - name  
+      - lat
+      - lon
+      - ownerId
+      - description
+    properties:
+      name:
+        type: string
+      lat:
+        type: string
+      lon:
+        type: string
+      ownerId:
+        type: string
+      description:
+        type: string
+
+  User:
+    allOf:
+      - $ref: '#/definitions/NewUser'
+      - required:
+        - id
+        properties:
+          id:
+            type: string
+            
+  NewUser:
+    required:
+      - lat
+      - lon
+    properties:
+      lat:
+        type: string
+      lon:
+        type: string
+
+  GCM:
+    required:
+      - userId
+      - gcm
+    properties:
+      userId:
+        type: string
+      gcm:
+        type: string  
+    
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  StatusMessage:
+    required:
+      - code
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string

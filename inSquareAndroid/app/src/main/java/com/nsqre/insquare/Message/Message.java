@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
+package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import java.text.DateFormat;
 import java.text.ParseException;

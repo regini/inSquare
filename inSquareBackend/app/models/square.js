@@ -26,8 +26,9 @@ var squareSchema = mongoose.Schema({
    es_schema: User},
   views: {type: Number, default: 0},
   favouredBy: {type: Number, default: 0},
+  userLocated: {type: Number, default: 0},
   description: {type: String},
-  state: {type: String},
+  state: {type: String, default: "asleep"},
   lastMessageDate: {type: Date}
 });
 

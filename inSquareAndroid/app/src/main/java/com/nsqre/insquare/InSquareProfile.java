@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Square.Square;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -92,16 +92,19 @@ public class InSquareProfile {
         profile.ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), type);
         if(profile.ownedSquaresList == null)
         {
+            profile.ownedSquaresList = new ArrayList<>();
             Log.d(TAG, "ownedSquaresList was null");
         }
         profile.favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), type);
         if(profile.favouriteSquaresList == null)
         {
+            profile.favouriteSquaresList = new ArrayList<>();
             Log.d(TAG, "favourtieSquaresList was null");
         }
         profile.recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), type);
         if(profile.recentSquaresList == null)
         {
+            profile.recentSquaresList = new ArrayList<>();
             Log.d(TAG, "recentSquaresList was null");
         }
 
@@ -246,13 +249,29 @@ public class InSquareProfile {
 
     public static void addListener(InSquareProfileListener listener)
     {
-        listeners.add(listener);
-        Log.d(TAG, "addListener: " + listener.getClass().toString());
+        boolean exists = false;
+        for(InSquareProfileListener ispl : listeners)
+        {
+            if(ispl.getClass().toString().equals(listener.getClass().toString()))
+                exists = true;
+        }
+        if(!exists){
+            listeners.add(listener);
+            Log.d(TAG, "addListener: " + listener.getClass().toString());
+        }else
+            Log.d(TAG, "addListener: already there!");
     }
 
     public static void removeListener(InSquareProfileListener listener) {
-        listeners.remove(listener);
-        Log.d(TAG, "removeListener: " + listener.getClass().toString());
+        for(InSquareProfileListener ispl : listeners)
+        {
+            if(ispl.getClass().toString().equals(listener.getClass().toString()))
+            {
+                listeners.remove(ispl);
+                Log.d(TAG, "removeListener: " + listener.getClass().toString());
+                return;
+            }
+        }
     }
 
     public static void addOwned(Square square)

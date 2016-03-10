@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.nsqre.insquare.Fragments.MapFragment;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Square.Square;
 
 import org.json.JSONArray;
 import org.json.JSONException;

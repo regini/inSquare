@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 2/1/16  */
+package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -119,6 +119,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public void removeItem(int position) {
         mDataset.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void clear() {
+        for(int i = 0; i<mDataset.size(); i++) {
+            removeItem(i);
+        }
     }
 
     @Override

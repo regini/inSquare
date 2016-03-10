@@ -47,9 +47,9 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.RegistrationIntentService;
-import com.nsqre.insquare.Utilities.User;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
+import com.nsqre.insquare.User.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,12 +104,16 @@ public class LoginActivity extends AppCompatActivity
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
 
-        Log.d(TAG, "DATILOGIN is: " + profile.hasLoginData());
-        Log.d(TAG, "NETWORK is "+ isNetworkAvailable());
         if (profile.hasLoginData() && isNetworkAvailable()) {
+            Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
+            return;
+        }else if(!isNetworkAvailable())
+        {
+
         }
 
+        Log.d(TAG, "onCreate: going past launching..?");
         fbCallbackManager = CallbackManager.Factory.create();
 
         //chiamato quando c'è un successo(o fallimento) della connessione a fb
@@ -266,6 +270,7 @@ public class LoginActivity extends AppCompatActivity
 
     //metodo che crea l'intent alla map activity
     private void launchInSquare() {
+        Log.d(TAG, "launchInSquare: launching!");
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         if(getIntent().getExtras() != null && getIntent().getExtras().getInt("profile") == 2) {
             intent.putExtra("profile",getIntent().getExtras().getInt("profile"));

@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Activities.LoginActivity"
     android:gravity="center_horizontal"
-    android:background="@color/colorAccent"
+    android:background="@color/colorPrimaryDark"
     >
 
     <TextView
@@ -28,7 +28,7 @@
 
     <View
         android:id="@+id/horizontal_line"
-        android:background="@color/colorAccentLight"
+        android:background="@color/white"
         android:layout_width = "wrap_content"
         android:layout_height="1dip"
         android:layout_centerVertical ="true"
