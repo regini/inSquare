@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
@@ -109,16 +110,24 @@ public class ProfileFragment extends Fragment implements
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
 
-        Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.logo_icon_96);
+        MapActivity mapActivity = (MapActivity) getActivity();
+
+        Bitmap icon = BitmapFactory.decodeResource(mapActivity.getResources(),
+                R.drawable.logo_icon_144);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
-        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
+        adapterOwned = new SquareAdapter(mapActivity, InSquareProfile.getOwnedSquaresList());
+        adapterFavourite = new SquareAdapter(mapActivity, InSquareProfile.getFavouriteSquaresList());
 
-        if(!InSquareProfile.getPictureUrl().equals(""))
-            new DownloadImageTask(profileImage).execute(InSquareProfile.getPictureUrl());
+        Bitmap bitmap = mapActivity.loadImageFromStorage();
+        if (bitmap == null) {
+            if (!InSquareProfile.getPictureUrl().equals(""))
+                new DownloadImageTask(profileImage, mapActivity).execute(InSquareProfile.getPictureUrl());
+        } else {
+            profileImage.setImageBitmap(bitmap);
+        }
+
         username.setText(InSquareProfile.getUsername());
 
         setupTabLayout();

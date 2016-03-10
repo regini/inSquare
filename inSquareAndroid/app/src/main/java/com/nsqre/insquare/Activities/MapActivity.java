@@ -3,10 +3,13 @@ package com.nsqre.insquare.Activities;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -60,6 +63,10 @@ import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Utilities.Square;
 import com.nsqre.insquare.Utilities.SquareDeserializer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,8 +121,12 @@ public class MapActivity extends AppCompatActivity
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
         drawerUsername = (TextView) findViewById(R.id.drawer_userName);
-        new DownloadImageTask(drawerImage)
-                .execute(InSquareProfile.getPictureUrl());
+        Bitmap bitmap = loadImageFromStorage();
+        if (bitmap == null) {
+            new DownloadImageTask(drawerImage, this).execute(InSquareProfile.getPictureUrl());
+        } else {
+             drawerImage.setImageBitmap(bitmap);
+        }
         drawerUsername.setText(InSquareProfile.getUsername());
 
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
@@ -241,6 +252,47 @@ public class MapActivity extends AppCompatActivity
         }
 
         return super.onTouchEvent(event);
+    }
+
+    public String saveToInternalStorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory,"profileImage.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    public Bitmap loadImageFromStorage()
+    {
+        Bitmap b = null;
+
+        try {
+            ContextWrapper cw = new ContextWrapper(getApplicationContext());
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+            File f=new File(directory, "profileImage.png");
+            b = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        return b;
     }
 
     public void setSquareName(String squareName) {
