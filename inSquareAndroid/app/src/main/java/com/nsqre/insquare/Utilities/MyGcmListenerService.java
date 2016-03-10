@@ -126,6 +126,6 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
-        updateSquares(null,null,"update");
+        updateSquares("","","update");
     }
 }
