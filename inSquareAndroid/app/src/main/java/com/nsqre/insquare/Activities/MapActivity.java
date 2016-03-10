@@ -662,22 +662,21 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void checkNotifications() {
-        //TODO contare i messaggi e non le piazze
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
-        int recCount = 0;
-        int prefCount = 0;
         TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
         TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
+        int recCount = 0;
+        int profileCount = 0;
         for(String id : sharedPreferences.getAll().keySet()) {
             Log.d(TAG, "checkNotifications: " + id);
             if(InSquareProfile.isOwned(id)) {
-                prefCount += sharedPreferences.getInt(id, 0);
+                profileCount = profileCount + sharedPreferences.getInt(id, 0);
                 Log.d(TAG, "checkNotifications: ");
             } else if(InSquareProfile.isFav(id)) {
-                prefCount += sharedPreferences.getInt(id, 0);
+                profileCount = profileCount + sharedPreferences.getInt(id, 0);
             }
             if(InSquareProfile.isRecent(id)) {
-                recCount += sharedPreferences.getInt(id, 0);
+                recCount = recCount + sharedPreferences.getInt(id, 0);
             }
         }
         if(recCount == 0) {
@@ -685,13 +684,13 @@ public class MapActivity extends AppCompatActivity
         } else {
             recents.setVisibility(View.VISIBLE);
         }
-        if(prefCount == 0) {
+        if(profileCount == 0) {
             profile.setVisibility(View.GONE);
         } else {
             profile.setVisibility(View.VISIBLE);
         }
         recents.setText(String.valueOf(recCount));
-        profile.setText(String.valueOf(prefCount));
+        profile.setText(String.valueOf(profileCount));
     }
 
     @Override

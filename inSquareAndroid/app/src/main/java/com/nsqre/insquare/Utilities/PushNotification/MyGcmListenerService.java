@@ -96,7 +96,7 @@ public class MyGcmListenerService extends GcmListenerService {
         if(!sharedPreferences.contains(squareId)) {
             sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
         }
-        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).apply();
+        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).commit();
 
         for(String square : sharedPreferences.getAll().keySet()) {
             if(!"squareCount".equals(square) && !"actualSquare".equals(square)) {
@@ -125,8 +125,8 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0, notificationBuilder.build());
         updateSquares("","","update");
+        notificationManager.notify(0, notificationBuilder.build());
     }
 
     public static class QuickstartPreferences {

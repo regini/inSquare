@@ -56,10 +56,10 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareDeserializer;
-import com.nsqre.insquare.Utilities.SquareState;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.Square.SquareState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,6 +87,7 @@ public class MainMapFragment extends Fragment
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
     private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
+    private static final float PIN_DOWNLOAD_RADIUS_MAX = 1000.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
@@ -237,7 +238,7 @@ public class MainMapFragment extends Fragment
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
-            onCameraChange(mGoogleMap.getCameraPosition());
+            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
         }
     }
 
@@ -249,7 +250,7 @@ public class MainMapFragment extends Fragment
             Log.d("receiver", "Got message: " + message);
             if(intent.getStringExtra("action").equals("deletion") ||
                     !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
-                onCameraChange(mGoogleMap.getCameraPosition());
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             }
         }
     };
@@ -403,7 +404,13 @@ public class MainMapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-        if(distance > PIN_DOWNLOAD_RADIUS*0.9f)
+        double radius = PIN_DOWNLOAD_RADIUS;
+
+        if(cameraPosition.zoom < 9) {
+            radius = PIN_DOWNLOAD_RADIUS*((-4f)*cameraPosition.zoom + 50);
+        }
+
+        if(distance > radius*0.9f)
         {
             if(cameraPosition.zoom < 9) //Camera molto elevata
             {
@@ -419,6 +426,9 @@ public class MainMapFragment extends Fragment
 
     private void downloadAndInsertPins(double distance, LatLng position)
     {
+        if(distance > PIN_DOWNLOAD_RADIUS_MAX) {
+            distance = PIN_DOWNLOAD_RADIUS_MAX;
+        }
         String d = distance + "km";
 
         //TODO check sul centro del mondo
