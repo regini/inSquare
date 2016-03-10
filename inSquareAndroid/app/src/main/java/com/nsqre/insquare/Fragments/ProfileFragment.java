@@ -23,8 +23,8 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareAdapter;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareAdapter;
 
 import java.util.ArrayList;
 

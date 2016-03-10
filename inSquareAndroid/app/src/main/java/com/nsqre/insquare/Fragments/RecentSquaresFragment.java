@@ -16,7 +16,7 @@ import android.widget.ListView;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.SquareAdapter;
+import com.nsqre.insquare.Square.SquareAdapter;
 
 public class RecentSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
 

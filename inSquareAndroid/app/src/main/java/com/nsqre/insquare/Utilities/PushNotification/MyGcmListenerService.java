@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Utilities.PushNotification;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -127,5 +127,12 @@ public class MyGcmListenerService extends GcmListenerService {
 
         notificationManager.notify(0, notificationBuilder.build());
         updateSquares("","","update");
+    }
+
+    public static class QuickstartPreferences {
+
+        public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+        public static final String REGISTRATION_COMPLETE = "registrationComplete";
+
     }
 }

@@ -47,9 +47,9 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.RegistrationIntentService;
-import com.nsqre.insquare.Utilities.User;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
+import com.nsqre.insquare.User.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;

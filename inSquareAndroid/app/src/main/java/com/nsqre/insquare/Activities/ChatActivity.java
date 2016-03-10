@@ -41,11 +41,11 @@ import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.Message;
-import com.nsqre.insquare.Utilities.MessageAdapter;
-import com.nsqre.insquare.Utilities.MessageDeserializer;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Message.Message;
+import com.nsqre.insquare.Message.MessageAdapter;
+import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.Square.Square;
 
 import org.json.JSONException;
 import org.json.JSONObject;

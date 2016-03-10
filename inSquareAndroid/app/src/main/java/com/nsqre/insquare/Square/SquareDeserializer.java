@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Square;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

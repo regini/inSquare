@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Square;
 
 import android.app.Activity;
 import android.content.Context;
