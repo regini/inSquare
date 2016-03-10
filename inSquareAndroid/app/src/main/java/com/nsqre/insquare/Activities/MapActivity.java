@@ -75,7 +75,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener
+        implements SearchView.OnQueryTextListener, InSquareProfile.InSquareProfileListener
 {
     private static final String TAG = "MapActivity";
 
@@ -202,6 +202,7 @@ public class MapActivity extends AppCompatActivity
         getOwnedSquares();
         getFavouriteSquares();
         getRecentSquares();
+        InSquareProfile.addListener(this);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
     }
@@ -214,7 +215,6 @@ public class MapActivity extends AppCompatActivity
             getOwnedSquares();
             getFavouriteSquares();
             getRecentSquares();
-            checkNotifications();
         }
     };
 
@@ -649,34 +649,48 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void checkNotifications() {
+        //TODO contare i messaggi e non le piazze
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int recCount = 0;
-        int profCount = 0;
+        int prefCount = 0;
+        TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
+        TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
         for(String id : sharedPreferences.getAll().keySet()) {
             if(InSquareProfile.isOwned(id)) {
-                profCount += sharedPreferences.getInt(id, 0);
+                prefCount += sharedPreferences.getInt(id, 0);
             } else if(InSquareProfile.isFav(id)) {
-                profCount += sharedPreferences.getInt(id, 0);
+                prefCount += sharedPreferences.getInt(id, 0);
             }
             if(InSquareProfile.isRecent(id)) {
                 recCount += sharedPreferences.getInt(id, 0);
             }
         }
-
-        TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
-        TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
         if(recCount == 0) {
             recents.setVisibility(View.GONE);
         } else {
             recents.setVisibility(View.VISIBLE);
         }
-        if(profCount == 0) {
+        if(prefCount == 0) {
             profile.setVisibility(View.GONE);
         } else {
             profile.setVisibility(View.VISIBLE);
         }
         recents.setText(String.valueOf(recCount));
-        profile.setText(String.valueOf(profCount));
+        profile.setText(String.valueOf(prefCount));
     }
 
+    @Override
+    public void onOwnedChanged() {
+        checkNotifications();
+    }
+
+    @Override
+    public void onFavChanged() {
+        checkNotifications();
+    }
+
+    @Override
+    public void onRecentChanged() {
+        checkNotifications();
+    }
 }
