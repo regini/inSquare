@@ -2,6 +2,7 @@ var Square = require('./models/square');
 var Message = require('./models/message');
 var User = require('./models/user');
 var async = require('async');
+var gcm = require('node-gcm');
 var fs = require('fs');
 
 module.exports = function(router, passport)
@@ -30,7 +31,9 @@ module.exports = function(router, passport)
       res.send("done");
     });
 */
+    //Documentata
     router.post('/squares', function(req, res)
+    //FARE CONTROLLO SU LAT E LON che devono essere float
     {
       var squareName = req.body.name;
       var latitude = parseFloat(req.body.lat);
@@ -38,7 +41,7 @@ module.exports = function(router, passport)
       var ownerId = req.body.ownerId;
       var description = req.body.description;
 
-      if(squareName == undefined)
+      if(squareName == undefined || squareName == null || squareName == "")
       {
         res.send("Non e' stato inserito un nome valido");
       }
@@ -48,136 +51,253 @@ module.exports = function(router, passport)
         res.send("Non e' stato inserito un ownerID valido");
       }
       */
-      if(latitude == undefined || longitude == undefined)
+      if(latitude == undefined || latitude == null || latitude == ""
+        || longitude == undefined || longitude == null || latitude == "")
       {
         res.send("Bisogna specificare delle coordinate valide!");
       }
 
       createSquare(squareName, latitude, longitude, description, ownerId, function(square) {
         User.findById(ownerId, function(err,user) {
-          if(err) throw err;
-          user.favourites.push(square);
+          if(err) console.log(err);
+          user.favourites.push(square["_id"]);
           user.save(function(err) {
-            if(err) throw err;
+            if(err) console.log(err);
           });
           res.json(square);
-        });
-      }.bind({res:res}));
+        }.bind({res:res}));
+      });
     });
 
-    //solo per aggiornamento dei modelli
+    //Documentata
     router.patch('/squares?', function(req,res) {
-      if(req.query.update) {
-        Square.find({}, function(err,squares) {
-          if(err) throw err;
-          for(var i = 0; i<squares.length; i++) {
-            if(squares[i].messages.length != 0) {
-              Message.findById(squares[i].messages[(squares[i].messages.length)-1], function(err,mes) {
-                if(err) throw err;
-                this.sqr.lastMessageDate = mes.createdAt;
-                this.sqr.save();
-              }.bind({sqr : squares[i]}))
-            }
-          }
+      var description = req.query.description;
+      var squareId = req.query.squareId;
+      if(req.query.update=='true' && description!=null && description!=undefined
+        && description!='' && squareId!=null && squareId!='' && squareId!=undefined) {
+        Square.findById(req.query.squareId, function(err,square) {
+          if(err) console.log(err);
+          square.description=req.query.description;
+          square.save(function(err) {
+            if(err) console.log(err);
+            res.send("La descrizione square è stata modificata");
+            notifyEvent(square.ownedBy, squareId, "update")
+         });
         })
-      }
-      res.send('done');
+      }else{
+      console.log("Errore");
+      res.send("La descrizione square NON è stata modificata");
+    }
     })
 
+    //Documentata
     router.get('/favouritesquares/:id', function(req, res) {
       var userId = req.params.id;
       if(userId!=null && userId != "" && userId != undefined){
         User.findById(userId, function(err, usr){
           if (err) console.log(err);
-          Square.search({
-            filtered:{
-              filter:{
-                terms:{
-                  _id: usr.favourites
+          async.forEachOf(usr.favourites, function(item, k, callback) {
+            if(item == null) {
+              usr.favourites.splice(k, 1);
+              usr.save();
+            }
+            callback();
+          }, function(err) {
+            if(err) console.log(err);
+            Square.search({
+              filtered:{
+                filter:{
+                  terms:{
+                    _id: usr.favourites
+                  }
                 }
               }
-            }
-          },function(err, squares){
-              res.json(squares.hits.hits);
-          });
+            },{
+              sort : [
+                {
+                  lastMessageDate : {
+                    order : "desc"
+                  }
+                }
+              ],
+              size:1000
+            }, function(err, squares){
+                if(err) console.log(err);
+                console.log(squares);
+                res.json(squares.hits.hits);
+            });
+          })
         });
       }
     })
 
+    //Documentata
     router.post('/favouritesquares', function(req, res) {
-      var squareId = req.body.squareId;
-      if(squareId != null && squareId != undefined && squareId != ""){
-        var userId = req.body.userId;
-        if(userId != null && userId != undefined && userId != ""){
-          Square.findById(squareId, function (err, sqr) {
-            if(err) throw err;
-            User.findById(userId, function(err, usr) {
-              usr.favourites.push(sqr);
-              usr.save(function(err) {
-                if(err) throw err;
-                console.log(usr);
-              })
+      var user = req.query.userId;
+      var square = req.query.squareId;
+
+      if(square != null && square != undefined && square != "")
+      {
+        if(user != null && user != undefined && user != "")
+        {
+          Square.findById(square, function(err, sqr)
+          {
+            if(err) console.log(err);
+            User.findById(user, function(err, usr)
+            {
+              if(err) console.log(err);
+              if(usr.favourites.indexOf(sqr.id) == (-1)) {
+                usr.favourites.push(sqr);
+                usr.save(function(err) {
+                  if(err) console.log(err);
+                  console.log(usr);
+                })
+                sqr.favouredBy = sqr.favouredBy+1;
+                sqr.save(function(err) {
+                  if(err) console.log(err);
+                  res.send("La square è stata aggiunta come preferita");
+                  notifyEvent(user, square, "update")
+               });
+              } else {
+                res.send("Errore la square è già tra i preferiti");
+              }
             })
-            sqr.favouredBy = sqr.favouredBy+1;
-            sqr.save(function(err) {
-              if(err) throw err;
-              console.log(sqr)
-            });
           });
+        } else {
+          res.send("Errore la square NON è stata aggiunta come preferita. userId mancante: " + user);
         }
+      } else {
+        res.send("Errore la square NON è stata aggiunta come preferita. squareId mancante: " + square);
       }
-      res.send("La square è stata aggiunta come preferita");
     });
 
-
+    //Documentata
     router.delete('/favouritesquares', function(req, res) {
-      console.log(req.body.squareId + "  " + req.body.userId);
-      var squareId = req.body.squareId;
-      if(squareId != null && squareId != undefined && squareId != ""){
-        Square.findById(squareId, function(err, sqr) {
-          sqr.favouredBy = sqr.favouredBy-1;
-          sqr.save(function(err) {
-            if(err) throw err;
-            console.log(sqr);
-          });
-        });
-        var userId = req.body.userId;
-        if(userId != null && userId != undefined && userId != ""){
+      console.log(req.query.squareId + "  " + req.query.userId);
+      var squareId = req.query.squareId;
+      if(squareId != null && squareId != undefined && squareId != "") {
+        var userId = req.query.userId;
+        if(userId != null && userId != undefined && userId != "") {
           User.findById(userId, function(err, usr){
-            if(err) throw err;
+            if(err) console.log(err);
             var index = usr.favourites.indexOf(squareId);
             usr.favourites.splice(index,1);
             usr.save(function(err){
-              if(err) throw err;
+              if(err) console.log(err);
               console.log(usr);
             });
           });
+          Square.findById(squareId, function(err, sqr) {
+            if(err) console.log(err);
+            sqr.favouredBy = sqr.favouredBy-1;
+            sqr.save(function(err) {
+              if(err) console.log(err);
+              console.log(sqr);
+              notifyEvent(userId, squareId, "update")
+            });
+          });
+          res.send("La square è stata eliminata dai preferiti");
+        } else {
+          res.send("Errore La square NON è stata eliminata dai preferiti. UserId mancante: " + userId);
         }
+      } else {
+        res.send("Errore La square NON è stata eliminata dai preferiti. SquareId mancante: " + squareId);
       }
-      res.send("La square è stata eliminata dai preferiti");
     });
 
+    //Documentata
+    router.get('/recentSquares/:userId', function(req, res) {
+      User.findById(req.params.userId)
+      .exec(function(err, user) {
+        if(err) console.log(err);
+        var squares = [];
+        async.forEachOf(user.recents, function(item, k, callback) {
+          squares.push(item.square);
+          callback();
+        }, function(err) {
+          if(err) console.log(err);
+          Square.search({
+            filtered : {
+              filter : {
+                terms : {
+                  _id : squares
+                }
+              }
+            }
+          },{
+            sort : [
+              {
+                lastMessageDate : {
+                  order : "desc"
+                }
+              }
+            ],
+            size:1000}, function(err, result) {
+            if(err) console.log(err);
+            res.json(result.hits.hits);
+          })
+        })
+      })
+    })
 
+    //Documentata
+    router.delete('/recentSquares?', function(req, res) {
+      if(req.query.userId != null && req.query.userId != undefined && req.query.userId != "") {
+        User.findById(req.query.userId, function(err, user) {
+          if(err) console.log(err);
+          user.recents = [];
+          user.save();
+          res.send("Recenti eliminate");
+        })
+      } else {
+        res.send("Recenti non eliminate, userId non valido");
+      }
+    })
+
+    //Documentata
     router.get('/squares/:id', function(req,res) {
       Square.findById(req.params.id, function(err,square) {
+        if(err) console.log(err);
         getCurrentState(req.params.id, function(state) {
           square.state = state;
           square.save(function(err) {
-            if(err) throw err;
+            if(err) console.log(err);
             res.json(square);
           })
         });
       });
     });
 
+    //Documentata
     router.delete('/squares?', function(req,res) {
-      deleteSquare(req.query.name, req.query.userId);
-      console.log("Stai per cancellare la square: " + req.query.name + " Con userId: " + req.query.userId);
-      res.send('done');
+      if(req.query.name != null && req.query.name != undefined && req.query.name != "") {
+        if(req.query.userId != null && req.query.userId != undefined && req.query.userId != "") {
+          deleteSquare(req.query.name, req.query.userId);
+          console.log("Stai per cancellare la square: " + req.query.name + " Con userId: " + req.query.userId);
+          res.send("Square eliminata con successo!");
+        } else {
+          res.send("Square NON eliminata devi fornire uno userId valido");
+        }
+      } else {
+        res.send("Square NON eliminata devi fornire un nome valido");
+      }
     });
 
+    //Documentata
+    router.delete('/squaresNotOwned?', function(req,res) {
+      if(req.query.name != null && req.query.name != undefined && req.query.name != "") {
+        deleteSquareWithNoOwner(req.query.name);
+        console.log("Stai per cancellare la square: " + req.query.name + " Con userId: " + req.query.userId);
+        res.send("Square eliminata con successo!");
+      } else {
+        res.send("Square NON eliminata devi fornire un nome valido");
+      }
+    });
+
+    //Documentata
     router.get('/squares?', function(req,res) {
-      if(req.query.ownerId && req.query.byOwner){
+      if(req.query.ownerId!=undefined && req.query.ownerId!='' &&
+      req.query.ownerId!=null && req.query.byOwner=='true'){
         Square.search({
           bool:{
             must:{
@@ -200,13 +320,14 @@ module.exports = function(router, passport)
                 order : "desc"
               }
             }
-          ]
+          ],
+          size : 10000
           }, function(err, squares){
-          if (err) console.log(err);
+            if (err) console.log(err);
             res.json(squares.hits.hits);
         });
       }
-      else if(req.query.autocomplete) {
+      else if(req.query.autocomplete=='true') {
         if(req.query.name != '' && req.query.name != undefined && req.query.name != null) {
           var name = req.query.name;
           if(req.query.lat != '' && req.query.lat != undefined && req.query.lon != null) {
@@ -244,7 +365,7 @@ module.exports = function(router, passport)
                 ],
                 size : 5
               }, function(err,squares) {
-                if(err) throw err;
+                if(err) console.log(err);
                 res.json(squares.hits.hits);
               })
             }
@@ -253,8 +374,11 @@ module.exports = function(router, passport)
       }
       //RICERCA PER TOPIC
       //TODO MESSAGGI RECENTI IN ORDINE DI CREATED BY
-      else if(req.query.topic && req.query.name!=undefined &&
-            req.query.lat != undefined && req.query.lon != undefined){
+      else if(req.query.topic=='true' && req.query.name!=undefined &&
+            req.query.name!=null && req.query.name!='' &&
+            req.query.lat != undefined && req.query.lat != null &&
+            req.query.lat !=  '' && req.query.lon != undefined &&
+          req.query.lon != null && req.query.lon !=''){
           Message.search({
             bool:{
               should:
@@ -279,10 +403,10 @@ module.exports = function(router, passport)
           },
           {
             aggs:{
-              'names' :{
-                'terms':{
-                  'field': "squareId",
-                  'size' : 10000
+              names :{
+                terms:{
+                  field: "squareId",
+                  size : 10000
                 }
               }
             },
@@ -292,6 +416,7 @@ module.exports = function(router, passport)
               if (err) console.log("Error while searching for topic: " + err);
               findSquares(result.aggregations.names.buckets, req.query.lat, req.query.lon,
                 function(err, configs){
+                  if(err) console.log(err);
               res.json(configs);
               });
             });
@@ -333,7 +458,6 @@ module.exports = function(router, passport)
         }, function(err,squares) {
           if(err)
             console.log("Error while searching for squares: " + err);
-          console.log(squares.hits.hits);
           res.json(squares.hits.hits);
         })
       } else {res.send("Invalid query")};
@@ -341,21 +465,11 @@ module.exports = function(router, passport)
 };
 
 
-function isLoggedIn(req, res, next)
-{
-	//if user is auth-ed, go on
-	if(req.isAuthenticated())
-		return next();
-
-	// else redirect to home page
-	res.redirect('/');
-}
 
 //Aggiunto ownerID
 function createSquare(squareName, latitude, longitude, description, ownerId, callback) {
 	var square = new Square();
 
-    // TODO aggiungere la ricerca di una piazza gia' esistente (o farlo tramite validation)
 	square.name = squareName;
   square.searchName = squareName;
   square.createdAt = (new Date()).getTime();
@@ -363,30 +477,73 @@ function createSquare(squareName, latitude, longitude, description, ownerId, cal
   square.ownerId = ownerId;
   square.description = description;
   square.favouredBy = square.favouredBy+1;
+  square.lastMessageDate = square.createdAt;
   square.save(function(err) {
-		if(err) throw err;
+		if(err) console.log(err);
     Square.findOne({'name' : squareName}, function(err,sqr) {
-      if(err) throw err;
-      callback(sqr);
+      if(err) console.log(err);
+      var square = {};
+      square["_id"] = sqr.id;
+      square["_source"] = {};
+      square["_source"].name = sqr.name;
+      square["_source"].description = sqr.description;
+      square["_source"].searchName = sqr.searchName;
+      square["_source"].geo_loc = sqr.geo_loc;
+      square["_source"].messages = sqr.messages;
+      square["_source"].ownerId = sqr.ownerId;
+      square["_source"].views = sqr.views;
+      square["_source"].favouredBy = sqr.favouredBy;
+      square["_source"].state = sqr.state;
+      square["_source"].lastMessageDate = sqr.lastMessageDate;
+      console.log(square);
+      notifyEvent(ownerId, sqr.id, "creation");
+      callback(square);
     })
-	}.bind({callback : callback}));
+	})
 }
 
 function deleteSquare(squareName, userId) {
+  //TODO notificare client dell'eliminazione
   Square.findOne({'name' : squareName , 'ownerId' : userId})
   .exec(function(err,mySquare) {
+    if(err) console.log(err);
     Message.find({'squareId' : mySquare.id})
     .exec(function(err,messages) {
+      if(err) console.log(err);
       for(var j=0; j<messages.length; j++) {
         messages[j].remove(function (err,message) {
-          if(err) throw err;
+          if(err) console.log(err);
         });
       }
     });
     mySquare.remove(function(err, square) {
-      if(err) throw err;
+      if(err) console.log(err);
+      notifyEvent(userId, square.id, "deletion");
 	  });
     forgetSquare(mySquare.id);
+  });
+}
+
+function deleteSquareWithNoOwner(squareName) {
+  Square.findOne({'name' : squareName})
+  .exec(function(err,mySquare) {
+    if(err) console.log(err);
+    if(!mySquare.ownerId) {
+      Message.find({'squareId' : mySquare.id})
+      .exec(function(err,messages) {
+        if(err) console.log(err);
+        for(var j=0; j<messages.length; j++) {
+          messages[j].remove(function (err,message) {
+            if(err) console.log(err);
+          });
+        }
+      });
+      mySquare.remove(function(err, square) {
+        if(err) console.log(err);
+        notifyEvent(userId, square.id, "deletion");
+      });
+      forgetSquare(mySquare.id);
+    }
   });
 }
 
@@ -397,10 +554,52 @@ function forgetSquare(squareId) {
       var index = users[i].favourites.indexOf(squareId);
       users[i].favourites.splice(index, 1);
       users[i].save(function(err) {
-        if(err) throw err;
+        if(err) console.log(err);
+      })
+      forgetRecent(squareId);
+    }
+  })
+}
+
+function forgetRecent(squareId) {
+  User.find({'recents.square' : squareId}, function(err, users) {
+    if(err) console.log(err);
+    for(var i = 0; i<users.length; i++) {
+      indexSquare(squareId, users[i].recents, function(result) {
+        console.log(result);
+        users[i].recents.splice(result, 1);
+        users[i].save(function(err) {
+          if(err) console.log(err);
+        });
       })
     }
   })
+}
+
+function indexSquare(squareId, squares, callback) {
+	console.log(squareId + ' | ' + squares);
+	for(var i = 0; i<squares.length; i++) {
+		if(squares[i].square == squareId) {
+			console.log(squares[i].square + ' | ' + squareId);
+			callback(i);
+			return;
+		}
+	}
+	callback(-1);
+}
+
+function notifyEvent(userId, squareId, event) {
+  var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+  var message = new gcm.Message();
+  message.addData("event", event);
+  message.addData("userId", userId);
+  message.addData("squareId",squareId);
+
+  sender.send(message, {topic: '/topics/global'}, function(err, response){
+    if (err)
+      console.log(err);
+    console.log(response);
+  });
 }
 
 function findSquares(squares, lat, lon, callback){
@@ -437,25 +636,26 @@ function findSquares(squares, lat, lon, callback){
       from : 0,
       size : 10000
     }, function(err, result){
+      if(err) console.log(err);
       callback(null,result);
     }.bind({ callback : callback }));
   });
 }
 
 
-setInterval(updateSquareState, 600000);
+setInterval(updateSquareState, 2*60*1000);
 
 function updateSquareState() {
   console.log("Updating states");
   Square.find({}, function(err,squares) {
-    if(err) throw err;
+    if(err) console.log(err);
     for(var i = 0; i<squares.length; i++) {
       getCurrentState(squares[i].id, function(state) {
         this.square.state = state;
         this.square.save();
       }.bind({square : squares[i]}))
     }
-  })
+  });
 }
 
 function getCurrentState(square, callback) {
@@ -478,7 +678,7 @@ function getCurrentState(square, callback) {
       ]
     }
   }, function(err,response) {
-    if(err) throw err;
+    if(err) console.log(err);
     getState(response.count, function(state) {
       callback(state);
     });

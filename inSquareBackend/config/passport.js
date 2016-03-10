@@ -421,7 +421,7 @@ module.exports = function(passport)
 						user.google.token = idToken.body.access_token;
 						user.google.name  = parsedToken.payload.name;
 						user.google.email = (parsedToken.payload.email).toLowerCase();
-						user.google.profilePhoto = parsedToken.payload.picture;
+						user.google.profilePhoto = parsedToken.payload.picture + "?sz=200";
 						user.save(function(err) {
 							if (err)
 								return done(err);
@@ -436,7 +436,7 @@ module.exports = function(passport)
 							newUser.google.token = idToken.body.access_token; // we will save the token that facebook provides to the user
 							newUser.google.name  = parsedToken.payload.name;
 							newUser.google.email = (parsedToken.payload.email).toLowerCase();
-							newUser.google.profilePhoto = parsedToken.payload.picture;
+							newUser.google.profilePhoto = parsedToken.payload.picture + "?sz=200";
 							// save our user to the database
 							newUser.save(function(err) {
 									if (err)
