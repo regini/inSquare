@@ -92,16 +92,19 @@ public class InSquareProfile {
         profile.ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), type);
         if(profile.ownedSquaresList == null)
         {
+            profile.ownedSquaresList = new ArrayList<>();
             Log.d(TAG, "ownedSquaresList was null");
         }
         profile.favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), type);
         if(profile.favouriteSquaresList == null)
         {
+            profile.favouriteSquaresList = new ArrayList<>();
             Log.d(TAG, "favourtieSquaresList was null");
         }
         profile.recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), type);
         if(profile.recentSquaresList == null)
         {
+            profile.recentSquaresList = new ArrayList<>();
             Log.d(TAG, "recentSquaresList was null");
         }
 

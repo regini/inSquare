@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -70,7 +71,10 @@ import java.util.Map;
 public class MapActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener, InSquareProfile.InSquareProfileListener
 {
+    public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
     private static final String TAG = "MapActivity";
+    public static final String TAG_MAP_FRAGMENT = "MAPPA";
+    public static final String TAG_RECENT_FRAGMENT = "RECENTS";
 
     private float startTouchY;
 
@@ -363,7 +367,14 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        this.finishAffinity();
+        Fragment mapFragment = getSupportFragmentManager().findFragmentByTag(TAG_MAP_FRAGMENT);
+        int backStackSize = getSupportFragmentManager().getBackStackEntryCount();
+        Log.d(TAG, "onBackPressed: " + backStackSize);
+        if(backStackSize < 2)
+        {
+            this.finishAffinity();
+        }
+
         super.onBackPressed();
     }
 
@@ -443,17 +454,20 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, mainMapFragment, "MAPPA")
+                        .replace(R.id.main_content_layout, mainMapFragment, TAG_MAP_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             case 1:  //caso recenti
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, recentSquaresFragment, "RECENTS")
+                        .replace(R.id.main_content_layout, recentSquaresFragment, TAG_RECENT_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             case 2:  //caso profilo
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, profileFragment, "PROFILE")
+                        .replace(R.id.main_content_layout, profileFragment, TAG_PROFILE_FRAGMENT)
+                        .addToBackStack(null)
                         .commit();
                 break;
             default:
@@ -604,8 +618,10 @@ public class MapActivity extends AppCompatActivity
         TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
         TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
         for(String id : sharedPreferences.getAll().keySet()) {
+            Log.d(TAG, "checkNotifications: " + id);
             if(InSquareProfile.isOwned(id)) {
                 prefCount += sharedPreferences.getInt(id, 0);
+                Log.d(TAG, "checkNotifications: ");
             } else if(InSquareProfile.isFav(id)) {
                 prefCount += sharedPreferences.getInt(id, 0);
             }

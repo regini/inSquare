@@ -758,7 +758,7 @@ public class MainMapFragment extends Fragment
 
         // Parte Bassa del Drawer
         ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
-        bottomSheetLowerFavs.setText("Favorita da " + currentSquare.getFavouredBy() + " persone");
+        bottomSheetLowerFavs.setText("Seguita da " + currentSquare.getFavouredBy() + " persone");
         ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         String d = currentSquare.getDescription().trim();

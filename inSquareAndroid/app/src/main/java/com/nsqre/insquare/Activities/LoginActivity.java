@@ -108,6 +108,9 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
             return;
+        }else if(!isNetworkAvailable())
+        {
+
         }
 
         Log.d(TAG, "onCreate: going past launching..?");
