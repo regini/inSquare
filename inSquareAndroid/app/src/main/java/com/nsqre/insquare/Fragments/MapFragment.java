@@ -2,30 +2,30 @@ package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,50 +51,42 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.REST.DownloadClosestSquares;
 import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.SquareDeserializer;
+import com.nsqre.insquare.Utilities.SquareState;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MapFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MapFragment extends SupportMapFragment implements GoogleApiClient.ConnectionCallbacks,
+public class MapFragment extends Fragment
+        implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraChangeListener,
-        OnMapReadyCallback
+        OnMapReadyCallback,
+        InSquareProfile.InSquareProfileListener
 {
 
+    private SupportMapFragment mainMapFragment;
     public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
-    public static final int MAX_SQUARENAME_LENGTH = 40;
 
-    private OnFragmentInteractionListener mListener;
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
     public Location mCurrentLocation;
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
+    private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
@@ -114,25 +106,31 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
-    private MapActivity rootActivity;
 
+    private View bottomSheetSeparator;
+    private TextView bottomSheetSquareName;
+    private ImageButton bottomSheetButton;
+    private LinearLayout bottomSheetUpperLinearLayout;
+    private LinearLayout bottomSheetLowerLinearLayout;
+    private TextView bottomSheetLowerFavs;
+    private TextView bottomSheetLowerViews;
+    private TextView bottomSheetLowerDescription;
+    private View bottomSheetLowerState;
+
+    private Marker lastMarkerClicked;
+
+//    private RecyclerView bottomSheetList;
+    private TextView bottomSheetSquareActivity;
     private Tracker mTracker;
-
-    private LinearLayout linearLayout;
-    private FloatingActionButton mapFab;
-    private Animation animationUp, animationDown;
     // Variabili per l'inizializzazione della Chat
     public static final String SQUARE_TAG = "SQUARE_TAG";
-    private Square mSquare;
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance(String param1, String param2) {
-        MapFragment fragment = new MapFragment();
-
-        return fragment;
+    public static MapFragment newInstance() {
+        return new MapFragment();
     }
 
     @Override
@@ -145,46 +143,55 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
         mLastUpdateLocation = new LatLng(0,0);
 
-        squareHashMap = new LinkedHashMap<>();
+        squareHashMap = new HashMap<>();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
 
-        rootActivity = (MapActivity) getActivity();
-
-        getMapAsync(this);
+//        rootMainActivity = (MainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //onCreateView viene chiamato dopo onAttach e onCreate, subito dopo questa riga il codice torna su onAttach()
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        View v = inflater.inflate(R.layout.fragment_main_map_full, container, false);
 
-        mapFab = (FloatingActionButton) v.findViewById(R.id.map_fab);
-        Log.d("Inflater", "mapfab is:" + (mapFab==null));
-        mapFab.setVisibility(View.GONE);
-        mapFab.setOnClickListener(new View.OnClickListener() {
+        // Recuperiamo un po' di riferimenti ai layout
+        bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
+        bottomSheetButton.setVisibility(View.GONE);
+
+        bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
+        bottomSheetSeparator.setVisibility(View.GONE);
+
+        bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
+
+        bottomSheetSquareActivity = (TextView) v.findViewById(R.id.bottom_sheet_last_activity);
+        bottomSheetSquareActivity.setVisibility(View.GONE);
+
+        bottomSheetUpperLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_upper_ll);
+
+        bottomSheetLowerLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_lower_ll);
+        bottomSheetLowerLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(rootActivity, ChatActivity.class);
-                // [START FloatingButton_event]
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("MapActivity")
-                        .setAction("FloatingButton")
-                        .build());
-                // [END FloatingButton_event]
-                intent.putExtra(SQUARE_TAG, mSquare);
-                startActivity(intent);
+                // Click listener che intercetta i click sul bottom sliding drawer
+                Log.d(TAG, "onClick: Clicky");
             }
         });
-        linearLayout = (LinearLayout) v.findViewById(R.id.slider_ll);
-        linearLayout.setVisibility(View.GONE);
-        animationUp = AnimationUtils.loadAnimation(getContext(), R.anim.anim_up);
-        animationDown = AnimationUtils.loadAnimation(getContext(), R.anim.anim_down);
+
+        bottomSheetLowerDescription = (TextView) v.findViewById(R.id.bottom_sheet_square_description);
+        bottomSheetLowerViews = (TextView) v.findViewById(R.id.bottom_sheet_square_views);
+        bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
+        bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
+        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+
+
+//        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
+//        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
+
         return v;
     }
 
@@ -192,71 +199,95 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-        if (mGoogleApiClient == null) {
-            Log.d(TAG, "Disconnected atm");
+
+        mainMapFragment = SupportMapFragment.newInstance();
+        getChildFragmentManager().beginTransaction().replace(R.id.main_map_container, mainMapFragment).commit();
+        mainMapFragment.getMapAsync(this);
+
+        if(mGoogleApiClient == null)
+        {
+            Toast.makeText(getContext(), "Google API Client is null", Toast.LENGTH_SHORT).show();
         }
+
         mGoogleApiClient.connect();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
     }
 
-    //Fa crashare se in mapActivity non è implementato OnFragmentInteractionListener, scommenta quel codice e da errore
-    // per correggerlo va messo un altro implements in mapactivity e l'override di un metodo, ma non risolve nulla, e poi
-    // perchè questo fragment vuole che mapactivity lo implementi, ma gli altri due funzionano senza?
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        /*
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onStop()
+    {
+        super.onStop();
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        {
+            mGoogleApiClient.disconnect();
         }
-        */
+        Log.d(TAG, "onStop: I've just stopped!");
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        Log.d(TAG, "onDetach: removing the fraggment from the system!");
+        InSquareProfile.removeListener(this);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
+        InSquareProfile.addListener(this);
+        if(mGoogleMap != null) {
+            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+        }
     }
 
-    private void initListeners() {
-        mGoogleMap.setOnMarkerClickListener(this);
-        mGoogleMap.setOnMapLongClickListener(this);
-        mGoogleMap.setOnInfoWindowClickListener(this);
-        mGoogleMap.setOnMapClickListener(this);
-        mGoogleMap.setOnCameraChangeListener(this);
-    }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract data included in the Intent
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            if("creation".equals(intent.getStringExtra("action"))) {
+                if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                    VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+                    double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+                    downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+                }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
-//        mListener = null;
-    }
+            } else {
+                VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
+                double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
+                downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            }
+        }
+    };
 
     @Override
     public void onConnected(Bundle bundle) {
-
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            handlePermissions();
+            this.requestPermissions(PERMISSIONS,
+                    REQUEST_COARSE_LOCATION);
+            this.requestPermissions(PERMISSIONS,
+                    REQUEST_FINE_LOCATION);
             return;
         }
+        setupLocation();
+    }
+
+    private void setupLocation()
+    {
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if(mCurrentLocation == null)
@@ -300,6 +331,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                             + "; Lon: "
                             + location.getLongitude() + ")");
                     mCurrentLocation = location;
+                }else
+                {
+                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
                 }
 
             }else if(locationManager.isProviderEnabled(NETWORK))
@@ -316,6 +350,9 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
                             + "; Lon: "
                             + location.getLongitude() + ")");
                     mCurrentLocation = location;
+                }else
+                {
+                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
                 }
             }else
             {
@@ -333,28 +370,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         }
     }
 
-    private Address reverseGeocode() throws IOException {
-        Geocoder gc = new Geocoder(getContext());
-        if(gc.isPresent())
-        {
-            List<Address> list = gc.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
-
-            Address address = list.get(0);
-            Log.d(TAG, "reverseGeocode: " + address.toString());
-
-            return address;
-        }
-        return null;
-    }
-
-    private void handlePermissions() {
-        ActivityCompat.requestPermissions(getActivity(),
-                PERMISSIONS, REQUEST_FINE_LOCATION);
-
-        ActivityCompat.requestPermissions(getActivity(),
-                PERMISSIONS, REQUEST_COARSE_LOCATION);
-    }
-
+    // Permessi di locazioni richiesti
+    // Gestione di ritorno dalla richiesta
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode)
@@ -363,7 +380,8 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
             case REQUEST_FINE_LOCATION:
                 if(grantResults.length>0)
                 {
-                    initCamera(mCurrentLocation);
+                    setupLocation();
+                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(getContext(),
@@ -376,12 +394,6 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
 
     private void initCamera(Location mCurrentLocation) {
 
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            handlePermissions();
-            return;
-        }
         CameraPosition position = CameraPosition.builder()
                 .target(new LatLng(mCurrentLocation.getLatitude(),
                         mCurrentLocation.getLongitude()))
@@ -394,7 +406,7 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
-//        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+        // mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
     @Override
@@ -403,200 +415,33 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    // LatLng | Name |
-    private Marker createSquarePin(LatLng pos, String name) {
-
-        MarkerOptions options = new MarkerOptions().position(pos);
-        options.title(name);
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
-        Marker marker = mGoogleMap.addMarker(options);
-
-        return marker;
-    }
-    @Override
-    public void onMapClick(final LatLng latLng) {
-
-        final String lat = Double.toString(latLng.latitude);
-        final String lon = Double.toString(latLng.longitude);
-
-        final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_crea_square);
-        mDialog.setTitle("Crea una Square");
-        mDialog.setCancelable(true);
-        mDialog.show();
-
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-
-        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
-        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
-        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
-        crea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String squareName = usernameEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(squareName)) {
-                    Marker m = createSquarePin(latLng, squareName);
-                    // Richiesta Volley POST per la creazione di piazze
-                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
-                    String ownerId = InSquareProfile.getUserId();
-                    createSquarePostRequest(squareName, lat, lon, m, ownerId);
-                    mDialog.dismiss();
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-    }
-
-    public String getAddressFromLatLng(LatLng latLng)
-    {
-        Geocoder geocoder = new Geocoder( getActivity() );
-
-        String address = "";
-        try {
-            address = geocoder
-                    .getFromLocation( latLng.latitude, latLng.longitude, 1 )
-                    .get( 0 ).getAddressLine( 0 );
-        } catch (IOException e ) {
-        }
-
-        return address;
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        // TODO on secondo click start chat
-        marker.showInfoWindow();
-
-        TextView tv = (TextView)getActivity().findViewById(R.id.square_textview);
-        String text = marker.getTitle();
-        if(text.length() > MAX_SQUARENAME_LENGTH)
-        {
-            text = text.substring(0, MAX_SQUARENAME_LENGTH-3) + "...";
-        }
-        tv.setText("#" + text);
-
-        // Animazione per mostrare il riquadro in fondo allo schermo insieme al tasto per accedere alle piazze
-        LinearLayout ll = ((LinearLayout) getActivity().findViewById(R.id.slider_ll));
-        if(ll.getVisibility() == View.GONE) {
-            ll.setVisibility(View.VISIBLE);
-            FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.map_fab);
-            fab.setVisibility(View.VISIBLE);
-        }
-
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
-                400, // Tempo di spostamento in ms
-                null); // callback
-        Square currentSquare = squareHashMap.get(marker);
-
-        mSquare = currentSquare;
-        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
-
-        return true;
-    }
-
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        startChatActivity(marker);
-    }
-
-    private void startChatActivity(Marker marker) {
-
-        // [START PinButton_event]
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("MapActivity")
-                .setAction("PinButton")
-                .build());
-        // [END PinButton_event]
-
-        Intent intent = new Intent(getActivity(), ChatActivity.class);
-        Square s = squareHashMap.get(marker);
-        intent.putExtra(SQUARE_TAG, s);
-        startActivity(intent);
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.mGoogleMap = googleMap;
-
-        initListeners();
-    }
-
-    private void createSquarePostRequest(final String squareName,
-                                         final String latitude,
-                                         final String longitude,
-                                         final Marker marker,
-                                         final String ownerId) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://recapp-insquare.rhcloud.com/squares";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Create Square response: " + response);
-                        try {
-                            /*
-                                Devo recuperare ID della Square dal responso del server
-                                per poter mantenere coerenti le strutture dati della mappa
-                            */
-
-                            JSONObject o = new JSONObject(response);
-                            String squareId = o.getString("_id");
-                            String name = o.getString("name");
-                            double lat = Double.parseDouble(latitude);
-                            double lon = Double.parseDouble(longitude);
-                            String owner = o.getString("ownerId");
-                            Square s = new Square(squareId, name, lat, lon, "geo_point",owner);
-                            squareHashMap.put(marker, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("CreateSquare Response", error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", squareName);
-                params.put("lat", latitude);
-                params.put("lon", longitude);
-                params.put("ownerId",ownerId);
-                return params;
-            }
-        };
-        queue.add(stringRequest);
-    }
-
-    @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-//        double distance = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
-//        if (!waitingDelay)
-//            downloadAndInsertPins(30.0f,cameraPosition.target);
-        if( distance > PIN_DOWNLOAD_RADIUS*0.9f)
+        float radius = PIN_DOWNLOAD_RADIUS;
+
+        if(cameraPosition.zoom < 9) {
+            radius = PIN_DOWNLOAD_RADIUS*8f;
+        }
+        if(cameraPosition.zoom < 5) {
+            radius = PIN_DOWNLOAD_RADIUS*15f;
+        }
+        if(cameraPosition.zoom < 3) {
+            radius = PIN_DOWNLOAD_RADIUS*20f;
+        }
+
+        if(distance > radius*0.9f)
         {
-            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
+            if(cameraPosition.zoom < 9) //Camera molto elevata
+            {
+                double rad = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
+                downloadAndInsertPins(rad, cameraPosition.target);
+            }else{
+                // I'm closer
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
+            }
             Log.d(TAG, "Downloading From: " + cameraPosition.target.toString());
         }
     }
@@ -605,45 +450,82 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
     {
         String d = distance + "km";
 
-        DownloadClosestSquares dcs;
-
         //TODO check sul centro del mondo
         if(position != null)
         {
-            dcs = new DownloadClosestSquares(d,
-                    position.latitude,
-                    position.longitude);
+
+            getClosestSquares(d, position.latitude, position.longitude);
         }
         else
         {
-            dcs = new DownloadClosestSquares(d, 0, 0);
+            getClosestSquares(d, 0, 0);
             Log.d(TAG, "downloadAndInsertPins: downloading at the center of the world..?");
         }
 
-
-        try {
-            // Update con l'ultima posizione a cui ho effettuato l'aggiornamento
-            mLastUpdateLocation = position;
-
-            HashMap<String, Square> squarePins = dcs.execute().get();
-
-            // Rimuovi le Squares di troppo
-            for (Square closeSquare : squarePins.values()) {
-                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                Marker m = createSquarePin(coords, closeSquare.getName());
-                squareHashMap.put(m, closeSquare);
-                if(squareHashMap.size() > SQUARE_DOWNLOAD_LIMIT) {
-                    Marker key = squareHashMap.entrySet().iterator().next().getKey();
-                    key.remove();
-                    squareHashMap.remove(key);
-                }
-            }
-            Log.d(TAG, "downloadAndInsertPins: squareHashMapSize: " + squareHashMap.size());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        mLastUpdateLocation = position;
     }
 
+    private void getClosestSquares(String distance, double lat, double lon) {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://recapp-insquare.rhcloud.com/squares?";
+        url += "distance=" + distance;
+        url += "&lat=" + lat;
+        url += "&lon=" + lon;
+
+        Log.d(TAG, "getClosestSquares: " + url);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        GsonBuilder b = new GsonBuilder();
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+                        // Log.d(TAG, "Get Closest Squares onResponse: " + response);
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square[] squares = gson.fromJson(response, Square[].class);
+
+                        HashMap<String, Square> squarePins = new HashMap<>();
+                        for(Square s: squares)
+                        {
+                            squarePins.put(s.getId(), s);
+                        }
+                        List<Marker> markersToRemove = new ArrayList<>();
+                        for(Marker m : squareHashMap.keySet())
+                        {
+                            if(!squarePins.containsValue(squareHashMap.get(m))) {
+                                markersToRemove.add(m);
+                            }
+                        }
+                        for(Marker m : markersToRemove) {
+                            squareHashMap.remove(m);
+                            m.remove();
+                        }
+                        for(Square closeSquare: squarePins.values())
+                        {
+                            if(!squareHashMap.containsValue(closeSquare)) {
+                                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                                Marker m = createSquarePin(coords, closeSquare.getName());
+                                squareHashMap.put(m, closeSquare);
+                            } else {
+                                for(Marker m : squareHashMap.keySet()) {
+                                    if(closeSquare.equals(squareHashMap.get(m))) {
+                                        squareHashMap.put(m, closeSquare);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "GetClosestSquares " + error.toString());
+            }
+        });
+        queue.add(stringRequest);
+    }
 
     // Con due locazioni restituisce il valore in km di distanza
     private float getDistance(LatLng southwest, LatLng frnd_latlong){
@@ -663,18 +545,331 @@ public class MapFragment extends SupportMapFragment implements GoogleApiClient.C
         return distance;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        startChatActivity(marker);
+    }
+
+    private void startChatActivity(Marker marker) {
+
+        // [START PinButton_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MapActivity")
+                .setAction("PinButton")
+                .build());
+        // [END PinButton_event]
+
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        Square s = squareHashMap.get(marker);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(s.getId())) {
+            sharedPreferences.edit().remove(s.getId()).apply();
+            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+            MapActivity rootActivity = (MapActivity) getActivity();
+            rootActivity.checkNotifications();
+        }
+        intent.putExtra(SQUARE_TAG, s);
+        startActivity(intent);
+    }
+
+    // LatLng | Name |
+    private Marker createSquarePin(LatLng pos, String name) {
+
+        MarkerOptions options = new MarkerOptions().position(pos);
+        options.title(name);
+        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        Marker marker = mGoogleMap.addMarker(options);
+
+        return marker;
+    }
+
+    @Override
+    public void onMapClick(final LatLng latLng) {
+        final String lat = Double.toString(latLng.latitude);
+        final String lon = Double.toString(latLng.longitude);
+
+        final Dialog mDialog = new Dialog(getContext());
+        mDialog.setContentView(R.layout.dialog_crea_square);
+        mDialog.setTitle("Crea una Square");
+        mDialog.setCancelable(true);
+        mDialog.show();
+
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
+        final EditText descriptionEditText = (EditText) mDialog.findViewById((R.id.descr_square));
+        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
+        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
+        crea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String squareName = usernameEditText.getText().toString().trim();
+                String squareDescr = descriptionEditText.getText().toString().trim();
+                if (!TextUtils.isEmpty(squareName)) {
+                    Marker m = createSquarePin(latLng, squareName);
+                    // Richiesta Volley POST per la creazione di piazze
+                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
+                    String ownerId = InSquareProfile.getUserId();
+                    createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
+                    mDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    private void createSquarePostRequest(final String squareName,
+                                         final String squareDescr,
+                                         final String latitude,
+                                         final String longitude,
+                                         final Marker marker,
+                                         final String ownerId) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "http://recapp-insquare.rhcloud.com/squares";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Create Square response: " + response);
+                        GsonBuilder b = new GsonBuilder();
+                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+                        Log.d(TAG, "Create Post onResponse: " + response);
+                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+                        Gson gson = b.create();
+                        Square s = gson.fromJson(response, Square.class);
+                        squareHashMap.put(marker, s);
+                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CreateSquare Response", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", squareName);
+                params.put("description", squareDescr);
+                params.put("lat", latitude);
+                params.put("lon", longitude);
+                params.put("ownerId",ownerId);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if(mainMapFragment != null)
+        {
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            if(locationManager != null && googleMap != null)
+            {
+                mGoogleMap = googleMap;
+            }
+        }
+
+        initListeners();
+    }
+
+    private void initListeners() {
+        mGoogleMap.setOnMarkerClickListener(this);
+        mGoogleMap.setOnMapLongClickListener(this);
+        mGoogleMap.setOnInfoWindowClickListener(this);
+        mGoogleMap.setOnMapClickListener(this);
+        mGoogleMap.setOnCameraChangeListener(this);
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        marker.showInfoWindow();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                400, // Tempo di spostamento in ms
+                null); // callback
+        lastMarkerClicked = marker;
+        final Square currentSquare = squareHashMap.get(marker);
+        String text = marker.getTitle();
+        if(currentSquare.getId().equals(mLastSelectedSquareId))
+        {
+            Log.d(TAG, "onMarkerClick: Clicked twice?");
+            startChatActivity(marker);
+        }else
+        {
+            mLastSelectedSquareId = currentSquare.getId();
+        }
+        
+        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+
+
+        // Parte superiore del drawer
+        bottomSheetSquareName.setText(text);
+        bottomSheetSquareActivity.setVisibility(View.VISIBLE);
+        bottomSheetSquareActivity.setText(currentSquare.formatTime());
+
+        // Controllo sulla lista dell'utente
+        if(InSquareProfile.isFav(currentSquare.getId()))
+            bottomSheetButton.setImageResource(R.drawable.heart_black);
+        else
+            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+
+        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int method;
+
+                if(InSquareProfile.isFav(currentSquare.getId()))
+                {
+                    method = Request.Method.DELETE;
+                }else
+                {
+                    method = Request.Method.POST;
+                }
+
+                favouriteSquare(method,currentSquare);
+            }
+        });
+        bottomSheetButton.setVisibility(View.VISIBLE);
+        bottomSheetSeparator.setVisibility(View.VISIBLE);
+
+        bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChatActivity(marker);
+            }
+        });
+        // ===== Fine Parte Superiore del Drawer
+
+        // Parte Bassa del Drawer
+        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
+        bottomSheetLowerFavs.setText("Seguita da " + currentSquare.getFavouredBy() + " persone");
+        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
+        bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
+        String d = currentSquare.getDescription().trim();
+        if(d.isEmpty())
+        {
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+        }else
+        {
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
+            bottomSheetLowerDescription.setText(d.trim());
+        }
+
+        SquareState currentState = currentSquare.getSquareState();
+        int stateColor;
+        switch(currentState)
+        {
+            default:
+            case ASLEEP:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                break;
+            case AWOKEN:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                break;
+            case CAFFEINATED:
+                stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                break;
+        }
+        ((LinearLayout)bottomSheetLowerState.getParent()).setVisibility(View.VISIBLE);
+        bottomSheetLowerState.setBackgroundColor(stateColor);
+        // ===== Fine Parte Bassa del Drawer
+
+        return true;
+    }
+
+    public void favouriteSquare(final int method, final Square square) {
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
+        url += "squareId=" + square.getId();
+        url += "&userId=" + InSquareProfile.getUserId();
+        Log.d(TAG, "favouriteSquare: " + url);
+        StringRequest postRequest = new StringRequest(method, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (method)
+                        {
+                            case Request.Method.DELETE:
+                                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+                                InSquareProfile.removeFav(square.getId());
+//                                InSquareProfile.favouriteSquaresList.remove(square);
+                                break;
+                            case Request.Method.POST:
+                                bottomSheetButton.setImageResource(R.drawable.heart_black);
+                                InSquareProfile.addFav(square);
+//                                InSquareProfile.favouriteSquaresList.add(square);
+                                break;
+                        }
+//                        Log.d(TAG, "FAVOURITE response => " + response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "FAVOURITE error => "+ error.toString());
+                    }
+                }
+        );
+        queue.add(postRequest);
+    }
+
+    @Override
+    public void onOwnedChanged() {
+        Log.d(TAG, "onOwnedChanged: Owned changed!");
+        if(InSquareProfile.isOwned(mLastSelectedSquareId)) {
+            for(Square s : InSquareProfile.getOwnedSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onFavChanged() {
+        Log.d(TAG, "onFavChanged: Favs changed!");
+        if(InSquareProfile.isFav(mLastSelectedSquareId))
+        {
+            bottomSheetButton.setImageResource(R.drawable.heart_black);
+            for(Square s : InSquareProfile.getFavouriteSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
+        }else
+        {
+            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+        }
+    }
+
+    @Override
+    public void onRecentChanged() {
+        Log.d(TAG, "onRecentChanged: Recent changed!");
+        if(InSquareProfile.isRecent(mLastSelectedSquareId)) {
+            for(Square s : InSquareProfile.getRecentSquaresList()) {
+                if(mLastSelectedSquareId.equals(s.getId())) {
+                    bottomSheetSquareActivity.setText(s.formatTime());
+                }
+            }
+        }
     }
 }

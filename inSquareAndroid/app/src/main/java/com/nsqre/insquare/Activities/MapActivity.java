@@ -48,7 +48,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
@@ -103,7 +102,7 @@ public class MapActivity extends AppCompatActivity
     // Fragments del menu
     private ProfileFragment profileFragment;
     private RecentSquaresFragment recentSquaresFragment;
-    private MainMapFragment mainMapFragment;
+    private MapFragment mapFragment;
     // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
@@ -182,7 +181,7 @@ public class MapActivity extends AppCompatActivity
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mainMapFragment = new MainMapFragment();
+        mapFragment = new MapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
@@ -506,7 +505,7 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, mainMapFragment, TAG_MAP_FRAGMENT)
+                        .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
                         .addToBackStack(null)
                         .commit();
                 break;

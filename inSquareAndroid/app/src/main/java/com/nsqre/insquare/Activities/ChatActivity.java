@@ -38,7 +38,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.AnalyticsApplication;
@@ -156,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Recuperiamo i dati passati dalla MapActivity
         Intent intent = getIntent();
 
-        mSquare = (Square) intent.getSerializableExtra(MainMapFragment.SQUARE_TAG);
+        mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
         Log.d("CHAT", mSquare.toString());
 
         mSquareId = mSquare.getId();
