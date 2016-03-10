@@ -79,7 +79,7 @@ public class MapFragment extends Fragment
         InSquareProfile.InSquareProfileListener
 {
 
-    private SupportMapFragment mainMapFragment;
+    private SupportMapFragment mapFragment;
     public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
 
     private static final String TAG = "MapFragment";
@@ -200,9 +200,9 @@ public class MapFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
 
-        mainMapFragment = SupportMapFragment.newInstance();
-        getChildFragmentManager().beginTransaction().replace(R.id.main_map_container, mainMapFragment).commit();
-        mainMapFragment.getMapAsync(this);
+        mapFragment = SupportMapFragment.newInstance();
+        getChildFragmentManager().beginTransaction().replace(R.id.main_map_container, mapFragment).commit();
+        mapFragment.getMapAsync(this);
 
         if(mGoogleApiClient == null)
         {
@@ -675,7 +675,7 @@ public class MapFragment extends Fragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if(mainMapFragment != null)
+        if(mapFragment != null)
         {
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if(locationManager != null && googleMap != null)
