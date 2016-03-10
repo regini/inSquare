@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nsqre.insquare"
-    android:versionCode="2"
-    android:versionName="0.2" > <!-- API Key for Google Maps: AIzaSyAxtPjGcRbeJFKEHugwNW8xJMxWnNNcfYc -->
-    <uses-sdk
-        android:minSdkVersion="19"
-        android:targetSdkVersion="19" />
+    package="com.nsqre.insquare"> <!-- API Key for Google Maps: AIzaSyAxtPjGcRbeJFKEHugwNW8xJMxWnNNcfYc -->
 
     <uses-feature
         android:glEsVersion="0x00020000"
