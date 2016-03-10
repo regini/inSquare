@@ -237,9 +237,7 @@ public class MainMapFragment extends Fragment
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
-            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            onCameraChange(mGoogleMap.getCameraPosition());
         }
     }
 
@@ -249,10 +247,9 @@ public class MainMapFragment extends Fragment
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d("receiver", "Got message: " + message);
-            if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
-                VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-                double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-                downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            if(intent.getStringExtra("action").equals("deletion") ||
+                    !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                onCameraChange(mGoogleMap.getCameraPosition());
             }
         }
     };
