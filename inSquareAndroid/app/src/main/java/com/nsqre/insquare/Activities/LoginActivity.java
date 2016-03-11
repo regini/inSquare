@@ -47,9 +47,9 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.RegistrationIntentService;
-import com.nsqre.insquare.Utilities.User;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
+import com.nsqre.insquare.User.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -282,7 +282,7 @@ public class LoginActivity extends AppCompatActivity
     private void facebookPostRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        String url = "http://recapp-insquare.rhcloud.com/auth/facebook/token";
+        String url = getString(R.string.facebookTokenUrl);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -313,7 +313,7 @@ public class LoginActivity extends AppCompatActivity
     private void googlePostRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        String url = "http://recapp-insquare.rhcloud.com/auth/google/token";
+        String url = getString(R.string.googleTokenUrl);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -481,7 +481,7 @@ public class LoginActivity extends AppCompatActivity
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
                         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                        String url = "http://recapp-insquare.rhcloud.com/feedback";
+                        String url = getString(R.string.feedbackUrl);
 
                         // Request a string response from the provided URL.
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

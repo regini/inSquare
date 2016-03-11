@@ -38,14 +38,14 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.Message;
-import com.nsqre.insquare.Utilities.MessageAdapter;
-import com.nsqre.insquare.Utilities.MessageDeserializer;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Message.Message;
+import com.nsqre.insquare.Message.MessageAdapter;
+import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.Square.Square;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,7 +107,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
             // Si connette alla socket che e' una sola
             // La Room viene gestita a livello server tramite socket.join(room)
-            String url = getString(R.string.chatUrl);
+            String url = getString(R.string.squaresUrl);
             Log.d(TAG, "onCreate: " + url);
             mSocket = IO.socket(url);
 
@@ -156,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Recuperiamo i dati passati dalla MapActivity
         Intent intent = getIntent();
 
-        mSquare = (Square) intent.getSerializableExtra(MainMapFragment.SQUARE_TAG);
+        mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
         Log.d("CHAT", mSquare.toString());
 
         mSquareId = mSquare.getId();
@@ -177,8 +177,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
         final String q = new Integer(quantity).toString();
 
-        String url = String.format("http://recapp-insquare.rhcloud.com/messages?recent=%1$s&size=%2$s&square=%3$s",
-                "true", q, mSquareId);
+        String url = String.format("%1$s?recent=%2$s&size=%3$s&square=%4$s",
+                getString(R.string.messagesUrl),"true", q, mSquareId);
 
         Log.d(TAG, "getRecentMessages from: " + url);
 
@@ -476,7 +476,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
                         RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
-                        String url = "http://recapp-insquare.rhcloud.com/feedback";
+                        String url = getString(R.string.feedbackUrl);
 
                         // Request a string response from the provided URL.
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -531,9 +531,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         RequestQueue queue = Volley.newRequestQueue(this);
         final String squareId = square.getId();
         final String userId = InSquareProfile.getUserId();
-        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
-        url += "squareId=" + squareId;
-        url += "&userId=" + userId;
+
+        String url = String.format("%1$s?squareId=%2$s&userId=%3$s",
+                getString(R.string.favouritesquaresUrl), squareId, userId);;
+
         Log.d(TAG, "favouriteSquare: " + url);
         StringRequest postRequest = new StringRequest(method, url,
                 new Response.Listener<String>()

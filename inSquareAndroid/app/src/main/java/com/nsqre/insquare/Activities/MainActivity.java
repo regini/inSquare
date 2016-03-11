@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
-import com.nsqre.insquare.Fragments.MainMapFragment;
+import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.R;
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         switch (tabName)
         {
             case TAB_MAP:
-                return new MainMapFragment();
+                return new MapFragment();
             case TAB_RECENT:
                 return new RecentSquaresFragment();
         }

@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -57,10 +56,10 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareDeserializer;
-import com.nsqre.insquare.Utilities.SquareState;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.Square.SquareState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +87,7 @@ public class MainMapFragment extends Fragment
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
     private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
+    private static final float PIN_DOWNLOAD_RADIUS_MAX = 1000.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
@@ -118,6 +118,8 @@ public class MainMapFragment extends Fragment
     private View bottomSheetLowerState;
 
     private Marker lastMarkerClicked;
+
+    private MapActivity rootActivity;
 
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
@@ -186,8 +188,6 @@ public class MainMapFragment extends Fragment
         bottomSheetLowerViews = (TextView) v.findViewById(R.id.bottom_sheet_square_views);
         bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
         bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
-        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-
 
 //        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
 //        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
@@ -215,6 +215,7 @@ public class MainMapFragment extends Fragment
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        InSquareProfile.removeListener(this);
         super.onPause();
         Log.d(TAG, "onPause: I've just paused!");
     }
@@ -231,22 +232,13 @@ public class MainMapFragment extends Fragment
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.d(TAG, "onDetach: removing the fraggment from the system!");
-        InSquareProfile.removeListener(this);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
-            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
         }
     }
 
@@ -256,17 +248,9 @@ public class MainMapFragment extends Fragment
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d("receiver", "Got message: " + message);
-            if("creation".equals(intent.getStringExtra("action"))) {
-                if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
-                    VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-                    double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-                    downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
-                }
-
-            } else {
-                VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-                double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-                downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            if(intent.getStringExtra("action").equals("deletion") ||
+                    !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             }
         }
     };
@@ -420,16 +404,10 @@ public class MainMapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-        float radius = PIN_DOWNLOAD_RADIUS;
+        double radius = PIN_DOWNLOAD_RADIUS;
 
         if(cameraPosition.zoom < 9) {
-            radius = PIN_DOWNLOAD_RADIUS*8f;
-        }
-        if(cameraPosition.zoom < 5) {
-            radius = PIN_DOWNLOAD_RADIUS*15f;
-        }
-        if(cameraPosition.zoom < 3) {
-            radius = PIN_DOWNLOAD_RADIUS*20f;
+            radius = PIN_DOWNLOAD_RADIUS*((-4f)*cameraPosition.zoom + 50);
         }
 
         if(distance > radius*0.9f)
@@ -448,6 +426,9 @@ public class MainMapFragment extends Fragment
 
     private void downloadAndInsertPins(double distance, LatLng position)
     {
+        if(distance > PIN_DOWNLOAD_RADIUS_MAX) {
+            distance = PIN_DOWNLOAD_RADIUS_MAX;
+        }
         String d = distance + "km";
 
         //TODO check sul centro del mondo
@@ -467,6 +448,7 @@ public class MainMapFragment extends Fragment
 
     private void getClosestSquares(String distance, double lat, double lon) {
         RequestQueue queue = Volley.newRequestQueue(getContext());
+
         String url = "http://recapp-insquare.rhcloud.com/squares?";
         url += "distance=" + distance;
         url += "&lat=" + lat;
@@ -516,6 +498,11 @@ public class MainMapFragment extends Fragment
                                     }
                                 }
                             }
+                        }
+                        if(lastMarkerClicked != null) {
+                            mLastSelectedSquareId = null;
+                            onMarkerClick(lastMarkerClicked);
+                            lastMarkerClicked = null;
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -567,13 +554,6 @@ public class MainMapFragment extends Fragment
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
-        if(sharedPreferences.contains(s.getId())) {
-            sharedPreferences.edit().remove(s.getId()).apply();
-            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
-            MapActivity rootActivity = (MapActivity) getActivity();
-            rootActivity.checkNotifications();
-        }
         intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);
     }
@@ -699,10 +679,11 @@ public class MainMapFragment extends Fragment
     public boolean onMarkerClick(final Marker marker) {
 
         marker.showInfoWindow();
-
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
-                400, // Tempo di spostamento in ms
-                null); // callback
+        if(lastMarkerClicked == null) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
+                    400, // Tempo di spostamento in ms
+                    null); // callback
+        }
         lastMarkerClicked = marker;
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
@@ -758,7 +739,7 @@ public class MainMapFragment extends Fragment
 
         // Parte Bassa del Drawer
         ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
-        bottomSheetLowerFavs.setText("Seguita da " + currentSquare.getFavouredBy() + " persone");
+        bottomSheetLowerFavs.setText("Favorita da " + currentSquare.getFavouredBy() + " persone");
         ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         String d = currentSquare.getDescription().trim();
@@ -835,41 +816,15 @@ public class MainMapFragment extends Fragment
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged: Owned changed!");
-        if(InSquareProfile.isOwned(mLastSelectedSquareId)) {
-            for(Square s : InSquareProfile.getOwnedSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                }
-            }
-        }
     }
 
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged: Favs changed!");
-        if(InSquareProfile.isFav(mLastSelectedSquareId))
-        {
-            bottomSheetButton.setImageResource(R.drawable.heart_black);
-            for(Square s : InSquareProfile.getFavouriteSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                }
-            }
-        }else
-        {
-            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-        }
     }
 
     @Override
     public void onRecentChanged() {
         Log.d(TAG, "onRecentChanged: Recent changed!");
-        if(InSquareProfile.isRecent(mLastSelectedSquareId)) {
-            for(Square s : InSquareProfile.getRecentSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                }
-            }
-        }
     }
 }

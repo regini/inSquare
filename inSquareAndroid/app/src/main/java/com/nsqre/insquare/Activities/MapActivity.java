@@ -48,20 +48,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nsqre.insquare.Fragments.MainMapFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
 import com.nsqre.insquare.Utilities.LocationServices;
-import com.nsqre.insquare.Utilities.MyInstanceIDListenerService;
+import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
-import com.nsqre.insquare.Utilities.Square;
-import com.nsqre.insquare.Utilities.SquareDeserializer;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,7 +102,7 @@ public class MapActivity extends AppCompatActivity
     // Fragments del menu
     private ProfileFragment profileFragment;
     private RecentSquaresFragment recentSquaresFragment;
-    private MainMapFragment mainMapFragment;
+    private MapFragment mapFragment;
     // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
@@ -182,7 +181,7 @@ public class MapActivity extends AppCompatActivity
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mainMapFragment = new MainMapFragment();
+        mapFragment = new MapFragment();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
@@ -373,7 +372,7 @@ public class MapActivity extends AppCompatActivity
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
                         RequestQueue queue = Volley.newRequestQueue(MapActivity.this);
-                        String url = "http://recapp-insquare.rhcloud.com/feedback";
+                        String url = getString(R.string.feedbackUrl);
 
                         // Request a string response from the provided URL.
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -506,7 +505,7 @@ public class MapActivity extends AppCompatActivity
         switch (position) {
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, mainMapFragment, TAG_MAP_FRAGMENT)
+                        .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
                         .addToBackStack(null)
                         .commit();
                 break;
@@ -533,8 +532,8 @@ public class MapActivity extends AppCompatActivity
 
     public void getOwnedSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s?byOwner=%2$s&ownerId=%3$s",
+                getString(R.string.squaresUrl), "true",InSquareProfile.getUserId());
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -567,8 +566,8 @@ public class MapActivity extends AppCompatActivity
     public void getFavouriteSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String url = String.format("http://recapp-insquare.rhcloud.com/favouritesquares/%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s/%2$s",
+                getString(R.string.favouritesquaresUrl), InSquareProfile.getUserId());
 
         Log.d(TAG, "getFavouriteSquares: " + url);
 
@@ -603,8 +602,8 @@ public class MapActivity extends AppCompatActivity
 
     public void getRecentSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("http://recapp-insquare.rhcloud.com/recentSquares/%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s/%2$s",
+                getString(R.string.recentSquaresUrl), InSquareProfile.getUserId());
 
         Log.d(TAG, "getRecentSquares: " + url);
 
@@ -663,22 +662,21 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void checkNotifications() {
-        //TODO contare i messaggi e non le piazze
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
-        int recCount = 0;
-        int prefCount = 0;
         TextView recents = (TextView) mDrawerList.getChildAt(1).findViewById(R.id.drawer_counter);
         TextView profile = (TextView) mDrawerList.getChildAt(2).findViewById(R.id.drawer_counter);
+        int recCount = 0;
+        int profileCount = 0;
         for(String id : sharedPreferences.getAll().keySet()) {
             Log.d(TAG, "checkNotifications: " + id);
             if(InSquareProfile.isOwned(id)) {
-                prefCount += sharedPreferences.getInt(id, 0);
+                profileCount = profileCount + sharedPreferences.getInt(id, 0);
                 Log.d(TAG, "checkNotifications: ");
             } else if(InSquareProfile.isFav(id)) {
-                prefCount += sharedPreferences.getInt(id, 0);
+                profileCount = profileCount + sharedPreferences.getInt(id, 0);
             }
             if(InSquareProfile.isRecent(id)) {
-                recCount += sharedPreferences.getInt(id, 0);
+                recCount = recCount + sharedPreferences.getInt(id, 0);
             }
         }
         if(recCount == 0) {
@@ -686,13 +684,13 @@ public class MapActivity extends AppCompatActivity
         } else {
             recents.setVisibility(View.VISIBLE);
         }
-        if(prefCount == 0) {
+        if(profileCount == 0) {
             profile.setVisibility(View.GONE);
         } else {
             profile.setVisibility(View.VISIBLE);
         }
         recents.setText(String.valueOf(recCount));
-        profile.setText(String.valueOf(prefCount));
+        profile.setText(String.valueOf(profileCount));
     }
 
     @Override

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.nsqre.insquare.Utilities.Square;
+import com.nsqre.insquare.Square.Square;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

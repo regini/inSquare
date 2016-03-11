@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.User;
 
 import java.io.Serializable;
 

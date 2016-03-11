@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Utilities.PushNotification;
 
 import android.content.Intent;
 
-import com.google.android.gms.iid.InstanceIDListenerService;import java.lang.Override;import java.lang.String;
+import com.google.android.gms.iid.InstanceIDListenerService;
+import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
+
+import java.lang.Override;import java.lang.String;
 
 public class MyInstanceIDListenerService extends InstanceIDListenerService {
 

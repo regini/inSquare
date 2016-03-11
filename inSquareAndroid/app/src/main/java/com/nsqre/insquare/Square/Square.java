@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;/* Created by umbertosonnino on 6/2/16  */
+package com.nsqre.insquare.Square;/* Created by umbertosonnino on 6/2/16  */
 
 import java.io.Serializable;
 import java.text.DateFormat;

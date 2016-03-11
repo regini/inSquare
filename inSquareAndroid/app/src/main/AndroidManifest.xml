@@ -24,7 +24,7 @@
     <uses-permission android:name="com.nsqre.insquare.permission.C2D_MESSAGE" />
 
     <application
-        android:name=".Utilities.AnalyticsApplication"
+        android:name=".Utilities.Analytics.AnalyticsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -83,21 +83,21 @@
         </receiver>
 
         <service
-            android:name=".Utilities.MyGcmListenerService"
+            android:name=".Utilities.PushNotification.MyGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".Utilities.MyInstanceIDListenerService"
+            android:name=".Utilities.PushNotification.MyInstanceIDListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".Utilities.RegistrationIntentService"
+            android:name=".Utilities.PushNotification.RegistrationIntentService"
             android:exported="false" />
         <service android:name=".Utilities.LocationServices"/>
 
