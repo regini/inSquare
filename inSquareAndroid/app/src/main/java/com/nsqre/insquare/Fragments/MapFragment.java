@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -415,13 +416,13 @@ public class MapFragment extends Fragment
 
         double radius = PIN_DOWNLOAD_RADIUS;
 
-        if(cameraPosition.zoom < 9) {
-            radius = PIN_DOWNLOAD_RADIUS*((-5f)*cameraPosition.zoom + 50);
+        if(cameraPosition.zoom < 8) {
+            radius = PIN_DOWNLOAD_RADIUS*((-5f)*cameraPosition.zoom + 40);
         }
 
         if(distance > radius*0.9f)
         {
-            if(cameraPosition.zoom < 9) //Camera molto elevata
+            if(cameraPosition.zoom < 8) //Camera molto elevata
             {
                 double rad = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
                 if(rad > PIN_DOWNLOAD_RADIUS_MAX)
@@ -468,44 +469,7 @@ public class MapFragment extends Fragment
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        GsonBuilder b = new GsonBuilder();
-                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        // Log.d(TAG, "Get Closest Squares onResponse: " + response);
-                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-                        Gson gson = b.create();
-                        Square[] squares = gson.fromJson(response, Square[].class);
-
-                        HashMap<String, Square> squarePins = new HashMap<>();
-                        for(Square s: squares)
-                        {
-                            squarePins.put(s.getId(), s);
-                        }
-                        List<Marker> markersToRemove = new ArrayList<>();
-                        for(Marker m : squareHashMap.keySet())
-                        {
-                            if(!squarePins.containsValue(squareHashMap.get(m))) {
-                                markersToRemove.add(m);
-                            }
-                        }
-                        for(Marker m : markersToRemove) {
-                            squareHashMap.remove(m);
-                            m.remove();
-                        }
-                        for(Square closeSquare: squarePins.values())
-                        {
-                            if(!squareHashMap.containsValue(closeSquare)) {
-                                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                                Marker m = createSquarePin(coords, closeSquare.getName());
-                                squareHashMap.put(m, closeSquare);
-                            } else {
-                                for(Marker m : squareHashMap.keySet()) {
-                                    if(closeSquare.equals(squareHashMap.get(m))) {
-                                        squareHashMap.put(m, closeSquare);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        new MapFiller().execute(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -573,9 +537,7 @@ public class MapFragment extends Fragment
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
-        Marker marker = mGoogleMap.addMarker(options);
-
-        return marker;
+        return mGoogleMap.addMarker(options);
     }
 
     @Override
@@ -861,4 +823,46 @@ public class MapFragment extends Fragment
             }
         }
     }
+
+    private class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
+
+        @Override
+        protected HashMap<String, Square> doInBackground(String... params) {
+            GsonBuilder b = new GsonBuilder();
+            // SquareDeserializer specifica come popolare l'oggetto Message fromJson
+            // Log.d(TAG, "Get Closest Squares onResponse: " + response);
+            b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
+            Gson gson = b.create();
+            Square[] squares = gson.fromJson(String.valueOf(params[0]), Square[].class);
+
+            HashMap<String, Square> squarePins = new HashMap<>();
+            for(Square s: squares)
+            {
+                squarePins.put(s.getId(), s);
+            }
+            for(Square closeSquare : squarePins.values()) {
+                if(squareHashMap.containsValue(closeSquare)) {
+                    for(Marker m : squareHashMap.keySet()) {
+                        if(closeSquare.equals(squareHashMap.get(m))) {
+                            squareHashMap.put(m, closeSquare);
+                            break;
+                        }
+                    }
+                }
+            }
+            return squarePins;
+        }
+        @Override
+        protected void onPostExecute(HashMap<String, Square> squarePins) {
+            for(Square closeSquare: squarePins.values())
+            {
+                if(!squareHashMap.containsValue(closeSquare)) {
+                    LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                    Marker m = createSquarePin(coords, closeSquare.getName());
+                    squareHashMap.put(m, closeSquare);
+                } 
+            }
+        }
+    }
+
 }
