@@ -372,7 +372,7 @@ public class MapActivity extends AppCompatActivity
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
                         RequestQueue queue = Volley.newRequestQueue(MapActivity.this);
-                        String url = "http://recapp-insquare.rhcloud.com/feedback";
+                        String url = getString(R.string.feedbackUrl);
 
                         // Request a string response from the provided URL.
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -532,8 +532,8 @@ public class MapActivity extends AppCompatActivity
 
     public void getOwnedSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("http://recapp-insquare.rhcloud.com/squares?byOwner=true&ownerId=%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s?byOwner=%2$s&ownerId=%3$s",
+                getString(R.string.squaresUrl), "true",InSquareProfile.getUserId());
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -566,8 +566,8 @@ public class MapActivity extends AppCompatActivity
     public void getFavouriteSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String url = String.format("http://recapp-insquare.rhcloud.com/favouritesquares/%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s/%2$s",
+                getString(R.string.favouritesquaresUrl), InSquareProfile.getUserId());
 
         Log.d(TAG, "getFavouriteSquares: " + url);
 
@@ -602,8 +602,8 @@ public class MapActivity extends AppCompatActivity
 
     public void getRecentSquares() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("http://recapp-insquare.rhcloud.com/recentSquares/%1$s",
-                InSquareProfile.getUserId());
+        String url = String.format("%1$s/%2$s",
+                getString(R.string.recentSquaresUrl), InSquareProfile.getUserId());
 
         Log.d(TAG, "getRecentSquares: " + url);
 

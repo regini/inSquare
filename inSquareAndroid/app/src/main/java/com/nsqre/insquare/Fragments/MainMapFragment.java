@@ -448,6 +448,7 @@ public class MainMapFragment extends Fragment
 
     private void getClosestSquares(String distance, double lat, double lon) {
         RequestQueue queue = Volley.newRequestQueue(getContext());
+
         String url = "http://recapp-insquare.rhcloud.com/squares?";
         url += "distance=" + distance;
         url += "&lat=" + lat;
