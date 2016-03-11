@@ -88,6 +88,7 @@ public class MapFragment extends Fragment
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
     private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
+    private static final float PIN_DOWNLOAD_RADIUS_MAX = 1000.0f;
 
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
@@ -244,9 +245,7 @@ public class MapFragment extends Fragment
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
-            VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-            double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-            downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
         }
     }
 
@@ -256,17 +255,11 @@ public class MapFragment extends Fragment
             // Extract data included in the Intent
             String message = intent.getStringExtra("event");
             Log.d("receiver", "Got message: " + message);
-            if("creation".equals(intent.getStringExtra("action"))) {
-                if(!intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
-                    VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-                    double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-                    downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
-                }
-
+            if("creation".equals(intent.getStringExtra("action")) &&
+                    !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             } else {
-                VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
-                double distance = getDistance(vr.latLngBounds.getCenter(),vr.latLngBounds.southwest);
-                downloadAndInsertPins(distance, mGoogleMap.getCameraPosition().target);
+                downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             }
         }
     };
@@ -420,16 +413,10 @@ public class MapFragment extends Fragment
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
 
-        float radius = PIN_DOWNLOAD_RADIUS;
+        double radius = PIN_DOWNLOAD_RADIUS;
 
         if(cameraPosition.zoom < 9) {
-            radius = PIN_DOWNLOAD_RADIUS*8f;
-        }
-        if(cameraPosition.zoom < 5) {
-            radius = PIN_DOWNLOAD_RADIUS*15f;
-        }
-        if(cameraPosition.zoom < 3) {
-            radius = PIN_DOWNLOAD_RADIUS*20f;
+            radius = PIN_DOWNLOAD_RADIUS*((-5f)*cameraPosition.zoom + 50);
         }
 
         if(distance > radius*0.9f)
@@ -437,6 +424,8 @@ public class MapFragment extends Fragment
             if(cameraPosition.zoom < 9) //Camera molto elevata
             {
                 double rad = getDistance(vr.latLngBounds.southwest, vr.latLngBounds.northeast);
+                if(rad > PIN_DOWNLOAD_RADIUS_MAX)
+                    rad = PIN_DOWNLOAD_RADIUS_MAX;
                 downloadAndInsertPins(rad, cameraPosition.target);
             }else{
                 // I'm closer
