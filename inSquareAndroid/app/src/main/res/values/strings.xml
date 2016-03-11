@@ -48,7 +48,7 @@
     <string name="favouritesquaresUrl">http://recapp-insquare.rhcloud.com/favouritesquares</string>
     <string name="facebookTokenUrl">http://recapp-insquare.rhcloud.com/auth/facebook/token</string>
     <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
-
+    <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
 
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>

@@ -147,7 +147,6 @@ public class SquareAdapter extends BaseAdapter {
         RequestQueue queue = Volley.newRequestQueue(activity);
         final String squareId = square.getId();
         final String userId = InSquareProfile.getUserId();
-
         String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
         url += "squareId=" + squareId;
         url += "&userId=" + userId;

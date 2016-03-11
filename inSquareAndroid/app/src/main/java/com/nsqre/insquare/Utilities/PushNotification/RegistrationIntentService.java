@@ -97,7 +97,8 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(final String token) {
         RequestQueue queue = Volley.newRequestQueue(RegistrationIntentService.this);
-        String url = "http://recapp-insquare.rhcloud.com/gcmToken";
+        getString(R.string.favouritesquaresUrl);
+        String url = getString(R.string.gcmTokenUrl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
