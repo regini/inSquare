@@ -99,7 +99,7 @@
         <service
             android:name=".Utilities.PushNotification.RegistrationIntentService"
             android:exported="false" />
-        <service android:name=".Utilities.LocationServices"/>
+        <service android:name=".Utilities.LocationService"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
