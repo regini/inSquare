@@ -60,6 +60,11 @@ import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 
+/**
+ * This is the first activity the user will see. This activity deals with the login, taking tokens from Facebook or Google,
+ * sending them to the back-end and elaborating the InSquareProfile
+ * @see InSquareProfile
+ */
 public class LoginActivity extends AppCompatActivity
     implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
 {
@@ -73,11 +78,17 @@ public class LoginActivity extends AppCompatActivity
     private Button fbLoginButton;
     private CallbackManager fbCallbackManager;
     private String fbUserId;
+    /**
+     * The token received from Facebook
+     */
     private String fbAccessToken;
     private AccessTokenTracker fbTokenTracker;
     // ==============
 
     // Google Login
+    /**
+     * The token received from Google
+     */
     private String gAccessToken;
     private GoogleApiClient gApiClient;
     private GoogleSignInOptions gSo;
@@ -87,6 +98,11 @@ public class LoginActivity extends AppCompatActivity
 
     private Tracker mTracker;
 
+    /**
+     * The OnCreate method of LoginActivity deals with the initialization of Google Analytics, the InSquareProfile data stored locally
+     * and if they're not present gives the user the possibility to login via Facebook or Google
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,7 +263,11 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
     }
 
-    //metodo che elabora il json preso dalle post, crea l'oggetto user e va @chatActivity
+    /**
+     * This method initializes the values of the InSquareProfile
+     * @param jsonUser the json string that represents the user
+     * @see InSquareProfile
+     */
     private void json2login(String jsonUser) {
         Gson gson = new Gson();
         user = gson.fromJson(jsonUser, User.class);
@@ -268,7 +288,11 @@ public class LoginActivity extends AppCompatActivity
         launchInSquare();
     }
 
-    //metodo che crea l'intent alla map activity
+    /**
+     * This method is called after the login is considered successful. It creates an intent to MapActivity to open the map
+     * or the ProfileFragment, depending on the extras that are put in it.
+     * @see MapActivity
+     */
     private void launchInSquare() {
         Log.d(TAG, "launchInSquare: launching!");
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
@@ -279,6 +303,11 @@ public class LoginActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /**
+     * This method creates a POST request to the backend to manage Facebook login
+     * The backend answers with data that are used in json2login
+     * @see #json2login(String)
+     */
     private void facebookPostRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
@@ -310,6 +339,11 @@ public class LoginActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
+    /**
+     * This method creates a POST request to the backend to manage Google login
+     * The backend answers with data that are used in json2login
+     * @see #json2login(String)
+     */
     private void googlePostRequest() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
@@ -339,7 +373,10 @@ public class LoginActivity extends AppCompatActivity
         queue.add(stringRequest);
     }
 
-    //quando il login a g+ va a buon fine esegue questo, dove c'è la post
+    /**
+     * This method manages the result of the Google Authentication calling googlePostRequest() in case of success
+     * @see #googlePostRequest()
+     */
     private void googleSignInResult(GoogleSignInResult result) {
 
         Log.d("Google" + TAG, "Success? " + result.isSuccess() + "\nStatus Code: " + result.getStatus().getStatusCode());
@@ -369,6 +406,10 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method manages Facebook's authentication calling facebookPostRequest() in case of success
+     * @see #facebookPostRequest()
+     */
     private void requestFacebookData()
     {
         // Creazione di una nuova richiesta al grafo di Facebook per le informazioni necessarie
@@ -409,6 +450,10 @@ public class LoginActivity extends AppCompatActivity
         graphRequest.executeAsync();
     }
 
+    /**
+     * This method checks if the user is logged in via Google
+     * @return true if the user is logged in via Google
+     */
     private boolean isGoogleSignedIn()
     {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
@@ -419,9 +464,12 @@ public class LoginActivity extends AppCompatActivity
         return result;
     }
 
+    /**
+     * This method checks if the user is logged in via Facebook
+     * @return true if the user is logged in via Facebook
+     */
     private boolean isFacebookSignedIn()
     {
-        // Controlla che Facebook sia gia' loggato
         try {
             AccessToken token = AccessToken.getCurrentAccessToken();
             if(token != null)
@@ -439,7 +487,10 @@ public class LoginActivity extends AppCompatActivity
         return false;
     }
 
-    //Controllo della disponibilità della connessione
+    /**
+     * This method checks if the network is currently available
+     * @return true if the Network is available
+     */
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -447,7 +498,9 @@ public class LoginActivity extends AppCompatActivity
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    //FEEDBACK STUFF
+    /**
+     * This method creates the action menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -455,6 +508,9 @@ public class LoginActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * This method manages the options from the Action menu
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
