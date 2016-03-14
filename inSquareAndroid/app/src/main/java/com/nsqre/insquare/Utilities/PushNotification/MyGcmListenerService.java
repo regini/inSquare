@@ -130,7 +130,7 @@ public class MyGcmListenerService extends GcmListenerService {
             notificationBuilder.setStyle(inboxStyle
                     .setBigContentTitle(squareName)
                     .setSummaryText("inSquare"));
-            notificationBuilder.setContentText("Hai " + notificationCount + " nuovi messaggi");
+            notificationBuilder.setContentText(notificationCount > 1 ? "Hai " + notificationCount + " nuovi messaggi" : message);
         } else {
             notificationBuilder.setContentTitle("inSquare");
             notificationBuilder.setContentText("Hai " + (notificationCount) + " nuovi messaggi in "
