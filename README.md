@@ -34,9 +34,6 @@ Where we go. Who we meet.
 ![](http://regini.github.io/inSquare/mockup.png)
 
 
-# Screenshot
-![](http://regini.github.io/inSquare/Screanshoot.png)
-
 
 # Milestone 1 - Proof of Concept
   • First form of Persistency with a Cloud-Based DBMS   
@@ -44,6 +41,8 @@ Where we go. Who we meet.
   • Rudimentary working Chat onAndroid  
   
   • Facebook login integration  
+  
+  ![](http://regini.github.io/inSquare/Screanshoot.png)
   
 # Milestone 2 - Release Candidate
  • Google, Twitter, Local Login Integration
