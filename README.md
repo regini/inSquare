@@ -34,7 +34,7 @@ Where we go. Who we meet.
 ![](http://regini.github.io/inSquare/mockup.png)
 
 
-# Screenshoot
+# Screenshot
 ![](http://regini.github.io/inSquare/Screanshoot.png)
 
 
