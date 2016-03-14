@@ -520,6 +520,8 @@ public class MapFragment extends Fragment
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
+        SharedPreferences messagePreferences = getActivity().getSharedPreferences(s.getId(), Context.MODE_PRIVATE);
+        messagePreferences.edit().clear().apply();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
         if(sharedPreferences.contains(s.getId())) {
             sharedPreferences.edit().remove(s.getId()).apply();
@@ -860,7 +862,7 @@ public class MapFragment extends Fragment
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
-                } 
+                }
             }
         }
     }

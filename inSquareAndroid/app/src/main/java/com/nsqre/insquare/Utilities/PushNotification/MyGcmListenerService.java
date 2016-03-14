@@ -85,42 +85,62 @@ public class MyGcmListenerService extends GcmListenerService {
         intent.putExtra("profile", 2);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
-        int squareCount = sharedPreferences.getInt("squareCount", 0);
+        int squareCount = notificationPreferences.getInt("squareCount", 0);
 
-        if(squareId.equals(sharedPreferences.getString("actualSquare",""))) {
+        if(squareId.equals(notificationPreferences.getString("actualSquare",""))) {
             return;
         }
 
-        if(!sharedPreferences.contains(squareId)) {
-            sharedPreferences.edit().putInt("squareCount", squareCount + 1).apply();
+        if(!notificationPreferences.contains(squareId)) {
+            notificationPreferences.edit().putInt("squareCount", squareCount + 1).apply();
         }
-        sharedPreferences.edit().putInt(squareId, sharedPreferences.getInt(squareId, 0) + 1).commit();
+        notificationPreferences.edit().putInt(squareId, notificationPreferences.getInt(squareId, 0) + 1).apply();
 
-        for(String square : sharedPreferences.getAll().keySet()) {
+        for(String square : notificationPreferences.getAll().keySet()) {
             if(!"squareCount".equals(square) && !"actualSquare".equals(square)) {
-                notificationCount += sharedPreferences.getInt(square, 0);
+                notificationCount += notificationPreferences.getInt(square, 0);
             }
         }
 
-        squareCount = sharedPreferences.getInt("squareCount", 0);
+        squareCount = notificationPreferences.getInt("squareCount", 0);
 
-        Log.d(TAG, sharedPreferences.getAll().toString());
+        Log.d(TAG, notificationPreferences.getAll().toString());
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.nsqre_map_pin_empty_inside)
-                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
-                .setContentTitle(notificationCount > 1 ? "inSquare" : squareName)
-                .setContentText(notificationCount > 1 ? "Hai " + (notificationCount) + " nuovi messaggi in " + squareCount
-                        + " piazze" : message)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setVibrate(new long[] { 300, 300, 300, 300, 300 })
-                .setLights(Color.RED, 1000, 3000)
-                .setContentIntent(pendingIntent);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+        notificationBuilder.setSmallIcon(R.drawable.nsqre_map_pin_empty_inside);
+        notificationBuilder.setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+        if(squareCount == 1) {
+            SharedPreferences messagePreferences = getSharedPreferences(squareId, MODE_PRIVATE);
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            messagePreferences.edit().putString(String.valueOf(notificationCount), message).commit();
+            if(messagePreferences.getAll().size() <= 6) {
+                for(int i = 1; i<=messagePreferences.getAll().keySet().size(); i++) {
+                    inboxStyle.addLine(messagePreferences.getString(String.valueOf(i), ""));
+                }
+            } else {
+                for(int i = messagePreferences.getAll().size() - 6; i<=messagePreferences.getAll().keySet().size(); i++) {
+                    inboxStyle.addLine(messagePreferences.getString(String.valueOf(i), ""));
+                }
+            }
+            notificationBuilder.setContentTitle(squareName);
+            notificationBuilder.setStyle(inboxStyle
+                    .setBigContentTitle(squareName)
+                    .setSummaryText("inSquare"));
+            notificationBuilder.setContentText("Hai " + notificationCount + " nuovi messaggi");
+        } else {
+            notificationBuilder.setContentTitle("inSquare");
+            notificationBuilder.setContentText("Hai " + (notificationCount) + " nuovi messaggi in "
+                    + squareCount + " piazze");
+        }
+        notificationBuilder.setAutoCancel(true);
+        notificationBuilder.setSound(defaultSoundUri);
+        notificationBuilder.setVibrate(new long[] { 300, 300, 300, 300, 300 });
+        notificationBuilder.setLights(Color.RED, 1000, 3000);
+        notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

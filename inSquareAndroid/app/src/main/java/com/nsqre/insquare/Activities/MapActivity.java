@@ -187,6 +187,9 @@ public class MapActivity extends AppCompatActivity
 
         if(getIntent().getExtras() != null) {
             selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+            getFavouriteSquares();
+            getOwnedSquares();
+            getRecentSquares();
             getIntent().getExtras().clear();
         }
         else {
