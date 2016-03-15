@@ -89,9 +89,9 @@ public class MapFragment extends Fragment
     public Location mCurrentLocation;
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
     private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
+    private Square mLastSelectedSquare;
     private static final float PIN_DOWNLOAD_RADIUS = 30.0f;
     private static final float PIN_DOWNLOAD_RADIUS_MAX = 1000.0f;
-
     private final int[] MAP_TYPES = {GoogleMap.MAP_TYPE_SATELLITE,
             GoogleMap.MAP_TYPE_NORMAL,
             GoogleMap.MAP_TYPE_HYBRID,
@@ -120,7 +120,6 @@ public class MapFragment extends Fragment
     private TextView bottomSheetLowerDescription;
     private View bottomSheetLowerState;
 
-    private Marker lastMarkerClicked;
 
 //    private RecyclerView bottomSheetList;
     private TextView bottomSheetSquareActivity;
@@ -213,6 +212,7 @@ public class MapFragment extends Fragment
         setHasOptionsMenu(true);
 
         mapFragment = SupportMapFragment.newInstance();
+        mapFragment.setRetainInstance(true);
         getChildFragmentManager().beginTransaction().replace(R.id.main_map_container, mapFragment).commit();
         mapFragment.getMapAsync(this);
 
@@ -257,7 +257,16 @@ public class MapFragment extends Fragment
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
             squareHashMap.clear();
+            mGoogleMap.clear();
             downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
+            if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startChatActivity(mLastSelectedSquare);
+                    }
+                });
+            }
         }
     }
 
@@ -269,10 +278,8 @@ public class MapFragment extends Fragment
             Log.d("receiver", "Got message: " + message);
             if("creation".equals(intent.getStringExtra("action")) &&
                     !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
-                squareHashMap.clear();
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             } else if("update".equals(intent.getStringExtra("action")) || "deletion".equals(intent.getStringExtra("action"))) {
-                squareHashMap.clear();
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             }
         }
@@ -519,10 +526,10 @@ public class MapFragment extends Fragment
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        startChatActivity(marker);
+        startChatActivity(squareHashMap.get(marker));
     }
 
-    private void startChatActivity(Marker marker) {
+    private void startChatActivity(Square s) {
 
         // [START PinButton_event]
         mTracker.send(new HitBuilders.EventBuilder()
@@ -532,7 +539,6 @@ public class MapFragment extends Fragment
         // [END PinButton_event]
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
-        Square s = squareHashMap.get(marker);
         SharedPreferences messagePreferences = getActivity().getSharedPreferences(s.getId(), Context.MODE_PRIVATE);
         messagePreferences.edit().clear().apply();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
@@ -557,36 +563,7 @@ public class MapFragment extends Fragment
 
     @Override
     public void onMapClick(final LatLng latLng) {
-        final String lat = Double.toString(latLng.latitude);
-        final String lon = Double.toString(latLng.longitude);
 
-        final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_crea_square);
-        mDialog.setTitle("Crea una Square");
-        mDialog.setCancelable(true);
-        mDialog.show();
-
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-
-        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
-        final EditText descriptionEditText = (EditText) mDialog.findViewById((R.id.descr_square));
-        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
-        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
-        crea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String squareName = usernameEditText.getText().toString().trim();
-                String squareDescr = descriptionEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(squareName)) {
-                    Marker m = createSquarePin(latLng, squareName);
-                    // Richiesta Volley POST per la creazione di piazze
-                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
-                    String ownerId = InSquareProfile.getUserId();
-                    createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
-                    mDialog.dismiss();
-                }
-            }
-        });
     }
 
     private void createSquarePostRequest(final String squareName,
@@ -635,8 +612,37 @@ public class MapFragment extends Fragment
     }
 
     @Override
-    public void onMapLongClick(LatLng latLng) {
+    public void onMapLongClick(final LatLng latLng) {
+        final String lat = Double.toString(latLng.latitude);
+        final String lon = Double.toString(latLng.longitude);
 
+        final Dialog mDialog = new Dialog(getContext());
+        mDialog.setContentView(R.layout.dialog_crea_square);
+        mDialog.setTitle("Crea una Square");
+        mDialog.setCancelable(true);
+        mDialog.show();
+
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
+        final EditText descriptionEditText = (EditText) mDialog.findViewById((R.id.descr_square));
+        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
+        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
+        crea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String squareName = usernameEditText.getText().toString().trim();
+                String squareDescr = descriptionEditText.getText().toString().trim();
+                if (!TextUtils.isEmpty(squareName)) {
+                    Marker m = createSquarePin(latLng, squareName);
+                    // Richiesta Volley POST per la creazione di piazze
+                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
+                    String ownerId = InSquareProfile.getUserId();
+                    createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
+                    mDialog.dismiss();
+                }
+            }
+        });
     }
 
     @Override
@@ -669,15 +675,15 @@ public class MapFragment extends Fragment
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
                 null); // callback
-        lastMarkerClicked = marker;
         final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
         if(currentSquare.getId().equals(mLastSelectedSquareId))
         {
             Log.d(TAG, "onMarkerClick: Clicked twice?");
-            startChatActivity(marker);
+            startChatActivity(currentSquare);
         }else
         {
+            mLastSelectedSquare = currentSquare;
             mLastSelectedSquareId = currentSquare.getId();
         }
         
@@ -717,7 +723,7 @@ public class MapFragment extends Fragment
         bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startChatActivity(marker);
+                startChatActivity(currentSquare);
             }
         });
         // ===== Fine Parte Superiore del Drawer
@@ -798,29 +804,38 @@ public class MapFragment extends Fragment
         queue.add(postRequest);
     }
 
+    private void updateBottomSheet(Square s) {
+        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+            bottomSheetSquareActivity.setText(s.formatTime());
+            SquareState currentState = s.getSquareState();
+            int stateColor;
+            switch(currentState)
+            {
+                default:
+                case ASLEEP:
+                    stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                    break;
+                case AWOKEN:
+                    stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                    break;
+                case CAFFEINATED:
+                    stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                    break;
+            }
+            bottomSheetLowerState.setBackgroundColor(stateColor);
+            bottomSheetLowerFavs.setText("Seguita da " + s.getFavouredBy() + " persone");
+            bottomSheetLowerViews.setText("Vista " + s.getViews() + " volte");
+        }
+    }
+
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged: Owned changed!");
         if(InSquareProfile.isOwned(mLastSelectedSquareId)) {
             for(Square s : InSquareProfile.getOwnedSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                    SquareState currentState = s.getSquareState();
-                    int stateColor;
-                    switch(currentState)
-                    {
-                        default:
-                        case ASLEEP:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
-                            break;
-                        case AWOKEN:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
-                            break;
-                        case CAFFEINATED:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
-                            break;
-                    }
-                    bottomSheetLowerState.setBackgroundColor(stateColor);
+                    updateBottomSheet(s);
+                    break;
                 }
             }
         }
@@ -832,26 +847,10 @@ public class MapFragment extends Fragment
         if(InSquareProfile.isFav(mLastSelectedSquareId))
         {
             bottomSheetButton.setImageResource(R.drawable.heart_black);
-            //TODO spostare in un metodo per farlo su tutti i tipi di piazze
             for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                    SquareState currentState = s.getSquareState();
-                    int stateColor;
-                    switch(currentState)
-                    {
-                        default:
-                        case ASLEEP:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
-                            break;
-                        case AWOKEN:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
-                            break;
-                        case CAFFEINATED:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
-                            break;
-                    }
-                    bottomSheetLowerState.setBackgroundColor(stateColor);
+                    updateBottomSheet(s);
+                    break;
                 }
             }
         }else
@@ -866,23 +865,8 @@ public class MapFragment extends Fragment
         if(InSquareProfile.isRecent(mLastSelectedSquareId)) {
             for(Square s : InSquareProfile.getRecentSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
-                    bottomSheetSquareActivity.setText(s.formatTime());
-                    SquareState currentState = s.getSquareState();
-                    int stateColor;
-                    switch(currentState)
-                    {
-                        default:
-                        case ASLEEP:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
-                            break;
-                        case AWOKEN:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
-                            break;
-                        case CAFFEINATED:
-                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
-                            break;
-                    }
-                    bottomSheetLowerState.setBackgroundColor(stateColor);
+                   updateBottomSheet(s);
+                    break;
                 }
             }
         }
@@ -924,6 +908,14 @@ public class MapFragment extends Fragment
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
+                }
+            }
+            for(Square s : squareHashMap.values()) {
+                if(mLastSelectedSquare != null) {
+                    if(s.equals(mLastSelectedSquare)) {
+                        updateBottomSheet(s);
+                        break;
+                    }
                 }
             }
         }
