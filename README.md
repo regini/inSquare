@@ -42,7 +42,7 @@ Where we go. Who we meet.
   
   • Facebook login integration  
   
-  ![](http://regini.github.io/inSquare/Screanshoot.png)
+  ![](http://regini.github.io/inSquare/ScreenshotsMilestone1.png)
   
 # Milestone 2 - Release Candidate
  • Google, Twitter, Local Login Integration
@@ -53,6 +53,8 @@ Where we go. Who we meet.
  
  • Improvements of the overall UI/UX with first user pilot  
  
+ ![](http://regini.github.io/inSquare/ScreenshotsMilestone2.png)
+ 
 # Milestone 3 - Public live BETA
  • Fully built mobile UI on Android  
  
@@ -60,6 +62,7 @@ Where we go. Who we meet.
  
  • Push notifications  
     
+ ![](http://regini.github.io/inSquare/ScreenshotsMilestone3.png)
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)

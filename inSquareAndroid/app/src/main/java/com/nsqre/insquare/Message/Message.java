@@ -8,15 +8,36 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Message is the class that represents the concept of message inside the application
+ */
 public class Message {
 
     private static final String TAG = "Message";
+    /**
+     * The id of the message
+     */
     private String msg_id;
+    /**
+     * The text content of the message
+     */
     private String text;
+    /**
+     * The name of the sender
+     */
     private String name;
+    /**
+     * The id of the sender
+     */
     private String from;
     private String createdAt;
+    /**
+     * The date in which the message was sent
+     */
     private Calendar calendar;
+    /**
+     * Wheter the user was in that particular place when he sent the message
+     */
     private Boolean userSpot;
 
     public Message(String m, String username, String userId, Locale l)

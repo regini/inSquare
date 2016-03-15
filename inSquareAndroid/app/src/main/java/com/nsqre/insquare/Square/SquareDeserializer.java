@@ -10,7 +10,9 @@ import java.lang.reflect.Type;
 import java.util.Locale;
 
 /**
- * Created by emanu on 28/02/2016.
+ * SquareDeserializer is the class that Gson uses to deserialize the JSON strings that represent squares
+ * @see com.nsqre.insquare.Activities.MapActivity
+ * @see com.nsqre.insquare.Fragments.MapFragment
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
 
@@ -22,6 +24,15 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         this.locale = l;
     }
 
+    /**
+     * Manages the particular format of square's JSON representation, so it has sufficient data to instantiate a Square object
+     * @param json
+     * @param typeOfT
+     * @param context
+     * @return A Square object based on the data deserialized
+     * @throws JsonParseException
+     * @see Square
+     */
     @Override
     public Square deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 

@@ -143,7 +143,7 @@ public class MapActivity extends AppCompatActivity
         }
 
         mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
-        mNavItems.add(new NavItem("Squares recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
+        mNavItems.add(new NavItem("Recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
         mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, profCount));
 
         // DrawerLayout

@@ -395,7 +395,7 @@ public class MapFragment extends Fragment
                 if(grantResults.length>0)
                 {
                     setupLocation();
-                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(getContext(),
@@ -584,7 +584,6 @@ public class MapFragment extends Fragment
                         Log.d(TAG, "Create Square response: " + response);
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "Create Post onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square s = gson.fromJson(response, Square.class);
@@ -872,7 +871,7 @@ public class MapFragment extends Fragment
         }
     }
 
-    private class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
+    public class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
 
         @Override
         protected HashMap<String, Square> doInBackground(String... params) {

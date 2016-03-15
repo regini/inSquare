@@ -9,17 +9,53 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Square is the class that represents the concept of Square inside the application
+ */
 public class Square implements Serializable {
 
     private static final String TAG = "Square";
+    /**
+     * The square id
+     */
     private String id;
+    /**
+     * The square name
+     */
     private String name;
+    /**
+     * A user written description for the square
+     */
     private String description;
-    private double lat, lon;
+    /**
+     * The latitude value of the position of the square
+     */
+    private double lat;
+    /**
+     * The longitude value of the position of the square
+     */
+    private double lon;
     private String type;
+    /**
+     * The id of the user that has created the square
+     */
     private String ownerId;
-    private long favouredBy, views;
+    /**
+     * The number of how many people are following the square
+     */
+    private long favouredBy;
+    /**
+     * The number of how many people have seen this square
+     */
+    private long views;
+    /**
+     * The state of the square
+     * @see SquareState
+     */
     private SquareState squareState;
+    /**
+     * The date of the last message sent to this square
+     */
     private Calendar lastMessageDate;
     private String lastMessageDateString;
     private Locale myLocale;
@@ -77,16 +113,16 @@ public class Square implements Serializable {
     public String toString() {
         return "Square{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", lat=" + lat +
-                ", lon=" + lon +
-                ", type='" + type + '\'' +
-                ", ownerId='" + ownerId + '\'' +
-                ", favouredBy=" + favouredBy +
-                ", views=" + views +
-                ", squareState=" + squareState +
-                ", lastMessageDate=" + lastMessageDate +
-                ", lastMessageDateString='" + lastMessageDateString + '\'' +
+                "\nname='" + name + '\'' +
+                "\nlat=" + lat +
+                "\nlon=" + lon +
+                "\ntype='" + type + '\'' +
+                "\nownerId='" + ownerId + '\'' +
+                "\nfavouredBy=" + favouredBy +
+                "\nviews=" + views +
+                "\nsquareState=" + squareState +
+                "\nlastMessageDate=" + lastMessageDate +
+                "\nlastMessageDateString='" + lastMessageDateString + '\'' +
                 '}';
     }
 
@@ -172,6 +208,10 @@ public class Square implements Serializable {
         return lastMessageDate;
     }
 
+    /**
+     * Creates a string out of the lastMessageDate Calendar object
+     * @return A string representing the date of the last message sent to the square
+     */
     public String formatTime()
     {
         String timetoShow = "";

@@ -9,6 +9,10 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
+/**
+ * MessageDeserializer is the class that Gson uses to deserialize the JSON strings that represent messages
+ * @see com.nsqre.insquare.Activities.ChatActivity
+ */
 public class MessageDeserializer implements JsonDeserializer<Message> {
 
     private Locale locale;
@@ -18,6 +22,15 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
         this.locale = l;
     }
 
+    /**
+     * Manages the particular format of messages's JSON representation, so it has sufficient data to instantiate a Message object
+     * @param json
+     * @param typeOfT
+     * @param context
+     * @return A Square object based on the data deserialized
+     * @throws JsonParseException
+     * @see Message
+     */
     @Override
     public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 

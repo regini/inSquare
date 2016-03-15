@@ -12,6 +12,11 @@ import com.nsqre.insquare.Square.Square;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+/**
+ * InSquareProfile is the class that handles most of the user data.
+ * It's a singleton class which stores user's data locally, so the app can react faster to inputs
+ * and has less data to request from the backend
+ */
 public class InSquareProfile {
 
     public interface InSquareProfileListener {
@@ -43,8 +48,17 @@ public class InSquareProfile {
     // Lista di ascoltatori che vengono notificati quando si modifica qualcosa nella lista
     private static ArrayList<InSquareProfileListener> listeners;
 
+    /**
+     * The list of the squares owned by the user
+     */
     private static ArrayList<Square> ownedSquaresList;
+    /**
+     * The list of the squares favoured by the user
+     */
     private static ArrayList<Square> favouriteSquaresList;
+    /**
+     * The list of the squares recently used by the user
+     */
     private static ArrayList<Square> recentSquaresList;
 
     public static String userId;
@@ -68,6 +82,11 @@ public class InSquareProfile {
     {
     }
 
+    /**
+     * Loads the data from the disk and creates user's InSquareProfile
+     * @param c The context of the application
+     * @return Returns the instance of the user's InSquareProfile
+     */
     public static InSquareProfile getInstance(Context c)
     {
         if(profile != null)
@@ -121,6 +140,10 @@ public class InSquareProfile {
         return profile;
     }
 
+    /**
+     * Saves locally user's data
+     * @param c The context of the application
+     */
     public static void save(Context c)
     {
         String NAME = c.getString(R.string.app_name);
@@ -274,6 +297,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Adds the square passed as parameter to the list of the owned squares
+     * @param square The square you want to add
+     */
     public static void addOwned(Square square)
     {
         // Aggiungi in coda
@@ -287,6 +314,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Removes the square passed as parameter from the list of the owned squares
+     * @param square The square you want to remove
+     */
     public static void removeOwned(String square)
     {
         // trova la square da rimuovere
@@ -307,6 +338,11 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Checks if there is a square with the id equals to the one passed as parameter inside the owned squares list
+     * @param squareId The id of the square
+     * @return True if the square is present
+     */
     public static boolean isOwned(String squareId)
     {
         for(Square s: ownedSquaresList)
@@ -317,6 +353,10 @@ public class InSquareProfile {
         return false;
     }
 
+    /**
+     * Adds the square passed as parameter to the list of the favourite squares
+     * @param square The square you want to add
+     */
     public static void addFav(Square square)
     {
         // Aggiungi in coda
@@ -330,6 +370,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Removes the square passed as parameter from the list of the favourite squares
+     * @param square The square you want to remove
+     */
     public static void removeFav(String square)
     {
         // trova la square da rimuovere
@@ -350,6 +394,11 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Checks if there is a square with the id equals to the one passed as parameter inside the favourite squares list
+     * @param squareId The id of the square
+     * @return True if the square is present
+     */
     public static boolean isFav(String squareId)
     {
         for(Square s: favouriteSquaresList)
@@ -360,6 +409,10 @@ public class InSquareProfile {
         return false;
     }
 
+    /**
+     * Adds the square passed as parameter to the list of the recent squares
+     * @param square The square you want to add
+     */
     public static void addRecent(Square square)
     {
         // Aggiungi in coda
@@ -373,6 +426,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Removes the square passed as parameter from the list of the recent squares
+     * @param square The square you want to remove
+     */
     public static void removeRecent(String square)
     {
         // trova la square da rimuovere
@@ -393,6 +450,11 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Checks if there is a square with the id equals to the one passed as parameter inside the recent squares list
+     * @param squareId The id of the square
+     * @return True if the square is present
+     */
     public static boolean isRecent(String squareId)
     {
         for(Square s: recentSquaresList)
@@ -421,7 +483,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onOwnedChanged();
-            Log.d(TAG, "removeOwned: notifying listeners!");
+            Log.d(TAG, "setOwnedSquares: notifying listeners!");
         }
     }
 
@@ -431,7 +493,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onFavChanged();
-            Log.d(TAG, "removeFav: notifying listeners!");
+            Log.d(TAG, "setFavSquares: notifying listeners!");
         }
     }
 
@@ -441,7 +503,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onRecentChanged();
-            Log.d(TAG, "addRecent: notifying listeners!");
+            Log.d(TAG, "setRecentSquares: notifying listeners!");
         }
     }
 }
