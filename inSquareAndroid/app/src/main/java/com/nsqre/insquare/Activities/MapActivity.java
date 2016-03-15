@@ -181,7 +181,7 @@ public class MapActivity extends AppCompatActivity
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mapFragment = new MapFragment();
+        mapFragment = MapFragment.newInstance();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
