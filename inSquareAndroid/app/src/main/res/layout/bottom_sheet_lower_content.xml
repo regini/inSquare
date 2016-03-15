@@ -1,79 +1,73 @@
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bottom_sheet_lower_ll"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    >
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/bottom_sheet_lower_ll"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/white"
+android:orientation="vertical"
+>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_vertical_margin"
+        android:orientation="horizontal"
+        android:visibility="gone"
         >
-        <LinearLayout
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/heart_black"
+            />
+        <TextView
+            android:id="@+id/bottom_sheet_square_favourites"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:padding="@dimen/activity_vertical_margin"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            >
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/heart_black"
-                />
-            <TextView
-                android:id="@+id/bottom_sheet_square_favourites"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Favoriti: "
-                />
-        </LinearLayout>
-        <LinearLayout
+            android:text="Favoriti: "
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_vertical_margin"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/eye"
+            />
+        <TextView
+            android:id="@+id/bottom_sheet_square_views"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:padding="@dimen/activity_vertical_margin"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            >
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/eye"
-                />
-            <TextView
-                android:id="@+id/bottom_sheet_square_views"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Vista da "
-                />
-        </LinearLayout>
-        <LinearLayout
+            android:text="Vista da "
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_vertical_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/description"
+            />
+        <TextView
+            android:id="@+id/bottom_sheet_square_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:padding="@dimen/activity_vertical_margin"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            >
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/description"
-                />
-            <TextView
-                android:id="@+id/bottom_sheet_square_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Descrizione: "
-                android:editable="false"
-                />
-        </LinearLayout>
+            android:hint="Inserisci una descrizione"
+            />
     </LinearLayout>
 </LinearLayout>

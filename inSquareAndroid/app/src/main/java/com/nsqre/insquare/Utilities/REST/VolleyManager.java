@@ -25,6 +25,8 @@ public class VolleyManager {
         void responseGET(E object);
         // Risposta ad una POST
         void responsePOST(E object);
+        // Risposta per la PATCH
+        void responsePATCH(E object);
     }
     private static final String TAG = "VolleyManager";
     private static VolleyManager instance = null;
@@ -207,6 +209,49 @@ public class VolleyManager {
         );
 
         requestQueue.add(getFavsRequest);
+    }
+
+    public void patchDescription(
+            String description,
+            final String squareId,
+            final VolleyResponseListener listener)
+    {
+        String volleyURL = prefixURL + "squares?";
+        description = description.replace(" ", "%20");
+        volleyURL += "description=" + description;
+        volleyURL += "&squareId=" + squareId;
+        volleyURL += "&update=true";
+
+        Log.d(TAG, "patchDescr url: " + volleyURL);
+
+        StringRequest patchDescriptionRequest = new StringRequest(
+                Request.Method.PATCH,
+                volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "patchDescription response: " + response);
+                        if(response.toLowerCase().contains("non"))
+                        {
+                            listener.responsePATCH(false);
+                        }else
+                        {
+                            // Tutto e' andato bene
+                            listener.responsePATCH(true);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        listener.responsePATCH(false);
+                    }
+        }
+        );
+
+        requestQueue.add(patchDescriptionRequest);
     }
 
 }
