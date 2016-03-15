@@ -9,9 +9,17 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 
-//http://inducesmile.com/android/how-to-make-circular-imageview-and-rounded-corner-imageview-in-android/
+/**
+ * ImageConverter provides a static method that can manipulate a Bitmap image
+ */
 public class ImageConverter {
 
+    /**
+     * Modifies the image passed as parameter to create a new image with rounded corners
+     * @param bitmap The input you want to manipulate
+     * @param pixels The dimension of the rounded corner image returned
+     * @return a bitmap based on the input, but with rounded corners
+     */
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
