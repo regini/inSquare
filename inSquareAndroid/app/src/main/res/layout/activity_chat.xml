@@ -2,10 +2,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".Activities.ChatActivity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/light_grey"
+    android:layout_gravity="bottom"
     >
 
     <android.support.v7.widget.RecyclerView
@@ -67,7 +68,7 @@
             android:layout_height="36dp"
             android:layout_marginLeft="@dimen/input_margin_side"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/send_red"
+            android:background="@drawable/button_send_chat"
             />
     </LinearLayout>
 </RelativeLayout>

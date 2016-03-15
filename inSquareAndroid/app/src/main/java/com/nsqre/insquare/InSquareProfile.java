@@ -421,7 +421,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onOwnedChanged();
-            Log.d(TAG, "removeOwned: notifying listeners!");
+            Log.d(TAG, "setOwnedSquares: notifying listeners!");
         }
     }
 
@@ -431,7 +431,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onFavChanged();
-            Log.d(TAG, "removeFav: notifying listeners!");
+            Log.d(TAG, "setFavSquares: notifying listeners!");
         }
     }
 
@@ -441,7 +441,7 @@ public class InSquareProfile {
         for(InSquareProfileListener ispl : listeners)
         {
             ispl.onRecentChanged();
-            Log.d(TAG, "addRecent: notifying listeners!");
+            Log.d(TAG, "setRecentSquares: notifying listeners!");
         }
     }
 }

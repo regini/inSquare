@@ -375,7 +375,7 @@ public class MapFragment extends Fragment
                 if(grantResults.length>0)
                 {
                     setupLocation();
-                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(getContext(),
@@ -824,7 +824,7 @@ public class MapFragment extends Fragment
         }
     }
 
-    private class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
+    public class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
 
         @Override
         protected HashMap<String, Square> doInBackground(String... params) {
@@ -860,7 +860,7 @@ public class MapFragment extends Fragment
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
-                } 
+                }
             }
         }
     }

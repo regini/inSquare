@@ -2,7 +2,6 @@ package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +97,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         timetoShow = df.format(msgCal.getTime());
 
-        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
+//        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
 
         holder.datetime.setText(timetoShow);
     }
