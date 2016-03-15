@@ -9,15 +9,26 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.GsonBuilder;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
+
+import java.util.Locale;
 
 public class VolleyManager {
 
-    public interface VolleyResponseListener
+    public interface VolleyResponseListener<E>
     {
-        void getClosestSquares();
+        // Handler per le risposte
+        // =======================
+        // Risposta ad una GET
+        void responseGET(E object);
+        // Risposta ad una POST
+        void responsePOST(E object);
     }
     private static final String TAG = "VolleyManager";
     private static VolleyManager instance = null;
+    private static Locale locale;
 
     private static final String prefixURL = "http://recapp-insquare.rhcloud.com/";
 
@@ -29,10 +40,11 @@ public class VolleyManager {
         requestQueue = Volley.newRequestQueue(c.getApplicationContext());
     }
 
-    public static synchronized VolleyManager getInstance(Context c)
+    public static synchronized VolleyManager getInstance(Context c, Locale l)
     {
         if(instance == null)
         {
+            locale = l;
             instance = new VolleyManager(c);
         }
         Log.d(TAG, "getInstance: returning VolleyManger");
@@ -79,6 +91,122 @@ public class VolleyManager {
         );
 
         requestQueue.add(closeSquareRequest);
+    }
+
+    public void postSquare(final String squareName,
+                           final String squareDescr,
+                           final String latitude,
+                           final String longitude,
+                           final String ownerId,
+                           final Locale loc,
+                           final VolleyResponseListener listener)
+    {
+        String volleyURL = prefixURL + "squares?";
+        volleyURL += "name=" + squareName;
+        volleyURL += "&description=" + squareDescr;
+        volleyURL += "&lat=" + latitude;
+        volleyURL += "&lon=" + longitude;
+        volleyURL += "&ownerId=" + ownerId;
+
+        Log.d(TAG, "postSquare url: " + volleyURL);
+
+        StringRequest postSquareRequest = new StringRequest(Request.Method.POST, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "postSquare response: " + response);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.registerTypeAdapter(Square.class, new SquareDeserializer(loc));
+
+                        Square s = builder.create().fromJson(response, Square.class);
+                        listener.responsePOST(s);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        // Risposta in caso di errore e' null
+                        listener.responsePOST(null);
+                    }
+                }
+        );
+
+        requestQueue.add(postSquareRequest);
+
+    }
+
+    public void getOwnedSquares(boolean byOwner,
+                                String ownerId,
+                                final VolleyResponseListener listener)
+    {
+        String volleyURL = prefixURL + "squares?";
+        volleyURL += "byOwner=" + byOwner;
+        volleyURL += "&ownerId=" + ownerId;
+
+        Log.d(TAG, "getOwnedSquares url: " + volleyURL );
+
+        StringRequest getOwnedRequest = new StringRequest(Request.Method.GET, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "getOwnedSquares response: " + response);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
+
+                        Square[] squares = builder.create().fromJson(response, Square[].class);
+                        Log.d(TAG, "I created: " + squares.toString());
+
+                        listener.responseGET(squares);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        listener.responseGET(null);
+                    }
+                }
+        );
+
+        requestQueue.add(getOwnedRequest);
+    }
+
+    public void getFavs(
+            final String userId,
+            final VolleyResponseListener listener)
+    {
+        String volleyURL = prefixURL + "favouritesquares/";
+        volleyURL += userId;
+
+        Log.d(TAG, "getFavs url: " + volleyURL);
+
+        StringRequest getFavsRequest = new StringRequest(
+                Request.Method.GET,
+                volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "getFavs response: " + response);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
+                        Square[] squares = builder.create().fromJson(response, Square[].class);
+
+                        for(Square s: squares)
+                            Log.d(TAG, "I obtained: " + s.toString());
+                        listener.responseGET(squares);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        listener.responseGET(null);
+                    }
+                }
+        );
+
+        requestQueue.add(getFavsRequest);
     }
 
 }

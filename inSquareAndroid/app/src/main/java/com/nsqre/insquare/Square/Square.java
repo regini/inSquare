@@ -113,16 +113,16 @@ public class Square implements Serializable {
     public String toString() {
         return "Square{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", lat=" + lat +
-                ", lon=" + lon +
-                ", type='" + type + '\'' +
-                ", ownerId='" + ownerId + '\'' +
-                ", favouredBy=" + favouredBy +
-                ", views=" + views +
-                ", squareState=" + squareState +
-                ", lastMessageDate=" + lastMessageDate +
-                ", lastMessageDateString='" + lastMessageDateString + '\'' +
+                "\nname='" + name + '\'' +
+                "\nlat=" + lat +
+                "\nlon=" + lon +
+                "\ntype='" + type + '\'' +
+                "\nownerId='" + ownerId + '\'' +
+                "\nfavouredBy=" + favouredBy +
+                "\nviews=" + views +
+                "\nsquareState=" + squareState +
+                "\nlastMessageDate=" + lastMessageDate +
+                "\nlastMessageDateString='" + lastMessageDateString + '\'' +
                 '}';
     }
 

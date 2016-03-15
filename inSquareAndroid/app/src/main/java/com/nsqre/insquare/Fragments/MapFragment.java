@@ -607,7 +607,6 @@ public class MapFragment extends Fragment
                         Log.d(TAG, "Create Square response: " + response);
                         GsonBuilder b = new GsonBuilder();
                         // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        Log.d(TAG, "Create Post onResponse: " + response);
                         b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
                         Gson gson = b.create();
                         Square s = gson.fromJson(response, Square.class);
