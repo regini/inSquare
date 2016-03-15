@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -631,8 +632,8 @@ public class MapFragment extends Fragment
         final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.et_dialog_description);
         if(!oldText.isEmpty())
         {
+            ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
             descriptionEditText.setText("");
-            descriptionEditText.setHint("Modifica la descrizione");
             descriptionEditText.setText(oldText);
         }
         final Button okButton = (Button) mDialog.findViewById(R.id.button_dialog_description);
@@ -807,7 +808,7 @@ public class MapFragment extends Fragment
                 @Override
                 public void onClick(View v) {
                     // Visualizza un dialog per inserire la descrizione
-                    descriptionDialog(d);
+                    descriptionDialog(bottomSheetLowerDescription.getText().toString().trim());
                 }
             });
             bottomSheetLowerDescription.setText(d);
