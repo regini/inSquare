@@ -181,12 +181,15 @@ public class MapActivity extends AppCompatActivity
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        mapFragment = new MapFragment();
+        mapFragment = MapFragment.newInstance();
         recentSquaresFragment = new RecentSquaresFragment();
         profileFragment = new ProfileFragment();
 
         if(getIntent().getExtras() != null) {
             selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+            getFavouriteSquares();
+            getOwnedSquares();
+            getRecentSquares();
             getIntent().getExtras().clear();
         }
         else {

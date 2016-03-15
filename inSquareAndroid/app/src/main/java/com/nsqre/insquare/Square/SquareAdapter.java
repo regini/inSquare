@@ -114,6 +114,8 @@ public class SquareAdapter extends BaseAdapter {
 
             //contatore di nuovi messaggi
             TextView txtCount = (TextView) vi.findViewById(R.id.counter);
+            SharedPreferences messagePreferences = activity.getSharedPreferences(square.getId(), Context.MODE_PRIVATE);
+            messagePreferences.edit().clear().apply();
             SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
             //se non trova la chiave ritorna 0
             int squaresNewMessages = sharedPreferences.getInt(square.getId(), 0);

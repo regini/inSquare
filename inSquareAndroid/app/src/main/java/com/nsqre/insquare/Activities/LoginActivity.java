@@ -124,9 +124,8 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
             return;
-        }else if(!isNetworkAvailable())
-        {
-
+        }else if(!isNetworkAvailable()) {
+            Toast.makeText(LoginActivity.this, "Senza internet nel 2016?... non posso fare niente.", Toast.LENGTH_SHORT).show();
         }
 
         Log.d(TAG, "onCreate: going past launching..?");

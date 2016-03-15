@@ -80,6 +80,7 @@ public class MapFragment extends Fragment
         InSquareProfile.InSquareProfileListener
 {
 
+    private static MapFragment instance;
     private SupportMapFragment mapFragment;
     public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
 
@@ -128,11 +129,14 @@ public class MapFragment extends Fragment
     public static final String SQUARE_TAG = "SQUARE_TAG";
 
     public MapFragment() {
-        // Required empty public constructor
+        Log.d(TAG,"new istance");
     }
 
     public static MapFragment newInstance() {
-        return new MapFragment();
+        if(instance == null) {
+            instance = new MapFragment();
+        }
+        return instance;
     }
 
     @Override
@@ -198,6 +202,12 @@ public class MapFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: started");
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
@@ -246,6 +256,7 @@ public class MapFragment extends Fragment
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
         if(mGoogleMap != null) {
+            squareHashMap.clear();
             downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
         }
     }
@@ -258,8 +269,10 @@ public class MapFragment extends Fragment
             Log.d("receiver", "Got message: " + message);
             if("creation".equals(intent.getStringExtra("action")) &&
                     !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
+                squareHashMap.clear();
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-            } else {
+            } else if("update".equals(intent.getStringExtra("action")) || "deletion".equals(intent.getStringExtra("action"))) {
+                squareHashMap.clear();
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             }
         }
@@ -520,6 +533,8 @@ public class MapFragment extends Fragment
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         Square s = squareHashMap.get(marker);
+        SharedPreferences messagePreferences = getActivity().getSharedPreferences(s.getId(), Context.MODE_PRIVATE);
+        messagePreferences.edit().clear().apply();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
         if(sharedPreferences.contains(s.getId())) {
             sharedPreferences.edit().remove(s.getId()).apply();
@@ -790,6 +805,22 @@ public class MapFragment extends Fragment
             for(Square s : InSquareProfile.getOwnedSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
                     bottomSheetSquareActivity.setText(s.formatTime());
+                    SquareState currentState = s.getSquareState();
+                    int stateColor;
+                    switch(currentState)
+                    {
+                        default:
+                        case ASLEEP:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                            break;
+                        case AWOKEN:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                            break;
+                        case CAFFEINATED:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                            break;
+                    }
+                    bottomSheetLowerState.setBackgroundColor(stateColor);
                 }
             }
         }
@@ -801,9 +832,26 @@ public class MapFragment extends Fragment
         if(InSquareProfile.isFav(mLastSelectedSquareId))
         {
             bottomSheetButton.setImageResource(R.drawable.heart_black);
+            //TODO spostare in un metodo per farlo su tutti i tipi di piazze
             for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
                     bottomSheetSquareActivity.setText(s.formatTime());
+                    SquareState currentState = s.getSquareState();
+                    int stateColor;
+                    switch(currentState)
+                    {
+                        default:
+                        case ASLEEP:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                            break;
+                        case AWOKEN:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                            break;
+                        case CAFFEINATED:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                            break;
+                    }
+                    bottomSheetLowerState.setBackgroundColor(stateColor);
                 }
             }
         }else
@@ -819,6 +867,22 @@ public class MapFragment extends Fragment
             for(Square s : InSquareProfile.getRecentSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
                     bottomSheetSquareActivity.setText(s.formatTime());
+                    SquareState currentState = s.getSquareState();
+                    int stateColor;
+                    switch(currentState)
+                    {
+                        default:
+                        case ASLEEP:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
+                            break;
+                        case AWOKEN:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
+                            break;
+                        case CAFFEINATED:
+                            stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
+                            break;
+                    }
+                    bottomSheetLowerState.setBackgroundColor(stateColor);
                 }
             }
         }
