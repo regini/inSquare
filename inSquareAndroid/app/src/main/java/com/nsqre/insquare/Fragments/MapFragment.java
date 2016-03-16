@@ -265,25 +265,6 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
-        if(getActivity().getIntent().getStringExtra("squareId") != null) {
-            String squareId = getActivity().getIntent().getStringExtra("squareId");
-            if(InSquareProfile.isFav(squareId)) {
-                for(Square s : InSquareProfile.getFavouriteSquaresList()) {
-                    if(squareId.equals(s.getId())) {
-                        startChatActivity(s);
-                        break;
-                    }
-                }
-            } else if(InSquareProfile.isRecent(squareId)) {
-                for(Square s : InSquareProfile.getRecentSquaresList()) {
-                    if(squareId.equals(s.getId())) {
-                        startChatActivity(s);
-                        break;
-                    }
-                }
-            }
-            getActivity().getIntent().getExtras().clear();
-        }
         if(mGoogleMap != null) {
             squareHashMap.clear();
             mGoogleMap.clear();
@@ -326,6 +307,7 @@ public class MapFragment extends Fragment
                     REQUEST_FINE_LOCATION);
             return;
         }
+        
         setupLocation();
     }
 
@@ -449,6 +431,7 @@ public class MapFragment extends Fragment
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
+
         // mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
@@ -587,7 +570,6 @@ public class MapFragment extends Fragment
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
-        options.visible(false);
         return mGoogleMap.addMarker(options);
     }
 
@@ -619,7 +601,7 @@ public class MapFragment extends Fragment
                         Square s = gson.fromJson(response, Square.class);
                         squareHashMap.put(marker, s);
                         marker.setVisible(true);
-                        Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(mapCoordinatorLayout, "Square creata!", Snackbar.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -661,8 +643,7 @@ public class MapFragment extends Fragment
             @Override
             public void onClick(View v) {
                 final String text = descriptionEditText.getText().toString().trim();
-                if(text.isEmpty())
-                {
+                if (text.isEmpty()) {
                     Toast.makeText(MapFragment.this.getContext(), "Devi inserire una descrizione!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -684,8 +665,7 @@ public class MapFragment extends Fragment
                     @Override
                     public void responsePATCH(Object object) {
                         boolean response = (boolean) object;
-                        if(response)
-                        {
+                        if (response) {
                             // Tutto OK!
                             Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
                             bottomSheetLowerDescription.setText(text);
@@ -722,9 +702,11 @@ public class MapFragment extends Fragment
                 String squareDescr = descriptionEditText.getText().toString().trim();
                 if (!TextUtils.isEmpty(squareName)) {
                     Marker m = createSquarePin(latLng, squareName);
+                    m.setVisible(false);
                     // Richiesta Volley POST per la creazione di piazze
                     // Si occupa anche di creare e aggiungere la nuova Square al HashMap
                     String ownerId = InSquareProfile.getUserId();
+                    Snackbar.make(mapCoordinatorLayout, "Stiamo creando la square", Snackbar.LENGTH_SHORT).show();
                     createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
                     mDialog.dismiss();
                 }
