@@ -262,9 +262,26 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
-        if(mGoogleMap != null) {
-            squareHashMap.clear();
+        if(mGoogleMap != null && squareHashMap.size() > 0)
+        {
             mGoogleMap.clear();
+
+            // Riempi la mappa
+            HashMap<String, Square> squarePins = new HashMap<>();
+            for(Square s : squareHashMap.values())
+            {
+                squarePins.put(s.getId(), s);
+            }
+            squareHashMap.clear();
+            for(Square closeSquare : squarePins.values())
+            {
+                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                Marker m = createSquarePin(coords, closeSquare.getName());
+                squareHashMap.put(m, closeSquare);
+            }
+            Log.d(TAG, "onResume: map has been refilled!");
+            // Fine refill
+
             downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
                 bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {

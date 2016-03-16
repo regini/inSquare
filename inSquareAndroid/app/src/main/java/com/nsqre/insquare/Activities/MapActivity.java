@@ -556,7 +556,7 @@ public class MapActivity extends AppCompatActivity
                             InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
                             InSquareProfile.save(getApplicationContext());
 //                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
-                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+//                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
                         } catch (Exception ex) {
                           ex.printStackTrace();
                         }
@@ -593,7 +593,7 @@ public class MapActivity extends AppCompatActivity
                             InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
                             InSquareProfile.save(getApplicationContext());
-                            Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
+//                            Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -630,7 +630,7 @@ public class MapActivity extends AppCompatActivity
                             InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
 //                        userProfile.save(getApplicationContext());
                             InSquareProfile.save(getApplicationContext());
-                            Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
+//                            Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
