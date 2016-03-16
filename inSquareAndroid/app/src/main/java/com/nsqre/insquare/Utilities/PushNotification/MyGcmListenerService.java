@@ -82,9 +82,6 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotification(String message, String squareName, String squareId) {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("profile", 2);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
         SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
         int squareCount = notificationPreferences.getInt("squareCount", 0);
@@ -115,6 +112,7 @@ public class MyGcmListenerService extends GcmListenerService {
         notificationBuilder.setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
         if(squareCount == 1) {
             SharedPreferences messagePreferences = getSharedPreferences(squareId, MODE_PRIVATE);
+            intent.putExtra("squareId", squareId);
             NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
             messagePreferences.edit().putString(String.valueOf(notificationCount), message).commit();
             if(messagePreferences.getAll().size() <= 6) {
@@ -132,6 +130,7 @@ public class MyGcmListenerService extends GcmListenerService {
                     .setSummaryText("inSquare"));
             notificationBuilder.setContentText(notificationCount > 1 ? "Hai " + notificationCount + " nuovi messaggi" : message);
         } else {
+            intent.putExtra("profile", 2);
             notificationBuilder.setContentTitle("inSquare");
             notificationBuilder.setContentText("Hai " + (notificationCount) + " nuovi messaggi in "
                     + squareCount + " piazze");
@@ -140,6 +139,8 @@ public class MyGcmListenerService extends GcmListenerService {
         notificationBuilder.setSound(defaultSoundUri);
         notificationBuilder.setVibrate(new long[] { 300, 300, 300, 300, 300 });
         notificationBuilder.setLights(Color.RED, 1000, 3000);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
         notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =

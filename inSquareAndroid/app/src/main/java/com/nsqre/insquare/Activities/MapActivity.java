@@ -186,11 +186,14 @@ public class MapActivity extends AppCompatActivity
         profileFragment = new ProfileFragment();
 
         if(getIntent().getExtras() != null) {
-            selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+            if(getIntent().getIntExtra("profile", 0) == 2) {
+                selectItemFromDrawer(getIntent().getExtras().getInt("profile"));
+            } else if(getIntent().getStringExtra("squareId") != null) {
+                selectItemFromDrawer(0);
+            }
             getFavouriteSquares();
             getOwnedSquares();
             getRecentSquares();
-            getIntent().getExtras().clear();
         }
         else {
             selectItemFromDrawer(0);

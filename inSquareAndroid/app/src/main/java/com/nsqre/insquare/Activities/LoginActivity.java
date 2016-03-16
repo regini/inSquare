@@ -295,8 +295,13 @@ public class LoginActivity extends AppCompatActivity
     private void launchInSquare() {
         Log.d(TAG, "launchInSquare: launching!");
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-        if(getIntent().getExtras() != null && getIntent().getExtras().getInt("profile") == 2) {
-            intent.putExtra("profile",getIntent().getExtras().getInt("profile"));
+        if(getIntent().getExtras() != null) {
+            if(getIntent().getExtras().getInt("profile") == 2) {
+                intent.putExtra("profile", getIntent().getExtras().getInt("profile"));
+            }
+            if(getIntent().getStringExtra("squareId") != null) {
+                intent.putExtra("squareId", getIntent().getStringExtra("squareId"));
+            }
             getIntent().getExtras().clear();
         }
         startActivity(intent);

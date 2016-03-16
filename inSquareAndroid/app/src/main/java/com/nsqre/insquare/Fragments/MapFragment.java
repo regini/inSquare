@@ -154,7 +154,6 @@ public class MapFragment extends Fragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
 //        rootMainActivity = (MainActivity) getActivity();
     }
 
@@ -255,6 +254,25 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
+        if(getActivity().getIntent().getStringExtra("squareId") != null) {
+            String squareId = getActivity().getIntent().getStringExtra("squareId");
+            if(InSquareProfile.isFav(squareId)) {
+                for(Square s : InSquareProfile.getFavouriteSquaresList()) {
+                    if(squareId.equals(s.getId())) {
+                        startChatActivity(s);
+                        break;
+                    }
+                }
+            } else if(InSquareProfile.isRecent(squareId)) {
+                for(Square s : InSquareProfile.getRecentSquaresList()) {
+                    if(squareId.equals(s.getId())) {
+                        startChatActivity(s);
+                        break;
+                    }
+                }
+            }
+            getActivity().getIntent().getExtras().clear();
+        }
         if(mGoogleMap != null) {
             squareHashMap.clear();
             mGoogleMap.clear();
@@ -558,6 +576,7 @@ public class MapFragment extends Fragment
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        options.visible(false);
         return mGoogleMap.addMarker(options);
     }
 
@@ -588,6 +607,7 @@ public class MapFragment extends Fragment
                         Gson gson = b.create();
                         Square s = gson.fromJson(response, Square.class);
                         squareHashMap.put(marker, s);
+                        marker.setVisible(true);
                         Toast.makeText(getContext(), "Square creata con successo!", Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
