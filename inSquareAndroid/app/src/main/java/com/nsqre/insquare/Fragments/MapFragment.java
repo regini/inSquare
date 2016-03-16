@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,14 +15,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -307,7 +304,6 @@ public class MapFragment extends Fragment
                     REQUEST_FINE_LOCATION);
             return;
         }
-        
         setupLocation();
     }
 
@@ -431,6 +427,26 @@ public class MapFragment extends Fragment
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
+
+        if(getActivity().getIntent().getStringExtra("squareId") != null) {
+            String squareId = getActivity().getIntent().getStringExtra("squareId");
+            if(InSquareProfile.isFav(squareId)) {
+                for(Square s : InSquareProfile.getFavouriteSquaresList()) {
+                    if(squareId.equals(s.getId())) {
+                        startChatActivity(s);
+                        break;
+                    }
+                }
+            } else if(InSquareProfile.isRecent(squareId)) {
+                for(Square s : InSquareProfile.getRecentSquaresList()) {
+                    if(squareId.equals(s.getId())) {
+                        startChatActivity(s);
+                        break;
+                    }
+                }
+            }
+            getActivity().getIntent().getExtras().clear();
+        }
 
         // mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
