@@ -1,0 +1,1477 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>inSquare API</title>
+    <style type="text/css">
+      body {
+	font-family: Trebuchet MS, sans-serif;
+	font-size: 15px;
+	color: #444;
+	margin-right: 24px;
+}
+
+h1	{
+	font-size: 25px;
+}
+h2	{
+	font-size: 20px;
+}
+h3	{
+	font-size: 16px;
+	font-weight: bold;
+}
+hr	{
+	height: 1px;
+	border: 0;
+	color: #ddd;
+	background-color: #ddd;
+	display: none;
+}
+
+.app-desc {
+  clear: both;
+  margin-left: 20px;
+}
+.param-name {
+  width: 100%;
+}
+.license-info {
+  margin-left: 20px;
+}
+
+.license-url {
+  margin-left: 20px;
+}
+
+.model {
+  margin: 0 0 0px 20px;
+}
+
+.method {
+  margin-left: 20px;
+}
+
+.method-notes	{
+	margin: 10px 0 20px 0;
+	font-size: 90%;
+	color: #555;
+}
+
+pre {
+  padding: 10px;
+  margin-bottom: 2px;
+}
+
+.http-method {
+ text-transform: uppercase;
+}
+
+pre.get {
+  background-color: #0f6ab4;
+}
+
+pre.post {
+  background-color: #10a54a;
+}
+
+pre.put {
+  background-color: #c5862b;
+}
+
+pre.delete {
+  background-color: #a41e22;
+}
+
+.huge	{
+	color: #fff;
+}
+
+pre.example {
+  background-color: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+code {
+  white-space: pre;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.method-path {
+  font-size: 1.5em;
+  background-color: #0f6ab4;
+}
+
+.up {
+  float:right;
+}
+
+.parameter {
+  width: 500px;
+}
+
+.param {
+  width: 500px;
+  padding: 10px 0 0 20px;
+  font-weight: bold;
+}
+
+.param-desc {
+  width: 700px;
+  padding: 0 0 0 20px;
+  color: #777;
+}
+
+.param-type {
+  font-style: italic;
+}
+
+.param-enum-header {
+width: 700px;
+padding: 0 0 0 60px;
+color: #777;
+font-weight: bold;
+}
+
+.param-enum {
+width: 700px;
+padding: 0 0 0 80px;
+color: #777;
+font-style: italic;
+}
+
+.field-label {
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+.field-items	{
+	padding: 0 0 15px 0;
+	margin-bottom: 15px;
+}
+
+.return-type {
+  clear: both;
+  padding-bottom: 10px;
+}
+
+.param-header {
+  font-weight: bold;
+}
+
+.method-tags {
+  text-align: right;
+}
+
+.method-tag {
+  background: none repeat scroll 0% 0% #24A600;
+  border-radius: 3px;
+  padding: 2px 10px;
+  margin: 2px;
+  color: #FFF;
+  display: inline-block;
+  text-decoration: none;
+}
+    </style>
+  </head>
+  <body>
+  <h1>inSquare API</h1>
+    <div class="app-desc">Geolocalized interactions through inSquare API</div>
+  
+    <div class="app-desc">Version: 1.0.0</div>
+    <div class="license-info">All rights reserved</div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+
+  <h2>Table of Contents </h2>
+  <div class="method-summary"></div>
+
+  <ol>
+
+
+
+  <li><a href="#favouritesquaresDelete"><code><span class="http-method">delete</span> /favouritesquares</code></a></li>
+
+  <li><a href="#favouritesquaresIdGet"><code><span class="http-method">get</span> /favouritesquares/{id}</code></a></li>
+
+  <li><a href="#favouritesquaresPost"><code><span class="http-method">post</span> /favouritesquares</code></a></li>
+
+  <li><a href="#gcmTokenPost"><code><span class="http-method">post</span> /gcmToken</code></a></li>
+
+  <li><a href="#messagesGet"><code><span class="http-method">get</span> /messages</code></a></li>
+
+  <li><a href="#profilePicturesUserIdGet"><code><span class="http-method">get</span> /profilePictures/{userId}</code></a></li>
+
+  <li><a href="#recentSquaresDelete"><code><span class="http-method">delete</span> /recentSquares</code></a></li>
+
+  <li><a href="#recentSquaresUserIdGet"><code><span class="http-method">get</span> /recentSquares/{userId}</code></a></li>
+
+  <li><a href="#squaresDelete"><code><span class="http-method">delete</span> /squares</code></a></li>
+
+  <li><a href="#squaresGet"><code><span class="http-method">get</span> /squares</code></a></li>
+
+  <li><a href="#squaresIdGet"><code><span class="http-method">get</span> /squares/{id}</code></a></li>
+
+  <li><a href="#squaresNotOwnedDelete"><code><span class="http-method">delete</span> /squaresNotOwned</code></a></li>
+
+  <li><a href="#squaresPatch"><code><span class="http-method">patch</span> /squares</code></a></li>
+
+  <li><a href="#squaresPost"><code><span class="http-method">post</span> /squares</code></a></li>
+
+  <li><a href="#userGet"><code><span class="http-method">get</span> /user</code></a></li>
+
+  <li><a href="#userPatch"><code><span class="http-method">patch</span> /user</code></a></li>
+
+
+
+  </ol>
+
+
+
+
+
+
+  <div class="method"><a name="favouritesquaresDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /favouritesquares</code></pre></div>
+    <div class="method-summary">Remove a Square from favourites squares of a User (<span class="nickname">favouritesquaresDelete</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">userId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The User ID </div><div class="param">squareId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The square you want to remove from a User Favourite </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    La square è stata aggiunta come preferita
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="favouritesquaresIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /favouritesquares/{id}</code></pre></div>
+    <div class="method-summary">Favorite squares of a User (<span class="nickname">favouritesquaresIdGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; The user Id </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Square">Square</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Favourite squares of a specified used
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="favouritesquaresPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /favouritesquares</code></pre></div>
+    <div class="method-summary">Match a square with the Favourite Squares of a User (<span class="nickname">favouritesquaresPost</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">userId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The User ID </div><div class="param">squareId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The new favourite square ID of the User </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    La square è stata aggiunta come preferita
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="gcmTokenPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /gcmToken</code></pre></div>
+    <div class="method-summary">Post the user frontend GCM push token on server (<span class="nickname">gcmTokenPost</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">GCM (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The user ID </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    GCM TOKEN on Server
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="messagesGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /messages</code></pre></div>
+    <div class="method-summary">Get alist of messages from a square (<span class="nickname">messagesGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">square (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Square ID </div><div class="param">size (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The maximum number of messages you want. </div><div class="param">recent (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Must be true </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Message">Message</a>]
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    A list of messages on a square
+
+
+    <h4 class="field-label">0</h4>
+    Malformed query
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="profilePicturesUserIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /profilePictures/{userId}</code></pre></div>
+    <div class="method-summary">Get the url of user&#39;s Profile Picture from Google or Facebook (<span class="nickname">profilePicturesUserIdGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">userId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; User ID </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+
+      String
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Photo Profile URL
+
+
+    <h4 class="field-label">0</h4>
+    Malformed query
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="recentSquaresDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /recentSquares</code></pre></div>
+    <div class="method-summary">Remove all recent Squares from a specfied User (<span class="nickname">recentSquaresDelete</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">userId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The User ID </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Recenti eliminate
+
+
+    <h4 class="field-label">0</h4>
+    Recenti non eliminate, userId non valido
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="recentSquaresUserIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /recentSquares/{userId}</code></pre></div>
+    <div class="method-summary">Recent squares of a User (<span class="nickname">recentSquaresUserIdGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">userId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; The user Id </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Square">Square</a>]
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Recent squares of a specified used
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /squares</code></pre></div>
+    <div class="method-summary">Delete a square by name and owner (<span class="nickname">squaresDelete</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">name (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The Square name. It is case sensitive. </div><div class="param">ownerId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The user ID of the square owner </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Square eliminata con successo!
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /squares</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">squaresGet</span>)</div>
+
+    <div class="method-notes">Squares by ownerId, name or topic</div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">byOwner (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Execute a search by ownerId </div><div class="param">byTopic (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Execute a search by a topic </div><div class="param">autocomplete (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Owr backend tries to guess the square that match most. </div><div class="param">ownerId (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The userID of the square&#39;s owner </div><div class="param">name (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Name of the square or topic you want to search. </div><div class="param">lat (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Latitude of the user. </div><div class="param">lon (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Longitude of the user. </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Square">Square</a>]
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    The squares you searched ordered by distance from your location if provided. The query returns maximum 10000 squares.
+
+
+    <h4 class="field-label">0</h4>
+    Invalid query
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /squares/{id}</code></pre></div>
+    <div class="method-summary">Get square by id (<span class="nickname">squaresIdGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; The ID of the square to fetch </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Square">Square</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Square with the specified ID
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresNotOwnedDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /squaresNotOwned</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">squaresNotOwnedDelete</span>)</div>
+
+    <div class="method-notes">Delete a square by name</div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">name (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The Square name. It is case sensitive. </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Square eliminata con successo!
+
+
+    <h4 class="field-label">0</h4>
+    Error if the square have a owner
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresPatch"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /squares</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">squaresPatch</span>)</div>
+
+    <div class="method-notes">Update the description of a specified square</div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">squareId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Square ID </div><div class="param">description (required)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Description to update </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    La descrizione square è stata modificata
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="squaresPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /squares</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">squaresPost</span>)</div>
+
+    <div class="method-notes">Creates a new square. Duplicates are allowed</div>
+
+
+
+
+
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">square (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; Square to add </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Square">Square</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    square response
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="userGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /user</code></pre></div>
+    <div class="method-summary">Get users on the square or get the last location of a specified user (<span class="nickname">userGet</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">byLocation (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; True if you want to get User last location </div><div class="param">userId (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The id of the user you want to retrive the last location </div><div class="param">squareId (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The square ID </div><div class="param">distance (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; The maximum distance from the square. </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#User">User</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    Last location of a user or an array of users
+
+
+    <h4 class="field-label">0</h4>
+    unexpected error
+
+
+  </div> <!-- method -->
+  <hr/>
+
+  <div class="method"><a name="userPatch"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /user</code></pre></div>
+    <div class="method-summary">Update the current user&#39;s location (<span class="nickname">userPatch</span>)</div>
+
+    <div class="method-notes"></div>
+
+
+
+
+
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">user (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The user </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#StatusMessage">StatusMessage</a>
+
+    </div>
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+
+      <li><code>application/json</code></li>
+
+    </ul>
+
+
+    <h3 class="field-label">Responses</h3>
+
+    <h4 class="field-label">200</h4>
+    User lastLocation update SUCCESSFUL
+
+
+    <h4 class="field-label">0</h4>
+    User lastLocation update NOT SUCCESSFUL
+
+
+  </div> <!-- method -->
+  <hr/>
+
+
+
+
+
+  <div class="up"><a href="#__Models">Up</a></div>
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h2>Table of Contents</h2>
+  <ol>
+
+
+    <li><a href="#Error"><code>Error</code></a></li>
+
+
+
+    <li><a href="#GCM"><code>GCM</code></a></li>
+
+
+
+    <li><a href="#Message"><code>Message</code></a></li>
+
+
+
+    <li><a href="#NewMessage"><code>NewMessage</code></a></li>
+
+
+
+    <li><a href="#NewSquare"><code>NewSquare</code></a></li>
+
+
+
+    <li><a href="#NewUser"><code>NewUser</code></a></li>
+
+
+
+    <li><a href="#Square"><code>Square</code></a></li>
+
+
+
+    <li><a href="#StatusMessage"><code>StatusMessage</code></a></li>
+
+
+
+    <li><a href="#User"><code>User</code></a></li>
+
+
+  </ol>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="Error">Error</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">code </div><div class="param-desc"><span class="param-type">Integer</span> </div>
+
+      <div class="param">message </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="GCM">GCM</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">userId </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">gcm </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="Message">Message</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">createdAt </div><div class="param-desc"><span class="param-type">date</span> </div>
+
+      <div class="param">senderId </div><div class="param-desc"><span class="param-type">User</span> </div>
+
+      <div class="param">squareId </div><div class="param-desc"><span class="param-type">Square</span> </div>
+
+      <div class="param">text </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">id </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="NewMessage">NewMessage</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">text </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">createdAt </div><div class="param-desc"><span class="param-type">date</span> </div>
+
+      <div class="param">senderId </div><div class="param-desc"><span class="param-type">User</span> </div>
+
+      <div class="param">squareId </div><div class="param-desc"><span class="param-type">Square</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="NewSquare">NewSquare</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lat </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lon </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">ownerId </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="NewUser">NewUser</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">lat </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lon </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="Square">Square</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lon </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">id </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">ownerId </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lat </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="StatusMessage">StatusMessage</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">code </div><div class="param-desc"><span class="param-type">Integer</span> </div>
+
+      <div class="param">message </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+
+  <div class="model">
+    <h3 class="field-label"><a name="User">User</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">lat </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">lon </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+      <div class="param">id </div><div class="param-desc"><span class="param-type">String</span> </div>
+
+
+    </div>  <!-- field-items -->
+  </div>
+
+
+  </body>
+</html>
