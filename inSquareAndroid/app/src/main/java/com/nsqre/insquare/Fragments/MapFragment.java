@@ -8,17 +8,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +67,7 @@ import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
 import com.nsqre.insquare.Square.SquareState;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,6 +115,8 @@ public class MapFragment extends Fragment
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
+
+    private CoordinatorLayout mapCoordinatorLayout;
 
     private View bottomSheetSeparator;
     private TextView bottomSheetSquareName;
@@ -164,6 +172,8 @@ public class MapFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_main_map_full, container, false);
 
         // Recuperiamo un po' di riferimenti ai layout
+        mapCoordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.map_coordinator_layout);
+
         bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
         bottomSheetButton.setVisibility(View.GONE);
 
@@ -251,6 +261,7 @@ public class MapFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+        mLastSelectedSquareId = "";
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
@@ -630,6 +641,63 @@ public class MapFragment extends Fragment
         queue.add(stringRequest);
     }
 
+    private void descriptionDialog(String oldText)
+    {
+        final Dialog mDialog = new Dialog(getContext());
+        mDialog.setContentView(R.layout.dialog_description);
+//        mDialog.setTitle("Modifica la descrizione");
+        mDialog.setCancelable(true);
+        mDialog.show();
+
+        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.et_dialog_description);
+        if(!oldText.isEmpty())
+        {
+            ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
+            descriptionEditText.setText("");
+            descriptionEditText.setText(oldText);
+        }
+        final Button okButton = (Button) mDialog.findViewById(R.id.button_dialog_description);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String text = descriptionEditText.getText().toString().trim();
+                if(text.isEmpty())
+                {
+                    Toast.makeText(MapFragment.this.getContext(), "Devi inserire una descrizione!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d(TAG, "onClick: stai tentando di inserire la descrizione:\n" + text);
+                // TODO VolleyManager request per la PATCH descrizione
+                VolleyManager.getInstance().patchDescription(text, mLastSelectedSquareId, new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // Lasciare vuoto
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Lasciare vuoto
+
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        boolean response = (boolean) object;
+                        if(response)
+                        {
+                            // Tutto OK!
+                            Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
+                            bottomSheetLowerDescription.setText(text);
+                            Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
+                            mDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     public void onMapLongClick(final LatLng latLng) {
         final String lat = Double.toString(latLng.latitude);
@@ -752,14 +820,28 @@ public class MapFragment extends Fragment
         bottomSheetLowerFavs.setText("Seguita da " + currentSquare.getFavouredBy() + " persone");
         ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
-        String d = currentSquare.getDescription().trim();
-        if(d.isEmpty())
+        final String d = currentSquare.getDescription().trim();
+        String userid = InSquareProfile.getUserId();
+        if( currentSquare.getOwnerId().equals(InSquareProfile.getUserId()) )
+        {
+            bottomSheetLowerDescription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Visualizza un dialog per inserire la descrizione
+                    descriptionDialog(bottomSheetLowerDescription.getText().toString().trim());
+                }
+            });
+            bottomSheetLowerDescription.setText(d);
+            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
+        }
+        else if(d.isEmpty())
         {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
         }else
         {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
             bottomSheetLowerDescription.setText(d.trim());
+            bottomSheetLowerDescription.setOnClickListener(null);
         }
 
         SquareState currentState = currentSquare.getSquareState();

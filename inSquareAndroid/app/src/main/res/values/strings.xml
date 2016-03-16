@@ -20,7 +20,7 @@
     <string name="message_user_joined">%s si è unito</string>
     <string name="message_user_left">%s è uscito</string>
     <string name="user_action_typing"> sta scrivendo</string>
-    <string name="username">Username</string>
+    <string name="hint_descrizione">Inserisci una descrizione</string>
     <string name="nome_square">Inserisci il nome della Square</string>
     <string name="descrizione_square">Inserisci la descrizione della Square</string>
     <string name="crea_square">Crea!</string>

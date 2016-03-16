@@ -50,6 +50,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
 import com.nsqre.insquare.User.User;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -119,6 +120,7 @@ public class LoginActivity extends AppCompatActivity
         // Profilo statico perche' non puo' cambiare.
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
+        VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
 
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
