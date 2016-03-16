@@ -210,12 +210,6 @@ public class MapFragment extends Fragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: started");
-    }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
@@ -234,28 +228,9 @@ public class MapFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
-        super.onPause();
-        Log.d(TAG, "onPause: I've just paused!");
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
-        {
-            mGoogleApiClient.disconnect();
-        }
-        Log.d(TAG, "onStop: I've just stopped!");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.d(TAG, "onDetach: removing the fraggment from the system!");
-        InSquareProfile.removeListener(this);
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: started");
     }
 
     @Override
@@ -295,6 +270,31 @@ public class MapFragment extends Fragment
                 });
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        {
+            mGoogleApiClient.disconnect();
+        }
+        Log.d(TAG, "onStop: I've just stopped!");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach: removing the fraggment from the system!");
+        InSquareProfile.removeListener(this);
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
