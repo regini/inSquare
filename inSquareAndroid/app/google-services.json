@@ -11,7 +11,8 @@
         "client_id": "android:com.nsqre.insquare",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.nsqre.insquare"
+          "package_name": "com.nsqre.insquare",
+          "certificate_hash": []
         }
       },
       "oauth_client": [
@@ -44,7 +45,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.nsqre.insquare",
-            "certificate_hash": "A1466C8EABF55D4A6FF008439A43B37710B6BB6A"
+            "certificate_hash": "82F445593A8B93D005C79226ED3025932D2B0C4F"
           }
         },
         {
