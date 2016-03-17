@@ -30,6 +30,8 @@ public class VolleyManager {
         void responsePOST(E object);
         // Risposta per la PATCH
         void responsePATCH(E object);
+        // Risposta per la DELETE
+        void responseDELETE(E object);
     }
     private static final String TAG = "VolleyManager";
     private static VolleyManager instance = null;
@@ -259,6 +261,37 @@ public class VolleyManager {
         );
 
         requestQueue.add(patchDescriptionRequest);
+    }
+
+    public void deleteSquare(
+            final String squareId,
+            final String ownerId,
+            final VolleyResponseListener listener) {
+        String volleyURL = prefixURL + "squares?";
+        volleyURL += "&squareId=" + squareId;
+        volleyURL += "&ownerId=" + ownerId;
+        Log.d(TAG, "deleteSquare url: " + volleyURL);
+        StringRequest deleteSquareRequest = new StringRequest(
+                Request.Method.DELETE,
+                volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "deleteSquare response is " + response);
+                        if(response.toLowerCase().contains("error")) {
+                            listener.responseDELETE(false);
+                        } else {
+                            listener.responseDELETE(true);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: " + error.toString());
+                listener.responseDELETE(false);
+            }
+        });
+        requestQueue.add(deleteSquareRequest);
     }
 
 }

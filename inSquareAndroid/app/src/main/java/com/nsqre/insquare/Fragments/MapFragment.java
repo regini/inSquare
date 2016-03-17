@@ -1,9 +1,11 @@
 package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -12,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -59,15 +62,13 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
 import com.nsqre.insquare.Square.SquareState;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MapFragment extends Fragment
@@ -125,6 +126,7 @@ public class MapFragment extends Fragment
     private View bottomSheetLowerState;
     private ImageButton bottomSheetEditButton;
     private ImageButton bottomSheetTrashButton;
+    private View bottomSheetSeparatorButtons;
 
 
 //    private RecyclerView bottomSheetList;
@@ -181,6 +183,8 @@ public class MapFragment extends Fragment
 
         bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
         bottomSheetSeparator.setVisibility(View.GONE);
+
+       // bottomSheetSeparatorButtons = v.findViewById(R.id.bottom_sheet_separator_buttons);
 
         bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
 
@@ -280,7 +284,8 @@ public class MapFragment extends Fragment
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
             } else if("update".equals(intent.getStringExtra("action"))) {
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-            } else if("deletion".equals(intent.getStringExtra("action"))) {
+            } else if("deletion".equals(intent.getStringExtra("action")) &&
+                    !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
                 for(Marker m : squareHashMap.keySet()) {
                     if(squareHashMap.get(m).getId().equals(intent.getStringExtra("squareId"))) {
                         squareHashMap.remove(m);
@@ -293,6 +298,7 @@ public class MapFragment extends Fragment
                             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
                             ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
                             ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
+                            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
                             bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
                             bottomSheetUpperLinearLayout.setOnClickListener(null);
                             Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
@@ -649,9 +655,76 @@ public class MapFragment extends Fragment
         };
         queue.add(stringRequest);
     }
+    
+    private void deleteDialog(String name) {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(getActivity());
+        }
+        builder.setTitle("Vuoi veramente cancellare la square?")
+                .setMessage("Tutti i messaggi associati a " + name + " andranno perduti.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                final String ownerId = InSquareProfile.getUserId();
+                final String squareId = mLastSelectedSquareId;
+                VolleyManager.getInstance().deleteSquare(squareId, ownerId, new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // Lasciare vuoto
+                    }
 
-    private void descriptionDialog(String oldName, String oldDescription)
-    {
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Lasciare vuoto
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Lasciare vuoto
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        boolean response = (boolean) object;
+                        if(response) {
+                            Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
+                            for(Marker m : squareHashMap.keySet()) {
+                                if(squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
+                                    squareHashMap.remove(m);
+                                    m.remove();
+                                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                                        bottomSheetSeparator.setVisibility(View.GONE);
+                                        bottomSheetButton.setVisibility(View.GONE);
+                                        bottomSheetSquareActivity.setVisibility(View.GONE);
+                                        bottomSheetSquareName.setText("Seleziona un posto");
+                                        ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+                                        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
+                                        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
+                                        ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
+                                        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+                                        bottomSheetUpperLinearLayout.setOnClickListener(null);
+                                        Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private void descriptionDialog(String oldName, String oldDescription) {
         final Dialog mDialog = new Dialog(getContext());
         mDialog.setContentView(R.layout.dialog_description);
 //        mDialog.setTitle("Modifica la descrizione");
@@ -663,7 +736,7 @@ public class MapFragment extends Fragment
         {
             ((TextInputLayout) nameEditText.getParent()).setHint("Modifica il nome della piazza");
             nameEditText.setText("");
-            nameEditText.setText(oldDescription);
+            nameEditText.setText(oldName);
         }
 
 
@@ -691,32 +764,38 @@ public class MapFragment extends Fragment
                 // TODO VolleyManager request per la PATCH descrizione
                 VolleyManager.getInstance().patchDescription(name, description, mLastSelectedSquareId, InSquareProfile.getUserId(),
                         new VolleyManager.VolleyResponseListener() {
-                    @Override
-                    public void responseGET(Object object) {
-                        // Lasciare vuoto
-                    }
+                            @Override
+                             public void responseGET(Object object) {
+                                // Lasciare vuoto
+                            }
 
-                    @Override
-                    public void responsePOST(Object object) {
-                        // Lasciare vuoto
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Lasciare vuoto
 
-                    }
+                            }
 
-                    @Override
-                    public void responsePATCH(Object object) {
-                        boolean response = (boolean) object;
-                        if (response) {
-                            // Tutto OK!
-                            Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
-                            bottomSheetLowerDescription.setText(description);
-                            Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
-                            mDialog.dismiss();
-                        } else {
-                            Snackbar.make(mapCoordinatorLayout, "Descrizione NON modificata!", Snackbar.LENGTH_SHORT).show();
-                            mDialog.dismiss();
-                        }
-                    }
-                });
+                            @Override
+                            public void responsePATCH(Object object) {
+                                boolean response = (boolean) object;
+                                if (response) {
+                                    // Tutto OK!
+                                    Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
+                                    bottomSheetSquareName.setText(name);
+                                    bottomSheetLowerDescription.setText(description);
+                                    Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
+                                    mDialog.dismiss();
+                                } else {
+                                    Snackbar.make(mapCoordinatorLayout, "Descrizione NON modificata!", Snackbar.LENGTH_SHORT).show();
+                                    mDialog.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // Lasciare vuoto
+                            }
+                        });
             }
         });
     }
@@ -862,10 +941,6 @@ public class MapFragment extends Fragment
         bottomSheetButton.setVisibility(View.VISIBLE);
         bottomSheetSeparator.setVisibility(View.VISIBLE);
 
-        if(InSquareProfile.isOwned(currentSquare.getId())) {
-
-        }
-
         bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -880,37 +955,38 @@ public class MapFragment extends Fragment
         ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         final String d = currentSquare.getDescription().trim();
-        if( currentSquare.getOwnerId().equals(InSquareProfile.getUserId()) )
-        {
-            bottomSheetLowerDescription.setOnClickListener(new View.OnClickListener() {
+        if(currentSquare.getOwnerId().equals(InSquareProfile.getUserId()) ) {
+            /*bottomSheetLowerDescription.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Visualizza un dialog per inserire la descrizione
                     descriptionDialog(bottomSheetLowerDescription.getText().toString().trim());
                 }
-            });
+            });*/
             bottomSheetLowerDescription.setText(d);
+            //((LinearLayout)bottomSheetSeparatorButtons.getParent()).setVisibility(View.VISIBLE);
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
             bottomSheetEditButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    descriptionDialog(bottomSheetSquareName.getText().toString().trim(), bottomSheetLowerDescription.getText().toString().trim());
                 }
             });
             ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.VISIBLE);
             bottomSheetTrashButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    deleteDialog(bottomSheetSquareName.getText().toString().trim());
                 }
             });
             ((LinearLayout)bottomSheetTrashButton.getParent().getParent()).setVisibility(View.VISIBLE);
         }
-        else if(d.isEmpty())
-        {
+        else {
+            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
+        }
+        if(d.isEmpty()) {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
-        }else
-        {
+        } else {
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
             bottomSheetLowerDescription.setText(d.trim());
             bottomSheetLowerDescription.setOnClickListener(null);
@@ -979,6 +1055,8 @@ public class MapFragment extends Fragment
 
     private void updateBottomSheet(Square s) {
         if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+            bottomSheetSquareName.setText(s.getName());
+            bottomSheetLowerDescription.setText(s.getDescription());
             bottomSheetSquareActivity.setText(s.formatTime());
             SquareState currentState = s.getSquareState();
             int stateColor;
