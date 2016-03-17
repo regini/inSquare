@@ -18,6 +18,9 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.SquareAdapter;
 
+/**
+ * This fragment show the recent squares used by the user. The recent squares are those in which he wrote at least a message
+ */
 public class RecentSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
 
     private static final String TAG = "RecentSquaresFragment";
@@ -42,6 +45,13 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         rootActivity = (MapActivity) getActivity();
     }
 
+    /**
+     * Create and initializes the main view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return The view of this fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,6 +63,9 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         return v;
     }
 
+    /**
+     * TODO ???
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -66,6 +79,9 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         super.onResume();
     }
 
+    /**
+     * TODO ???
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

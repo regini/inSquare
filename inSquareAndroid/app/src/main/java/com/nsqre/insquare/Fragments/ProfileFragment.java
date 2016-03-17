@@ -28,6 +28,10 @@ import com.nsqre.insquare.Square.SquareAdapter;
 
 import java.util.ArrayList;
 
+/**
+ * This is the fragment that show the user's Profile. In it you can find information about the user:
+ * his name, his photo and the lists of squares created and favoured
+ */
 public class ProfileFragment extends Fragment implements
         TabLayout.OnTabSelectedListener,
         InSquareProfile.InSquareProfileListener
@@ -59,14 +63,15 @@ public class ProfileFragment extends Fragment implements
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * TODO ??
+     */
     @Override
     public void onStart() {
         super.onStart();
         InSquareProfile.addListener(this);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
-        //TODO sostituire con un placeholder del profilo
-        //setta il placeholder, mentre attende il download dell'immagine
     }
 
     @Override
@@ -77,6 +82,9 @@ public class ProfileFragment extends Fragment implements
         }
     }
 
+    /**
+     * TODO ???
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -98,6 +106,15 @@ public class ProfileFragment extends Fragment implements
         }
     };
 
+    /**
+     * Initialized the view of this fragment setting the lists of favourite and owned squares
+     * and the profile image(downloading it if not saved in the local storage)
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return The view created
+     * @see DownloadImageTask
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -135,6 +152,9 @@ public class ProfileFragment extends Fragment implements
         return v;
     }
 
+    /**
+     * Sets up the TabLayout
+     */
     private void setupTabLayout() {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         TabLayout.Tab favouritesTab = tabLayout.newTab().setText(TAB_FAVOURITE);
@@ -162,6 +182,10 @@ public class ProfileFragment extends Fragment implements
         super.onPause();
     }
 
+    /**
+     * Switches to the tab the user selected, checking if the lists have changed
+     * @param tab The tab selected
+     */
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         Log.d(TAG, "onTabSelected: I've selected " + tab.getText());
@@ -177,6 +201,12 @@ public class ProfileFragment extends Fragment implements
         adapterOwned.notifyDataSetChanged();
     }
 
+    /**
+     * Fills the listAdapter with the list of squares, if the list is empty it shows the message
+     * @param list The list of squares to show
+     * @param listAdapter The adapter which manages the list of squares
+     * @param message The message shown if the list is empty
+     */
     private void fillTab(ArrayList<Square> list, SquareAdapter listAdapter, String message)
     {
         if(list.isEmpty())
