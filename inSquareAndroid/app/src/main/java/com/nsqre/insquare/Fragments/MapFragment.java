@@ -1127,6 +1127,9 @@ public class MapFragment extends Fragment
 
         @Override
         protected HashMap<String, Square> doInBackground(String... params) {
+            if(!isAdded()) {
+                return null;
+            }
             GsonBuilder b = new GsonBuilder();
             // SquareDeserializer specifica come popolare l'oggetto Message fromJson
             // Log.d(TAG, "Get Closest Squares onResponse: " + response);
@@ -1153,6 +1156,9 @@ public class MapFragment extends Fragment
         }
         @Override
         protected void onPostExecute(HashMap<String, Square> squarePins) {
+            if(!isAdded()) {
+                return;
+            }
             for(Square closeSquare: squarePins.values()) {
                 if(!squareHashMap.containsValue(closeSquare)) {
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
