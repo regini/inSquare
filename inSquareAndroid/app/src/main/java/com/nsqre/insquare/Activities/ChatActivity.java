@@ -57,6 +57,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * This activity lets the user chat in a Square, using a socket.io chat
+ */
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
 
     private static final String TAG = "ChatActivity";
@@ -78,6 +81,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     Dialog mDialog;
 
+    /**
+     * The InSquareProfile of the current user
+     * @see InSquareProfile
+     */
     private InSquareProfile mProfile;
 
     private Menu mMenu;
@@ -91,6 +98,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
+    /**
+     * Initializes the socket.io components, downloads the messages present in the chat and eventually puts to zero the
+     * notification counter for this chat
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +185,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
     }
 
+    /**
+     * Creates a Volley request to download the messages present in a particular square, then it adds the results to the
+     * view
+     * @param quantity
+     */
     private void getRecentMessages(int quantity) {
         RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
         final String q = new Integer(quantity).toString();
@@ -208,7 +225,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
-    //MODIFICATO invece di chiedere chi sta scrivendo, prende il nome dall'user passato dall'activity di login
+    /**
+     * Initializes some values and emits an event so the server knows the user is connected to the chat
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -247,6 +266,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    /**
+     * TODO
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -262,6 +284,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
+    /**
+     * TODO
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -292,12 +317,19 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         */
     }
 
+    /**
+     * Adds a message to the view
+     * @param m The message you want to add
+     */
     private void addMessage(Message m)
     {
         messageAdapter.addItem(m);
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
+    /**
+     * Attempts to send a message throught a socket event, if the message is valid
+     */
     private void attemptSend()
     {
         // [START message_event]
@@ -350,6 +382,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
+    /**
+     * TODO sistemare
+     * Notifies the user if the connection to the socket has failed
+     */
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -363,6 +399,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
+    /**
+     * Receives the event from socket for a new message to display and it displays it
+     * @see #addMessage(Message)
+     */
     private Emitter.Listener onNewMessage = new Emitter.Listener()
     {
 
@@ -392,6 +432,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             });
         }
     };
+
+    /**
+     * Receives the event from socket for a new message sent and it displays it
+     * @see #addMessage(Message)
+     */
     private Emitter.Listener onSendMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -422,6 +467,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
+    /**
+     * Receives an event from socket to keep the connection alive(to not let it timeout)
+     */
     private Emitter.Listener onPing = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -434,6 +482,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             });
         }
     };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -450,6 +499,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         return true;
     }
 
+    /**
+     * Manages the option menu items
+     * @param item The item selected
+     * TODO @see la richiesta a feedback
+     * @see #favouriteSquare(int, Square)
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -527,6 +582,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
+    /**
+     * Creates a Volley request to put/remove a square in/from the favourite squares list, then calls updateList
+     * @param method The volley method you want to use(POST to add, DELETE to remove
+     * @param square The square you want to add/remove
+     * @see #updateList(int, Square)
+     */
     public void favouriteSquare(final int method, final Square square) {
         RequestQueue queue = Volley.newRequestQueue(this);
         final String squareId = square.getId();
@@ -556,6 +617,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         queue.add(postRequest);
     }
 
+    /**
+     * Updates the list of favourite squares
+     * @param method The volley method used
+     * @param square The square to add/remove
+     */
     public void updateList (int method, Square square) {
         // Checking the house is not empty!
 //        if(InSquareProfile.favouriteSquaresList == null)

@@ -15,6 +15,9 @@ import com.nsqre.insquare.Square.SquareDeserializer;
 
 import java.util.Locale;
 
+/**
+ * This class manages the HTTP requests made with Volley from all the Activities andr Fragments of the application
+ */
 public class VolleyManager {
 
     public interface VolleyResponseListener<E>
