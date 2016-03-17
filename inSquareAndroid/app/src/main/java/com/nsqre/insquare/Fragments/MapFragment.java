@@ -288,13 +288,8 @@ public class MapFragment extends Fragment
                             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
                             ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
                             ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
-                            bottomSheetLowerState.setVisibility(View.GONE);
-                            bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    
-                                }
-                            });
+                            bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+                            bottomSheetUpperLinearLayout.setOnClickListener(null);
                         }
                         break;
                     }
