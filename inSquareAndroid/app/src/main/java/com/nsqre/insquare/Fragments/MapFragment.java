@@ -123,6 +123,8 @@ public class MapFragment extends Fragment
     private TextView bottomSheetLowerViews;
     private TextView bottomSheetLowerDescription;
     private View bottomSheetLowerState;
+    private ImageButton bottomSheetEditButton;
+    private ImageButton bottomSheetTrashButton;
 
 
 //    private RecyclerView bottomSheetList;
@@ -172,6 +174,10 @@ public class MapFragment extends Fragment
 
         bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
         bottomSheetButton.setVisibility(View.GONE);
+
+        bottomSheetEditButton = (ImageButton) v.findViewById(R.id.bottom_sheet_edit_button);
+
+        bottomSheetTrashButton = (ImageButton) v.findViewById(R.id.bottom_sheet_trash_button);
 
         bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
         bottomSheetSeparator.setVisibility(View.GONE);
@@ -832,19 +838,21 @@ public class MapFragment extends Fragment
             public void onClick(View v) {
                 final int method;
 
-                if(InSquareProfile.isFav(currentSquare.getId()))
-                {
+                if (InSquareProfile.isFav(currentSquare.getId())) {
                     method = Request.Method.DELETE;
-                }else
-                {
+                } else {
                     method = Request.Method.POST;
                 }
 
-                favouriteSquare(method,currentSquare);
+                favouriteSquare(method, currentSquare);
             }
         });
         bottomSheetButton.setVisibility(View.VISIBLE);
         bottomSheetSeparator.setVisibility(View.VISIBLE);
+
+        if(InSquareProfile.isOwned(currentSquare.getId())) {
+
+        }
 
         bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -860,7 +868,6 @@ public class MapFragment extends Fragment
         ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
         final String d = currentSquare.getDescription().trim();
-        String userid = InSquareProfile.getUserId();
         if( currentSquare.getOwnerId().equals(InSquareProfile.getUserId()) )
         {
             bottomSheetLowerDescription.setOnClickListener(new View.OnClickListener() {
@@ -872,6 +879,20 @@ public class MapFragment extends Fragment
             });
             bottomSheetLowerDescription.setText(d);
             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
+            bottomSheetEditButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.VISIBLE);
+            bottomSheetTrashButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            ((LinearLayout)bottomSheetTrashButton.getParent().getParent()).setVisibility(View.VISIBLE);
         }
         else if(d.isEmpty())
         {
