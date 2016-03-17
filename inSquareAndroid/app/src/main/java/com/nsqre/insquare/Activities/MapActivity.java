@@ -428,9 +428,11 @@ public class MapActivity extends AppCompatActivity
         Fragment mapFragment = getSupportFragmentManager().findFragmentByTag(TAG_MAP_FRAGMENT);
         int backStackSize = getSupportFragmentManager().getBackStackEntryCount();
         Log.d(TAG, "onBackPressed: " + backStackSize);
-        if(backStackSize < 2)
+        if(backStackSize == 1)
         {
             this.finishAffinity();
+        } else if(backStackSize < 1) {
+            return;
         }
 
         super.onBackPressed();
