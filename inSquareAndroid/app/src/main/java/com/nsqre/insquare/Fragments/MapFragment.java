@@ -303,8 +303,32 @@ public class MapFragment extends Fragment
             if("creation".equals(intent.getStringExtra("action")) &&
                     !intent.getStringExtra("userId").equals(InSquareProfile.getUserId())) {
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-            } else if("update".equals(intent.getStringExtra("action")) || "deletion".equals(intent.getStringExtra("action"))) {
+            } else if("update".equals(intent.getStringExtra("action"))) {
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
+            } else if("deletion".equals(intent.getStringExtra("action"))) {
+                for(Marker m : squareHashMap.keySet()) {
+                    if(squareHashMap.get(m).getId().equals(intent.getStringExtra("squareId"))) {
+                        squareHashMap.remove(m);
+                        m.remove();
+                        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                            bottomSheetSeparator.setVisibility(View.GONE);
+                            bottomSheetButton.setVisibility(View.GONE);
+                            bottomSheetSquareActivity.setVisibility(View.GONE);
+                            bottomSheetSquareName.setText("Seleziona un posto");
+                            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+                            ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
+                            ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
+                            bottomSheetLowerState.setVisibility(View.GONE);
+                            bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    
+                                }
+                            });
+                        }
+                        break;
+                    }
+                }
             }
         }
     };
@@ -1018,8 +1042,7 @@ public class MapFragment extends Fragment
         }
         @Override
         protected void onPostExecute(HashMap<String, Square> squarePins) {
-            for(Square closeSquare: squarePins.values())
-            {
+            for(Square closeSquare: squarePins.values()) {
                 if(!squareHashMap.containsValue(closeSquare)) {
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
