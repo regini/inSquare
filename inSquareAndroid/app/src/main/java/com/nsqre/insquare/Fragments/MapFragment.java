@@ -650,7 +650,7 @@ public class MapFragment extends Fragment
         queue.add(stringRequest);
     }
 
-    private void descriptionDialog(String oldText)
+    private void descriptionDialog(String oldName, String oldDescription)
     {
         final Dialog mDialog = new Dialog(getContext());
         mDialog.setContentView(R.layout.dialog_description);
@@ -658,26 +658,38 @@ public class MapFragment extends Fragment
         mDialog.setCancelable(true);
         mDialog.show();
 
+        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.et_dialog_name);
+        if(!oldDescription.isEmpty())
+        {
+            ((TextInputLayout) nameEditText.getParent()).setHint("Modifica il nome della piazza");
+            nameEditText.setText("");
+            nameEditText.setText(oldDescription);
+        }
+
+
         final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.et_dialog_description);
-        if(!oldText.isEmpty())
+        if(!oldDescription.isEmpty())
         {
             ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
             descriptionEditText.setText("");
-            descriptionEditText.setText(oldText);
+            descriptionEditText.setText(oldDescription);
         }
+
         final Button okButton = (Button) mDialog.findViewById(R.id.button_dialog_description);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String text = descriptionEditText.getText().toString().trim();
-                if (text.isEmpty()) {
-                    Snackbar.make(mapCoordinatorLayout, "Devi inserire una descrizione!", Snackbar.LENGTH_SHORT).show();
+                final String description = descriptionEditText.getText().toString().trim();
+                final String name = nameEditText.getText().toString().trim();
+                if (description.isEmpty() && name.isEmpty()) {
+                    Snackbar.make(mapCoordinatorLayout, "Devi modificare almeno un campo!", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
-                Log.d(TAG, "onClick: stai tentando di inserire la descrizione:\n" + text);
+                Log.d(TAG, "onClick: stai tentando di modificare la descrizione:\n" + description);
+                Log.d(TAG, "onClick: stai tentando di modificare il nome:\n" + name);
                 // TODO VolleyManager request per la PATCH descrizione
-                VolleyManager.getInstance().patchDescription(text, mLastSelectedSquareId, InSquareProfile.getUserId(),
+                VolleyManager.getInstance().patchDescription(name, description, mLastSelectedSquareId, InSquareProfile.getUserId(),
                         new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -696,7 +708,7 @@ public class MapFragment extends Fragment
                         if (response) {
                             // Tutto OK!
                             Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
-                            bottomSheetLowerDescription.setText(text);
+                            bottomSheetLowerDescription.setText(description);
                             Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
                             mDialog.dismiss();
                         } else {
