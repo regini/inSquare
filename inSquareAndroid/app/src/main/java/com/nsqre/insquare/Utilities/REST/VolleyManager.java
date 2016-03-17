@@ -217,13 +217,14 @@ public class VolleyManager {
     public void patchDescription(
             String description,
             final String squareId,
+            final String ownerId,
             final VolleyResponseListener listener)
     {
         String volleyURL = prefixURL + "squares?";
         description = description.replace(" ", "%20");
         volleyURL += "description=" + description;
         volleyURL += "&squareId=" + squareId;
-        volleyURL += "&update=true";
+        volleyURL += "&ownerId=" + ownerId;
 
         Log.d(TAG, "patchDescr url: " + volleyURL);
 

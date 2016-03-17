@@ -671,7 +671,8 @@ public class MapFragment extends Fragment
 
                 Log.d(TAG, "onClick: stai tentando di inserire la descrizione:\n" + text);
                 // TODO VolleyManager request per la PATCH descrizione
-                VolleyManager.getInstance().patchDescription(text, mLastSelectedSquareId, new VolleyManager.VolleyResponseListener() {
+                VolleyManager.getInstance().patchDescription(text, mLastSelectedSquareId, InSquareProfile.getUserId(),
+                        new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
                         // Lasciare vuoto
@@ -691,6 +692,9 @@ public class MapFragment extends Fragment
                             Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
                             bottomSheetLowerDescription.setText(text);
                             Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
+                            mDialog.dismiss();
+                        } else {
+                            Snackbar.make(mapCoordinatorLayout, "Descrizione NON modificata!", Snackbar.LENGTH_SHORT).show();
                             mDialog.dismiss();
                         }
                     }
