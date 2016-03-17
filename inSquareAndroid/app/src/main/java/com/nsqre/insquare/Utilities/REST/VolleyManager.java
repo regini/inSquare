@@ -215,6 +215,7 @@ public class VolleyManager {
     }
 
     public void patchDescription(
+            String name,
             String description,
             final String squareId,
             final String ownerId,
@@ -222,7 +223,9 @@ public class VolleyManager {
     {
         String volleyURL = prefixURL + "squares?";
         description = description.replace(" ", "%20");
-        volleyURL += "description=" + description;
+        name = name.replace(" ", "%20");
+        volleyURL += "name=" + name;
+        volleyURL += "&description=" + description;
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&ownerId=" + ownerId;
 
