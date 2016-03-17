@@ -40,7 +40,6 @@ module.exports = function(router, passport, squares)
 					sqr.views = sqr.views+1;
 					sqr.save(function(err) {
 						if(err) console.log(err);
-						notifyEvent(socket.userid, sqr.id, "update");
 					});
 				});
 

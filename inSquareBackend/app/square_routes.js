@@ -124,6 +124,11 @@ module.exports = function(router, passport)
             }, function(err, squares){
                 if(err) console.log(err);
                 console.log(squares);
+                res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+                res.header("Pragma", "no-cache");
+                res.removeHeader('ETag');
+                res.header("expires", 0);
+                console.log(squares);
                 res.json(squares.hits.hits);
             });
           })
@@ -196,12 +201,12 @@ module.exports = function(router, passport)
               notifyEvent(userId, squareId, "update")
             });
           });
-          res.send("La square è stata eliminata dai preferiti");
+          res.status(200).send("La square è stata eliminata dai preferiti");
         } else {
-          res.send("Errore La square NON è stata eliminata dai preferiti. UserId mancante: " + userId);
+          res.status(403).send("Errore La square NON è stata eliminata dai preferiti. UserId mancante: " + userId);
         }
       } else {
-        res.send("Errore La square NON è stata eliminata dai preferiti. SquareId mancante: " + squareId);
+        res.status(403).send("Errore La square NON è stata eliminata dai preferiti. SquareId mancante: " + squareId);
       }
     });
 
@@ -234,6 +239,10 @@ module.exports = function(router, passport)
             ],
             size:1000}, function(err, result) {
             if(err) console.log(err);
+            res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+            res.header("Pragma", "no-cache");
+            res.removeHeader('ETag');
+            res.header("expires", 0);
             res.json(result.hits.hits);
           })
         })
@@ -270,19 +279,23 @@ module.exports = function(router, passport)
 
     //Documentata
     router.delete('/squares?', function(req,res) {
-      if(req.query.name != null && req.query.name != undefined && req.query.name != "") {
-        if(req.query.userId != null && req.query.userId != undefined && req.query.userId != "") {
-          deleteSquare(req.query.name, req.query.userId);
-          console.log("Stai per cancellare la square: " + req.query.name + " Con userId: " + req.query.userId);
-          res.send("Square eliminata con successo!");
-        } else {
-          res.send("Square NON eliminata devi fornire uno userId valido");
-        }
-      } else {
-        res.send("Square NON eliminata devi fornire un nome valido");
+      if(req.query.squareId!=undefined && req.query.squareId!=null && req.query.squareId!=''){
+        Square.findById(req.query.squareId, function(err, result){
+          if (err) console.log(err);
+          if(result.ownerId == req.query.ownerId){
+            deleteSquare(result, req.query.ownerId);
+            res.send("Done");
+          } else if(result.ownerId==null || result.ownerId==undefined || result.ownerId==''){
+            deleteSquare(result, null);
+            res.send("Done");
+          } else {
+            res.send("Error");
+          }
+        })
       }
     });
 
+    /*
     //Documentata
     router.delete('/squaresNotOwned?', function(req,res) {
       if(req.query.name != null && req.query.name != undefined && req.query.name != "") {
@@ -293,6 +306,7 @@ module.exports = function(router, passport)
         res.send("Square NON eliminata devi fornire un nome valido");
       }
     });
+    */
 
     //Documentata
     router.get('/squares?', function(req,res) {
@@ -502,50 +516,27 @@ function createSquare(squareName, latitude, longitude, description, ownerId, cal
 	})
 }
 
-function deleteSquare(squareName, userId) {
-  //TODO notificare client dell'eliminazione
-  Square.findOne({'name' : squareName , 'ownerId' : userId})
-  .exec(function(err,mySquare) {
-    if(err) console.log(err);
-    Message.find({'squareId' : mySquare.id})
-    .exec(function(err,messages) {
-      if(err) console.log(err);
-      for(var j=0; j<messages.length; j++) {
-        messages[j].remove(function (err,message) {
-          if(err) console.log(err);
-        });
-      }
-    });
-    mySquare.remove(function(err, square) {
-      if(err) console.log(err);
-      notifyEvent(userId, square.id, "deletion");
-	  });
-    forgetSquare(mySquare.id);
-  });
+function deleteSquare(square, ownerId) {
+     Message.find({'squareId' : square.id})
+       .exec(function(err, messages) {
+         if(err) console.log(err);
+         for(var j=0; j<messages.length; j++) {
+           messages[j].remove(function (err,message) {
+             if(err) console.log(err);
+           });
+         }
+       });
+       square.remove(function(err, square) {
+         if(err) console.log(err);
+         if(ownerId!=null && ownerId!=undefined && ownerId!=""){
+           notifyEvent(ownerId, square.id, "deletion");
+         }else{
+           notifyEvent("", square.id, "deletion");
+         }
+       });
+       forgetSquare(square.id);
 }
 
-function deleteSquareWithNoOwner(squareName) {
-  Square.findOne({'name' : squareName})
-  .exec(function(err,mySquare) {
-    if(err) console.log(err);
-    if(!mySquare.ownerId) {
-      Message.find({'squareId' : mySquare.id})
-      .exec(function(err,messages) {
-        if(err) console.log(err);
-        for(var j=0; j<messages.length; j++) {
-          messages[j].remove(function (err,message) {
-            if(err) console.log(err);
-          });
-        }
-      });
-      mySquare.remove(function(err, square) {
-        if(err) console.log(err);
-        notifyEvent(userId, square.id, "deletion");
-      });
-      forgetSquare(mySquare.id);
-    }
-  });
-}
 
 function forgetSquare(squareId) {
   User.find({'favourites' : squareId}, function(err,users) {
