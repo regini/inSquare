@@ -31,7 +31,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -218,7 +217,7 @@ public class MapFragment extends Fragment
 
         if(mGoogleApiClient == null)
         {
-            Toast.makeText(getContext(), "Google API Client is null", Toast.LENGTH_SHORT).show();
+            Snackbar.make(mapCoordinatorLayout, "Google API Client is null", Snackbar.LENGTH_SHORT).show();
         }
 
         mGoogleApiClient.connect();
@@ -290,6 +289,7 @@ public class MapFragment extends Fragment
                             ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
                             bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
                             bottomSheetUpperLinearLayout.setOnClickListener(null);
+                            Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
                         }
                         break;
                     }
@@ -360,7 +360,7 @@ public class MapFragment extends Fragment
                     mCurrentLocation = location;
                 }else
                 {
-                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
+                    Snackbar.make(mapCoordinatorLayout, "Non ho modo di prendere la locazione corrente!", Snackbar.LENGTH_LONG).show();
                 }
 
             }else if(locationManager.isProviderEnabled(NETWORK))
@@ -379,13 +379,13 @@ public class MapFragment extends Fragment
                     mCurrentLocation = location;
                 }else
                 {
-                    Toast.makeText(getContext(), "Non ho modo di prendere la locazione corrente!", Toast.LENGTH_LONG).show();
+                    Snackbar.make(mapCoordinatorLayout, "Non ho modo di prendere la locazione corrente!", Snackbar.LENGTH_LONG).show();
                 }
             }else
             {
-                Toast.makeText(getContext(),
+                Snackbar.make(mapCoordinatorLayout,
                         "Geolocalizzazione disattivata..?",
-                        Toast.LENGTH_LONG)
+                        Snackbar.LENGTH_LONG)
                         .show();
                 return;
             }
@@ -408,11 +408,10 @@ public class MapFragment extends Fragment
                 if(grantResults.length>0)
                 {
                     setupLocation();
-//                    Toast.makeText(getContext(), "Permessi ottenuti!", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(getContext(),
-                            "Senza permessi non posso funzionare!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(mapCoordinatorLayout,
+                            "Senza permessi non posso funzionare!", Snackbar.LENGTH_SHORT).show();
                 }
 
                 return;
@@ -666,7 +665,7 @@ public class MapFragment extends Fragment
             public void onClick(View v) {
                 final String text = descriptionEditText.getText().toString().trim();
                 if (text.isEmpty()) {
-                    Toast.makeText(MapFragment.this.getContext(), "Devi inserire una descrizione!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(mapCoordinatorLayout, "Devi inserire una descrizione!", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
