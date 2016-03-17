@@ -207,12 +207,6 @@ public class MapFragment extends Fragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: started");
-    }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
@@ -228,6 +222,21 @@ public class MapFragment extends Fragment
         }
 
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: started");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mLastSelectedSquareId = "";
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
+        InSquareProfile.addListener(this);
     }
 
     @Override
@@ -253,45 +262,6 @@ public class MapFragment extends Fragment
         super.onDetach();
         Log.d(TAG, "onDetach: removing the fraggment from the system!");
         InSquareProfile.removeListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mLastSelectedSquareId = "";
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
-                new IntentFilter("update_squares"));
-        InSquareProfile.addListener(this);
-        if(mGoogleMap != null && squareHashMap.size() > 0)
-        {
-            mGoogleMap.clear();
-
-            // Riempi la mappa
-            HashMap<String, Square> squarePins = new HashMap<>();
-            for(Square s : squareHashMap.values())
-            {
-                squarePins.put(s.getId(), s);
-            }
-            squareHashMap.clear();
-            for(Square closeSquare : squarePins.values())
-            {
-                LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                Marker m = createSquarePin(coords, closeSquare.getName());
-                squareHashMap.put(m, closeSquare);
-            }
-            Log.d(TAG, "onResume: map has been refilled!");
-            // Fine refill
-
-            downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-            if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startChatActivity(mLastSelectedSquare);
-                    }
-                });
-            }
-        }
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -778,7 +748,39 @@ public class MapFragment extends Fragment
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if(locationManager != null && googleMap != null)
             {
+                Log.d(TAG, "onMapReady: mappa != null e hashMap con roba");
                 mGoogleMap = googleMap;
+                if(mGoogleMap != null && squareHashMap.size() > 0)
+                {
+                    // Riempi la mappa
+                    HashMap<String, Square> squarePins = new HashMap<>();
+                    for(Square s : squareHashMap.values())
+                    {
+                        squarePins.put(s.getId(), s);
+                    }
+                    squareHashMap.clear();
+                    mGoogleMap.clear();
+                    for(Square closeSquare : squarePins.values())
+                    {
+                        LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
+                        Marker m = createSquarePin(coords, closeSquare.getName());
+                        squareHashMap.put(m, closeSquare);
+                    }
+                    Log.d(TAG, "onResume: map has been refilled!");
+                    // Fine riempimento
+
+
+                    // Download dei nuovi pin
+                    downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
+                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                        bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                startChatActivity(mLastSelectedSquare);
+                            }
+                        });
+                    }
+                }
             }
         }
 
