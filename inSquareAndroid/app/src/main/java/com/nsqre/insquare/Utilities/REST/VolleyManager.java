@@ -70,6 +70,42 @@ public class VolleyManager {
         return instance;
     }
 
+    public void searchSquaresByName(String squareName, final VolleyResponseListener listener)
+    {
+        String reqURL = prefixURL + "squares?";
+        String name = squareName.replace(" ", "%20");
+        reqURL += "name=" + name;
+
+        Log.d(TAG, "searchSquaresByName: " + reqURL);
+
+        StringRequest searchSquaresByNameRequest = new StringRequest(Request.Method.GET, reqURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "searchSquaresByNam: " + response);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
+
+                        Square[] squares = builder.create().fromJson(response, Square[].class);
+                        Log.d(TAG, "I found: " + squares.toString());
+
+                        listener.responseGET(squares);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse != null) {
+                            Log.d(TAG, "onErrorResponse: " + error.toString());
+                            listener.responseGET(null);
+                        }
+                    }
+                }
+        );
+
+        requestQueue.add(searchSquaresByNameRequest);
+    }
+
     public void getClosestSquares(String distance, double lat, double lon, VolleyResponseListener listener)
     {
         String reqURL = prefixURL + "squares?";

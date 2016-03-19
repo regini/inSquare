@@ -1,6 +1,8 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Dialog;
+import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -61,6 +63,7 @@ import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,6 +119,65 @@ public class MapActivity extends AppCompatActivity
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+
+        // SEARCH
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+
+            VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
+                @Override
+                public void responseGET(Object object) {
+                    Square[] squaresResponse = (Square[]) object;
+                    CharSequence text = squaresResponse[0].toString();
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+
+                    /*
+                    if (response) {
+                        Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
+                        for (Marker m : squareHashMap.keySet()) {
+                            if (squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
+                                squareHashMap.remove(m);
+                                m.remove();
+                                if (bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                                    bottomSheetSeparator.setVisibility(View.GONE);
+                                    bottomSheetButton.setVisibility(View.GONE);
+                                    bottomSheetSquareActivity.setVisibility(View.GONE);
+                                    bottomSheetSquareName.setText("Seleziona un posto");
+                                    ((LinearLayout) bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
+                                    ((LinearLayout) bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
+                                    ((LinearLayout) bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
+                                    ((LinearLayout) bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
+                                    bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
+                                    bottomSheetUpperLinearLayout.setOnClickListener(null);
+                                    Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    */
+                }
+
+                @Override
+                public void responsePOST(Object object) {
+                    // Lasciare vuoto
+                }
+
+                @Override
+                public void responsePATCH(Object object) {
+                    // Lasciare vuoto
+                }
+
+                @Override
+                public void responseDELETE(Object object) {
+                    // Lasciare vuoto
+                }
+            });
+        }
 
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
@@ -312,10 +374,15 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.activity_map_actions, menu);
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_map_actions, menu);
+//        inflater.inflate(R.menu.activity_main_actions, menu);
 
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+          SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+          SearchView searchView = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
+
+          searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+          searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
 //        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
 //
 //        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -715,4 +782,5 @@ public class MapActivity extends AppCompatActivity
     public void onRecentChanged() {
         checkNotifications();
     }
+
 }
