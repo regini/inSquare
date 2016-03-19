@@ -82,7 +82,7 @@ public class VolleyManager {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG, "searchSquaresByNam: " + response);
+                        Log.d(TAG, "searchSquaresByName: " + response);
                         GsonBuilder builder = new GsonBuilder();
                         builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
 

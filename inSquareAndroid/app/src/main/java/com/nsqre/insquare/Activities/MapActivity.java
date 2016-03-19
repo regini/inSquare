@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -130,10 +131,17 @@ public class MapActivity extends AppCompatActivity
                 @Override
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
-                    CharSequence text = squaresResponse[0].toString();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    setContentView(R.layout.fragment_recent_squares);
+                    final ArrayList <Square> squareList = new ArrayList<Square>();
+                    for(Square s : squaresResponse){
+                        squareList.add(s);
+                    }
+
+                    final ListView myList = (ListView) findViewById(R.id.squares_recents);
+
+                    final ArrayAdapter<Square> adapter = new ArrayAdapter<Square>(getApplicationContext(), android.R.layout.simple_list_item_1, squareList);
+                    myList.setAdapter(adapter);
+
 
                     /*
                     if (response) {
@@ -381,6 +389,8 @@ public class MapActivity extends AppCompatActivity
           SearchView searchView = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
           searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+          searchView.setSubmitButtonEnabled(true);
+          searchView.setQueryRefinementEnabled(true);
           searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
 //        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
