@@ -64,10 +64,7 @@ public class SearchAdapter extends CursorAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
-                        .addToBackStack(null)
-                        .commit();
+               
             }
         });
         return view;
