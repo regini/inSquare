@@ -90,8 +90,21 @@
           "apns_config": []
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231545488769-vebgt9dn7al3bjf6koujod5ir703jv8b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "231545488769-djone3h4j6nmf3jjbahkjcdn4j002r6n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "inSquare",
+                "app_store_id": ""
+              }
+            }
+          ]
         },
         "google_signin_service": {
           "status": 2

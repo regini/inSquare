@@ -64,7 +64,6 @@ public class SearchAdapter extends CursorAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               
             }
         });
         return view;
