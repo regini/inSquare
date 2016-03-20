@@ -132,42 +132,16 @@ public class MapActivity extends AppCompatActivity
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
                     setContentView(R.layout.fragment_recent_squares);
-                    final ArrayList <Square> squareList = new ArrayList<Square>();
+                    final ArrayList <String> squareListName = new ArrayList<>();
                     for(Square s : squaresResponse){
-                        squareList.add(s);
+                        squareListName.add(s.getName());
                     }
 
                     final ListView myList = (ListView) findViewById(R.id.squares_recents);
 
-                    final ArrayAdapter<Square> adapter = new ArrayAdapter<Square>(getApplicationContext(), android.R.layout.simple_list_item_1, squareList);
+                    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
                     myList.setAdapter(adapter);
-
-
-                    /*
-                    if (response) {
-                        Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                        for (Marker m : squareHashMap.keySet()) {
-                            if (squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
-                                squareHashMap.remove(m);
-                                m.remove();
-                                if (bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                                    bottomSheetSeparator.setVisibility(View.GONE);
-                                    bottomSheetButton.setVisibility(View.GONE);
-                                    bottomSheetSquareActivity.setVisibility(View.GONE);
-                                    bottomSheetSquareName.setText("Seleziona un posto");
-                                    ((LinearLayout) bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
-                                    ((LinearLayout) bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
-                                    ((LinearLayout) bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
-                                    ((LinearLayout) bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
-                                    bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-                                    bottomSheetUpperLinearLayout.setOnClickListener(null);
-                                    Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    */
+                    
                 }
 
                 @Override
