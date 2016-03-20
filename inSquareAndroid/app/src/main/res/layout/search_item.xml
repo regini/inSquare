@@ -36,14 +36,6 @@
             android:textSize="18sp"
             android:fontFamily="sans-serif-condensed"
             />
-        <TextView
-            android:id="@+id/square_item_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ultima attivita'"
-            android:textColor="#000000"
-            android:fontFamily="sans-serif-condensed-light"
-            />
     </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

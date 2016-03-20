@@ -1,5 +1,6 @@
 package com.nsqre.insquare.Activities;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -10,19 +11,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +41,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CursorAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -56,6 +60,7 @@ import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.SearchAdapter;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
@@ -79,7 +84,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener, InSquareProfile.InSquareProfileListener
+        implements OnQueryTextListener, InSquareProfile.InSquareProfileListener
 {
     public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
     private static final String TAG = "MapActivity";
@@ -94,7 +99,7 @@ public class MapActivity extends AppCompatActivity
     private Tracker mTracker;
 
     private SearchView searchView;
-    private SimpleCursorAdapter mSearchAdapter;
+    private CursorAdapter mSearchAdapter;
 
     // Hamburger Menu
     ListView mDrawerList;
@@ -110,6 +115,11 @@ public class MapActivity extends AppCompatActivity
     // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
+    private Menu menu;
+
+
+    private MapActivity mp;
+    private List<String> searchItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,23 +135,23 @@ public class MapActivity extends AppCompatActivity
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            // MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
 
             VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
                 @Override
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
                     setContentView(R.layout.fragment_recent_squares);
-                    final ArrayList <String> squareListName = new ArrayList<>();
+                    final List <String> squareList = new ArrayList<>();
                     for(Square s : squaresResponse){
-                        squareListName.add(s.getName());
+                        squareList.add(s.getName());
                     }
+                    searchItems = squareList;
+                    //final ListView myList = (ListView) findViewById(R.id.squares_recents);
 
-                    final ListView myList = (ListView) findViewById(R.id.squares_recents);
+                 //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
+                  //  myList.setAdapter(adapter);
 
-                    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
-                    myList.setAdapter(adapter);
-                    
                 }
 
                 @Override
@@ -359,13 +369,32 @@ public class MapActivity extends AppCompatActivity
         inflater.inflate(R.menu.activity_map_actions, menu);
 //        inflater.inflate(R.menu.activity_main_actions, menu);
 
-          SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-          SearchView searchView = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
+        this.menu = menu;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
-          searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-          searchView.setSubmitButtonEnabled(true);
-          searchView.setQueryRefinementEnabled(true);
-          searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            search.setOnQueryTextListener(new OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    loadHistory(query);
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String query) {
+
+                    loadHistory(query);
+
+                    return true;
+
+                }
+
+            });
+
+        }
 
 //        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
 //
@@ -384,6 +413,64 @@ public class MapActivity extends AppCompatActivity
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setOnQueryTextListener(this);
         return true;
+    }
+
+    // History
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void loadHistory(String query) {
+
+        VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
+            @Override
+            public void responseGET(Object object) {
+                Square[] squaresResponse = (Square[]) object;
+                setContentView(R.layout.fragment_recent_squares);
+                final List <String> squareItems = new ArrayList<String>();
+                for(Square s : squaresResponse){
+                    squareItems.add(s.getName());
+                }
+                searchItems = squareItems;
+            }
+
+            @Override
+            public void responsePOST(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Lasciare vuoto
+            }
+        });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            // Cursor
+            String[] columns = new String[] { "_id", "text" };
+            Object[] temp = new Object[] { 0, "default" };
+
+            MatrixCursor cursor = new MatrixCursor(columns);
+            if(searchItems!=null) {
+                for (int i = 0; i < searchItems.size(); i++) {
+
+                    temp[0] = i;
+                    temp[1] = searchItems.get(i);//replaced s with i as s not used anywhere.
+                    cursor.addRow(temp);
+
+                }
+            }
+            // SearchView
+            SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+            final SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
+
+            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems));
+
+        }
     }
 
     @Override
