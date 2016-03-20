@@ -28,7 +28,7 @@
         android:layout_centerVertical="true"
         >
         <TextView
-            android:id="@+id/square_item_name"
+            android:id="@+id/square_search_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Square Name"

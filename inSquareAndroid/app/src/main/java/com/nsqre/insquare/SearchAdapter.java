@@ -59,8 +59,17 @@ public class SearchAdapter extends CursorAdapter {
 
         View view = inflater.inflate(R.layout.search_item, parent, false);
 
-        text = (TextView) view.findViewById(R.id.square_item_name);
+        text = (TextView) view.findViewById(R.id.square_search_name);
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         return view;
 
     }

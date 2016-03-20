@@ -142,15 +142,15 @@ public class MapActivity extends AppCompatActivity
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
                     setContentView(R.layout.fragment_recent_squares);
-                    final List <String> squareList = new ArrayList<>();
-                    for(Square s : squaresResponse){
+                    final List<String> squareList = new ArrayList<>();
+                    for (Square s : squaresResponse) {
                         squareList.add(s.getName());
                     }
                     searchItems = squareList;
                     //final ListView myList = (ListView) findViewById(R.id.squares_recents);
 
-                 //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
-                  //  myList.setAdapter(adapter);
+                    //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
+                    //  myList.setAdapter(adapter);
 
                 }
 
@@ -169,6 +169,7 @@ public class MapActivity extends AppCompatActivity
                     // Lasciare vuoto
                 }
             });
+
         }
 
         //IMMAGINE
@@ -375,6 +376,7 @@ public class MapActivity extends AppCompatActivity
             SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
             search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
             search.setOnQueryTextListener(new OnQueryTextListener() {
 
                 @Override
@@ -393,8 +395,8 @@ public class MapActivity extends AppCompatActivity
                 }
 
             });
-
         }
+
 
 //        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
 //
@@ -579,6 +581,7 @@ public class MapActivity extends AppCompatActivity
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
         searchLocationName(query.trim());
+        searchView.clearFocus();
         return false;
     }
 
