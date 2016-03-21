@@ -119,7 +119,7 @@ public class MapActivity extends AppCompatActivity
 
 
     private MapActivity mp;
-    private List<String> searchItems;
+    private List<Square> searchItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,12 +141,8 @@ public class MapActivity extends AppCompatActivity
                 @Override
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
-                    setContentView(R.layout.fragment_recent_squares);
-                    final List<String> squareList = new ArrayList<>();
-                    for (Square s : squaresResponse) {
-                        squareList.add(s.getName());
-                    }
-                    searchItems = squareList;
+                    //setContentView(R.layout.fragment_recent_squares);
+                    searchItems = Arrays.asList(squaresResponse);
                     //final ListView myList = (ListView) findViewById(R.id.squares_recents);
 
                     //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
@@ -368,13 +364,11 @@ public class MapActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_map_actions, menu);
-//        inflater.inflate(R.menu.activity_main_actions, menu);
 
         this.menu = menu;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
-
             search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
             search.setOnQueryTextListener(new OnQueryTextListener() {
@@ -387,13 +381,9 @@ public class MapActivity extends AppCompatActivity
 
                 @Override
                 public boolean onQueryTextChange(String query) {
-
                     loadHistory(query);
-
                     return true;
-
                 }
-
             });
         }
 
@@ -425,12 +415,8 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void responseGET(Object object) {
                 Square[] squaresResponse = (Square[]) object;
-                setContentView(R.layout.fragment_recent_squares);
-                final List <String> squareItems = new ArrayList<String>();
-                for(Square s : squaresResponse){
-                    squareItems.add(s.getName());
-                }
-                searchItems = squareItems;
+                //setContentView(R.layout.fragment_recent_squares);
+                searchItems = Arrays.asList(squaresResponse);
             }
 
             @Override
@@ -460,7 +446,7 @@ public class MapActivity extends AppCompatActivity
                 for (int i = 0; i < searchItems.size(); i++) {
 
                     temp[0] = i;
-                    temp[1] = searchItems.get(i);//replaced s with i as s not used anywhere.
+                    temp[1] = searchItems.get(i).getName(); //replaced s with i as s not used anywhere.
                     cursor.addRow(temp);
 
                 }
@@ -470,7 +456,7 @@ public class MapActivity extends AppCompatActivity
 
             final SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
-            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems));
+            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
 
         }
     }

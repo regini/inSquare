@@ -33,27 +33,25 @@ import java.util.List;
  */
 public class SearchAdapter extends CursorAdapter {
 
-    private List<String> items;
-
+    private List<Square> items;
+    private MapFragment mapFragment;
     private TextView text;
 
-    public SearchAdapter(Context context, Cursor cursor, List<String> items) {
-
+    public SearchAdapter(Context context, Cursor cursor, List<Square> items, MapFragment mapFragment) {
         super(context, cursor, false);
-
         this.items = items;
-
+        this.mapFragment = mapFragment;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         if(items!=null && text!=null) {
-            text.setText(items.get(cursor.getPosition()));
+            text.setText(items.get(cursor.getPosition()).getName());
         }
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+    public View newView(Context context, final Cursor cursor, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -64,6 +62,8 @@ public class SearchAdapter extends CursorAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Square s = items.get(cursor.getPosition());
+                mapFragment.setMapInPosition(s.getLat(), s.getLon());
             }
         });
         return view;

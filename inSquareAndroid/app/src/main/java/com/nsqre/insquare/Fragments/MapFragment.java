@@ -1177,4 +1177,12 @@ public class MapFragment extends Fragment
         }
     }
 
+    public void setMapInPosition(double lat, double lon) {
+        Log.d(TAG, "setMapInPosition: lat:" + lat + " lon:" + lon);
+        LatLng latlng = new LatLng(lat, lon);
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latlng),
+                400, // Tempo di spostamento in ms
+                null); // callback
+    }
+
 }
