@@ -70,11 +70,14 @@ public class VolleyManager {
         return instance;
     }
 
-    public void searchSquaresByName(String squareName, final VolleyResponseListener listener)
+    public void searchSquaresByName(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
     {
         String reqURL = prefixURL + "squares?";
-        String name = squareName.replace(" ", "%20");
+        String name = query.replace(" ", "%20");
         reqURL += "name=" + name;
+        reqURL += "lat=" + name;
+        reqURL += "name=" + name;
+
 
         Log.d(TAG, "searchSquaresByName: " + reqURL);
 

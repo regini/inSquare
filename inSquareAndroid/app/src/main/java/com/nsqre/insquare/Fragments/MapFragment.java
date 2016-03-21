@@ -16,7 +16,10 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -85,7 +88,6 @@ public class MapFragment extends Fragment
 
     private static MapFragment instance;
     private SupportMapFragment mapFragment;
-    public static final int SQUARE_DOWNLOAD_LIMIT = 1000;
 
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
@@ -115,9 +117,12 @@ public class MapFragment extends Fragment
 
     private CoordinatorLayout mapCoordinatorLayout;
 
-    private View bottomSheetSeparator;
+    public View bottomSheet;
+    public BottomSheetBehavior bottomSheetBehavior;
+
     private TextView bottomSheetSquareName;
-    private ImageButton bottomSheetButton;
+    private TextView bottomSheetSquareActivity;
+    private FloatingActionButton bottomSheetFab;
     private LinearLayout bottomSheetUpperLinearLayout;
     private LinearLayout bottomSheetLowerLinearLayout;
     private TextView bottomSheetLowerFavs;
@@ -125,12 +130,8 @@ public class MapFragment extends Fragment
     private TextView bottomSheetLowerDescription;
     private View bottomSheetLowerState;
     private ImageButton bottomSheetEditButton;
+
     private ImageButton bottomSheetTrashButton;
-    private View bottomSheetSeparatorButtons;
-
-
-//    private RecyclerView bottomSheetList;
-    private TextView bottomSheetSquareActivity;
     private Tracker mTracker;
     // Variabili per l'inizializzazione della Chat
     public static final String SQUARE_TAG = "SQUARE_TAG";
@@ -162,7 +163,6 @@ public class MapFragment extends Fragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-//        rootMainActivity = (MainActivity) getActivity();
     }
 
     @Override
@@ -174,15 +174,39 @@ public class MapFragment extends Fragment
         // Recuperiamo un po' di riferimenti ai layout
         mapCoordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.map_coordinator_layout);
 
-        bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
-        bottomSheetButton.setVisibility(View.GONE);
+        bottomSheet = mapCoordinatorLayout.findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState)
+                {
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        Log.d(TAG, "onStateChanged: collapsed!");
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        Log.d(TAG, "onStateChanged: dragging!");
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        Log.d(TAG, "onStateChanged: expanded!");
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+//        bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
+//        bottomSheetButton.setVisibility(View.GONE);
+
+        bottomSheetFab = (FloatingActionButton) v.findViewById(R.id.bottom_sheet_favourite_fab);
+        bottomSheetFab.setVisibility(View.GONE);
 
         bottomSheetEditButton = (ImageButton) v.findViewById(R.id.bottom_sheet_edit_button);
 
         bottomSheetTrashButton = (ImageButton) v.findViewById(R.id.bottom_sheet_trash_button);
 
-        bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
-        bottomSheetSeparator.setVisibility(View.GONE);
+//        bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
+//        bottomSheetSeparator.setVisibility(View.GONE);
 
        // bottomSheetSeparatorButtons = v.findViewById(R.id.bottom_sheet_separator_buttons);
 
@@ -246,11 +270,11 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
-        if(bottomSheetButton.getVisibility() == View.VISIBLE) {
+        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
             if(InSquareProfile.isFav(mLastSelectedSquare.getId())) {
-                bottomSheetButton.setImageResource(R.drawable.heart_black);
+                bottomSheetFab.setImageResource(R.drawable.heart_white);
             } else {
-                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
             }
         }
     }
@@ -297,9 +321,11 @@ public class MapFragment extends Fragment
                     if(squareHashMap.get(m).getId().equals(intent.getStringExtra("squareId"))) {
                         squareHashMap.remove(m);
                         m.remove();
-                        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                            bottomSheetSeparator.setVisibility(View.GONE);
-                            bottomSheetButton.setVisibility(View.GONE);
+//                        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
+//                            bottomSheetSeparator.setVisibility(View.GONE);
+//                            bottomSheetButton.setVisibility(View.GONE);
+                            bottomSheetFab.setVisibility(View.GONE);
                             bottomSheetSquareActivity.setVisibility(View.GONE);
                             bottomSheetSquareName.setText("Seleziona un posto");
                             ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
@@ -340,6 +366,10 @@ public class MapFragment extends Fragment
         {
             Log.d(TAG, "Nessuna locazione corrente, ora provvedo");
             LocationManager locationManager = (LocationManager) this.getContext().getSystemService(Context.LOCATION_SERVICE);
+
+            mCurrentLocation = new Location("");
+            mCurrentLocation.setLatitude(0.0d);
+            mCurrentLocation.setLongitude(0.0d);
 
             LocationListener locationListener = new LocationListener() {
                 @Override
@@ -482,6 +512,7 @@ public class MapFragment extends Fragment
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+
         VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
@@ -528,6 +559,7 @@ public class MapFragment extends Fragment
     }
 
     private void getClosestSquares(String distance, double lat, double lon) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://recapp-insquare.rhcloud.com/squares?";
         url += "distance=" + distance;
@@ -615,7 +647,13 @@ public class MapFragment extends Fragment
 
     @Override
     public void onMapClick(final LatLng latLng) {
+        hideBottomSheet();
+    }
 
+    private void hideBottomSheet() {
+        bottomSheet.setVisibility(View.GONE);
+        bottomSheetFab.setVisibility(View.GONE);
+        mLastSelectedSquareId = "";
     }
 
     private void createSquarePostRequest(final String squareName,
@@ -625,6 +663,7 @@ public class MapFragment extends Fragment
                                          final Marker marker,
                                          final String ownerId) {
         // Instantiate the RequestQueue.
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "http://recapp-insquare.rhcloud.com/squares";
 
@@ -701,9 +740,11 @@ public class MapFragment extends Fragment
                                 if(squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
                                     squareHashMap.remove(m);
                                     m.remove();
-                                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                                        bottomSheetSeparator.setVisibility(View.GONE);
-                                        bottomSheetButton.setVisibility(View.GONE);
+//                                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                                    if(bottomSheetFab.getVisibility() == View.VISIBLE) {
+//                                        bottomSheetSeparator.setVisibility(View.GONE);
+//                                        bottomSheetButton.setVisibility(View.GONE);
+                                        bottomSheetFab.setVisibility(View.GONE);
                                         bottomSheetSquareActivity.setVisibility(View.GONE);
                                         bottomSheetSquareName.setText("Seleziona un posto");
                                         ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
@@ -850,7 +891,6 @@ public class MapFragment extends Fragment
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if(locationManager != null && googleMap != null)
             {
-                Log.d(TAG, "onMapReady: mappa != null e hashMap con roba");
                 mGoogleMap = googleMap;
                 if(mGoogleMap != null && squareHashMap.size() > 0)
                 {
@@ -874,7 +914,8 @@ public class MapFragment extends Fragment
 
                     // Download dei nuovi pin
                     downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+//                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+                    if(bottomSheetFab.getVisibility() == View.VISIBLE) {
                         bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -917,21 +958,39 @@ public class MapFragment extends Fragment
             mLastSelectedSquareId = currentSquare.getId();
         }
         
-        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+//        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
+        setupBottomSheet(currentSquare, text);
+
+
+        return true;
+    }
+
+    private void setupBottomSheet(final Square currentSquare, String text) {
+
+        bottomSheet.setVisibility(View.VISIBLE);
 
 
         // Parte superiore del drawer
+        int peekHeight = ((LinearLayout)bottomSheetSquareName.getParent().getParent()).getHeight();
+        peekHeight += bottomSheetLowerState.getHeight();
+        bottomSheetBehavior.setPeekHeight(peekHeight);
+
         bottomSheetSquareName.setText(text);
         bottomSheetSquareActivity.setVisibility(View.VISIBLE);
         bottomSheetSquareActivity.setText(currentSquare.formatTime());
 
         // Controllo sulla lista dell'utente
-        if(InSquareProfile.isFav(currentSquare.getId()))
-            bottomSheetButton.setImageResource(R.drawable.heart_black);
-        else
-            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+        if(InSquareProfile.isFav(currentSquare.getId())) {
+//            bottomSheetButton.setImageResource(R.drawable.heart_black);
+            bottomSheetFab.setImageResource(R.drawable.heart_white);
+        }
+        else {
+//            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+            bottomSheetFab.setImageResource(R.drawable.heart_border_white);
+        }
 
-        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
+//        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
+        bottomSheetFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final int method;
@@ -945,8 +1004,9 @@ public class MapFragment extends Fragment
                 favouriteSquare(method, currentSquare);
             }
         });
-        bottomSheetButton.setVisibility(View.VISIBLE);
-        bottomSheetSeparator.setVisibility(View.VISIBLE);
+//        bottomSheetButton.setVisibility(View.VISIBLE);
+//        bottomSheetSeparator.setVisibility(View.VISIBLE);
+        bottomSheetFab.setVisibility(View.VISIBLE);
 
         bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1017,11 +1077,10 @@ public class MapFragment extends Fragment
         ((LinearLayout)bottomSheetLowerState.getParent()).setVisibility(View.VISIBLE);
         bottomSheetLowerState.setBackgroundColor(stateColor);
         // ===== Fine Parte Bassa del Drawer
-
-        return true;
     }
 
     public void favouriteSquare(final int method, final Square square) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
@@ -1036,12 +1095,14 @@ public class MapFragment extends Fragment
                         switch (method)
                         {
                             case Request.Method.DELETE:
-                                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+//                                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+                                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
                                 InSquareProfile.removeFav(square.getId());
 //                                InSquareProfile.favouriteSquaresList.remove(square);
                                 break;
                             case Request.Method.POST:
-                                bottomSheetButton.setImageResource(R.drawable.heart_black);
+//                                bottomSheetButton.setImageResource(R.drawable.heart_black);
+                                bottomSheetFab.setImageResource(R.drawable.heart_white);
                                 InSquareProfile.addFav(square);
 //                                InSquareProfile.favouriteSquaresList.add(square);
                                 break;
@@ -1061,14 +1122,14 @@ public class MapFragment extends Fragment
     }
 
     private void updateBottomSheet(Square s) {
-        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
+        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
             bottomSheetSquareName.setText(s.getName());
             bottomSheetLowerDescription.setText(s.getDescription());
             bottomSheetSquareActivity.setText(s.formatTime());
             if(InSquareProfile.isFav(s.getId())) {
-                bottomSheetButton.setImageResource(R.drawable.heart_black);
+                bottomSheetFab.setImageResource(R.drawable.heart_white);
             } else {
-                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
             }
             SquareState currentState = s.getSquareState();
             int stateColor;

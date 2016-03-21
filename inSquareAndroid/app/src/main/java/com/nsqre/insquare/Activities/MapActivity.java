@@ -2,7 +2,6 @@ package com.nsqre.insquare.Activities;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,12 +13,8 @@ import android.content.res.Configuration;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,18 +25,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.CursorAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,8 +44,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MapFragment;
@@ -61,14 +52,14 @@ import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.SearchAdapter;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Square.SquareDeserializer;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
 import com.nsqre.insquare.Utilities.LocationService;
-import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.NavItem;
-import com.nsqre.insquare.Square.Square;
-import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.io.File;
@@ -80,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
@@ -90,6 +80,9 @@ public class MapActivity extends AppCompatActivity
     private static final String TAG = "MapActivity";
     public static final String TAG_MAP_FRAGMENT = "MAPPA";
     public static final String TAG_RECENT_FRAGMENT = "RECENTS";
+    public static final String MAPPA_FRAGMENT_TITLE = "Mappa";
+    public static final String RECENTI_FRAGMENT_TITLE = "Recenti";
+    public static final String PROFILO_FRAGMENT_TITLE = "Profilo";
 
     private float startTouchY;
 
@@ -136,37 +129,8 @@ public class MapActivity extends AppCompatActivity
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-
-            VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
-                @Override
-                public void responseGET(Object object) {
-                    Square[] squaresResponse = (Square[]) object;
-                    //setContentView(R.layout.fragment_recent_squares);
-                    searchItems = Arrays.asList(squaresResponse);
-                    //final ListView myList = (ListView) findViewById(R.id.squares_recents);
-
-                    //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
-                    //  myList.setAdapter(adapter);
-
-                }
-
-                @Override
-                public void responsePOST(Object object) {
-                    // Lasciare vuoto
-                }
-
-                @Override
-                public void responsePATCH(Object object) {
-                    // Lasciare vuoto
-                }
-
-                @Override
-                public void responseDELETE(Object object) {
-                    // Lasciare vuoto
-                }
-            });
-
+            //MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            searchSquares(query);
         }
 
 
@@ -195,9 +159,9 @@ public class MapActivity extends AppCompatActivity
             }
         }
 
-        mNavItems.add(new NavItem("Mappa", "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
-        mNavItems.add(new NavItem("Recenti", "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
-        mNavItems.add(new NavItem("Profilo", "Gestisci il tuo profilo", R.drawable.account_circle, profCount));
+        mNavItems.add(new NavItem(MAPPA_FRAGMENT_TITLE, "Dai un'occhiata in giro", R.drawable.google_maps, 0));  // 0 fa scomparire il notification counter
+        mNavItems.add(new NavItem(RECENTI_FRAGMENT_TITLE, "Non perderti un messaggio", R.drawable.google_circles_extended, recCount));
+        mNavItems.add(new NavItem(PROFILO_FRAGMENT_TITLE, "Gestisci il tuo profilo", R.drawable.account_circle, profCount));
 
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -288,31 +252,6 @@ public class MapActivity extends AppCompatActivity
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        switch (event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                startTouchY = event.getY();
-            case MotionEvent.ACTION_UP:
-                float endTouchY = event.getY();
-
-                if(endTouchY < startTouchY)
-                {
-                    Log.d(TAG, "Moving Up");
-//                    linearLayout.setVisibility(View.VISIBLE);
-//                    linearLayout.startAnimation(animationUp);
-                }else {
-                    Log.d(TAG, "Moving Down!");
-//                    linearLayout.setVisibility(View.GONE);
-//                    linearLayout.startAnimation(animationDown);
-                }
-        }
-
-        return super.onTouchEvent(event);
-    }
-
     public String saveToInternalStorage(Bitmap bitmapImage){
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
@@ -352,10 +291,6 @@ public class MapActivity extends AppCompatActivity
             e.printStackTrace();
         }
         return b;
-    }
-
-    public void setSquareName(String squareName) {
-        this.mSquareName = squareName;
     }
 
     public void setSquareId(String mSquareId) {
@@ -413,28 +348,7 @@ public class MapActivity extends AppCompatActivity
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void loadHistory(String query) {
 
-        VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
-            @Override
-            public void responseGET(Object object) {
-                Square[] squaresResponse = (Square[]) object;
-                searchItems = Arrays.asList(squaresResponse);
-            }
-
-            @Override
-            public void responsePOST(Object object) {
-                // Lasciare vuoto
-            }
-
-            @Override
-            public void responsePATCH(Object object) {
-                // Lasciare vuoto
-            }
-
-            @Override
-            public void responseDELETE(Object object) {
-                // Lasciare vuoto
-            }
-        });
+        searchSquares(query);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
@@ -503,6 +417,8 @@ public class MapActivity extends AppCompatActivity
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        // TODO Muovere dentro VolleyManager
                         final String feedback = feedbackText.getText().toString();
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
@@ -553,13 +469,17 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Fragment mapFragment = getSupportFragmentManager().findFragmentByTag(TAG_MAP_FRAGMENT);
         int backStackSize = getSupportFragmentManager().getBackStackEntryCount();
-        Log.d(TAG, "onBackPressed: " + backStackSize);
-        if(backStackSize == 1) {
-            this.finishAffinity();
-        } else if(backStackSize < 1) {
+
+        if(backStackSize < 1) {
             return;
+        }else if(backStackSize == 1) {
+            this.finishAffinity();
+        }else {
+            String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(backStackSize - 2).getName();
+            Log.d(TAG, "onBackPressed: " + backStackSize);
+            Log.d(TAG, "onBackPressed: " + fragmentTag);
+            getSupportActionBar().setTitle(fragmentTag);
         }
 
         super.onBackPressed();
@@ -646,19 +566,19 @@ public class MapActivity extends AppCompatActivity
             case 0:   //caso mappa
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_content_layout, mapFragment, TAG_MAP_FRAGMENT)
-                        .addToBackStack(null)
+                        .addToBackStack(MAPPA_FRAGMENT_TITLE)
                         .commit();
                 break;
             case 1:  //caso recenti
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_content_layout, recentSquaresFragment, TAG_RECENT_FRAGMENT)
-                        .addToBackStack(null)
+                        .addToBackStack(RECENTI_FRAGMENT_TITLE)
                         .commit();
                 break;
             case 2:  //caso profilo
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_content_layout, profileFragment, TAG_PROFILE_FRAGMENT)
-                        .addToBackStack(null)
+                        .addToBackStack(PROFILO_FRAGMENT_TITLE)
                         .commit();
                 break;
             default:
@@ -671,6 +591,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void getOwnedSquares() {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = String.format("%1$s?byOwner=%2$s&ownerId=%3$s",
                 getString(R.string.squaresUrl), "true",InSquareProfile.getUserId());
@@ -704,6 +625,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void getFavouriteSquares() {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(this);
 
         String url = String.format("%1$s/%2$s",
@@ -741,6 +663,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void getRecentSquares() {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = String.format("%1$s/%2$s",
                 getString(R.string.recentSquaresUrl), InSquareProfile.getUserId());
@@ -848,4 +771,32 @@ public class MapActivity extends AppCompatActivity
         checkNotifications();
     }
 
+    private void searchSquares(String query){
+        double latitude = mapFragment.mCurrentLocation.getLatitude();
+        double longitude = mapFragment.mCurrentLocation.getLongitude();
+        String userId = InSquareProfile.getUserId();
+
+        VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude, new VolleyManager.VolleyResponseListener() {
+            @Override
+            public void responseGET(Object object) {
+                Square[] squaresResponse = (Square[]) object;
+                searchItems = Arrays.asList(squaresResponse);
+            }
+
+            @Override
+            public void responsePOST(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Lasciare vuoto
+            }
+        });
+    }
 }
