@@ -1,6 +1,9 @@
 package com.nsqre.insquare.Activities;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -8,19 +11,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +33,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,6 +41,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CursorAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -53,6 +60,7 @@ import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.SearchAdapter;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
@@ -61,6 +69,7 @@ import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,7 +84,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener, InSquareProfile.InSquareProfileListener
+        implements InSquareProfile.InSquareProfileListener
 {
     public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
     private static final String TAG = "MapActivity";
@@ -90,7 +99,7 @@ public class MapActivity extends AppCompatActivity
     private Tracker mTracker;
 
     private SearchView searchView;
-    private SimpleCursorAdapter mSearchAdapter;
+    private CursorAdapter mSearchAdapter;
 
     // Hamburger Menu
     ListView mDrawerList;
@@ -106,6 +115,11 @@ public class MapActivity extends AppCompatActivity
     // ==================
     private ImageView drawerImage;
     private TextView drawerUsername;
+    private Menu menu;
+
+
+    private MapActivity mp;
+    private List<Square> searchItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +130,45 @@ public class MapActivity extends AppCompatActivity
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+
+        // SEARCH
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+
+            VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
+                @Override
+                public void responseGET(Object object) {
+                    Square[] squaresResponse = (Square[]) object;
+                    //setContentView(R.layout.fragment_recent_squares);
+                    searchItems = Arrays.asList(squaresResponse);
+                    //final ListView myList = (ListView) findViewById(R.id.squares_recents);
+
+                    //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
+                    //  myList.setAdapter(adapter);
+
+                }
+
+                @Override
+                public void responsePOST(Object object) {
+                    // Lasciare vuoto
+                }
+
+                @Override
+                public void responsePATCH(Object object) {
+                    // Lasciare vuoto
+                }
+
+                @Override
+                public void responseDELETE(Object object) {
+                    // Lasciare vuoto
+                }
+            });
+
+        }
+
 
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
@@ -312,10 +365,31 @@ public class MapActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.activity_map_actions, menu);
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_map_actions, menu);
 
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        this.menu = menu;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
+            search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+            search.setOnQueryTextListener(new OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    loadHistory(query);
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    loadHistory(query);
+                    return true;
+                }
+            });
+        }
+
+
 //        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
 //
 //        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -335,6 +409,60 @@ public class MapActivity extends AppCompatActivity
         return true;
     }
 
+    // History
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void loadHistory(String query) {
+
+        VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
+            @Override
+            public void responseGET(Object object) {
+                Square[] squaresResponse = (Square[]) object;
+                searchItems = Arrays.asList(squaresResponse);
+            }
+
+            @Override
+            public void responsePOST(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Lasciare vuoto
+            }
+        });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            // Cursor
+            String[] columns = new String[] { "_id", "text" };
+            Object[] temp = new Object[] { 0, "default" };
+
+            MatrixCursor cursor = new MatrixCursor(columns);
+            if(searchItems!=null) {
+                for (int i = 0; i < searchItems.size(); i++) {
+
+                    temp[0] = i;
+                    temp[1] = searchItems.get(i).getName(); //replaced s with i as s not used anywhere.
+                    cursor.addRow(temp);
+
+                }
+            }
+
+            // SearchView
+            SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+            final SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
+
+            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
+
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle
@@ -345,7 +473,7 @@ public class MapActivity extends AppCompatActivity
         }
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.search_squares_action:
+            /*case R.id.search_squares_action:
                 // [START search_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")
@@ -354,7 +482,7 @@ public class MapActivity extends AppCompatActivity
                 // [END search_event]
 
                 Log.d(TAG, "I've just initiated search");
-                break;
+                break;*/
             case R.id.instfeedback:
 
                 // [START feedback_event]
@@ -437,10 +565,12 @@ public class MapActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
+    /*
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
         searchLocationName(query.trim());
+        searchView.clearFocus();
         return false;
     }
 
@@ -503,6 +633,8 @@ public class MapActivity extends AppCompatActivity
 
         return new LatLng(lat, lon);
     }
+
+    */
 
     /*
     *  Apre il fragment scelto dal burger menu
@@ -715,4 +847,5 @@ public class MapActivity extends AppCompatActivity
     public void onRecentChanged() {
         checkNotifications();
     }
+
 }

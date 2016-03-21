@@ -64,9 +64,15 @@
             android:name=".Activities.MapActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@style/AppTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="ccom.nsqre.MapActivity" />
         </activity>
 
 
@@ -104,6 +110,11 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="35c848454ff5eb807fec41acfff55e85f922c532" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
 
         <activity
             android:name=".Activities.MainActivity"

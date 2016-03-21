@@ -574,7 +574,7 @@ public class MapFragment extends Fragment
         startChatActivity(squareHashMap.get(marker));
     }
 
-    private void startChatActivity(Square s) {
+    public void startChatActivity(Square s) {
 
         // [START PinButton_event]
         mTracker.send(new HitBuilders.EventBuilder()
@@ -1175,6 +1175,14 @@ public class MapFragment extends Fragment
                 }
             }
         }
+    }
+
+    public void setMapInPosition(double lat, double lon) {
+        Log.d(TAG, "setMapInPosition: lat:" + lat + " lon:" + lon);
+        LatLng latlng = new LatLng(lat, lon);
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latlng),
+                400, // Tempo di spostamento in ms
+                null); // callback
     }
 
 }
