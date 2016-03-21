@@ -84,7 +84,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
-        implements OnQueryTextListener, InSquareProfile.InSquareProfileListener
+        implements InSquareProfile.InSquareProfileListener
 {
     public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
     private static final String TAG = "MapActivity";
@@ -132,16 +132,17 @@ public class MapActivity extends AppCompatActivity
         mTracker = application.getDefaultTracker();
 
         // SEARCH
+
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            // MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
 
             VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
                 @Override
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
-                    setContentView(R.layout.fragment_recent_squares);
+                   // setContentView(R.layout.fragment_recent_squares);
                     final List<String> squareList = new ArrayList<>();
                     for (Square s : squaresResponse) {
                         squareList.add(s.getName());
@@ -171,6 +172,7 @@ public class MapActivity extends AppCompatActivity
             });
 
         }
+
 
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
@@ -368,7 +370,7 @@ public class MapActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_map_actions, menu);
-//        inflater.inflate(R.menu.activity_main_actions, menu);
+      //  inflater.inflate(R.menu.activity_main_actions, menu);
 
         this.menu = menu;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -381,15 +383,13 @@ public class MapActivity extends AppCompatActivity
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    loadHistory(query);
+                    //loadHistory(query);
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String query) {
-
                     loadHistory(query);
-
                     return true;
 
                 }
@@ -425,7 +425,7 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void responseGET(Object object) {
                 Square[] squaresResponse = (Square[]) object;
-                setContentView(R.layout.fragment_recent_squares);
+                //setContentView(R.layout.fragment_recent_squares);
                 final List <String> squareItems = new ArrayList<String>();
                 for(Square s : squaresResponse){
                     squareItems.add(s.getName());
@@ -465,6 +465,7 @@ public class MapActivity extends AppCompatActivity
 
                 }
             }
+
             // SearchView
             SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
@@ -485,7 +486,7 @@ public class MapActivity extends AppCompatActivity
         }
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.search_squares_action:
+            /*case R.id.search_squares_action:
                 // [START search_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")
@@ -494,7 +495,7 @@ public class MapActivity extends AppCompatActivity
                 // [END search_event]
 
                 Log.d(TAG, "I've just initiated search");
-                break;
+                break;*/
             case R.id.instfeedback:
 
                 // [START feedback_event]
@@ -577,6 +578,7 @@ public class MapActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
+    /*
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit: Currently looking for: " + query);
@@ -644,6 +646,8 @@ public class MapActivity extends AppCompatActivity
 
         return new LatLng(lat, lon);
     }
+
+    */
 
     /*
     *  Apre il fragment scelto dal burger menu
