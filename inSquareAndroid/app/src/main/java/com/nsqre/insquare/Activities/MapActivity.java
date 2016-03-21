@@ -142,17 +142,8 @@ public class MapActivity extends AppCompatActivity
                 @Override
                 public void responseGET(Object object) {
                     Square[] squaresResponse = (Square[]) object;
-<<<<<<< HEAD
                     //setContentView(R.layout.fragment_recent_squares);
                     searchItems = Arrays.asList(squaresResponse);
-=======
-                   // setContentView(R.layout.fragment_recent_squares);
-                    final List<String> squareList = new ArrayList<>();
-                    for (Square s : squaresResponse) {
-                        squareList.add(s.getName());
-                    }
-                    searchItems = squareList;
->>>>>>> 41aa8362d4c6349aa5439be585687b91eb6b47be
                     //final ListView myList = (ListView) findViewById(R.id.squares_recents);
 
                     //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
@@ -375,10 +366,6 @@ public class MapActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_map_actions, menu);
-<<<<<<< HEAD
-=======
-      //  inflater.inflate(R.menu.activity_main_actions, menu);
->>>>>>> 41aa8362d4c6349aa5439be585687b91eb6b47be
 
         this.menu = menu;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -431,15 +418,7 @@ public class MapActivity extends AppCompatActivity
             public void responseGET(Object object) {
                 Square[] squaresResponse = (Square[]) object;
                 //setContentView(R.layout.fragment_recent_squares);
-<<<<<<< HEAD
                 searchItems = Arrays.asList(squaresResponse);
-=======
-                final List <String> squareItems = new ArrayList<String>();
-                for(Square s : squaresResponse){
-                    squareItems.add(s.getName());
-                }
-                searchItems = squareItems;
->>>>>>> 41aa8362d4c6349aa5439be585687b91eb6b47be
             }
 
             @Override
