@@ -136,37 +136,8 @@ public class MapActivity extends AppCompatActivity
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-
-            VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
-                @Override
-                public void responseGET(Object object) {
-                    Square[] squaresResponse = (Square[]) object;
-                    //setContentView(R.layout.fragment_recent_squares);
-                    searchItems = Arrays.asList(squaresResponse);
-                    //final ListView myList = (ListView) findViewById(R.id.squares_recents);
-
-                    //  final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, squareListName);
-                    //  myList.setAdapter(adapter);
-
-                }
-
-                @Override
-                public void responsePOST(Object object) {
-                    // Lasciare vuoto
-                }
-
-                @Override
-                public void responsePATCH(Object object) {
-                    // Lasciare vuoto
-                }
-
-                @Override
-                public void responseDELETE(Object object) {
-                    // Lasciare vuoto
-                }
-            });
-
+            //MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+            searchSquares(query);
         }
 
 
@@ -413,28 +384,7 @@ public class MapActivity extends AppCompatActivity
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void loadHistory(String query) {
 
-        VolleyManager.getInstance().searchSquaresByName(query, new VolleyManager.VolleyResponseListener() {
-            @Override
-            public void responseGET(Object object) {
-                Square[] squaresResponse = (Square[]) object;
-                searchItems = Arrays.asList(squaresResponse);
-            }
-
-            @Override
-            public void responsePOST(Object object) {
-                // Lasciare vuoto
-            }
-
-            @Override
-            public void responsePATCH(Object object) {
-                // Lasciare vuoto
-            }
-
-            @Override
-            public void responseDELETE(Object object) {
-                // Lasciare vuoto
-            }
-        });
+        searchSquares(query);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
@@ -848,4 +798,32 @@ public class MapActivity extends AppCompatActivity
         checkNotifications();
     }
 
+    private void searchSquares(String query){
+        double latitude = mapFragment.mCurrentLocation.getLatitude();
+        double longitude = mapFragment.mCurrentLocation.getLongitude();
+        String userId = InSquareProfile.getUserId();
+
+        VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude, new VolleyManager.VolleyResponseListener() {
+            @Override
+            public void responseGET(Object object) {
+                Square[] squaresResponse = (Square[]) object;
+                searchItems = Arrays.asList(squaresResponse);
+            }
+
+            @Override
+            public void responsePOST(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
+                // Lasciare vuoto
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Lasciare vuoto
+            }
+        });
+    }
 }

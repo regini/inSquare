@@ -334,6 +334,10 @@ public class MapFragment extends Fragment
             Log.d(TAG, "Nessuna locazione corrente, ora provvedo");
             LocationManager locationManager = (LocationManager) this.getContext().getSystemService(Context.LOCATION_SERVICE);
 
+            mCurrentLocation = new Location("");
+            mCurrentLocation.setLatitude(0.0d);
+            mCurrentLocation.setLongitude(0.0d);
+
             LocationListener locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
