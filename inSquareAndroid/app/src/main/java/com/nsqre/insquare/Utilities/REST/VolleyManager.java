@@ -75,9 +75,9 @@ public class VolleyManager {
         String reqURL = prefixURL + "squares?";
         String name = query.replace(" ", "%20");
         reqURL += "name=" + name;
-        reqURL += "lat=" + name;
-        reqURL += "name=" + name;
-
+        reqURL += "&lat=" + lat;
+        reqURL += "&lon=" + lon;
+        reqURL += "&userId=" + userId;
 
         Log.d(TAG, "searchSquaresByName: " + reqURL);
 
