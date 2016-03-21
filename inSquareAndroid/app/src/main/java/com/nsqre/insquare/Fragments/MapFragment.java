@@ -574,7 +574,7 @@ public class MapFragment extends Fragment
         startChatActivity(squareHashMap.get(marker));
     }
 
-    private void startChatActivity(Square s) {
+    public void startChatActivity(Square s) {
 
         // [START PinButton_event]
         mTracker.send(new HitBuilders.EventBuilder()

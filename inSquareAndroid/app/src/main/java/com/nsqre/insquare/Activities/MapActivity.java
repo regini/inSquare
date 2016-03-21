@@ -377,7 +377,7 @@ public class MapActivity extends AppCompatActivity
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    //loadHistory(query);
+                    loadHistory(query);
                     return true;
                 }
 
@@ -417,7 +417,6 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void responseGET(Object object) {
                 Square[] squaresResponse = (Square[]) object;
-                //setContentView(R.layout.fragment_recent_squares);
                 searchItems = Arrays.asList(squaresResponse);
             }
 

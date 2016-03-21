@@ -63,6 +63,7 @@ public class SearchAdapter extends CursorAdapter {
             @Override
             public void onClick(View v) {
                 Square s = items.get(cursor.getPosition());
+                mapFragment.startChatActivity(s);
                 mapFragment.setMapInPosition(s.getLat(), s.getLon());
             }
         });
