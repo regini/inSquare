@@ -117,8 +117,8 @@ public class MapFragment extends Fragment
 
     private CoordinatorLayout mapCoordinatorLayout;
 
-    private View bottomSheet;
-    private BottomSheetBehavior bottomSheetBehavior;
+    public View bottomSheet;
+    public BottomSheetBehavior bottomSheetBehavior;
 
     private TextView bottomSheetSquareName;
     private TextView bottomSheetSquareActivity;
