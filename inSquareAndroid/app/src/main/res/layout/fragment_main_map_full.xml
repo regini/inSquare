@@ -15,11 +15,12 @@
         />
 
     <FrameLayout
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="77dp"
+        app:behavior_peekHeight="60dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
         >
 
@@ -49,25 +50,6 @@
 
                 <include layout="@layout/bottom_sheet_upper_text" />
 
-                <View
-                    android:id="@+id/bottom_sheet_separator"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorPrimary"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="@dimen/input_margin_side"
-                    />
-
-                <ImageButton
-                    android:id="@+id/bottom_sheet_button"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_marginLeft="@dimen/input_margin_side"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/heart_border_black"
-                    />
-
             </LinearLayout>
 
             <View
@@ -82,4 +64,15 @@
         </LinearLayout>
     </FrameLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/bottom_sheet_favourite_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/bubble_horizontal_margin"
+        android:src="@drawable/heart_border_white"
+        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchorGravity="end"
+        app:backgroundTint="@color/colorAccentLight"
+        />
+    
 </android.support.design.widget.CoordinatorLayout>

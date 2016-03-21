@@ -585,6 +585,12 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ..!");
+        super.onPause();
+    }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
