@@ -182,7 +182,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
-        sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
     }
 
     /**
@@ -264,6 +263,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+        sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
     }
 
     /**
@@ -392,8 +394,22 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, getString(R.string.error_connect));
+                    try {
+                        String url = getString(R.string.squaresUrl);
+                        mSocket = IO.socket(url);
+
+                        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+                        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+
+                        mSocket.on("sendMessage", onSendMessage);
+                        mSocket.on("newMessage", onNewMessage);
+                        mSocket.on("ping", onPing);
+
+                        mSocket.connect();
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }

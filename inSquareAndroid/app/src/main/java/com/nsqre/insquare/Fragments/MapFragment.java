@@ -246,6 +246,13 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
+        if(bottomSheetButton.getVisibility() == View.VISIBLE) {
+            if(InSquareProfile.isFav(mLastSelectedSquare.getId())) {
+                bottomSheetButton.setImageResource(R.drawable.heart_black);
+            } else {
+                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+            }
+        }
     }
 
     @Override
@@ -765,7 +772,7 @@ public class MapFragment extends Fragment
                 VolleyManager.getInstance().patchDescription(name, description, mLastSelectedSquareId, InSquareProfile.getUserId(),
                         new VolleyManager.VolleyResponseListener() {
                             @Override
-                             public void responseGET(Object object) {
+                            public void responseGET(Object object) {
                                 // Lasciare vuoto
                             }
 
@@ -1058,6 +1065,11 @@ public class MapFragment extends Fragment
             bottomSheetSquareName.setText(s.getName());
             bottomSheetLowerDescription.setText(s.getDescription());
             bottomSheetSquareActivity.setText(s.formatTime());
+            if(InSquareProfile.isFav(s.getId())) {
+                bottomSheetButton.setImageResource(R.drawable.heart_black);
+            } else {
+                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
+            }
             SquareState currentState = s.getSquareState();
             int stateColor;
             switch(currentState)
@@ -1095,18 +1107,13 @@ public class MapFragment extends Fragment
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged: Favs changed!");
-        if(InSquareProfile.isFav(mLastSelectedSquareId))
-        {
-            bottomSheetButton.setImageResource(R.drawable.heart_black);
+        if(InSquareProfile.isFav(mLastSelectedSquareId)) {
             for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
                     updateBottomSheet(s);
                     break;
                 }
             }
-        }else
-        {
-            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
         }
     }
 
