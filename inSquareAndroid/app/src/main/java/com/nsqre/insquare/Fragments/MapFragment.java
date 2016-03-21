@@ -505,6 +505,7 @@ public class MapFragment extends Fragment
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+
         VisibleRegion vr = mGoogleMap.getProjection().getVisibleRegion();
 
         double distance = getDistance(mLastUpdateLocation, cameraPosition.target);
@@ -551,6 +552,7 @@ public class MapFragment extends Fragment
     }
 
     private void getClosestSquares(String distance, double lat, double lon) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://recapp-insquare.rhcloud.com/squares?";
         url += "distance=" + distance;
@@ -654,6 +656,7 @@ public class MapFragment extends Fragment
                                          final Marker marker,
                                          final String ownerId) {
         // Instantiate the RequestQueue.
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "http://recapp-insquare.rhcloud.com/squares";
 
@@ -881,7 +884,6 @@ public class MapFragment extends Fragment
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if(locationManager != null && googleMap != null)
             {
-                Log.d(TAG, "onMapReady: mappa != null e hashMap con roba");
                 mGoogleMap = googleMap;
                 if(mGoogleMap != null && squareHashMap.size() > 0)
                 {
@@ -1071,6 +1073,7 @@ public class MapFragment extends Fragment
     }
 
     public void favouriteSquare(final int method, final Square square) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";

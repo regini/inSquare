@@ -7,13 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -40,12 +37,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
-import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,16 +67,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private MessageAdapter messageAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private EditText chatEditText;
-    private EditText usernameEditText;
-    private TextInputLayout textInputLayout;
-    private Toolbar toolbar;
 
     private Socket mSocket;
-    private boolean mTyping = false;
-    private Handler mTypingHandler = new Handler();
-    private int mNumUsers;
-
-    Dialog mDialog;
 
     /**
      * The InSquareProfile of the current user
@@ -191,6 +180,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * @param quantity
      */
     private void getRecentMessages(int quantity) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
         final String q = new Integer(quantity).toString();
 
@@ -527,6 +517,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // TODO Muovere dentro VolleyManager
                         final String feedback = feedbackText.getText().toString();
                         final String activity = this.getClass().getSimpleName();
                         // Instantiate the RequestQueue.
@@ -589,6 +580,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * @see #updateList(int, Square)
      */
     public void favouriteSquare(final int method, final Square square) {
+        // TODO Muovere dentro VolleyManager
         RequestQueue queue = Volley.newRequestQueue(this);
         final String squareId = square.getId();
         final String userId = InSquareProfile.getUserId();
@@ -624,19 +616,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      */
     public void updateList (int method, Square square) {
         // Checking the house is not empty!
-//        if(InSquareProfile.favouriteSquaresList == null)
-//        {
-//            Log.d(TAG, "updateView: lista fav era null!");
-//            InSquareProfile.favouriteSquaresList = new ArrayList<Square>();
-//        }
-
         if (method == Request.Method.DELETE) {
-//            InSquareProfile.favouriteSquaresList.remove(square);
             InSquareProfile.removeFav(square.getId());
             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
 
         } else {
-//            InSquareProfile.favouriteSquaresList.add(square);
             InSquareProfile.addFav(square);
             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
         }

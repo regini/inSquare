@@ -97,7 +97,6 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         if (intent != null)
             stopService = intent.getBooleanExtra("stopservice", false);
 
-        // TODO controllare che stopService non sia sempre false
         Log.d(TAG, "onStartCommand: stop service? " + stopService);
 
         locationListener = new LocationListener();

@@ -12,7 +12,6 @@
     <string name="fb_login_string">Facebook Login</string>
     <string name="fb_logout_string">Facebook Logout</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_fab">InSquare</string>
 
