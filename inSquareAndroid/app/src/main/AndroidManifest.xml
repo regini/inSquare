@@ -111,6 +111,11 @@
             android:name="io.fabric.ApiKey"
             android:value="35c848454ff5eb807fec41acfff55e85f922c532" />
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main"
