@@ -29,12 +29,9 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-<<<<<<< HEAD
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.ChatService;
-=======
->>>>>>> 0766c761b67f18ec7caf38f3d188b36fa7186820
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
@@ -49,12 +46,9 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-=======
->>>>>>> 0766c761b67f18ec7caf38f3d188b36fa7186820
 import java.util.Locale;
 
 /**
@@ -359,12 +353,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
-        if(!mSocket.connected()) 
+        /*
+        if(!mSocket.connected())
         {
             Log.d(TAG, "attemptSend: Socket is not connected");
             return;
         }
-
+        */
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
