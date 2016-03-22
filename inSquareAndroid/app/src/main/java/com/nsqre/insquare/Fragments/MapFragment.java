@@ -91,7 +91,8 @@ public class MapFragment extends Fragment
 
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
-    public Location mCurrentLocation;
+
+    private Location mCurrentLocation;
     private LatLng mLastUpdateLocation; // Da dove ho scaricato i pin l'ultima volta
     private String mLastSelectedSquareId = ""; // L'ultima Square selezionata
     private Square mLastSelectedSquare;
@@ -1251,6 +1252,11 @@ public class MapFragment extends Fragment
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latlng),
                 400, // Tempo di spostamento in ms
                 null); // callback
+    }
+
+
+    public Location getmCurrentLocation() {
+        return mCurrentLocation;
     }
 
 }

@@ -59,6 +59,7 @@ public class SearchAdapter extends CursorAdapter {
 
         text = (TextView) view.findViewById(R.id.square_search_name);
 
+        /*
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +68,7 @@ public class SearchAdapter extends CursorAdapter {
                 mapFragment.setMapInPosition(s.getLat(), s.getLon());
             }
         });
+        */
         return view;
 
     }

@@ -372,8 +372,25 @@ public class MapActivity extends AppCompatActivity
 
             final SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
-            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
+            search.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+                @Override
+                public boolean onSuggestionSelect(int position) {
+                    return false;
+                }
 
+                @Override
+                public boolean onSuggestionClick(int position) {
+                    Log.d("POSITION CLICK", ""+position);
+                    Square s = searchItems.get(position);
+                    if(s!=null) {
+                        mapFragment.startChatActivity(s);
+                        mapFragment.setMapInPosition(s.getLat(), s.getLon());
+                    }
+                    return true;
+                }
+            });
+
+            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
         }
     }
 
@@ -772,11 +789,14 @@ public class MapActivity extends AppCompatActivity
     }
 
     private void searchSquares(String query){
-        double latitude = mapFragment.mCurrentLocation.getLatitude();
-        double longitude = mapFragment.mCurrentLocation.getLongitude();
+
+        double latitude = mapFragment.getmCurrentLocation().getLatitude();
+        double longitude = mapFragment.getmCurrentLocation().getLongitude();
         String userId = InSquareProfile.getUserId();
 
-        VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude, new VolleyManager.VolleyResponseListener() {
+
+        VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude,
+                new VolleyManager.VolleyResponseListener() {
             @Override
             public void responseGET(Object object) {
                 Square[] squaresResponse = (Square[]) object;
