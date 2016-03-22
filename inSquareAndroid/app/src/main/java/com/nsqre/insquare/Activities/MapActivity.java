@@ -373,7 +373,22 @@ public class MapActivity extends AppCompatActivity
             final SearchView search = (SearchView) menu.findItem(R.id.search_squares_action).getActionView();
 
             search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
+            search.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+                @Override
+                public boolean onSuggestionSelect(int position) {
+                    Log.d("POSITION SELECT", ""+position);
+                    return false;
+                }
 
+                @Override
+                public boolean onSuggestionClick(int position) {
+                    Log.d("POSITION CLICK", ""+position);
+                    Square s = searchItems.get(position);
+                    mapFragment.startChatActivity(s);
+                    mapFragment.setMapInPosition(s.getLat(), s.getLon());
+                    return false;
+                }
+            });
         }
     }
 
@@ -772,6 +787,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     private void searchSquares(String query){
+        
         double latitude = mapFragment.getmCurrentLocation().getLatitude();
         double longitude = mapFragment.getmCurrentLocation().getLongitude();
         String userId = InSquareProfile.getUserId();
