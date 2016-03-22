@@ -19,8 +19,10 @@ import com.nsqre.insquare.Square.SquareDeserializer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class manages the HTTP requests made with Volley from all the Activities andr Fragments of the application
@@ -235,6 +237,44 @@ public class VolleyManager {
 
         requestQueue.add(favoriteSquare);
     }
+
+    public void postToken(
+            final String service,
+            final String accessToken,
+            final VolleyResponseListener listener
+    )
+    {
+        String volleyURL = prefixURL + "auth/" + service + "/token";
+
+        Log.d(TAG, "postToken: " + volleyURL);
+
+        StringRequest postTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "ServerResponse " + response);
+                        listener.responsePOST(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "ErrorResponse: " + error.toString());
+                        listener.responsePOST(null);
+                    }
+        }) {
+            //TOKEN messo nei parametri della query
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("access_token", accessToken);
+
+                return params;
+            }
+        };
+        requestQueue.add(postTokenRequest);
+    }
+
 
     public void postFeedback(final String feedback,
                              String userId,

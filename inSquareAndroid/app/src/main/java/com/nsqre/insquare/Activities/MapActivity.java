@@ -402,7 +402,7 @@ public class MapActivity extends AppCompatActivity
 
                 Log.d(TAG, "I've just initiated search");
                 break;*/
-            case R.id.instfeedback:
+            case R.id.menu_entry_feedback:
 
                 // [START feedback_event]
                 mTracker.send(new HitBuilders.EventBuilder()
@@ -661,11 +661,9 @@ public class MapActivity extends AppCompatActivity
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             Log.d(TAG, "responseGET: getRecentSquares returned NULL!");
-                        }else
-                        {
+                        } else {
                             InSquareProfile.setRecentSquaresList((ArrayList<Square>) object);
                         }
                     }

@@ -490,7 +490,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.instfeedback:
+            case R.id.menu_entry_feedback:
                 // [START feedback_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")

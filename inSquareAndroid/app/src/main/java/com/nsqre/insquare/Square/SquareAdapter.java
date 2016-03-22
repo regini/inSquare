@@ -146,6 +146,7 @@ public class SquareAdapter extends BaseAdapter {
     }
 
     public void favouriteSquare(final int method, final Square square) {
+        // TODO VolleyManager - Favorite Square
         RequestQueue queue = Volley.newRequestQueue(activity);
         final String squareId = square.getId();
         final String userId = InSquareProfile.getUserId();

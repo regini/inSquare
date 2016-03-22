@@ -96,6 +96,7 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(final String token) {
+        // TODO VolleyManager - POST GCM token for User
         RequestQueue queue = Volley.newRequestQueue(RegistrationIntentService.this);
         getString(R.string.favouritesquaresUrl);
         String url = getString(R.string.gcmTokenUrl);

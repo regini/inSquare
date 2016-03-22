@@ -6,7 +6,7 @@
         android:title="@string/chat_favourite_action"
         app:showAsAction="ifRoom|collapseActionView"
         />
-    <item android:id="@+id/instfeedback"
+    <item android:id="@+id/menu_entry_feedback"
         android:icon="@drawable/ic_more_vert_white_48dp"
         app:showAsAction="collapseActionView"
         android:title="@string/feedback">

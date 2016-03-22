@@ -135,6 +135,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     }
 
     private void sendLocationToServer(final Location lastLocation) {
+        // TODO VolleyManager - Patch Location
         RequestQueue queue = Volley.newRequestQueue(LocationService.this);
         String url = getString(R.string.userUrl);
         InSquareProfile.getInstance(getApplicationContext());
