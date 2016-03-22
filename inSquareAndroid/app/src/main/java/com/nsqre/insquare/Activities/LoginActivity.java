@@ -17,12 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -47,17 +41,15 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.User.User;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
-import com.nsqre.insquare.User.User;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -315,34 +307,36 @@ public class LoginActivity extends AppCompatActivity
      * @see #json2login(String)
      */
     private void facebookPostRequest() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        String url = getString(R.string.facebookTokenUrl);
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        final String serviceName = "facebook";
+
+        VolleyManager.getInstance().postLoginToken(serviceName, fbAccessToken,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "ServerResponse " + response);
-                        json2login(response);
+                    public void responseGET(Object object) {
+                        // Vuoto - POST Request
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "ServerResponse" + error.toString());
-            }
-        }) {
-            //TOKEN messo nei parametri della query
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("access_token", fbAccessToken);
 
-                return params;
-            }
-        };
-        queue.add(stringRequest);
+                    @Override
+                    public void responsePOST(Object object) {
+                        if (object == null) {
+                            Toast.makeText(LoginActivity.this, "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            String serverResponse = (String) object;
+                            json2login(serverResponse);
+                        }
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Vuoto - POST Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto - POST Request
+                    }
+                });
     }
 
     /**
@@ -351,32 +345,35 @@ public class LoginActivity extends AppCompatActivity
      * @see #json2login(String)
      */
     private void googlePostRequest() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        String url = getString(R.string.googleTokenUrl);
+        final String serviceName = "google";
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().postLoginToken(serviceName, gAccessToken,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Google+ Response: " + response);
-                        json2login(response);
+                    public void responseGET(Object object) {
+                        // Vuoto - POST Request
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Google+ Error Response: " + error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("access_token", gAccessToken);
-                return params;
-            }
-        };
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        if (object == null) {
+                            Toast.makeText(LoginActivity.this, "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            String serverResponse = (String) object;
+                            json2login(serverResponse);
+                        }
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Vuoto - POST Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto - POST Request
+                    }
+                });
     }
 
     /**
@@ -521,63 +518,55 @@ public class LoginActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.instfeedback:
+            case R.id.menu_entry_feedback:
                 // [START feedback_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")
                         .setAction("Feedback")
                         .build());
                 // [END feedback_event]
-                final Dialog d = new Dialog(this);
-                d.setContentView(R.layout.dialog_feedback);
-                d.setTitle("Feedback");
-                d.setCancelable(true);
-                d.show();
+                final Dialog feedbackDialog = new Dialog(this);
+                feedbackDialog.setContentView(R.layout.dialog_feedback);
+                feedbackDialog.setTitle("Feedback");
+                feedbackDialog.setCancelable(true);
+                feedbackDialog.show();
 
-                final EditText feedbackText = (EditText) d.findViewById(R.id.dialog_feedbacktext);
-                Button confirm = (Button) d.findViewById(R.id.dialog_feedback_confirm_button);
+                final EditText feedbackText = (EditText) feedbackDialog.findViewById(R.id.dialog_feedbacktext);
+                Button confirm = (Button) feedbackDialog.findViewById(R.id.dialog_feedback_confirm_button);
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final String feedback = feedbackText.getText().toString();
+                        final String feedback = feedbackText.getText().toString().trim();
                         final String activity = this.getClass().getSimpleName();
-                        // Instantiate the RequestQueue.
-                        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                        String url = getString(R.string.feedbackUrl);
 
-                        // Request a string response from the provided URL.
-                        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                                new Response.Listener<String>() {
+                        VolleyManager.getInstance().postFeedback(feedback, InSquareProfile.getUserId(), activity,
+                                new VolleyManager.VolleyResponseListener() {
                                     @Override
-                                    public void onResponse(String response) {
-                                        Log.d(TAG, "VOLLEY ServerResponse: " + response);
-                                        CharSequence text = getString(R.string.thanks_feedback);
-                                        int duration = Toast.LENGTH_SHORT;
-                                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                        toast.show();
+                                    public void responseGET(Object object) {
+                                        // Vuoto - POST Request
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "VOLLEY Error: " + error.toString());
-                                CharSequence text = getString(R.string.error_feedback);
-                                int duration = Toast.LENGTH_SHORT;
-                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                toast.show();
-                            }
-                        }) {
-                            @Override
-                            protected Map<String, String> getParams() {
-                                Map<String, String> params = new HashMap<String, String>();
-                                params.put("feedback", feedback);
-                                if (user != null)
-                                    params.put("username", user.getId());
-                                params.put("activity", activity);
-                                return params;
-                            }
-                        };
-                        queue.add(stringRequest);
-                        d.dismiss();
+
+                                    @Override
+                                    public void responsePOST(Object object) {
+                                        if (object == null) {
+                                            Toast.makeText(LoginActivity.this, getString(R.string.error_feedback), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, getString(R.string.thanks_feedback), Toast.LENGTH_SHORT).show();
+                                            feedbackDialog.dismiss();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void responsePATCH(Object object) {
+                                        // Vuoto - POST Request
+                                    }
+
+                                    @Override
+                                    public void responseDELETE(Object object) {
+                                        // Vuoto - POST Request
+                                    }
+                                });
+                        feedbackDialog.dismiss();
                     }
                 });
         default:

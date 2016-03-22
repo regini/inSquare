@@ -12,21 +12,12 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.nsqre.insquare.InSquareProfile;
-import com.nsqre.insquare.R;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
@@ -135,32 +126,42 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     }
 
     private void sendLocationToServer(final Location lastLocation) {
-        RequestQueue queue = Volley.newRequestQueue(LocationService.this);
-        String url = getString(R.string.userUrl);
-        InSquareProfile.getInstance(getApplicationContext());
 
-        StringRequest stringRequest = new StringRequest(Request.Method.PATCH, url,
-                new Response.Listener<String>() {
+        final String lat = String.valueOf(lastLocation.getLatitude());
+        final String lon = String.valueOf(lastLocation.getLongitude());
+        final String isUpdateLocation = String.valueOf(true);
+        VolleyManager.getInstance().patchLocation(
+                lat,
+                lon,
+                InSquareProfile.getUserId(),
+                isUpdateLocation,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Response is: " + response);
+                    public void responseGET(Object object) {
+                        // Vuoto - PATCH Request
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("lat", String.valueOf(lastLocation.getLatitude()));
-                params.put("lon", String.valueOf(lastLocation.getLongitude()));
-                params.put("userId", InSquareProfile.getUserId());
-                params.put("updateLocation",String.valueOf(true));
-                return params;
-            }
-        };
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Vuoto - PATCH Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        if(object == null)
+                        {
+                            Log.d(TAG, "responsePATCH: qualcosa è andato storto durante il PATCH della location");
+                        }else 
+                        {
+                            Log.d(TAG, "responsePATCH: tutto ok!");
+                        }
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto - PATCH Request
+                    }
+                }
+        );
     }
 }
