@@ -23,22 +23,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-
-import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
-import java.io.IOException;import java.lang.Exception;import java.lang.Override;import java.lang.String;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -96,32 +87,34 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(final String token) {
-        // TODO VolleyManager - POST GCM token for User
-        RequestQueue queue = Volley.newRequestQueue(RegistrationIntentService.this);
-        getString(R.string.favouritesquaresUrl);
-        String url = getString(R.string.gcmTokenUrl);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Response is: " + response);
-                    }
-                }, new Response.ErrorListener() {
+        VolleyManager.getInstance().postGCMToken(token, new VolleyManager.VolleyResponseListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.toString());
+            public void responseGET(Object object) {
+                // Vuoto - POST Request
             }
-        }) {
+
             @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("gcm", token);
-                params.put("userId", InSquareProfile.getUserId());
-                return params;
+            public void responsePOST(Object object) {
+                if(object == null)
+                {
+                    Log.d(TAG, "responsePOST: my token wasn't posted correctly!");
+                }else
+                {
+                    Log.d(TAG, "responsePOST: everything is fine!");
+                }
             }
-        };
-        queue.add(stringRequest);
+
+            @Override
+            public void responsePATCH(Object object) {
+                // Vuoto - POST Request
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Vuoto - POST Request
+            }
+        });
     }
 
     /**

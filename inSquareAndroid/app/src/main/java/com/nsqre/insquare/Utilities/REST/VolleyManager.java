@@ -11,6 +11,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageDeserializer;
 import com.nsqre.insquare.Square.Square;
@@ -238,7 +239,7 @@ public class VolleyManager {
         requestQueue.add(favoriteSquare);
     }
 
-    public void postToken(
+    public void postLoginToken(
             final String service,
             final String accessToken,
             final VolleyResponseListener listener
@@ -246,7 +247,7 @@ public class VolleyManager {
     {
         String volleyURL = prefixURL + "auth/" + service + "/token";
 
-        Log.d(TAG, "postToken: " + volleyURL);
+        Log.d(TAG, "postLoginToken: " + volleyURL);
 
         StringRequest postTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -273,6 +274,40 @@ public class VolleyManager {
             }
         };
         requestQueue.add(postTokenRequest);
+    }
+
+    public void postGCMToken(
+            final String token,
+            final VolleyResponseListener listener
+    )
+    {
+        String volleyURL = prefixURL + "gcmToken";
+
+        StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Response is: " + response);
+                        listener.responsePOST(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, error.toString());
+                        listener.responsePOST(null);
+                    }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("gcm", token);
+                params.put("userId", InSquareProfile.getUserId());
+                return params;
+            }
+        };
+
+        requestQueue.add(postGCMTokenRequest);
     }
 
 
