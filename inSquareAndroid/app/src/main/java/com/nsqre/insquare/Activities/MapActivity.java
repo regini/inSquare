@@ -772,8 +772,8 @@ public class MapActivity extends AppCompatActivity
     }
 
     private void searchSquares(String query){
-        double latitude = mapFragment.mCurrentLocation.getLatitude();
-        double longitude = mapFragment.mCurrentLocation.getLongitude();
+        double latitude = mapFragment.getmCurrentLocation().getLatitude();
+        double longitude = mapFragment.getmCurrentLocation().getLongitude();
         String userId = InSquareProfile.getUserId();
 
         VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude, new VolleyManager.VolleyResponseListener() {
