@@ -227,22 +227,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
 
-        mUsername = InSquareProfile.getUsername();
-        mUserId = InSquareProfile.getUserId();
-
-        JSONObject data = new JSONObject();
-
-        try{
-            data.put("room", mSquareId);
-            data.put("username", mUsername);
-            data.put("userid", mUserId);
-            data.put("message", mUsername + " joined");
-        } catch(JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        mSocket.emit("addUser", data);
     }
 
     @Override
@@ -256,6 +240,44 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
+
+        if(!mSocket.connected()) {
+            try {
+                String url = getString(R.string.squaresUrl);
+                Log.d(TAG, "onCreate: " + url);
+                mSocket = IO.socket(url);
+
+                mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+                mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+
+                mSocket.on("sendMessage", onSendMessage);
+                mSocket.on("newMessage", onNewMessage);
+                mSocket.on("ping", onPing);
+
+                mSocket.connect();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+
+            messageAdapter.clear();
+            getRecentMessages(RECENT_MESSAGES_NUM);
+        }
+
+        mUsername = InSquareProfile.getUsername();
+        mUserId = InSquareProfile.getUserId();
+
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("room", mSquareId);
+            data.put("username", mUsername);
+            data.put("userid", mUserId);
+            data.put("message", mUsername + " joined");
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        mSocket.emit("addUser", data);
     }
 
     /**
@@ -282,6 +304,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onPause() {
         super.onPause();
+        mSocket.disconnect();
+        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.off("sendMessage", onSendMessage);
+        mSocket.off("newMessage", onNewMessage);
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         sharedPreferences.edit().remove("actualSquare").apply();
@@ -295,12 +322,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        mSocket.disconnect();
-        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        mSocket.off("sendMessage", onSendMessage);
-        mSocket.off("newMessage", onNewMessage);
         
         /*
             mSocket.off("typing", onTyping);
