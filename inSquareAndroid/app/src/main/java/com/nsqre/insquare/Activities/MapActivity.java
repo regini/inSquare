@@ -36,16 +36,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
@@ -53,7 +45,6 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.SearchAdapter;
 import com.nsqre.insquare.Square.Square;
-import com.nsqre.insquare.Square.SquareDeserializer;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
@@ -68,10 +59,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapActivity extends AppCompatActivity
         implements InSquareProfile.InSquareProfileListener
@@ -423,58 +411,55 @@ public class MapActivity extends AppCompatActivity
                         .build());
                 // [END feedback_event]
 
-                final Dialog d = new Dialog(this);
-                d.setContentView(R.layout.dialog_feedback);
-                d.setTitle("Feedback");
-                d.setCancelable(true);
-                d.show();
+                final Dialog feedbackDialog = new Dialog(this);
+                feedbackDialog.setContentView(R.layout.dialog_feedback);
+                feedbackDialog.setTitle("Invia Feedback");
+                feedbackDialog.setCancelable(true);
+                feedbackDialog.show();
 
-                final EditText feedbackText = (EditText) d.findViewById(R.id.dialog_feedbacktext);
-                Button confirm = (Button) d.findViewById(R.id.dialog_feedback_confirm_button);
-                confirm.setOnClickListener(new View.OnClickListener() {
+                final EditText feedbackEditText = (EditText) feedbackDialog.findViewById(R.id.dialog_feedbacktext);
+
+                // Parametri:
+                final String feedbackParam = feedbackEditText.getText().toString().trim();
+                final String activityParam = this.getClass().getSimpleName();
+                final String userIdParam = InSquareProfile.getUserId();
+
+                Button confirm = (Button) feedbackDialog.findViewById(R.id.dialog_feedback_confirm_button);
+                confirm.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
                     public void onClick(View v) {
-
-                        // TODO Muovere dentro VolleyManager
-                        final String feedback = feedbackText.getText().toString();
-                        final String activity = this.getClass().getSimpleName();
-                        // Instantiate the RequestQueue.
-                        RequestQueue queue = Volley.newRequestQueue(MapActivity.this);
-                        String url = getString(R.string.feedbackUrl);
-
-                        // Request a string response from the provided URL.
-                        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                                new Response.Listener<String>() {
+                        VolleyManager.getInstance().postFeedback(
+                                feedbackParam,
+                                userIdParam,
+                                activityParam,
+                                new VolleyManager.VolleyResponseListener() {
                                     @Override
-                                    public void onResponse(String response) {
-                                        Log.d(TAG,"VOLLEY ServerResponse: "+response);
-                                        CharSequence text = getString(R.string.thanks_feedback);
-                                        int duration = Toast.LENGTH_SHORT;
-                                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                        toast.show();
+                                    public void responseGET(Object object) {
+                                        // Vuoto -- POST Request
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "VOLLEY " + error.toString());
-                                CharSequence text = getString(R.string.error_feedback);
-                                int duration = Toast.LENGTH_SHORT;
-                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                toast.show();
-                            }
-                        }) {
-                            @Override
-                            protected Map<String, String> getParams() {
-                                Map<String, String> params = new HashMap<String, String>();
-                                params.put("feedback", feedback);
-                                params.put("username", InSquareProfile.getUserId());
-                                params.put("activity", activity);
-                                return params;
-                            }
 
-                        };
-                        queue.add(stringRequest);
-                        d.dismiss();
+                                    @Override
+                                    public void responsePOST(Object object) {
+                                        if(object == null){
+                                            Toast.makeText(MapActivity.this, "Non sono riuscito ad inviare il feedback!", Toast.LENGTH_LONG).show();
+                                        }else {
+                                            Toast.makeText(MapActivity.this, "Feedback inviato con successo!", Toast.LENGTH_SHORT).show();
+                                            feedbackDialog.dismiss();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void responsePATCH(Object object) {
+                                        // Vuoto -- POST Request
+                                    }
+
+                                    @Override
+                                    public void responseDELETE(Object object) {
+                                        // Vuoto -- POST Request
+                                    }
+                                }
+                        );
                     }
                 });
             default:
@@ -608,113 +593,99 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void getOwnedSquares() {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("%1$s?byOwner=%2$s&ownerId=%3$s",
-                getString(R.string.squaresUrl), "true",InSquareProfile.getUserId());
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().getOwnedSquares("true", InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        GsonBuilder b = new GsonBuilder();
-                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
-                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-                        Gson gson = b.create();
-                        try {
-                            Square[] squares = gson.fromJson(response, Square[].class);
-                            InSquareProfile.setOwnedSquaresList(new ArrayList<>(Arrays.asList(squares)));
-                            InSquareProfile.save(getApplicationContext());
-//                        Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET: getOwnedSquares returned NULL!");
+                        } else {
+                            InSquareProfile.setOwnedSquaresList((ArrayList<Square>) object);
+                            Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
 //                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
-                        } catch (Exception ex) {
-                          ex.printStackTrace();
+
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "GETOWNEDSQUARES" + error.toString());
-            }
-        });
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+
+                    }
+                });
     }
 
     public void getFavouriteSquares() {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        String url = String.format("%1$s/%2$s",
-                getString(R.string.favouritesquaresUrl), InSquareProfile.getUserId());
-
-        Log.d(TAG, "getFavouriteSquares: " + url);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().getFavoriteSquares(InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        GsonBuilder b = new GsonBuilder();
-                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-//                        Log.d(TAG, "onResponse: " + response);
-                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-                        Gson gson = b.create();
-                        try {
-                            Square[] squares = gson.fromJson(response, Square[].class);
-                            InSquareProfile.setFavouriteSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
-//                        userProfile.favouriteSquaresList = new ArrayList<>(Arrays.asList(squares));
-                            InSquareProfile.save(getApplicationContext());
-//                            Log.d(TAG, "onResponse Favourites: " + InSquareProfile.getFavouriteSquaresList().toString());
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET: getFavoriteSquares returned NULL!");
+                        } else {
+                            InSquareProfile.setFavouriteSquaresList((ArrayList<Square>) object);
+                            Log.d(TAG, "onResponse: ho ottenuto FAVS con successo!");
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "GETFAVOURITESQUARES " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Empty - GET Request
+                    }
+                });
     }
 
     public void getRecentSquares() {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format("%1$s/%2$s",
-                getString(R.string.recentSquaresUrl), InSquareProfile.getUserId());
-
-        Log.d(TAG, "getRecentSquares: " + url);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        
+        VolleyManager.getInstance().getRecentSquares(
+                InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        GsonBuilder b = new GsonBuilder();
-                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-//                        Log.d(TAG, "onResponse: " + response);
-                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-                        Gson gson = b.create();
-                        try {
-                            Square[] squares = gson.fromJson(response, Square[].class);
-//                        userProfile.recentSquaresList = new ArrayList<>(Arrays.asList(squares));
-                            InSquareProfile.setRecentSquaresList(new ArrayList<Square>(Arrays.asList(squares)));
-//                        userProfile.save(getApplicationContext());
-                            InSquareProfile.save(getApplicationContext());
-//                            Log.d(TAG, "onResponse Recents: " + InSquareProfile.getRecentSquaresList().toString());
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                    public void responseGET(Object object) {
+                        if(object == null)
+                        {
+                            Log.d(TAG, "responseGET: getRecentSquares returned NULL!");
+                        }else
+                        {
+                            InSquareProfile.setRecentSquaresList((ArrayList<Square>) object);
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "GETRECENTQUARES " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Empty - GET Request
+                    }
+                }
+        );
     }
 
     public ProfileFragment getProfileFragment() {
@@ -799,8 +770,8 @@ public class MapActivity extends AppCompatActivity
                 new VolleyManager.VolleyResponseListener() {
             @Override
             public void responseGET(Object object) {
-                Square[] squaresResponse = (Square[]) object;
-                searchItems = Arrays.asList(squaresResponse);
+
+                searchItems = (List<Square>) object;
             }
 
             @Override
