@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +36,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nsqre.insquare.ChatService;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
@@ -48,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +60,7 @@ import java.util.Map;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
-public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
+public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener {
 
     private static final String TAG = "ChatActivity";
     
@@ -86,6 +89,22 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private Tracker mTracker;
     private Locale format;
+
+    //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            //se mettiamo degli extra nell'intent di chat service
+            if (bundle != null) {
+                //HO INVIATO IL MESSAGGIO
+                Toast.makeText(ChatActivity.this, "Inviato dentro if", Toast.LENGTH_SHORT).show();
+            }
+            //se non mettiamo gli extra
+            Toast.makeText(ChatActivity.this, "Inviato", Toast.LENGTH_SHORT).show();
+        }
+    };
+
 
     /**
      * Initializes the socket.io components, downloads the messages present in the chat and eventually puts to zero the
@@ -127,8 +146,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             mSocket.on("stop typing", onStopTyping);
             mSocket.on("login", onLogin);
             */
-
             mSocket.connect();
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -172,6 +191,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
         sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
+
     }
 
     /**
@@ -254,6 +274,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        registerReceiver(messageReceiver, new IntentFilter(ChatService.NOTIFICATION));
     }
 
     /**
@@ -263,7 +285,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("event");
-            Log.d("receiver", "Got message: " + message);
+            Log.d("messageReceiver", "Got message: " + message);
             if("deletion".equals(intent.getStringExtra("action"))) {
                 if(mSquareId.equals(intent.getStringExtra("squareId"))) {
                     messageAdapter.clear();
@@ -283,6 +305,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         sharedPreferences.edit().remove("actualSquare").apply();
+
+        unregisterReceiver(messageReceiver);
     }
 
     @Override
@@ -350,25 +374,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText.setText("");
 
-        // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
-        addMessage(new Message(message, mUsername, mUserId, format));
+        Intent intent = new Intent(this, ChatService.class);
+        intent.putExtra("squareid", mSquareId);
+        intent.putExtra("username", mUsername);
+        intent.putExtra("userid", mUserId);
+        intent.putExtra("message", message);
+        startService(intent);
 
-        // Il server riceve un oggetto in JSON che deve essere processato
-        JSONObject data = new JSONObject();
-
-        try{
-            data.put("room", mSquareId);
-            data.put("username", mUsername);
-            data.put("userid", mUserId);
-            data.put("message", message);
-        }catch(JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        Log.d(TAG, "profilo " + InSquareProfile.printProfile());
-        //This is the callback that socket.io uses to understand that an event has been triggered
-        mSocket.emit("sendMessage", data);
+        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
     }
 
 
@@ -473,6 +486,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
+    public Socket getmSocket() {
+        return mSocket;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
