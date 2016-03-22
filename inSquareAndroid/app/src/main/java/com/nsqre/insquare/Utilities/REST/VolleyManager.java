@@ -574,6 +574,45 @@ public class VolleyManager {
         requestQueue.add(patchDescriptionRequest);
     }
 
+    public void patchLocation(
+            final String latitude,
+            final String longitude,
+            final String userId,
+            final String isUpdateLocation,
+            final VolleyResponseListener listener
+    )
+    {
+        String volleyURL = prefixURL + "user";
+
+        StringRequest patchLocationRequest = new StringRequest(Request.Method.PATCH, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Response is: " + response);
+                        listener.responsePATCH(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, error.toString());
+                        listener.responsePATCH(null);
+                    }
+        }) {
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("lat", latitude);
+                params.put("lon", longitude);
+                params.put("userId", userId);
+                params.put("updateLocation",isUpdateLocation);
+                return params;
+            }
+        };
+
+        requestQueue.add(patchLocationRequest);
+    }
+
     public void deleteSquare(
             final String squareId,
             final String ownerId,
