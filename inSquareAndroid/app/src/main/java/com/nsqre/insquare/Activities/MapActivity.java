@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -59,9 +60,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
-public class MapActivity extends AppCompatActivity
+public class  MapActivity extends AppCompatActivity
         implements InSquareProfile.InSquareProfileListener
 {
     public static final String TAG_PROFILE_FRAGMENT = "PROFILE";
@@ -101,7 +105,7 @@ public class MapActivity extends AppCompatActivity
 
     private MapActivity mp;
     private List<Square> searchItems;
-
+    private MatrixCursor cursor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,14 +117,15 @@ public class MapActivity extends AppCompatActivity
         mTracker = application.getDefaultTracker();
 
         // SEARCH
-
+        searchItems = new ArrayList<>();
+        /*
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //MapFragment mFrag = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
             searchSquares(query);
         }
-
+        */
 
         //IMMAGINE
         drawerImage = (ImageView) findViewById(R.id.drawer_avatar);
@@ -300,13 +305,15 @@ public class MapActivity extends AppCompatActivity
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    loadHistory(query);
+                    // loadHistory(query);
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String query) {
-                    loadHistory(query);
+                    if(query.length()>=3){
+                        loadHistory(query);
+                    }
                     return true;
                 }
             });
@@ -341,13 +348,12 @@ public class MapActivity extends AppCompatActivity
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
             // Cursor
-            String[] columns = new String[] { "_id", "text" };
+            final String[] columns = new String[] { "_id", "text" };
             Object[] temp = new Object[] { 0, "default" };
 
-            MatrixCursor cursor = new MatrixCursor(columns);
+            cursor = new MatrixCursor(columns);
             if(searchItems!=null) {
                 for (int i = 0; i < searchItems.size(); i++) {
-
                     temp[0] = i;
                     temp[1] = searchItems.get(i).getName(); //replaced s with i as s not used anywhere.
                     cursor.addRow(temp);
@@ -369,16 +375,20 @@ public class MapActivity extends AppCompatActivity
                 @Override
                 public boolean onSuggestionClick(int position) {
                     Log.d("POSITION CLICK", ""+position);
-                    Square s = searchItems.get(position);
-                    if(s!=null) {
-                        mapFragment.startChatActivity(s);
-                        mapFragment.setMapInPosition(s.getLat(), s.getLon());
+                    if(position<searchItems.size()) {
+                        Square s = searchItems.get(position);
+                        if (s != null) {
+                            mapFragment.startChatActivity(s);
+                            mapFragment.setMapInPosition(s.getLat(), s.getLon());
+                        }
+                        searchItems = new ArrayList<Square>();
+                        cursor = new MatrixCursor(columns);
                     }
                     return true;
                 }
             });
 
-            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems, mapFragment));
+            search.setSuggestionsAdapter(new SearchAdapter(this, cursor, searchItems));
         }
     }
 

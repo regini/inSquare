@@ -34,13 +34,11 @@ import java.util.List;
 public class SearchAdapter extends CursorAdapter {
 
     private List<Square> items;
-    private MapFragment mapFragment;
     private TextView text;
 
-    public SearchAdapter(Context context, Cursor cursor, List<Square> items, MapFragment mapFragment) {
+    public SearchAdapter(Context context, Cursor cursor, List<Square> items) {
         super(context, cursor, false);
         this.items = items;
-        this.mapFragment = mapFragment;
     }
 
     @Override
