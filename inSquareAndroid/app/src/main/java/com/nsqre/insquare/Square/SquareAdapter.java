@@ -13,16 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
 
@@ -146,43 +142,45 @@ public class SquareAdapter extends BaseAdapter {
     }
 
     public void favouriteSquare(final int method, final Square square) {
-        // TODO VolleyManager - Favorite Square
-        RequestQueue queue = Volley.newRequestQueue(activity);
-        final String squareId = square.getId();
-        final String userId = InSquareProfile.getUserId();
-        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
-        url += "squareId=" + squareId;
-        url += "&userId=" + userId;
-        Log.d(TAG, "favouriteSquare: " + url);
-        StringRequest postRequest = new StringRequest(method, url,
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response) {
-                        updateView(method, square);
-                        Log.d(TAG, "FAVOURITE response => " + response);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "FAVOURITE error => "+error.toString());
-                    }
-                }
-        );
-        queue.add(postRequest);
-    }
 
-    public void updateView (int method, Square square) {
+        VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // method e' POST o DELETE
+                    }
 
-        if (method == Request.Method.DELETE) {
-            InSquareProfile.removeFav(square.getId());
-            notifyDataSetChanged();
-        } else {
-            InSquareProfile.addFav(square);
-            notifyDataSetChanged();
-        }
+                    @Override
+                    public void responsePOST(Object object) {
+                        if(object == null)
+                        {
+                            //La richiesta e' fallita
+                            Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
+                        }else
+                        {
+                            notifyDataSetChanged();
+                            InSquareProfile.addFav(square);
+                        }
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // method e' POST o DELETE
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        if(object == null)
+                        {
+                            //La richiesta e' fallita
+                            Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
+                        }else
+                        {
+                            notifyDataSetChanged();
+                            InSquareProfile.removeFav(square.getId());
+                        }
+                    }
+                });
     }
 
     public static class ViewHolder {
