@@ -21,6 +21,7 @@ public class NotificationHelper {
     public final static String TAG = NotificationHelper.class.getSimpleName();
 
     private WeakReference<Context> mContext;
+    private static String fotoURL;
 
     public NotificationHelper(Context context) {
         this.mContext = new WeakReference<>(context);
@@ -71,6 +72,7 @@ public class NotificationHelper {
                 (NotificationManager) mContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(mContext.get().getString(R.string.app_name).hashCode(), mBuilder.build());
+        fotoURL = response.data.link;
     }
 
     public void createFailedUploadNotification() {
@@ -87,5 +89,9 @@ public class NotificationHelper {
                 (NotificationManager) mContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(mContext.get().getString(R.string.app_name).hashCode(), mBuilder.build());
+    }
+
+    public static String getFotoURL() {
+        return fotoURL;
     }
 }
