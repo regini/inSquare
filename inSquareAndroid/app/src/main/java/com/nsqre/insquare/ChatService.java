@@ -19,6 +19,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -31,7 +33,7 @@ public class ChatService extends IntentService {
     private static final String TAG = "ChatService";
     public static final String NOTIFICATION = "notification";
     private Socket mSocket;
-    private final int MAX_RETRY = 5;
+    private final int MAX_RETRY = 10;
     private int retryNumber;
     
     public ChatService() {
@@ -82,16 +84,18 @@ public class ChatService extends IntentService {
             Log.d(TAG, "sendMessage: " + e.toString());
             retryNumber++;
             if (retryNumber < MAX_RETRY) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendMessage(data);
-                    }
-                }, 3000);
+                new Timer().schedule(
+                        new TimerTask() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG, "run: Eseguo sendmessage tentativo num: " + retryNumber);
+                                sendMessage(data);
+                            }
+                        },
+                        5000);
             }
             else {
-                Toast.makeText(getApplicationContext(), "messaggio non inviato", Toast.LENGTH_SHORT);
+                Log.d(TAG, "sendMessage: messaggio non inviato per num tentativi troppo alto");
             }
         }
     }

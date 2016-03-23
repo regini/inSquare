@@ -92,10 +92,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             //se mettiamo degli extra nell'intent di chat service
             if (bundle != null) {
                 //HO INVIATO IL MESSAGGIO
-                Toast.makeText(ChatActivity.this, "Inviato dentro if", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onReceive: messaggio inviato con chatservice");
             }
             //se non mettiamo gli extra
-            Toast.makeText(ChatActivity.this, "Inviato", Toast.LENGTH_SHORT).show();
         }
     };
 
