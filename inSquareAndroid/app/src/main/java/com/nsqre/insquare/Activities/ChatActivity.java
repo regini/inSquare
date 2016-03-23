@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +25,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -38,14 +42,27 @@ import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.Photo.helpers.DocumentHelper;
+import com.nsqre.insquare.Utilities.Photo.helpers.IntentHelper;
+import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
+import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
+import com.nsqre.insquare.Utilities.Photo.services.UploadService;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
@@ -82,6 +99,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
+
+
+    private Upload upload; // Upload object containging image and meta data
+    private File chosenFile; //chosen file from intent
+
+
     //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -106,6 +129,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //FOTO
+        //ButterKnife.bind(this);
+
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -121,11 +147,20 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         setContentView(R.layout.activity_chat);
 
-        ImageButton imageButton = (ImageButton) findViewById(R.id.chat_send_button);
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptSend();
+            }
+        });
+
+        //Foto
+        ImageButton uploadImage = (ImageButton) findViewById(R.id.chat_foto_button);
+        uploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onChooseImage();
             }
         });
 
@@ -658,4 +693,74 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
+    @OnClick(R.id.chat_foto_button)
+    public void onChooseImage() {
+        IntentHelper.chooseFileIntent(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri returnUri;
+
+        if (requestCode != IntentHelper.FILE_PICK) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        returnUri = data.getData();
+        String filePath = DocumentHelper.getPath(this, returnUri);
+        //Safety check to prevent null pointer exception
+        if (filePath == null || filePath.isEmpty()) return;
+        chosenFile = new File(filePath);
+        uploadImage(); //TO DOOOOOOO
+    }
+
+
+    public void uploadImage() {
+    /*
+      Create the @Upload object
+     */
+        if (chosenFile == null) return;
+        createUpload(chosenFile);
+
+    /*
+      Start upload
+     */
+        new UploadService(this).Execute(upload, new UiCallback());
+    }
+
+    private void createUpload(File image) {
+        Log.d("createUpload", "createUpload");
+        upload = new Upload();
+
+        upload.image = image;
+    }
+
+    private void clearInput() {
+        Log.d("clearInput", "clearInput");
+        //uploadImage.setImageResource(R.drawable.ic_add_a_photo_black_48dp);
+    }
+
+    private class UiCallback implements Callback<ImageResponse> {
+
+        @Override
+        public void success(ImageResponse imageResponse, Response response) {
+            Log.d("success", "success");
+            clearInput();
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            Log.d("failure", "failure");
+            //Assume we have no connection, since error is null
+            if (error == null) {
+                //TO DOOOO
+                Log.d("ERROR UiCallback", "ERROR UiCallback");
+            }
+        }
+    }
 }
