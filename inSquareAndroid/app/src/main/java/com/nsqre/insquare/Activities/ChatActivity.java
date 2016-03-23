@@ -44,6 +44,7 @@ import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Photo.helpers.DocumentHelper;
 import com.nsqre.insquare.Utilities.Photo.helpers.IntentHelper;
+import com.nsqre.insquare.Utilities.Photo.helpers.NotificationHelper;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
 import com.nsqre.insquare.Utilities.Photo.services.UploadService;
@@ -432,6 +433,49 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
     }
 
+    /**
+     * Attempts to send a foto throught a socket event, if the message is valid
+     */
+    private void attemptSendFoto(String fotoURL) {
+        // [START message_event]
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Send Message")
+                .build());
+        // [END message_event]
+
+        if(mUsername == null)
+        {
+            Log.d(TAG, "attemptSend: there's no Username specified");
+            return;
+        }
+        /*
+        if(!mSocket.connected())
+        {
+            Log.d(TAG, "attemptSend: Socket is not connected");
+            return;
+        }
+        */
+        String message = fotoURL;
+        if (TextUtils.isEmpty(message)) {
+            chatEditText.requestFocus();
+            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
+
+            return;
+        }
+
+        chatEditText.setText("");
+
+        Intent intent = new Intent(this, ChatService.class);
+        intent.putExtra("squareid", mSquareId);
+        intent.putExtra("username", mUsername);
+        intent.putExtra("userid", mUserId);
+        intent.putExtra("message", message);
+        startService(intent);
+
+        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
+    }
+
 
     /**
      * TODO sistemare
@@ -662,12 +706,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
                     @Override
                     public void responsePOST(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
-                        }else
-                        {
+                        } else {
                             InSquareProfile.addFav(square);
                             mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
                         }
@@ -731,6 +773,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
       Start upload
      */
         new UploadService(this).Execute(upload, new UiCallback());
+
     }
 
     private void createUpload(File image) {
@@ -749,6 +792,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         @Override
         public void success(ImageResponse imageResponse, Response response) {
+            attemptSendFoto(response.getUrl());
             Log.d("success", "success");
             clearInput();
         }

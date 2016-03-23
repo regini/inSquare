@@ -27,6 +27,8 @@ public class UploadService {
 
     private WeakReference<Context> mContext;
 
+
+
     public UploadService(Context context) {
         this.mContext = new WeakReference<>(context);
     }
@@ -91,4 +93,6 @@ public class UploadService {
             imgurAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
         return imgurAdapter;
     }
+
+
 }
