@@ -792,8 +792,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         @Override
         public void success(ImageResponse imageResponse, Response response) {
-            attemptSendFoto(response.getUrl());
-            Log.d("success", "success");
+            attemptSendFoto(imageResponse.data.link);
+            Log.d("success", imageResponse.data.link);
             clearInput();
         }
 
