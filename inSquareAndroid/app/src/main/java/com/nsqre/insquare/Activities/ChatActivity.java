@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -84,6 +86,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private String mUsername;
     private String mUserId;
 
+    private boolean isScrolled;
+
     private Tracker mTracker;
     private Locale format;
 
@@ -104,34 +108,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         format = getResources().getConfiguration().locale;
 
-        try {
+        isScrolled = false;
 
-            // Si connette alla socket che e' una sola
-            // La Room viene gestita a livello server tramite socket.join(room)
-            String url = getString(R.string.squaresUrl);
-            Log.d(TAG, "onCreate: " + url);
-            mSocket = IO.socket(url);
-
-            messageAdapter = new MessageAdapter(getApplicationContext());
-            messageAdapter.setOnClickListener(this);
-
-            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-
-            mSocket.on("sendMessage", onSendMessage);
-            mSocket.on("newMessage", onNewMessage);
-            mSocket.on("ping", onPing);
-
-            /*
-            mSocket.on("typing", onTyping);
-            mSocket.on("stop typing", onStopTyping);
-            mSocket.on("login", onLogin);
-            */
-
-            mSocket.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        messageAdapter = new MessageAdapter(getApplicationContext());
+        messageAdapter.setOnClickListener(this);
 
         setContentView(R.layout.activity_chat);
 
@@ -162,9 +142,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         mSquareId = mSquare.getId();
         mSquareName = mSquare.getName();
-
-        // Get Messaggi recenti
-        getRecentMessages(RECENT_MESSAGES_NUM);
 
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         if(sharedPreferences.contains(mSquareId)) {
@@ -241,27 +218,25 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
 
-        if(!mSocket.connected()) {
-            try {
-                String url = getString(R.string.squaresUrl);
-                Log.d(TAG, "onCreate: " + url);
-                mSocket = IO.socket(url);
+        try {
+            String url = getString(R.string.squaresUrl);
+            Log.d(TAG, "onCreate: " + url);
+            mSocket = IO.socket(url);
 
-                mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-                mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
-                mSocket.on("sendMessage", onSendMessage);
-                mSocket.on("newMessage", onNewMessage);
-                mSocket.on("ping", onPing);
+            mSocket.on("sendMessage", onSendMessage);
+            mSocket.on("newMessage", onNewMessage);
+            mSocket.on("ping", onPing);
 
-                mSocket.connect();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-
-            messageAdapter.clear();
-            getRecentMessages(RECENT_MESSAGES_NUM);
+            mSocket.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
+
+        // Get Messaggi recenti
+        getRecentMessages(RECENT_MESSAGES_NUM);
 
         mUsername = InSquareProfile.getUsername();
         mUserId = InSquareProfile.getUserId();
@@ -278,6 +253,27 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
 
         mSocket.emit("addUser", data);
+
+        final View rootView = this.getWindow().getDecorView(); // this = activity
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if(isScrolled) {
+                    isScrolled = false;
+                    return;
+                }
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+
+                int screenHeight = rootView.getHeight();
+                int heightDifference = screenHeight - (r.bottom - r.top);
+
+                if (heightDifference > screenHeight / 3) {
+                    recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+                    isScrolled = true;
+                }
+            }
+        });
     }
 
     /**
@@ -334,17 +330,20 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * Adds a message to the view
      * @param m The message you want to add
      */
-    private void addMessage(Message m)
-    {
-        messageAdapter.addItem(m);
+    private void addMessage(Message m) {
+        if(m.getId() != null && messageAdapter.contains(m)) {
+            return;
+        } else {
+            messageAdapter.addItem(m);
+        }
         recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+        isScrolled = true;
     }
 
     /**
      * Attempts to send a message throught a socket event, if the message is valid
      */
-    private void attemptSend()
-    {
+    private void attemptSend() {
         // [START message_event]
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
@@ -668,4 +667,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // TODO implementare onclick behavior per i messaggi nella chat
         Log.d(TAG, "onItemClick: I've just clicked item " + position);
     }
+
+
 }
