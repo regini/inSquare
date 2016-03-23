@@ -14,6 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
 
@@ -49,7 +50,9 @@ public class VolleyManager {
     private static VolleyManager instance = null;
     private static Locale locale;
 
-    private static final String prefixURL = "http://recapp-insquare.rhcloud.com/";
+    private String[] URL_Array;
+    private String baseURL;
+    boolean connection;
 
     public RequestQueue requestQueue;
 
@@ -67,7 +70,6 @@ public class VolleyManager {
             instance = new VolleyManager(c);
         }
         Log.d(TAG, "getInstance: returning VolleyManger");
-
         return instance;
     }
 
@@ -82,9 +84,15 @@ public class VolleyManager {
         return instance;
     }
 
+    public void startConnection(){
+        initializesURL();
+        findBaseURL();
+    }
+
     public void searchSquaresByName(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
     {
-        String reqURL = prefixURL + "squares?";
+        startConnection();
+        String reqURL = baseURL + "squares?";
         String name = emptySpacesForParams(query);
 
         reqURL += "name=" + name;
@@ -125,7 +133,8 @@ public class VolleyManager {
                                   final VolleyResponseListener listener
     )
     {
-        String reqURL = prefixURL + "squares?";
+        startConnection();
+        String reqURL = baseURL + "squares?";
         reqURL += "distance=" + distance;
         reqURL += "&lat=" + lat;
         reqURL += "&lon=" + lon;
@@ -161,7 +170,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "messages?";
+        startConnection();
+        String volleyURL = baseURL + "messages?";
         volleyURL += "recent=" + isRecentRequest;
         volleyURL += "&size=" + howMany;
         volleyURL += "&square=" + squareId;
@@ -198,7 +208,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "favouritesquares?";
+        startConnection();
+        String volleyURL = baseURL + "favouritesquares?";
         volleyURL += "squareId=" + squareId;
         volleyURL += "&userId=" + userId;
 
@@ -245,7 +256,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "auth/" + service + "/token";
+        startConnection();
+        String volleyURL = baseURL + "auth/" + service + "/token";
 
         Log.d(TAG, "postLoginToken: " + volleyURL);
 
@@ -281,7 +293,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "gcmToken";
+        startConnection();
+        String volleyURL = baseURL + "gcmToken";
 
         StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -316,9 +329,10 @@ public class VolleyManager {
                              String fromActivity,
                              final VolleyResponseListener listener)
     {
+        startConnection();
         String feedbackParam = emptySpacesForParams(feedback);
 
-        String volleyURL = prefixURL + "feedback?";
+        String volleyURL = baseURL + "feedback?";
         volleyURL += "feedback=" + feedbackParam;
         volleyURL += "&username=" + userId;
         volleyURL += "&activity=" + fromActivity;
@@ -357,10 +371,11 @@ public class VolleyManager {
                            final String ownerId,
                            final VolleyResponseListener listener)
     {
+        startConnection();
         String name = emptySpacesForParams(squareName);
         String description = emptySpacesForParams(squareDescr);
 
-        String volleyURL = prefixURL + "squares?";
+        String volleyURL = baseURL + "squares?";
         volleyURL += "name=" + name;
         volleyURL += "&description=" + description;
         volleyURL += "&lat=" + latitude;
@@ -399,7 +414,8 @@ public class VolleyManager {
                                 String ownerId,
                                 final VolleyResponseListener listener)
     {
-        String volleyURL = prefixURL + "squares?";
+        startConnection();
+        String volleyURL = baseURL + "squares?";
         volleyURL += "byOwner=" + byOwner;
         volleyURL += "&ownerId=" + ownerId;
 
@@ -433,7 +449,8 @@ public class VolleyManager {
             final String userId,
             final VolleyResponseListener listener)
     {
-        String volleyURL = prefixURL + "favouritesquares/";
+        startConnection();
+        String volleyURL = baseURL + "favouritesquares/";
         volleyURL += userId;
 
         Log.d(TAG, "getFavoriteSquares url: " + volleyURL);
@@ -471,7 +488,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "recentSquares/";
+        startConnection();
+        String volleyURL = baseURL + "recentSquares/";
         volleyURL += userId;
 
         Log.d(TAG, "getRecentSquares url: " + volleyURL);
@@ -503,6 +521,7 @@ public class VolleyManager {
     // Deserializza dalla risposta JSON una lista di Squares
     public List<Square> deserializeSquares(String jsonResponse)
     {
+
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
         Type listType = new TypeToken<ArrayList<Square>>() {
@@ -533,7 +552,8 @@ public class VolleyManager {
             final String ownerId,
             final VolleyResponseListener listener)
     {
-        String volleyURL = prefixURL + "squares?";
+        startConnection();
+        String volleyURL = baseURL + "squares?";
         String nameParam = emptySpacesForParams(name);
         String descriptionParam = emptySpacesForParams(description);
 
@@ -582,7 +602,8 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        String volleyURL = prefixURL + "user";
+        startConnection();
+        String volleyURL = baseURL + "user";
 
         StringRequest patchLocationRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {
@@ -617,7 +638,8 @@ public class VolleyManager {
             final String squareId,
             final String ownerId,
             final VolleyResponseListener listener) {
-        String volleyURL = prefixURL + "squares?";
+        startConnection();
+        String volleyURL = baseURL + "squares?";
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&ownerId=" + ownerId;
         Log.d(TAG, "deleteSquare url: " + volleyURL);
@@ -650,5 +672,82 @@ public class VolleyManager {
         // Negli url gli spazi vuoti compaiono come %20
         String res = urlParameter.replace(" ", "%20");
         return res;
+    }
+
+    private void initializesURL(){
+        //URL_Array = new String[2];
+        URL_Array = new String[1];
+        URL_Array[0] = "http://recapp-insquare.rhcloud.com/";
+        //URL_Array[1] = "http://recapp2-insquare.rhcloud.com/";
+    }
+
+
+    public void ping(String url,
+                     final VolleyResponseListener listener)
+    {
+        final String volleyURL = url + "ping";
+        StringRequest pingRequest = new StringRequest(
+                Request.Method.GET,
+                volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (response.toLowerCase().contains("pong")) {
+                            connection = true;
+                            listener.responseGET(volleyURL.replace("ping", ""));
+                        } else {
+                            Log.d("Ping", " Server: " + volleyURL.replace("ping", "") + "NOT RESPONDING");
+                            listener.responseGET("Error");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.responseGET("Error");
+            }
+        });
+        requestQueue.add(pingRequest);
+    }
+
+    private void findBaseURL() {
+        connection = false;
+        for (int i = 0; i < URL_Array.length; i++) {
+            if (URL_Array[i] != null) {
+                //try {
+                final String urlToPing = URL_Array[i];
+                VolleyManager.getInstance().ping(urlToPing,
+                        new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                if (object == null) {
+                                    Log.d(TAG, "responseGET: ping returned NULL!");
+                                } else if(object.equals("Error")){
+                                    Log.d(TAG, "responseGET: ping returned ERROR!");
+                                }else {
+                                    baseURL = urlToPing;
+                                    connection=true;
+                                }
+                            }
+
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Empty - GET Request
+                            }
+
+                            @Override
+                            public void responsePATCH(Object object) {
+                                // Empty - GET Request
+                            }
+
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // Empty - GET Request
+                            }
+                        }
+                );
+            }
+            if (connection)
+                break;
+        }
     }
 }
