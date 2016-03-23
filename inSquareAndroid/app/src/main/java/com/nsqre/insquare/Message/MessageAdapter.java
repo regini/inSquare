@@ -126,6 +126,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
+    public int size() {
+        return mDataset.size();
+    }
+
     public boolean contains(Message msg) {
         return mDataset.contains(msg);
     }

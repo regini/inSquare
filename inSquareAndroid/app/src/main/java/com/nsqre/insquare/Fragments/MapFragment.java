@@ -39,11 +39,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -72,7 +67,7 @@ import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -560,29 +555,34 @@ public class MapFragment extends Fragment
     }
 
     private void getClosestSquares(String distance, double lat, double lon) {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "http://recapp-insquare.rhcloud.com/squares?";
-        url += "distance=" + distance;
-        url += "&lat=" + lat;
-        url += "&lon=" + lon;
 
-        Log.d(TAG, "getClosestSquares: " + url);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().getClosestSquares(distance, lat, lon,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        new MapFiller().execute(response);
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET ClosestSquares: la risposta era null!");
+                        } else {
+                            String jsonResponse = (String) object;
+                            new MapFiller().execute(jsonResponse);
+                        }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "GetClosestSquares " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Vuoto -- GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Vuoto -- GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto -- GET Request
+                    }
+                });
     }
 
     // Con due locazioni restituisce il valore in km di distanza
@@ -663,44 +663,42 @@ public class MapFragment extends Fragment
                                          final String longitude,
                                          final Marker marker,
                                          final String ownerId) {
-        // Instantiate the RequestQueue.
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://recapp-insquare.rhcloud.com/squares";
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().postSquare(
+                squareName,
+                squareDescr,
+                latitude,
+                longitude,
+                ownerId,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Create Square response: " + response);
-                        GsonBuilder b = new GsonBuilder();
-                        // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-                        b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-                        Gson gson = b.create();
-                        Square s = gson.fromJson(response, Square.class);
-                        squareHashMap.put(marker, s);
-                        marker.setVisible(true);
-                        Snackbar.make(mapCoordinatorLayout, "Square creata!", Snackbar.LENGTH_SHORT).show();
+                    public void responseGET(Object object) {
+                        // Vuoto -- POST Request
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("CreateSquare Response", error.toString());
-            }
-        }) {
-            @Override
-            public Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", squareName);
-                params.put("description", squareDescr);
-                params.put("lat", latitude);
-                params.put("lon", longitude);
-                params.put("ownerId",ownerId);
-                return params;
-            }
-        };
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
+                        } else {
+                            Square postedSquare = (Square) object;
+                            squareHashMap.put(marker, postedSquare);
+                            marker.setVisible(true);
+                            Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Vuoto -- POST Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto -- POST Request
+                    }
+                }
+        );
     }
     
     private void deleteDialog(String name) {
@@ -803,14 +801,13 @@ public class MapFragment extends Fragment
             public void onClick(View v) {
                 final String description = descriptionEditText.getText().toString().trim();
                 final String name = nameEditText.getText().toString().trim();
-                if (description.isEmpty() && name.isEmpty()) {
-                    Snackbar.make(mapCoordinatorLayout, "Devi modificare almeno un campo!", Snackbar.LENGTH_SHORT).show();
+                if (name.isEmpty()) {
+                    Snackbar.make(mapCoordinatorLayout, "Il nome non puo' essere vuoto!", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
-                Log.d(TAG, "onClick: stai tentando di modificare la descrizione:\n" + description);
-                Log.d(TAG, "onClick: stai tentando di modificare il nome:\n" + name);
-                // TODO VolleyManager request per la PATCH descrizione
+//                Log.d(TAG, "onClick: stai tentando di modificare la descrizione:\n" + description);
+//                Log.d(TAG, "onClick: stai tentando di modificare il nome:\n" + name);
                 VolleyManager.getInstance().patchDescription(name, description, mLastSelectedSquareId, InSquareProfile.getUserId(),
                         new VolleyManager.VolleyResponseListener() {
                             @Override
@@ -1081,45 +1078,44 @@ public class MapFragment extends Fragment
     }
 
     public void favouriteSquare(final int method, final Square square) {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // method e' POST o DELETE
+                    }
 
-        String url = "http://recapp-insquare.rhcloud.com/favouritesquares?";
-        url += "squareId=" + square.getId();
-        url += "&userId=" + InSquareProfile.getUserId();
-        Log.d(TAG, "favouriteSquare: " + url);
-        StringRequest postRequest = new StringRequest(method, url,
-                new Response.Listener<String>()
-                {
                     @Override
-                    public void onResponse(String response) {
-                        switch (method)
+                    public void responsePOST(Object object) {
+                        if(object == null)
                         {
-                            case Request.Method.DELETE:
-//                                bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-                                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
-                                InSquareProfile.removeFav(square.getId());
-//                                InSquareProfile.favouriteSquaresList.remove(square);
-                                break;
-                            case Request.Method.POST:
-//                                bottomSheetButton.setImageResource(R.drawable.heart_black);
-                                bottomSheetFab.setImageResource(R.drawable.heart_white);
-                                InSquareProfile.addFav(square);
-//                                InSquareProfile.favouriteSquaresList.add(square);
-                                break;
+                            //La richiesta e' fallita
+                            Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
+                        }else
+                        {
+                            bottomSheetFab.setImageResource(R.drawable.heart_white);
+                            InSquareProfile.addFav(square);
                         }
-//                        Log.d(TAG, "FAVOURITE response => " + response);
                     }
-                },
-                new Response.ErrorListener()
-                {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "FAVOURITE error => "+ error.toString());
+                    public void responsePATCH(Object object) {
+                        // method e' POST o DELETE
                     }
-                }
-        );
-        queue.add(postRequest);
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        if(object == null)
+                        {
+                            //La richiesta e' fallita
+                            Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
+                        }else
+                        {
+                            bottomSheetFab.setImageResource(R.drawable.heart_border_white);
+                            InSquareProfile.removeFav(square.getId());
+                        }
+                    }
+                });
     }
 
     private void updateBottomSheet(Square s) {
@@ -1199,12 +1195,9 @@ public class MapFragment extends Fragment
             if(!isAdded()) {
                 return null;
             }
-            GsonBuilder b = new GsonBuilder();
-            // SquareDeserializer specifica come popolare l'oggetto Message fromJson
-            // Log.d(TAG, "Get Closest Squares onResponse: " + response);
-            b.registerTypeAdapter(Square.class, new SquareDeserializer(getResources().getConfiguration().locale));
-            Gson gson = b.create();
-            Square[] squares = gson.fromJson(String.valueOf(params[0]), Square[].class);
+
+            // @VolleyManager ha già la deserializzazione integrata
+            List<Square> squares = VolleyManager.getInstance().deserializeSquares(String.valueOf(params[0]));
 
             HashMap<String, Square> squarePins = new HashMap<>();
             for(Square s: squares)

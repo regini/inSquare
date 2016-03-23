@@ -64,6 +64,19 @@
             />
 
         <ImageButton
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:src="@drawable/ic_add_a_photo_black_48dp"
+            android:tint="@color/bb_inActiveBottomBarItemColor"
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="1dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
+
+        <ImageButton
             android:id="@+id/chat_send_button"
             android:layout_width="36dp"
             android:layout_height="36dp"

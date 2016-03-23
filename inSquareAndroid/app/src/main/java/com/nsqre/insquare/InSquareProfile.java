@@ -169,21 +169,6 @@ public class InSquareProfile {
         editor.putString(GOOGLE_NAME_KEY, googleName);
 
         editor.commit();
-        /*
-        Log.d(TAG, "Save: " + "==== USER  ====" +
-                "\nID: " + userId +
-                "\nUsername: " + username +
-                "\nEmail: " + email +
-                "\nPicture URL: " + pictureUrl +
-                "\n==== FACEBOOK  ====" +
-                "\nID: " + facebookId +
-                "\nEmail: " + facebookEmail +
-                "\nName : " + facebookName +
-                "\n==== GOOGLE ====" +
-                "\nID: " + googleId +
-                "\nEmail: " + googleEmail +
-                "\nName: " + googleEmail);
-         */
     }
 
     public static String getUsername()
@@ -211,15 +196,6 @@ public class InSquareProfile {
         if(userId != null)
         {
             return userId;
-        }else if(googleId != null)
-        {
-            Log.d(TAG, "getUserId: google id!");
-            return googleId;
-        }
-        else if(facebookId != null)
-        {
-            Log.d(TAG, "getUserId: facebook id!");
-            return facebookId;
         }
 
         Log.d(TAG, "getUserId: Current username is empty");

@@ -25,41 +25,32 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.nsqre.insquare.ChatService;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
-import com.nsqre.insquare.Message.MessageDeserializer;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
-public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener{
+public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener {
 
     private static final String TAG = "ChatActivity";
     
@@ -90,6 +81,22 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private Tracker mTracker;
     private Locale format;
+
+    //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
+    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            //se mettiamo degli extra nell'intent di chat service
+            if (bundle != null) {
+                //HO INVIATO IL MESSAGGIO
+                Toast.makeText(ChatActivity.this, "Inviato dentro if", Toast.LENGTH_SHORT).show();
+            }
+            //se non mettiamo gli extra
+            Toast.makeText(ChatActivity.this, "Inviato", Toast.LENGTH_SHORT).show();
+        }
+    };
+
 
     /**
      * Initializes the socket.io components, downloads the messages present in the chat and eventually puts to zero the
@@ -156,38 +163,39 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * @param quantity
      */
     private void getRecentMessages(int quantity) {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
+
         final String q = new Integer(quantity).toString();
 
-        String url = String.format("%1$s?recent=%2$s&size=%3$s&square=%4$s",
-                getString(R.string.messagesUrl),"true", q, mSquareId);
-
-        Log.d(TAG, "getRecentMessages from: " + url);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        VolleyManager.getInstance().getRecentMessages("true", q, mSquareId,
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-//                        Log.d(TAG + "GETRECENTI", response);
-                        GsonBuilder b = new GsonBuilder();
-                        // MessageDeserializer specifica come popolare l'oggetto Message fromJson
-                        b.registerTypeAdapter(Message.class, new MessageDeserializer(format));
-                        Gson gson = b.create();
-                        Message[] messages = gson.fromJson(response, Message[].class);
-                        Collections.reverse(Arrays.asList(messages));
-                        for (Message m : messages) {
-                            addMessage(m);
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Toast.makeText(ChatActivity.this, "Non sono riuscito ad ottenere i messaggi recenti!", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            ArrayList<Message> messages = (ArrayList<Message>) object;
+                            for (Message m : messages) {
+                                addMessage(m);
+                            }
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "GETRECENTI Error: " + error.toString());
-            }
-        });
-        queue.add(stringRequest);
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Vuoto -- GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Vuoto -- GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto -- GET Request
+                    }
+                });
     }
 
 
@@ -264,7 +272,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }
                 Rect r = new Rect();
                 rootView.getWindowVisibleDisplayFrame(r);
-
                 int screenHeight = rootView.getHeight();
                 int heightDifference = screenHeight - (r.bottom - r.top);
 
@@ -274,6 +281,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }
             }
         });
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
+        mTracker.setScreenName(this.getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        registerReceiver(messageReceiver, new IntentFilter(ChatService.NOTIFICATION));
     }
 
     /**
@@ -283,7 +296,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("event");
-            Log.d("receiver", "Got message: " + message);
+            Log.d("messageReceiver", "Got message: " + message);
             if("deletion".equals(intent.getStringExtra("action"))) {
                 if(mSquareId.equals(intent.getStringExtra("squareId"))) {
                     messageAdapter.clear();
@@ -308,6 +321,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
         SharedPreferences sharedPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         sharedPreferences.edit().remove("actualSquare").apply();
+
+        unregisterReceiver(messageReceiver);
     }
 
     @Override
@@ -356,12 +371,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
-        if(!mSocket.connected()) 
+        /*
+        if(!mSocket.connected())
         {
             Log.d(TAG, "attemptSend: Socket is not connected");
             return;
         }
-
+        */
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
@@ -372,25 +388,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText.setText("");
 
-        // TODO aggiungere una coda di messaggi da mandare quando non ci sta una buona connessione
-        addMessage(new Message(message, mUsername, mUserId, format));
+        Intent intent = new Intent(this, ChatService.class);
+        intent.putExtra("squareid", mSquareId);
+        intent.putExtra("username", mUsername);
+        intent.putExtra("userid", mUserId);
+        intent.putExtra("message", message);
+        startService(intent);
 
-        // Il server riceve un oggetto in JSON che deve essere processato
-        JSONObject data = new JSONObject();
-
-        try{
-            data.put("room", mSquareId);
-            data.put("username", mUsername);
-            data.put("userid", mUserId);
-            data.put("message", message);
-        }catch(JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        Log.d(TAG, "profilo " + InSquareProfile.printProfile());
-        //This is the callback that socket.io uses to understand that an event has been triggered
-        mSocket.emit("sendMessage", data);
+        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
     }
 
 
@@ -509,6 +514,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
+    public Socket getmSocket() {
+        return mSocket;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -535,7 +543,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.instfeedback:
+            case R.id.menu_entry_feedback:
                 // [START feedback_event]
                 mTracker.send(new HitBuilders.EventBuilder()
                         .setCategory("Action")
@@ -548,55 +556,50 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 d.setCancelable(true);
                 d.show();
 
-                final EditText feedbackText = (EditText) d.findViewById(R.id.dialog_feedbacktext);
+                final EditText feedbackEditText = (EditText) d.findViewById(R.id.dialog_feedbacktext);
+
+                final String feedback = feedbackEditText.getText().toString().trim();
+                final String activity = this.getClass().getSimpleName();
+
                 Button confirm = (Button) d.findViewById(R.id.dialog_feedback_confirm_button);
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO Muovere dentro VolleyManager
-                        final String feedback = feedbackText.getText().toString();
-                        final String activity = this.getClass().getSimpleName();
-                        // Instantiate the RequestQueue.
-                        RequestQueue queue = Volley.newRequestQueue(ChatActivity.this);
-                        String url = getString(R.string.feedbackUrl);
 
-                        // Request a string response from the provided URL.
-                        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                                new Response.Listener<String>() {
+                        VolleyManager.getInstance().postFeedback(
+                                feedback,
+                                InSquareProfile.getUserId(),
+                                activity,
+                                new VolleyManager.VolleyResponseListener() {
                                     @Override
-                                    public void onResponse(String response) {
-                                        Log.d(TAG, "VOLLEY ServerResponse: "+response);
-                                        CharSequence text = getString(R.string.thanks_feedback);
-                                        int duration = Toast.LENGTH_SHORT;
-                                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                        toast.show();
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.d(TAG, "VOLLEY " + error.toString());
-                                        CharSequence text = getString(R.string.error_feedback);
-                                        int duration = Toast.LENGTH_SHORT;
-                                        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                        toast.show();
-                                    }
-                                }) {
-                                    @Override
-                                    protected Map<String, String> getParams() {
-                                        Map<String, String> params = new HashMap<String, String>();
-                                        params.put("feedback", feedback);
-                                        params.put("username", mUsername);
-                                        params.put("activity", activity);
-                                        return params;
+                                    public void responseGET(Object object) {
+                                        // Vuoto - POST Request
                                     }
 
-                        };
-                        queue.add(stringRequest);
-                        d.dismiss();
+                                    @Override
+                                    public void responsePOST(Object object) {
+                                        if (object == null) {
+                                            Toast.makeText(ChatActivity.this, "Non sono riuscito ad inviare il feedback", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(ChatActivity.this, "Feedback inviato con successo!", Toast.LENGTH_SHORT).show();
+                                            d.dismiss();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void responsePATCH(Object object) {
+                                        // Vuoto - POST Request
+                                    }
+
+                                    @Override
+                                    public void responseDELETE(Object object) {
+                                        // Vuoto - POST Request
+                                    }
+                                }
+                        );
                     }
                 });
             case R.id.favourite_square_action:
-//                if (mProfile.favouriteSquaresList.contains(mSquare)) {
                 if(InSquareProfile.isFav(mSquare.getId()))
                 {
                     favouriteSquare(Request.Method.DELETE, mSquare);
@@ -613,53 +616,40 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * Creates a Volley request to put/remove a square in/from the favourite squares list, then calls updateList
      * @param method The volley method you want to use(POST to add, DELETE to remove
      * @param square The square you want to add/remove
-     * @see #updateList(int, Square)
      */
     public void favouriteSquare(final int method, final Square square) {
-        // TODO Muovere dentro VolleyManager
-        RequestQueue queue = Volley.newRequestQueue(this);
-        final String squareId = square.getId();
-        final String userId = InSquareProfile.getUserId();
 
-        String url = String.format("%1$s?squareId=%2$s&userId=%3$s",
-                getString(R.string.favouritesquaresUrl), squareId, userId);;
-
-        Log.d(TAG, "favouriteSquare: " + url);
-        StringRequest postRequest = new StringRequest(method, url,
-                new Response.Listener<String>()
-                {
+        VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-                        updateList(method, square);
-                        Log.d(TAG, "FAVOURITE response => " + response);
+                    public void responseGET(Object object) {
+                        // method e' POST o DELETE
                     }
-                },
-                new Response.ErrorListener()
-                {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "FAVOURITE error => "+error.toString());
+                    public void responsePOST(Object object) {
+                        if(object == null)
+                        {
+                            //La richiesta e' fallita
+                            Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
+                        }else
+                        {
+                            InSquareProfile.addFav(square);
+                            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
+                        }
                     }
-                }
-        );
-        queue.add(postRequest);
-    }
 
-    /**
-     * Updates the list of favourite squares
-     * @param method The volley method used
-     * @param square The square to add/remove
-     */
-    public void updateList (int method, Square square) {
-        // Checking the house is not empty!
-        if (method == Request.Method.DELETE) {
-            InSquareProfile.removeFav(square.getId());
-            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // method e' POST o DELETE
+                    }
 
-        } else {
-            InSquareProfile.addFav(square);
-            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
-        }
+                    @Override
+                    public void responseDELETE(Object object) {
+                        InSquareProfile.removeFav(square.getId());
+                        mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+                    }
+                });
     }
 
     @Override
