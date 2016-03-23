@@ -11,6 +11,7 @@ import android.util.Log;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 public class MainActivity extends AppCompatActivity
     implements TabLayout.OnTabSelectedListener

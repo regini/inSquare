@@ -99,6 +99,8 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
+        VolleyManager.getInstance().startConnection();
         Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
@@ -112,7 +114,7 @@ public class LoginActivity extends AppCompatActivity
         // Profilo statico perche' non puo' cambiare.
         // Singleton perche' cosi non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
-        VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
+        //VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
 
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");

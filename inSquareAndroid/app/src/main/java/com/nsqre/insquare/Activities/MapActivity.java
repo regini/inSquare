@@ -83,6 +83,7 @@ public class  MapActivity extends AppCompatActivity
 
     private Tracker mTracker;
 
+
     private SearchView searchView;
     private CursorAdapter mSearchAdapter;
 
@@ -778,7 +779,6 @@ public class  MapActivity extends AppCompatActivity
                 new VolleyManager.VolleyResponseListener() {
             @Override
             public void responseGET(Object object) {
-
                 searchItems = (List<Square>) object;
             }
 

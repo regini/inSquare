@@ -40,6 +40,7 @@
     </plurals>
 
     <!-- URL -->
+    <string name="baseUrl0">http://recapp-insquare.rhcloud.com/</string>
     <string name="squaresUrl">http://recapp-insquare.rhcloud.com/squares</string>
     <string name="recentSquaresUrl">http://recapp-insquare.rhcloud.com/recentSquares</string>
     <string name="userUrl">http://recapp-insquare.rhcloud.com/user</string>
