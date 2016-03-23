@@ -716,7 +716,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //Safety check to prevent null pointer exception
         if (filePath == null || filePath.isEmpty()) return;
         chosenFile = new File(filePath);
-        uploadImage(); //TO DOOOOOOO
+        uploadImage();
     }
 
 
@@ -758,7 +758,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d("failure", "failure");
             //Assume we have no connection, since error is null
             if (error == null) {
-                //TO DOOOO
                 Log.d("ERROR UiCallback", "ERROR UiCallback");
             }
         }
