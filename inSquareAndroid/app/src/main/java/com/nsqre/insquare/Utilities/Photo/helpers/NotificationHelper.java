@@ -22,7 +22,6 @@ public class NotificationHelper {
 
     private WeakReference<Context> mContext;
 
-
     public NotificationHelper(Context context) {
         this.mContext = new WeakReference<>(context);
     }
@@ -72,6 +71,7 @@ public class NotificationHelper {
                 (NotificationManager) mContext.get().getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(mContext.get().getString(R.string.app_name).hashCode(), mBuilder.build());
+
     }
 
     public void createFailedUploadNotification() {
@@ -89,4 +89,5 @@ public class NotificationHelper {
 
         mNotificationManager.notify(mContext.get().getString(R.string.app_name).hashCode(), mBuilder.build());
     }
+
 }

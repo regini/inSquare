@@ -1,16 +1,21 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,13 +35,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.mDataset = new ArrayList<Message>();
     }
 
-
+    //  0 Messaggio TEXT from OTHER USER
+    //  1 Messaggio TEXT from ME
+    //  2 Messaggio PHOTO from OTHER USER
+    //  3 Messaggio PHOTO from ME
     @Override
     public int getItemViewType(int position) {
         Message m = mDataset.get(position);
-        if(m.getFrom().equals(InSquareProfile.getUserId()))
-        {
+
+        if(m.getFrom().equals(InSquareProfile.getUserId())) {
+            if(m.getText().contains("i.imgur.com/")){
+                return 3;
+            }
             return 1;
+        } else if(m.getText().contains("i.imgur.com/")){
+            return 2;
         }
         return 0;
     }
@@ -53,6 +66,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 1:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item_me, parent, false);
                 break;
+            case 2:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.foto_item, parent, false);
+                break;
+            case 3:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.foto_item_me, parent, false);
+                break;
         }
         MessageHolder msgHld = new MessageHolder(view);  //va a 3
         return msgHld;  //dopo aver creato il msgHld va su 4
@@ -62,15 +81,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public void onBindViewHolder(MessageHolder holder, int position) {
         Message m = mDataset.get(position);
-        holder.content.setText(m.getText());
         int type = getItemViewType(position);
         switch (type)
         {
-            case 0:
+            case 0: {
+                holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
                 break;
-            case 1:
+            }
+            case 1: {
+                holder.content.setText(m.getText());
                 break;
+            }
+            case 2: {
+                holder.username.setText(m.getName());
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                break;
+            }
+            case 3: {
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                break;
+            }
         }
 
         String timetoShow = "";
@@ -147,6 +178,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private TextView content;
+        private ImageView foto;
         private TextView username;
         private TextView datetime;
         private RelativeLayout relativeLayout;
@@ -154,7 +186,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         //3: si prende questi dati
         public MessageHolder(View itemView) {
             super(itemView);
-
+            foto = (ImageView) itemView.findViewById((R.id.foto_content));
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
             datetime =  (TextView) itemView.findViewById(R.id.message_timestamp);

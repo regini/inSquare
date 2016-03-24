@@ -22,7 +22,7 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "com.nsqre.insquare"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 7
         versionName "0.7"
@@ -68,6 +68,8 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.roughike:bottom-bar:1.1.6'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.squareup.picasso:picasso:2.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
