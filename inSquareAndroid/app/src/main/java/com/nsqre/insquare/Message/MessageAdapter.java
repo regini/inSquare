@@ -43,11 +43,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         Message m = mDataset.get(position);
 
         if(m.getFrom().equals(InSquareProfile.getUserId())) {
-            if(m.getText().contains("i.imgur.com/")){
+            if(m.getText().contains("http://i.imgur.com/")){
                 return 3;
             }
             return 1;
-        } else if(m.getText().contains("i.imgur.com/")){
+        } else if(m.getText().contains("http://i.imgur.com/")){
             return 2;
         }
         return 0;
