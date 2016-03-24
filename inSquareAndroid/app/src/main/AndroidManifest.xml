@@ -17,7 +17,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-
     <permission
         android:name="com.nsqre.insquare.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -121,7 +120,8 @@
 
         <service
             android:name=".ChatService"
-            android:exported="false"></service>
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

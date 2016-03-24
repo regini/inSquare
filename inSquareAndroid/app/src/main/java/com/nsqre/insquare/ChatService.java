@@ -1,15 +1,12 @@
 package com.nsqre.insquare;
 
-import android.app.IntentService;
-import android.content.ComponentName;
-import android.content.Context;
+import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
+import android.os.IBinder;
+import android.os.IInterface;
 import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
-
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -17,32 +14,27 @@ import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.io.FileDescriptor;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- */
-public class ChatService extends IntentService {
+public class ChatService extends Service {
 
     private static final String TAG = "ChatService";
+
     public static final String NOTIFICATION = "notification";
     private Socket mSocket;
     private final int MAX_RETRY = 10;
     private int retryNumber;
     
     public ChatService() {
-        super("ChatService");
-        retryNumber = 0;
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.d(TAG, "Service onStartCommand: intent is null? " + (intent==null));
+        Log.d(TAG, "onStartCommand: questo è il service " + this.toString());
         if (intent != null) {
             Log.d(TAG, "onHandleIntent: " + this.getClass().getName());
             String mSquareId = intent.getStringExtra("squareid");
@@ -62,6 +54,12 @@ public class ChatService extends IntentService {
             }
             sendMessage(data);
         }
+        return Service.START_REDELIVER_INTENT;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     private void sendMessage(final JSONObject data) {

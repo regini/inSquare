@@ -14,7 +14,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +25,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -51,7 +49,6 @@ import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Photo.helpers.DocumentHelper;
 import com.nsqre.insquare.Utilities.Photo.helpers.IntentHelper;
-import com.nsqre.insquare.Utilities.Photo.helpers.NotificationHelper;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
 import com.nsqre.insquare.Utilities.Photo.services.UploadService;
@@ -65,8 +62,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -570,6 +565,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 @Override
                 public void run() {
                     Log.d(TAG, getString(R.string.error_connect));
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_connect), Toast.LENGTH_SHORT).show();
+                    /*
                     try {
                         String url = getString(R.string.squaresUrl);
                         mSocket = IO.socket(url);
@@ -585,6 +582,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
                     }
+                    */
                 }
             });
         }
