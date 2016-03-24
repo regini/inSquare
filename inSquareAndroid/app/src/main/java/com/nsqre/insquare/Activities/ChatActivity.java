@@ -96,7 +96,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     };
 
-
+    //TODO aggiungere slider "nuovi messaggi" se sto guardando messaggi vecchi, risolvere problema download messaggi
     /**
      * Initializes the socket.io components, downloads the messages present in the chat and eventually puts to zero the
      * notification counter for this chat
