@@ -50,7 +50,7 @@ public class VolleyManager {
     private static Locale locale;
 
     private String[] URL_Array;
-    private String baseURL;
+    private String baseURL = "http://recapp-insquare.rhcloud.com/";
     boolean connection;
 
     public RequestQueue requestQueue;
@@ -83,14 +83,15 @@ public class VolleyManager {
         return instance;
     }
 
+    /*
     public void startConnection(){
         initializesURL();
         findBaseURL();
     }
-
+    */
     public void searchSquaresByName(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String reqURL = baseURL + "squares?";
         String name = emptySpacesForParams(query);
 
@@ -132,7 +133,7 @@ public class VolleyManager {
                                   final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String reqURL = baseURL + "squares?";
         reqURL += "distance=" + distance;
         reqURL += "&lat=" + lat;
@@ -169,7 +170,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "messages?";
         volleyURL += "recent=" + isRecentRequest;
         volleyURL += "&size=" + howMany;
@@ -207,7 +208,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "favouritesquares?";
         volleyURL += "squareId=" + squareId;
         volleyURL += "&userId=" + userId;
@@ -255,7 +256,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "auth/" + service + "/token";
 
         Log.d(TAG, "postLoginToken: " + volleyURL);
@@ -292,7 +293,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "gcmToken";
 
         StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
@@ -328,7 +329,7 @@ public class VolleyManager {
                              String fromActivity,
                              final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String feedbackParam = emptySpacesForParams(feedback);
 
         String volleyURL = baseURL + "feedback?";
@@ -370,7 +371,7 @@ public class VolleyManager {
                            final String ownerId,
                            final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String name = emptySpacesForParams(squareName);
         String description = emptySpacesForParams(squareDescr);
 
@@ -413,7 +414,7 @@ public class VolleyManager {
                                 String ownerId,
                                 final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "squares?";
         volleyURL += "byOwner=" + byOwner;
         volleyURL += "&ownerId=" + ownerId;
@@ -448,7 +449,7 @@ public class VolleyManager {
             final String userId,
             final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "favouritesquares/";
         volleyURL += userId;
 
@@ -487,7 +488,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "recentSquares/";
         volleyURL += userId;
 
@@ -551,7 +552,7 @@ public class VolleyManager {
             final String ownerId,
             final VolleyResponseListener listener)
     {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "squares?";
         String nameParam = emptySpacesForParams(name);
         String descriptionParam = emptySpacesForParams(description);
@@ -601,7 +602,7 @@ public class VolleyManager {
             final VolleyResponseListener listener
     )
     {
-        startConnection();
+        //startConnection();
         String volleyURL = URL_Array[0] + "user";
 
         StringRequest patchLocationRequest = new StringRequest(Request.Method.PATCH, volleyURL,
@@ -637,7 +638,7 @@ public class VolleyManager {
             final String squareId,
             final String ownerId,
             final VolleyResponseListener listener) {
-        startConnection();
+        //startConnection();
         String volleyURL = baseURL + "squares?";
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&ownerId=" + ownerId;
@@ -673,6 +674,7 @@ public class VolleyManager {
         return res;
     }
 
+    /*
     private void initializesURL(){
         //URL_Array = new String[2];
         URL_Array = new String[1];
@@ -749,4 +751,5 @@ public class VolleyManager {
                 break;
         }
     }
+    */
 }
