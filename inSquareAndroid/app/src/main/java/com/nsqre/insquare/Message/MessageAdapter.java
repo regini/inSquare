@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -76,9 +78,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     //4: con la position nel dataset, si prende i messaggi, e setta il text nell'item, se gli id sono uguali cambia bubble
     @Override
-    public void onBindViewHolder(MessageHolder holder, int position) {
+    public void onBindViewHolder(final MessageHolder holder, int position) {
         Message m = mDataset.get(position);
         int type = getItemViewType(position);
+        Transformation transformation = new Transformation() {
+
+            @Override
+            public Bitmap transform(Bitmap source) {
+                int targetWidth = holder.foto.getWidth();
+
+                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
+                int targetHeight = (int) (targetWidth * aspectRatio);
+                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+                if (result != source) {
+                    // Same bitmap is returned if sizes are the same
+                    source.recycle();
+                }
+                return result;
+            }
+
+            @Override
+            public String key() {
+                return "transformation" + " desiredWidth";
+            }
+        };
         switch (type)
         {
             case 0: {
@@ -92,11 +115,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             }
             case 2: {
                 holder.username.setText(m.getName());
-                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).centerInside().into(holder.foto);
+                Picasso.with(context)
+                        .load(m.getText())
+                        .placeholder(R.drawable.ic_photo_library_black)
+                        .transform(transformation)
+                        .into(holder.foto);
                 break;
             }
             case 3: {
-                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).centerInside().into(holder.foto);
+                Picasso.with(context)
+                        .load(m.getText())
+                        .placeholder(R.drawable.ic_photo_library_black)
+                        .transform(transformation)
+                        .into(holder.foto);
                 break;
             }
         }
