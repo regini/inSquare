@@ -95,11 +95,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             }
             case 2: {
                 holder.username.setText(m.getName());
-                Picasso.with(context).load("http://i.imgur.com/seFuqUP.jpg").placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
                 break;
             }
             case 3: {
-                Picasso.with(context).load("http://i.imgur.com/seFuqUP.jpg").placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
                 break;
             }
         }
