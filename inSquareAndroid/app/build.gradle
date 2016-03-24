@@ -69,6 +69,7 @@ dependencies {
     compile 'com.roughike:bottom-bar:1.1.6'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.squareup.picasso:picasso:2.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
