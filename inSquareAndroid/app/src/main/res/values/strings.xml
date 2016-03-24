@@ -51,6 +51,7 @@
     <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
     <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
 
+    <string name="share_action">Share</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
