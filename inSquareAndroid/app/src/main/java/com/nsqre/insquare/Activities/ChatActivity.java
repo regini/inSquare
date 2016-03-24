@@ -76,7 +76,7 @@ import retrofit.client.Response;
  * This activity lets the user chat in a Square, using a socket.io chat
  */
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
-        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "ChatActivity";
     
@@ -228,51 +228,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     }
 
-    //SHARE
-    private void onInviteClicked() {
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-                .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                .setCallToActionText(getString(R.string.invitation_cta))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);
-    }
-
-    /**
-     * User has clicked the 'Custom Invite' button, launch the invitation UI but pass in
-     * a custom HTML body and subject for email invites.
-     */
-    // [START on_custom_invite_clicked]
-    private void onCustomInviteClicked() {
-        // When using the setEmailHtmlContent method, you must also set a subject using the
-        // setEmailSubject message and you may not use either setCustomImage or setCallToActionText
-        // in conjunction with the setEmailHtmlContent method.
-        //
-        // The "%%APPINVITE_LINK_PLACEHOLDER%%" token is replaced by the invitation server
-        // with the custom invitation deep link based on the other parameters you provide.
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-                .setEmailHtmlContent("<html><body>" +
-                        "<h1>App Invites</h1>" +
-                        "<a href=\"%%APPINVITE_LINK_PLACEHOLDER%%\">Install Now!</a>" +
-                        "<body></html>")
-                .setEmailSubject(getString(R.string.invitation_subject))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);
-    }
-    // [END on_custom_invite_clicked]
-
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.share_action:
-                onInviteClicked();
-                break;
-        }
-    }
 
     /**
      * Creates a Volley request to download the messages present in a particular square, then it adds the results to the
@@ -687,7 +642,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         //SHARE
 
-        menu.findItem(R.id.share_action).setIcon(R.drawable.ic_share_white_48dp);
+       //menu.findItem(R.id.share_action).setIcon(R.drawable.ic_share_white_48dp);
 
 //        if (mProfile.favouriteSquaresList.contains(mSquare))
         if(InSquareProfile.isFav(mSquare.getId()))
@@ -763,6 +718,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         );
                     }
                 });
+                break;
             case R.id.favourite_square_action:
                 if(InSquareProfile.isFav(mSquare.getId()))
                 {
@@ -770,11 +726,19 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 } else {
                     favouriteSquare(Request.Method.POST, mSquare);
                 }
+                break;
             case R.id.share_action:
-                onInviteClicked();
+                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                        .setMessage(getString(R.string.invitation_message))
+                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+                        .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                        .setCallToActionText(getString(R.string.invitation_cta))
+                        .build();
+                startActivityForResult(intent, REQUEST_INVITE);
+                break;
             default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
