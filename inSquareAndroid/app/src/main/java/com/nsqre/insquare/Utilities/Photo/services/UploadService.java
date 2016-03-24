@@ -3,7 +3,6 @@ package com.nsqre.insquare.Utilities.Photo.services;
 import android.content.Context;
 
 import com.nsqre.insquare.Utilities.Photo.Constants;
-import com.nsqre.insquare.Utilities.Photo.helpers.NotificationHelper;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImgurAPI;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
@@ -42,8 +41,8 @@ public class UploadService {
             return;
         }
 
-        final NotificationHelper notificationHelper = new NotificationHelper(mContext.get());
-        notificationHelper.createUploadingNotification();
+        //final NotificationHelper notificationHelper = new NotificationHelper(mContext.get());
+        //notificationHelper.createUploadingNotification();
 
         RestAdapter restAdapter = buildRestAdapter();
 
@@ -57,26 +56,16 @@ public class UploadService {
                 new Callback<ImageResponse>() {
                     @Override
                     public void success(ImageResponse imageResponse, Response response) {
-                        if (cb != null) cb.success(imageResponse, response);
+                        if (cb != null)
+                            cb.success(imageResponse, response);
                         if (response == null) {
-                            /*
-                             Notify image was NOT uploaded successfully
-                            */
-                            notificationHelper.createFailedUploadNotification();
                             return;
-                        }
-                        /*
-                        Notify image was uploaded successfully
-                        */
-                        if (imageResponse.success) {
-                            notificationHelper.createUploadedNotification(imageResponse);
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
                         if (cb != null) cb.failure(error);
-                        notificationHelper.createFailedUploadNotification();
                     }
                 });
     }
