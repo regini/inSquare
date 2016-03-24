@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +35,12 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.google.android.gms.appinvite.AppInviteInvitationResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.nsqre.insquare.ChatService;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.InSquareProfile;
@@ -68,7 +75,8 @@ import retrofit.client.Response;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
-public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener {
+public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = "ChatActivity";
     
@@ -105,6 +113,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
 
+
+    //SHARE
+    private GoogleApiClient mGoogleApiClient;
+    private static final int REQUEST_INVITE = 0;
 
     //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -165,6 +177,30 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         });
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(AppInvite.API)
+                .enableAutoManage(this, this)
+                .build();
+
+        // Check for App Invite invitations and launch deep-link activity if possible.
+        // Requires that an Activity is registered in AndroidManifest.xml to handle
+        // deep-link URLs.
+        boolean autoLaunchDeepLink = true;
+        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                .setResultCallback(
+                        new ResultCallback<AppInviteInvitationResult>() {
+                            @Override
+                            public void onResult(AppInviteInvitationResult result) {
+                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
+                                // Because autoLaunchDeepLink = true we don't have to do anything
+                                // here, but we could set that to false and manually choose
+                                // an Activity to launch to handle the deep link here.
+                            }
+                        });
+
+
+        //FINE SHARE
+
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
 
@@ -189,6 +225,52 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         if(sharedPreferences.contains(mSquareId)) {
             sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+        }
+    }
+
+    //SHARE
+    private void onInviteClicked() {
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+                .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                .setCallToActionText(getString(R.string.invitation_cta))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
+    }
+
+    /**
+     * User has clicked the 'Custom Invite' button, launch the invitation UI but pass in
+     * a custom HTML body and subject for email invites.
+     */
+    // [START on_custom_invite_clicked]
+    private void onCustomInviteClicked() {
+        // When using the setEmailHtmlContent method, you must also set a subject using the
+        // setEmailSubject message and you may not use either setCustomImage or setCallToActionText
+        // in conjunction with the setEmailHtmlContent method.
+        //
+        // The "%%APPINVITE_LINK_PLACEHOLDER%%" token is replaced by the invitation server
+        // with the custom invitation deep link based on the other parameters you provide.
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+                .setEmailHtmlContent("<html><body>" +
+                        "<h1>App Invites</h1>" +
+                        "<a href=\"%%APPINVITE_LINK_PLACEHOLDER%%\">Install Now!</a>" +
+                        "<body></html>")
+                .setEmailSubject(getString(R.string.invitation_subject))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
+    }
+    // [END on_custom_invite_clicked]
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.share_action:
+                onInviteClicked();
+                break;
         }
     }
 
@@ -603,6 +685,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         mMenu = menu;
 
+        //SHARE
+
+        menu.findItem(R.id.share_action).setIcon(R.drawable.ic_share_white_48dp);
+
 //        if (mProfile.favouriteSquaresList.contains(mSquare))
         if(InSquareProfile.isFav(mSquare.getId()))
             menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
@@ -684,6 +770,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 } else {
                     favouriteSquare(Request.Method.POST, mSquare);
                 }
+            case R.id.share_action:
+                onInviteClicked();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -759,6 +847,22 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         if (filePath == null || filePath.isEmpty()) return;
         chosenFile = new File(filePath);
         uploadImage();
+
+        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if (requestCode == REQUEST_INVITE) {
+            if (resultCode == RESULT_OK) {
+                // Check how many invitations were sent and log a message
+                // The ids array contains the unique invitation ids for each invitation sent
+                // (one for each contact select by the user). You can use these for analytics
+                // as the ID will be consistent on the sending and receiving devices.
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
+            } else {
+                // Sending failed or it was canceled, show failure message to the user
+                showMessage(getString(R.string.send_failed));
+            }
+        }
     }
 
 
@@ -805,5 +909,17 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 Log.d("ERROR UiCallback", "ERROR UiCallback");
             }
         }
+    }
+
+    //SHARE
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        showMessage(getString(R.string.google_play_services_error));
+    }
+
+    private void showMessage(String msg) {
+        ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
+        Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
     }
 }
