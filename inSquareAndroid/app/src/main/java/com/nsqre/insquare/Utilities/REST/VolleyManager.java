@@ -14,7 +14,6 @@ import com.google.gson.reflect.TypeToken;
 import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageDeserializer;
-import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
 
@@ -603,7 +602,7 @@ public class VolleyManager {
     )
     {
         startConnection();
-        String volleyURL = baseURL + "user";
+        String volleyURL = URL_Array[0] + "user";
 
         StringRequest patchLocationRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {

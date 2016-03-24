@@ -22,7 +22,7 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "com.nsqre.insquare"
-        minSdkVersion 19
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 7
         versionName "0.7"

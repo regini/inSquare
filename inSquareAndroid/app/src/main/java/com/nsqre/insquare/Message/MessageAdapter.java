@@ -1,12 +1,10 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
-
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,7 +13,6 @@ import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -95,11 +92,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             }
             case 2: {
                 holder.username.setText(m.getName());
-                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).centerInside().into(holder.foto);
                 break;
             }
             case 3: {
-                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).into(holder.foto);
+                Picasso.with(context).load(m.getText()).placeholder(R.drawable.ic_photo_library_black).centerInside().into(holder.foto);
                 break;
             }
         }

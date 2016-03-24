@@ -50,7 +50,6 @@
             android:layout_below="@+id/message_content"
             android:layout_alignRight="@+id/message_content"
             android:layout_alignEnd="@+id/message_content"
-            android:gravity="bottom"
             android:text="Time Text"
             android:textSize="12sp"
             android:fontFamily="sans-serif-condensed-light"
