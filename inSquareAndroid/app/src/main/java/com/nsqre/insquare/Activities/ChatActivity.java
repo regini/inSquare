@@ -510,7 +510,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
 
     /**
-     * TODO sistemare
+     * TODO TENERE ANCORA SOLO PER TEST
      * Notifies the user if the connection to the socket has failed
      */
     private Emitter.Listener onConnectError = new Emitter.Listener() {
@@ -626,10 +626,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             });
         }
     };
-
-    public Socket getmSocket() {
-        return mSocket;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

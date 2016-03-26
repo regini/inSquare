@@ -603,7 +603,7 @@ public class VolleyManager {
     )
     {
         //startConnection();
-        String volleyURL = URL_Array[0] + "user";
+        String volleyURL = baseURL + "user";
 
         StringRequest patchLocationRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {

@@ -3,18 +3,15 @@ package com.nsqre.insquare;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.IInterface;
-import android.os.Parcel;
-import android.os.RemoteException;
 import android.util.Log;
 
+import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileDescriptor;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,8 +30,8 @@ public class ChatService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d(TAG, "Service onStartCommand: intent is null? " + (intent==null));
-        Log.d(TAG, "onStartCommand: questo è il service " + this.toString());
+        //Log.d(TAG, "Service onStartCommand: intent is null? " + (intent==null));
+        //Log.d(TAG, "onStartCommand: questo è il service " + this.toString());
         if (intent != null) {
             Log.d(TAG, "onHandleIntent: " + this.getClass().getName());
             String mSquareId = intent.getStringExtra("squareid");
@@ -71,12 +68,17 @@ public class ChatService extends Service {
             if (!mSocket.connected()) {
                 throw new Exception("socket non connesso");
             }
-            mSocket.emit("sendMessage", data);
-            //TODO aspettare la notifica del server
-            //se c'è
-            publishResults();
-            //se non c'è
-            //TODO
+            mSocket.emit("sendMessage", data, new Ack() {
+                @Override
+                //TODO gestire la notifica del server
+                public void call(Object... args) {
+                    if (args.length > 0) {
+                        //args[0] è un JSONObject ed ha gli stessi dati inviati
+                        Log.d(TAG, "call: ho avuto acknowledgement per: " + args[0].toString());
+                        publishResults();
+                    }
+                }
+            });
         }
         catch (Exception e) {
             Log.d(TAG, "sendMessage: " + e.toString());
@@ -93,6 +95,7 @@ public class ChatService extends Service {
                         5000);
             }
             else {
+                //TODO NON c'è notifica dal server
                 Log.d(TAG, "sendMessage: messaggio non inviato per num tentativi troppo alto");
             }
         }
