@@ -39,7 +39,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
-import com.nsqre.insquare.InSquareProfile;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.User;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
@@ -111,10 +111,11 @@ public class LoginActivity extends AppCompatActivity
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        // Profilo statico perche' non puo' cambiare.
+        // VolleyManager e Profilo statici perché non possono cambiare.
         // Singleton perche' cosi non puo' essere duplicato
-        profile = InSquareProfile.getInstance(getApplicationContext());
         //VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
+        profile = InSquareProfile.getInstance(getApplicationContext());
+        VolleyManager.getInstance(getApplicationContext(), getResources().getConfiguration().locale);
 
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
@@ -290,7 +291,8 @@ public class LoginActivity extends AppCompatActivity
      */
     private void launchInSquare() {
         Log.d(TAG, "launchInSquare: launching!");
-        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+//        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+        Intent intent = new Intent(getApplicationContext(), BottomNavActivity.class);
         if(getIntent().getExtras() != null) {
             if(getIntent().getExtras().getInt("profile") == 2) {
                 intent.putExtra("profile", getIntent().getExtras().getInt("profile"));

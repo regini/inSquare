@@ -8,17 +8,17 @@
        />
     <item
         android:id="@+id/bottom_bar_recenti"
-        android:icon="@drawable/bottom_bar_recenti"
+        android:icon="@drawable/bottom_bar_recent"
         android:title="Recenti"
        />
     <item
         android:id="@+id/bottom_bar_profilo"
-        android:icon="@drawable/bottom_bar_profilo"
+        android:icon="@drawable/bottom_bar_profile"
         android:title="Profilo"
        />
     <item
         android:id="@+id/bottom_bar_other"
-        android:icon="@drawable/bottom_bar_altro"
+        android:icon="@drawable/bottom_bar_more"
         android:title="Altro"
         />
 

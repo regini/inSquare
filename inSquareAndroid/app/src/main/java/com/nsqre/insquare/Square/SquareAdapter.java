@@ -1,6 +1,5 @@
 package com.nsqre.insquare.Square;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,9 +13,8 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.MapFragment;
-import com.nsqre.insquare.InSquareProfile;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
@@ -28,17 +26,17 @@ import java.util.ArrayList;
 public class SquareAdapter extends BaseAdapter {
 
     private static final String TAG = "SquareAdapter";
-    private MapActivity activity;
+    private Context context;
     private ArrayList data;
     private static LayoutInflater inflater = null;
     int i = 0;
 
-    public SquareAdapter(Activity a, ArrayList d) {
+    public SquareAdapter(Context c, ArrayList d) {
 
-        activity = (MapActivity)a;
+        this.context = c;
         data = d;
 
-        inflater = (LayoutInflater) activity.
+        inflater = (LayoutInflater) c.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -62,7 +60,7 @@ public class SquareAdapter extends BaseAdapter {
 
         final Square square = (Square) data.get(position);
 
-        if(convertView==null){
+        if(convertView == null){
 
             /****** Inflate tabitem.xml file for each row ( Defined below ) *******/
             vi = inflater.inflate(R.layout.square_item, null);
@@ -70,15 +68,15 @@ public class SquareAdapter extends BaseAdapter {
             vi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(activity, ChatActivity.class);
+                    Intent intent = new Intent(context, ChatActivity.class);
                     intent.putExtra(MapFragment.SQUARE_TAG, square);
-                    SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
                     if(sharedPreferences.contains(square.getId())) {
                         sharedPreferences.edit().remove(square.getId()).apply();
                         sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
-                        activity.checkNotifications();
+//                        activity.checkNotifications();
                     }
-                    activity.startActivity(intent);
+                    context.startActivity(intent);
                 }
             });
 
@@ -110,9 +108,9 @@ public class SquareAdapter extends BaseAdapter {
 
             //contatore di nuovi messaggi
             TextView txtCount = (TextView) vi.findViewById(R.id.counter);
-            SharedPreferences messagePreferences = activity.getSharedPreferences(square.getId(), Context.MODE_PRIVATE);
+            SharedPreferences messagePreferences = context.getSharedPreferences(square.getId(), Context.MODE_PRIVATE);
             messagePreferences.edit().clear().apply();
-            SharedPreferences sharedPreferences = activity.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = context.getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
             //se non trova la chiave ritorna 0
             int squaresNewMessages = sharedPreferences.getInt(square.getId(), 0);
             if (squaresNewMessages == 0) {

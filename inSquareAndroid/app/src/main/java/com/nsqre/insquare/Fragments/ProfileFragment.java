@@ -18,13 +18,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Utilities.DownloadImageTask;
-import com.nsqre.insquare.Utilities.ImageConverter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareAdapter;
+import com.nsqre.insquare.User.InSquareProfile;
+import com.nsqre.insquare.Utilities.DownloadImageTask;
+import com.nsqre.insquare.Utilities.ImageConverter;
 
 import java.util.ArrayList;
 
@@ -37,6 +36,7 @@ public class ProfileFragment extends Fragment implements
         InSquareProfile.InSquareProfileListener
 {
 
+    private static ProfileFragment instance;
 
     private static final String TAG = "ProfileFragment";
 
@@ -54,8 +54,10 @@ public class ProfileFragment extends Fragment implements
     }
 
     public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        return fragment;
+        if(instance == null){
+            instance = new ProfileFragment();
+        }
+        return instance;
     }
 
     @Override
@@ -72,6 +74,7 @@ public class ProfileFragment extends Fragment implements
         InSquareProfile.addListener(this);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
+        InSquareProfile.downloadAllSquares();
     }
 
     @Override
@@ -127,20 +130,19 @@ public class ProfileFragment extends Fragment implements
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
 
-        MapActivity mapActivity = (MapActivity) getActivity();
 
-        Bitmap icon = BitmapFactory.decodeResource(mapActivity.getResources(),
+        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
                 R.drawable.logo_icon_144);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        adapterOwned = new SquareAdapter(mapActivity, InSquareProfile.getOwnedSquaresList());
-        adapterFavourite = new SquareAdapter(mapActivity, InSquareProfile.getFavouriteSquaresList());
+        adapterOwned = new SquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+        adapterFavourite = new SquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
 
-        Bitmap bitmap = mapActivity.loadImageFromStorage();
+        Bitmap bitmap = InSquareProfile.loadProfileImageFromStorage(getContext());
         if (bitmap == null) {
             if (!InSquareProfile.getPictureUrl().equals(""))
-                new DownloadImageTask(profileImage, mapActivity).execute(InSquareProfile.getPictureUrl());
+                new DownloadImageTask(profileImage, getContext()).execute(InSquareProfile.getPictureUrl());
         } else {
             profileImage.setImageBitmap(bitmap);
         }

@@ -11,7 +11,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.nsqre.insquare.InSquareProfile;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageDeserializer;
 import com.nsqre.insquare.Square.Square;
@@ -116,10 +116,8 @@ public class VolleyManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (error.networkResponse != null) {
-                            Log.d(TAG, "onErrorResponse: " + error.toString());
-                            listener.responseGET(null);
-                        }
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        listener.responseGET(null);
                     }
                 }
         );
@@ -152,10 +150,8 @@ public class VolleyManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (error.networkResponse != null) {
-                            Log.d(TAG, "onErrorResponse: " + error.networkResponse.statusCode);
+                            Log.d(TAG, "onErrorResponse: " + error.toString());
                             listener.responseGET(null);
-                        }
                     }
                 }
         );
@@ -191,7 +187,7 @@ public class VolleyManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.networkResponse.toString());
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
                         listener.responseGET(null);
                     }
                 }
@@ -233,7 +229,7 @@ public class VolleyManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorResponse: " + error.networkResponse.toString());
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
                         switch (requestType)
                         {
                             case Request.Method.POST:

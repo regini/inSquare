@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nsqre.insquare.InSquareProfile;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;

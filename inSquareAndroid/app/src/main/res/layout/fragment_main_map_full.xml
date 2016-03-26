@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     >
 
-
     <FrameLayout
         android:id="@+id/main_map_container"
         android:layout_width="match_parent"
@@ -14,65 +13,19 @@
         android:background="@color/light_grey"
         />
 
-    <FrameLayout
-        android:id="@+id/bottom_sheet"
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/main_map_floating_search_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="60dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        >
-
-        <!-- Parte visibile del bottom sheet -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-            <!-- Ombra che divide il layout -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/drop_shadow"
-                />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:paddingLeft="@dimen/input_margin_side"
-                android:paddingStart="@dimen/input_margin_side"
-                android:paddingRight="@dimen/input_margin_side"
-                android:paddingEnd="@dimen/input_margin_side"
-                android:orientation="horizontal"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                >
-
-                <include layout="@layout/bottom_sheet_upper_text" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/bottom_sheet_square_state"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:background="@color/white"
-                />
-
-            <!-- Parte più bassa del bottom sheet  -->
-            <include layout="@layout/bottom_sheet_lower_content" />
-        </LinearLayout>
-    </FrameLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/bottom_sheet_favourite_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/bubble_horizontal_margin"
-        android:src="@drawable/heart_border_white"
-        app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="end"
-        app:backgroundTint="@color/colorAccentLight"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
+        app:floatingSearch_searchBarMarginLeft="@dimen/search_bar_margin"
+        app:floatingSearch_searchBarMarginTop="@dimen/search_bar_margin"
+        app:floatingSearch_searchBarMarginRight="@dimen/search_bar_margin"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_showSearchKey="false"
+        app:floatingSearch_dismissOnOutsideTouch="true"
+        app:floatingSearch_leftActionMode="showSearch"
+        app:floatingSearch_menu="@menu/menu_floating_search_view_extras"
         />
     
 </android.support.design.widget.CoordinatorLayout>

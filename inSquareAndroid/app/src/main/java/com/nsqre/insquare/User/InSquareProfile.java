@@ -1,14 +1,24 @@
-package com.nsqre.insquare;/* Created by umbertosonnino on 5/1/16  */
+package com.nsqre.insquare.User;/* Created by umbertosonnino on 5/1/16  */
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -80,6 +90,9 @@ public class InSquareProfile {
 
     private InSquareProfile()
     {
+        downloadFavoriteSquares();
+        downloadOwnedSquares();
+        downloadRecentSquares();
     }
 
     /**
@@ -481,5 +494,151 @@ public class InSquareProfile {
             ispl.onRecentChanged();
             Log.d(TAG, "setRecentSquares: notifying listeners!");
         }
+    }
+
+    public static String saveToInternalStorage(Context currentContext, Bitmap bitmap)
+    {
+        ContextWrapper cw = new ContextWrapper(currentContext);
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory,"profileImage.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    public static Bitmap loadProfileImageFromStorage(Context context)
+    {
+        Bitmap b = null;
+
+        try {
+            ContextWrapper cw = new ContextWrapper(context);
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+            File f=new File(directory, "profileImage.png");
+            b = BitmapFactory.decodeStream(new FileInputStream(f));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        return b;
+    }
+
+    public static void downloadAllSquares()
+    {
+        Log.d(TAG, "downloadAllSquares: working on it!");
+        downloadOwnedSquares();
+        downloadFavoriteSquares();
+        downloadRecentSquares();
+    }
+
+    private static void downloadRecentSquares()
+    {
+        VolleyManager.getInstance().getRecentSquares(
+                InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET: getRecentSquares returned NULL!");
+                        } else {
+                            setRecentSquaresList((ArrayList<Square>) object);
+                        }
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Empty - GET Request
+                    }
+                }
+        );
+    }
+
+    private static void downloadFavoriteSquares()
+    {
+        VolleyManager.getInstance().getFavoriteSquares(InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET: getFavoriteSquares returned NULL!");
+                        } else {
+                            setFavouriteSquaresList((ArrayList<Square>) object);
+                            Log.d(TAG, "onResponse: ho ottenuto FAVS con successo!");
+                        }
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Empty - GET Request
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Empty - GET Request
+                    }
+                });
+    }
+
+    private static void downloadOwnedSquares()
+    {
+        VolleyManager.getInstance().getOwnedSquares("true", InSquareProfile.getUserId(),
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        if (object == null) {
+                            Log.d(TAG, "responseGET: getOwnedSquares returned NULL!");
+                        } else {
+                            setOwnedSquaresList((ArrayList<Square>) object);
+                            Log.d(TAG, "onResponse: ho ottenuto OWNED con successo!");
+//                            Log.d(TAG, "onResponse Owned: " + InSquareProfile.getOwnedSquaresList().toString());
+
+                        }
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+
+                    }
+                });
     }
 }

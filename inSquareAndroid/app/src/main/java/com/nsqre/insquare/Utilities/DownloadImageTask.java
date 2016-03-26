@@ -1,19 +1,14 @@
 package com.nsqre.insquare.Utilities;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.nsqre.insquare.Activities.MapActivity;
+import com.nsqre.insquare.User.InSquareProfile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -21,11 +16,11 @@ import java.io.InputStream;
  */
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
-    MapActivity activity;
+    Context context;
 
-    public DownloadImageTask(ImageView bmImage, MapActivity mapActivity) {
+    public DownloadImageTask(ImageView bmImage, Context c) {
         this.bmImage = bmImage;
-        this.activity = mapActivity;
+        this.context = c;
     }
 
     protected Bitmap doInBackground(String... urls) {
@@ -44,6 +39,6 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(result, 100);
         bmImage.setImageBitmap(circularBitmap);
-        activity.saveToInternalStorage(circularBitmap);
+        InSquareProfile.saveToInternalStorage(context, circularBitmap);
     }
 }

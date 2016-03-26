@@ -16,10 +16,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -29,16 +26,14 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.android.volley.Request;
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -54,15 +49,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
-import com.nsqre.insquare.Square.SquareDeserializer;
 import com.nsqre.insquare.Square.SquareState;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
@@ -112,22 +104,8 @@ public class MapFragment extends Fragment
     private HashMap<Marker, Square> squareHashMap;
 
     private CoordinatorLayout mapCoordinatorLayout;
+    private FloatingSearchView topSearchView;
 
-    public View bottomSheet;
-    public BottomSheetBehavior bottomSheetBehavior;
-
-    private TextView bottomSheetSquareName;
-    private TextView bottomSheetSquareActivity;
-    private FloatingActionButton bottomSheetFab;
-    private LinearLayout bottomSheetUpperLinearLayout;
-    private LinearLayout bottomSheetLowerLinearLayout;
-    private TextView bottomSheetLowerFavs;
-    private TextView bottomSheetLowerViews;
-    private TextView bottomSheetLowerDescription;
-    private View bottomSheetLowerState;
-    private ImageButton bottomSheetEditButton;
-
-    private ImageButton bottomSheetTrashButton;
     private Tracker mTracker;
     // Variabili per l'inizializzazione della Chat
     public static final String SQUARE_TAG = "SQUARE_TAG";
@@ -170,67 +148,8 @@ public class MapFragment extends Fragment
         // Recuperiamo un po' di riferimenti ai layout
         mapCoordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.map_coordinator_layout);
 
-        bottomSheet = mapCoordinatorLayout.findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState)
-                {
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-                        Log.d(TAG, "onStateChanged: collapsed!");
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        Log.d(TAG, "onStateChanged: dragging!");
-                    case BottomSheetBehavior.STATE_EXPANDED:
-                        Log.d(TAG, "onStateChanged: expanded!");
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
-//        bottomSheetButton = (ImageButton) v.findViewById(R.id.bottom_sheet_button);
-//        bottomSheetButton.setVisibility(View.GONE);
-
-        bottomSheetFab = (FloatingActionButton) v.findViewById(R.id.bottom_sheet_favourite_fab);
-        bottomSheetFab.setVisibility(View.GONE);
-
-        bottomSheetEditButton = (ImageButton) v.findViewById(R.id.bottom_sheet_edit_button);
-
-        bottomSheetTrashButton = (ImageButton) v.findViewById(R.id.bottom_sheet_trash_button);
-
-//        bottomSheetSeparator = v.findViewById(R.id.bottom_sheet_separator);
-//        bottomSheetSeparator.setVisibility(View.GONE);
-
-       // bottomSheetSeparatorButtons = v.findViewById(R.id.bottom_sheet_separator_buttons);
-
-        bottomSheetSquareName = (TextView) v.findViewById(R.id.bottom_sheet_square_name);
-
-        bottomSheetSquareActivity = (TextView) v.findViewById(R.id.bottom_sheet_last_activity);
-        bottomSheetSquareActivity.setVisibility(View.GONE);
-
-        bottomSheetUpperLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_upper_ll);
-
-        bottomSheetLowerLinearLayout = (LinearLayout) v.findViewById(R.id.bottom_sheet_lower_ll);
-        bottomSheetLowerLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Click listener che intercetta i click sul bottom sliding drawer
-                Log.d(TAG, "onClick: Clicky");
-            }
-        });
-
-        bottomSheetLowerDescription = (TextView) v.findViewById(R.id.bottom_sheet_square_description);
-        bottomSheetLowerViews = (TextView) v.findViewById(R.id.bottom_sheet_square_views);
-        bottomSheetLowerFavs = (TextView) v.findViewById(R.id.bottom_sheet_square_favourites);
-        bottomSheetLowerState = v.findViewById(R.id.bottom_sheet_square_state);
-        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-
-
-//        FrameLayout bottomSheet = (FrameLayout) bottomSheetButton.getParent().getParent().getParent();
-//        BottomSheetBehavior bsb = BottomSheetBehavior.from(bottomSheet);
+        topSearchView = (FloatingSearchView) v.findViewById(R.id.main_map_floating_search_view);
+        setupSearchView();
 
         return v;
     }
@@ -266,13 +185,6 @@ public class MapFragment extends Fragment
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
-        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
-            if(InSquareProfile.isFav(mLastSelectedSquare.getId())) {
-                bottomSheetFab.setImageResource(R.drawable.heart_white);
-            } else {
-                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
-            }
-        }
     }
 
     @Override
@@ -317,21 +229,7 @@ public class MapFragment extends Fragment
                     if(squareHashMap.get(m).getId().equals(intent.getStringExtra("squareId"))) {
                         squareHashMap.remove(m);
                         m.remove();
-//                        if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
-//                            bottomSheetSeparator.setVisibility(View.GONE);
-//                            bottomSheetButton.setVisibility(View.GONE);
-                            bottomSheetFab.setVisibility(View.GONE);
-                            bottomSheetSquareActivity.setVisibility(View.GONE);
-                            bottomSheetSquareName.setText("Seleziona un posto");
-                            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
-                            ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
-                            ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
-                            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
-                            bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-                            bottomSheetUpperLinearLayout.setOnClickListener(null);
                             Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
-                        }
                         break;
                     }
                 }
@@ -372,7 +270,7 @@ public class MapFragment extends Fragment
                 public void onLocationChanged(Location location) {
                     if(getContext() != null) {
                         mCurrentLocation = location;
-                        initCamera(mCurrentLocation);
+                        initCamera();
                     }
                 }
 
@@ -438,7 +336,7 @@ public class MapFragment extends Fragment
             // Se ci sono GPS o Network Provider attivati, richiedi la locazione
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0 , 0, locationListener);
         }else {
-            initCamera(mCurrentLocation);
+            initCamera();
         }
     }
 
@@ -463,20 +361,47 @@ public class MapFragment extends Fragment
         }
     }
 
-    private void initCamera(Location mCurrentLocation) {
+    private void setupSearchView() {
 
+        // Per aggiungere funzionalita'
+        // https://android-arsenal.com/details/1/2842
+
+        topSearchView.setOnMenuItemClickListener(
+                new FloatingSearchView.OnMenuItemClickListener() {
+                    @Override
+                    public void onActionMenuItemSelected(MenuItem item) {
+                        switch (item.getItemId())
+                        {
+                            case R.id.action_location_floating_search:
+                                moveToPosition(mCurrentLocation);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+        );
+    }
+
+    private void moveToPosition(Location toLocation) {
         CameraPosition position = CameraPosition.builder()
-                .target(new LatLng(mCurrentLocation.getLatitude(),
-                        mCurrentLocation.getLongitude()))
+                .target(new LatLng(toLocation.getLatitude(),
+                        toLocation.getLongitude()))
                 .zoom(16f)
                 .bearing(0.0f)
                 .tilt(0.0f)
                 .build();
-
         mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+    }
+
+    private void initCamera() {
+
+        moveToPosition(mCurrentLocation);
+
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         if(getActivity().getIntent().getStringExtra("squareId") != null) {
             String squareId = getActivity().getIntent().getStringExtra("squareId");
@@ -497,8 +422,6 @@ public class MapFragment extends Fragment
             }
             getActivity().getIntent().getExtras().clear();
         }
-
-        // mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
     @Override
@@ -652,8 +575,6 @@ public class MapFragment extends Fragment
     }
 
     private void hideBottomSheet() {
-        bottomSheet.setVisibility(View.GONE);
-        bottomSheetFab.setVisibility(View.GONE);
         mLastSelectedSquareId = "";
     }
 
@@ -739,21 +660,6 @@ public class MapFragment extends Fragment
                                 if(squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
                                     squareHashMap.remove(m);
                                     m.remove();
-//                                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                                    if(bottomSheetFab.getVisibility() == View.VISIBLE) {
-//                                        bottomSheetSeparator.setVisibility(View.GONE);
-//                                        bottomSheetButton.setVisibility(View.GONE);
-                                        bottomSheetFab.setVisibility(View.GONE);
-                                        bottomSheetSquareActivity.setVisibility(View.GONE);
-                                        bottomSheetSquareName.setText("Seleziona un posto");
-                                        ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
-                                        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.GONE);
-                                        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility((View.GONE));
-                                        ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
-                                        bottomSheetLowerState.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-                                        bottomSheetUpperLinearLayout.setOnClickListener(null);
-                                        Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
-                                    }
                                     break;
                                 }
                             }
@@ -827,8 +733,6 @@ public class MapFragment extends Fragment
                                 if (response) {
                                     // Tutto OK!
                                     Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
-                                    bottomSheetSquareName.setText(name);
-                                    bottomSheetLowerDescription.setText(description);
                                     Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
                                     mDialog.dismiss();
                                 } else {
@@ -912,15 +816,6 @@ public class MapFragment extends Fragment
 
                     // Download dei nuovi pin
                     downloadAndInsertPins(PIN_DOWNLOAD_RADIUS_MAX, mGoogleMap.getCameraPosition().target);
-//                    if(bottomSheetSeparator.getVisibility() == View.VISIBLE) {
-                    if(bottomSheetFab.getVisibility() == View.VISIBLE) {
-                        bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startChatActivity(mLastSelectedSquare);
-                            }
-                        });
-                    }
                 }
             }
         }
@@ -956,125 +851,7 @@ public class MapFragment extends Fragment
             mLastSelectedSquareId = currentSquare.getId();
         }
         
-//        Log.d(TAG, currentSquare.getId() + " " + currentSquare.getName());
-        setupBottomSheet(currentSquare, text);
-
-
         return true;
-    }
-
-    private void setupBottomSheet(final Square currentSquare, String text) {
-
-        bottomSheet.setVisibility(View.VISIBLE);
-
-
-        // Parte superiore del drawer
-        int peekHeight = ((LinearLayout)bottomSheetSquareName.getParent().getParent()).getHeight();
-        peekHeight += bottomSheetLowerState.getHeight();
-        bottomSheetBehavior.setPeekHeight(peekHeight);
-
-        bottomSheetSquareName.setText(text);
-        bottomSheetSquareActivity.setVisibility(View.VISIBLE);
-        bottomSheetSquareActivity.setText(currentSquare.formatTime());
-
-        // Controllo sulla lista dell'utente
-        if(InSquareProfile.isFav(currentSquare.getId())) {
-//            bottomSheetButton.setImageResource(R.drawable.heart_black);
-            bottomSheetFab.setImageResource(R.drawable.heart_white);
-        }
-        else {
-//            bottomSheetButton.setImageResource(R.drawable.heart_border_black);
-            bottomSheetFab.setImageResource(R.drawable.heart_border_white);
-        }
-
-//        bottomSheetButton.setOnClickListener(new View.OnClickListener() {
-        bottomSheetFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int method;
-
-                if (InSquareProfile.isFav(currentSquare.getId())) {
-                    method = Request.Method.DELETE;
-                } else {
-                    method = Request.Method.POST;
-                }
-
-                favouriteSquare(method, currentSquare);
-            }
-        });
-//        bottomSheetButton.setVisibility(View.VISIBLE);
-//        bottomSheetSeparator.setVisibility(View.VISIBLE);
-        bottomSheetFab.setVisibility(View.VISIBLE);
-
-        bottomSheetUpperLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startChatActivity(currentSquare);
-            }
-        });
-        // ===== Fine Parte Superiore del Drawer
-
-        // Parte Bassa del Drawer
-        ((LinearLayout)bottomSheetLowerFavs.getParent()).setVisibility(View.VISIBLE);
-        bottomSheetLowerFavs.setText("Seguita da " + currentSquare.getFavouredBy() + " persone");
-        ((LinearLayout)bottomSheetLowerViews.getParent()).setVisibility(View.VISIBLE);
-        bottomSheetLowerViews.setText("Vista " + currentSquare.getViews() + " volte");
-        final String d = currentSquare.getDescription().trim();
-        if(currentSquare.getOwnerId().equals(InSquareProfile.getUserId()) ) {
-            /*bottomSheetLowerDescription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Visualizza un dialog per inserire la descrizione
-                    descriptionDialog(bottomSheetLowerDescription.getText().toString().trim());
-                }
-            });*/
-            bottomSheetLowerDescription.setText(d);
-            //((LinearLayout)bottomSheetSeparatorButtons.getParent()).setVisibility(View.VISIBLE);
-            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
-            bottomSheetEditButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    descriptionDialog(bottomSheetSquareName.getText().toString().trim(), bottomSheetLowerDescription.getText().toString().trim());
-                }
-            });
-            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.VISIBLE);
-            bottomSheetTrashButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteDialog(bottomSheetSquareName.getText().toString().trim());
-                }
-            });
-            ((LinearLayout)bottomSheetTrashButton.getParent().getParent()).setVisibility(View.VISIBLE);
-        }
-        else {
-            ((LinearLayout)bottomSheetEditButton.getParent().getParent()).setVisibility(View.GONE);
-        }
-        if(d.isEmpty()) {
-            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.GONE);
-        } else {
-            ((LinearLayout)bottomSheetLowerDescription.getParent()).setVisibility(View.VISIBLE);
-            bottomSheetLowerDescription.setText(d.trim());
-            bottomSheetLowerDescription.setOnClickListener(null);
-        }
-
-        SquareState currentState = currentSquare.getSquareState();
-        int stateColor;
-        switch(currentState)
-        {
-            default:
-            case ASLEEP:
-                stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
-                break;
-            case AWOKEN:
-                stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
-                break;
-            case CAFFEINATED:
-                stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
-                break;
-        }
-        ((LinearLayout)bottomSheetLowerState.getParent()).setVisibility(View.VISIBLE);
-        bottomSheetLowerState.setBackgroundColor(stateColor);
-        // ===== Fine Parte Bassa del Drawer
     }
 
     public void favouriteSquare(final int method, final Square square) {
@@ -1087,13 +864,10 @@ public class MapFragment extends Fragment
 
                     @Override
                     public void responsePOST(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
-                        }else
-                        {
-                            bottomSheetFab.setImageResource(R.drawable.heart_white);
+                        } else {
                             InSquareProfile.addFav(square);
                         }
                     }
@@ -1105,61 +879,19 @@ public class MapFragment extends Fragment
 
                     @Override
                     public void responseDELETE(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
-                        }else
-                        {
-                            bottomSheetFab.setImageResource(R.drawable.heart_border_white);
+                        } else {
                             InSquareProfile.removeFav(square.getId());
                         }
                     }
                 });
     }
 
-    private void updateBottomSheet(Square s) {
-        if(bottomSheetFab.getVisibility() == View.VISIBLE) {
-            bottomSheetSquareName.setText(s.getName());
-            bottomSheetLowerDescription.setText(s.getDescription());
-            bottomSheetSquareActivity.setText(s.formatTime());
-            if(InSquareProfile.isFav(s.getId())) {
-                bottomSheetFab.setImageResource(R.drawable.heart_white);
-            } else {
-                bottomSheetFab.setImageResource(R.drawable.heart_border_white);
-            }
-            SquareState currentState = s.getSquareState();
-            int stateColor;
-            switch(currentState)
-            {
-                default:
-                case ASLEEP:
-                    stateColor = ContextCompat.getColor(getContext(), R.color.state_asleep);
-                    break;
-                case AWOKEN:
-                    stateColor = ContextCompat.getColor(getContext(), R.color.state_awoken);
-                    break;
-                case CAFFEINATED:
-                    stateColor = ContextCompat.getColor(getContext(), R.color.state_caffeinated);
-                    break;
-            }
-            bottomSheetLowerState.setBackgroundColor(stateColor);
-            bottomSheetLowerFavs.setText("Seguita da " + s.getFavouredBy() + " persone");
-            bottomSheetLowerViews.setText("Vista " + s.getViews() + " volte");
-        }
-    }
-
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged: Owned changed!");
-        if(InSquareProfile.isOwned(mLastSelectedSquareId)) {
-            for(Square s : InSquareProfile.getOwnedSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                    updateBottomSheet(s);
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -1168,7 +900,6 @@ public class MapFragment extends Fragment
         if(InSquareProfile.isFav(mLastSelectedSquareId)) {
             for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                 if(mLastSelectedSquareId.equals(s.getId())) {
-                    updateBottomSheet(s);
                     break;
                 }
             }
@@ -1178,14 +909,6 @@ public class MapFragment extends Fragment
     @Override
     public void onRecentChanged() {
         Log.d(TAG, "onRecentChanged: Recent changed!");
-        if(InSquareProfile.isRecent(mLastSelectedSquareId)) {
-            for(Square s : InSquareProfile.getRecentSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                   updateBottomSheet(s);
-                    break;
-                }
-            }
-        }
     }
 
     public class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
@@ -1226,14 +949,6 @@ public class MapFragment extends Fragment
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
                     Marker m = createSquarePin(coords, closeSquare.getName());
                     squareHashMap.put(m, closeSquare);
-                }
-            }
-            for(Square s : squareHashMap.values()) {
-                if(mLastSelectedSquare != null) {
-                    if(s.equals(mLastSelectedSquare)) {
-                        updateBottomSheet(s);
-                        break;
-                    }
                 }
             }
         }

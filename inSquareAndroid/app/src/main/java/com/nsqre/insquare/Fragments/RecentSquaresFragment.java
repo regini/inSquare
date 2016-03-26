@@ -13,15 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.nsqre.insquare.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.SquareAdapter;
+import com.nsqre.insquare.User.InSquareProfile;
 
 /**
  * This fragment show the recent squares used by the user. The recent squares are those in which he wrote at least a message
  */
 public class RecentSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
 
+    private static RecentSquaresFragment instance;
     private static final String TAG = "RecentSquaresFragment";
 
     private ListView listRecent;
@@ -32,9 +33,13 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
     }
 
     public static RecentSquaresFragment newInstance() {
-        RecentSquaresFragment fragment = new RecentSquaresFragment();
 
-        return fragment;
+        if(instance == null)
+        {
+            instance = new RecentSquaresFragment();
+        }
+
+        return instance;
     }
 
     @Override
@@ -69,6 +74,7 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         InSquareProfile.addListener(this);
+        InSquareProfile.downloadAllSquares();
     }
 
     @Override

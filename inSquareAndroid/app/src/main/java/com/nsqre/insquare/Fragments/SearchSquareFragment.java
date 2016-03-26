@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.InSquareProfile;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.SquareAdapter;
 
