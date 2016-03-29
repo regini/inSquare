@@ -49,13 +49,14 @@
 
     <TextView
         android:id="@+id/recents_text_empty"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:layout_below="@id/profile_title"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:paddingTop="?attr/actionBarSize"
         android:textColor="#000"
         android:textSize="22sp"
+        android:gravity="center"
         android:textAlignment="center"
         android:fontFamily="sans-serif-condensed-light"
         android:visibility="invisible"

@@ -29,7 +29,7 @@
             android:textSize="18sp"
             android:text="MyText is beautiful"
             android:textIsSelectable="true"
-            android:fontFamily="sans-serif-condensed-light"
+            android:fontFamily="sans-serif-condensed"
             android:autoLink="web"
             />
         <TextView

@@ -391,7 +391,7 @@ public class MapFragment extends Fragment
                 .bearing(0.0f)
                 .tilt(0.0f)
                 .build();
-        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
     private void initCamera() {
