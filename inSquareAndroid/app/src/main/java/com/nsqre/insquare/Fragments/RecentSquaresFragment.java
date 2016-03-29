@@ -7,14 +7,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Square.SquareAdapter;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.User.InSquareProfile;
 
 /**
@@ -25,8 +26,9 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
     private static RecentSquaresFragment instance;
     private static final String TAG = "RecentSquaresFragment";
 
-    private ListView listRecent;
-    private SquareAdapter adapterRecents;
+//    private ListView listRecent;
+    private RecyclerView recyclerListRecent;
+    private RecyclerSquareAdapter adapterRecents;
 
     public RecentSquaresFragment() {
         // Required empty public constructor
@@ -59,9 +61,16 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recent_squares, container, false);
-        listRecent = (ListView) v.findViewById(R.id.squares_recents);
-        adapterRecents = new SquareAdapter(getActivity(), InSquareProfile.getRecentSquaresList());
-        listRecent.setAdapter(adapterRecents);
+//        listRecent = (ListView) v.findViewById(R.id.squares_recents);
+        recyclerListRecent = (RecyclerView) v.findViewById(R.id.recyclerview_squares_recents);
+        recyclerListRecent.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerListRecent.setLayoutManager(linearLayoutManager);
+
+        adapterRecents = new RecyclerSquareAdapter(getActivity(), InSquareProfile.getRecentSquaresList());
+        recyclerListRecent.setAdapter(adapterRecents);
+
         return v;
     }
 
@@ -136,7 +145,6 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
 
     @Override
     public void onRecentChanged() {
-        adapterRecents = new SquareAdapter(getActivity(), InSquareProfile.getRecentSquaresList());
-        listRecent.setAdapter(adapterRecents);
+        adapterRecents.notifyDataSetChanged();
     }
 }

@@ -10,17 +10,18 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
-import com.nsqre.insquare.Square.SquareAdapter;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
@@ -43,8 +44,9 @@ public class ProfileFragment extends Fragment implements
     private static final String TAB_OWNED = "Create";
     private static final String TAB_FAVOURITE = "Preferite";
 
-    private ListView squaresList;
-    private SquareAdapter adapterOwned, adapterFavourite;
+    private RecyclerView squaresRecyclerView;
+    private RecyclerSquareAdapter adapterOwned, adapterFavourite;
+//    private SquareAdapter adapterOwned, adapterFavourite;
     private ImageView profileImage;
     private TextView username, emptyText;
     private TabLayout tabLayout;
@@ -124,7 +126,10 @@ public class ProfileFragment extends Fragment implements
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        squaresList = (ListView) v.findViewById(R.id.squares_list);
+        squaresRecyclerView = (RecyclerView) v.findViewById(R.id.profile_squares_recyclerview);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        squaresRecyclerView.setLayoutManager(linearLayoutManager);
+
         profileImage = (ImageView) v.findViewById(R.id.user_avatar);
         username = (TextView) v.findViewById(R.id.userName);
         tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
@@ -136,8 +141,10 @@ public class ProfileFragment extends Fragment implements
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
-        adapterOwned = new SquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
-        adapterFavourite = new SquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
+        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+        adapterFavourite = new RecyclerSquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
+//        adapterOwned = new SquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+//        adapterFavourite = new SquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
 
         Bitmap bitmap = InSquareProfile.loadProfileImageFromStorage(getContext());
         if (bitmap == null) {
@@ -209,17 +216,17 @@ public class ProfileFragment extends Fragment implements
      * @param listAdapter The adapter which manages the list of squares
      * @param message The message shown if the list is empty
      */
-    private void fillTab(ArrayList<Square> list, SquareAdapter listAdapter, String message)
+    private void fillTab(ArrayList<Square> list, RecyclerSquareAdapter listAdapter, String message)
     {
         if(list.isEmpty())
         {
-            squaresList.setVisibility(View.INVISIBLE);
+            squaresRecyclerView.setVisibility(View.INVISIBLE);
             emptyText.setVisibility(View.VISIBLE);
             emptyText.setText(message);
         }else
         {
-            squaresList.setVisibility(View.VISIBLE);
-            squaresList.setAdapter(listAdapter);
+            squaresRecyclerView.setVisibility(View.VISIBLE);
+            squaresRecyclerView.setAdapter(listAdapter);
             emptyText.setVisibility(View.INVISIBLE);
         }
     }
@@ -237,14 +244,12 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged!");
-        adapterOwned = new SquareAdapter(getActivity(), InSquareProfile.getOwnedSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged!");
-        adapterFavourite = new SquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
         onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 

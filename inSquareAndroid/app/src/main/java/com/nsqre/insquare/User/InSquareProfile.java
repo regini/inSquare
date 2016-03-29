@@ -90,9 +90,6 @@ public class InSquareProfile {
 
     private InSquareProfile()
     {
-        downloadFavoriteSquares();
-        downloadOwnedSquares();
-        downloadRecentSquares();
     }
 
     /**
@@ -149,6 +146,12 @@ public class InSquareProfile {
         profile.googleToken = prefs.getString(GOOGLE_TOKEN_KEY, null);
         profile.googleEmail = prefs.getString(GOOGLE_EMAIL_KEY, null);
         profile.googleName  = prefs.getString(GOOGLE_NAME_KEY, null);
+
+        // VolleyManager viene istanziato e si procede con la richiesta al server
+        VolleyManager.getInstance(c);
+        downloadFavoriteSquares();
+        downloadOwnedSquares();
+        downloadRecentSquares();
 
         return profile;
     }

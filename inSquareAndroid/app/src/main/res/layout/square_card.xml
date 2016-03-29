@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/light_grey"
+    >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview_square"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/search_bar_margin"
+        android:layout_marginBottom="@dimen/search_bar_margin"
+        android:layout_marginLeft="@dimen/search_bar_margin"
+        android:layout_marginRight="@dimen/search_bar_margin"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_vertical_margin"
+            >
+
+            <ImageView
+                android:id="@+id/cardview_square_picture"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:src="@drawable/nsqre_map_pin_empty_inside"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toRightOf="@id/cardview_square_picture"
+                android:layout_centerVertical="true"
+                >
+
+                <TextView
+                    android:id="@+id/cardview_square_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Square Name"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+                <TextView
+                    android:id="@+id/cardview_square_last_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ultima attivita'"
+                    android:textColor="#000000"
+                    android:fontFamily="sans-serif-condensed-light"
+                    />
+
+            </LinearLayout>
+
+            <TextView android:id="@+id/cardview_square_notification_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/cardview_square_heart"
+                android:layout_marginRight="8dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/counter_bg"
+                android:textColor="@color/white"
+                android:text="1"
+                />
+
+            <ImageView
+                android:id="@+id/cardview_square_heart"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/heart_border_black"
+                />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

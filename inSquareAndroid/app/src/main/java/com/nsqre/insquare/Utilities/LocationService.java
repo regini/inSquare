@@ -19,8 +19,6 @@ import com.google.android.gms.location.LocationServices;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
-import java.util.Locale;
-
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
 {
@@ -128,7 +126,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     }
 
     private void sendLocationToServer(final Location lastLocation) {
-        VolleyManager.getInstance(getApplicationContext(), Locale.getDefault());
+        VolleyManager.getInstance(getApplicationContext());
         InSquareProfile.getInstance(getApplicationContext());
         final String lat = String.valueOf(lastLocation.getLatitude());
         final String lon = String.valueOf(lastLocation.getLongitude());
