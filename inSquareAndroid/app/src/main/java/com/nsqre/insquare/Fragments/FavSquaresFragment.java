@@ -30,26 +30,26 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * This fragment show the recent squares used by the user. The recent squares are those in which he wrote at least a message
  */
-public class RecentSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
+public class FavSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
 
-    private static RecentSquaresFragment instance;
-    private static final String TAG = "RecentSquaresFragment";
+    private static FavSquaresFragment instance;
+    private static final String TAG = "FavSquaresFragment";
 
 //    private ListView listRecent;
-    private RecyclerView recyclerListRecent;
-    private RecyclerSquareAdapter adapterRecents;
+    private RecyclerView recyclerListFavs;
+    private RecyclerSquareAdapter adapterFavs;
     private Toolbar toolbar;
-    private TextView recentsEmptyText;
+    private TextView favEmptyText;
 
-    public RecentSquaresFragment() {
+    public FavSquaresFragment() {
         // Required empty public constructor
     }
 
-    public static RecentSquaresFragment newInstance() {
+    public static FavSquaresFragment newInstance() {
 
         if(instance == null)
         {
-            instance = new RecentSquaresFragment();
+            instance = new FavSquaresFragment();
         }
 
         return instance;
@@ -73,16 +73,16 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recent_squares, container, false);
 //        listRecent = (ListView) v.findViewById(R.id.squares_recents);
-        recyclerListRecent = (RecyclerView) v.findViewById(R.id.recyclerview_squares_recents);
-        recyclerListRecent.setHasFixedSize(true);
+        recyclerListFavs = (RecyclerView) v.findViewById(R.id.recyclerview_squares_recents);
+        recyclerListFavs.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerListRecent.setLayoutManager(linearLayoutManager);
+        recyclerListFavs.setLayoutManager(linearLayoutManager);
 
-        adapterRecents = new RecyclerSquareAdapter(getActivity(), InSquareProfile.getRecentSquaresList());
-        recyclerListRecent.setAdapter(adapterRecents);
+        adapterFavs = new RecyclerSquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
+        recyclerListFavs.setAdapter(adapterFavs);
 
-        recentsEmptyText = (TextView) v.findViewById(R.id.recents_text_empty);
+        favEmptyText = (TextView) v.findViewById(R.id.recents_text_empty);
 
         setupToolbar(v);
 
@@ -109,9 +109,8 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         }
 
         TextView title = (TextView) v.findViewById(R.id.recents_title);
-        title.setText(getString(R.string.bottom_nav_tab_recent));
+        title.setText(getString(R.string.bottom_nav_tab_favs));
     }
-
 
     /**
      * TODO ???
@@ -129,17 +128,17 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
     public void onResume() {
         super.onResume();
 
-        if(this.adapterRecents.getItemCount() == 0)
+        if(this.adapterFavs.getItemCount() == 0)
         {
-            recyclerListRecent.setVisibility(View.INVISIBLE);
-            recentsEmptyText.setVisibility(View.VISIBLE);
+            recyclerListFavs.setVisibility(View.INVISIBLE);
+            favEmptyText.setVisibility(View.VISIBLE);
 
-            String message = getString(R.string.profile_empty_recent);
-            recentsEmptyText.setText(message);
+            String message = getString(R.string.profile_empty_favourite);
+            favEmptyText.setText(message);
         }else
         {
-            recyclerListRecent.setVisibility(View.VISIBLE);
-            recentsEmptyText.setVisibility(View.INVISIBLE);
+            recyclerListFavs.setVisibility(View.VISIBLE);
+            favEmptyText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -182,7 +181,6 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: I've just paused!");
     }
 
     @Override
@@ -192,11 +190,10 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
 
     @Override
     public void onFavChanged() {
-
+        adapterFavs.notifyDataSetChanged();
     }
 
     @Override
     public void onRecentChanged() {
-        adapterRecents.notifyDataSetChanged();
     }
 }

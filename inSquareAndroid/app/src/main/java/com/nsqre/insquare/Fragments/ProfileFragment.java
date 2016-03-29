@@ -21,19 +21,15 @@ import android.widget.TextView;
 
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.RecyclerSquareAdapter;
-import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
-
-import java.util.ArrayList;
 
 /**
  * This is the fragment that show the user's Profile. In it you can find information about the user:
  * his name, his photo and the lists of squares created and favoured
  */
 public class ProfileFragment extends Fragment implements
-        TabLayout.OnTabSelectedListener,
         InSquareProfile.InSquareProfileListener
 {
 
@@ -45,8 +41,7 @@ public class ProfileFragment extends Fragment implements
     private static final String TAB_FAVOURITE = "Preferite";
 
     private RecyclerView squaresRecyclerView;
-    private RecyclerSquareAdapter adapterOwned, adapterFavourite;
-//    private SquareAdapter adapterOwned, adapterFavourite;
+    private RecyclerSquareAdapter adapterOwned;
     private ImageView profileImage;
     private TextView username, emptyText;
     private TabLayout tabLayout;
@@ -82,8 +77,17 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        if(tabLayout != null) {
-            onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
+        if(this.adapterOwned.getItemCount() == 0)
+        {
+            squaresRecyclerView.setVisibility(View.INVISIBLE);
+            emptyText.setVisibility(View.VISIBLE);
+
+            String message = getString(R.string.profile_empty_owned);
+            emptyText.setText(message);
+        }else
+        {
+            squaresRecyclerView.setVisibility(View.VISIBLE);
+            emptyText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -130,21 +134,17 @@ public class ProfileFragment extends Fragment implements
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         squaresRecyclerView.setLayoutManager(linearLayoutManager);
 
+        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+        squaresRecyclerView.setAdapter(adapterOwned);
+
         profileImage = (ImageView) v.findViewById(R.id.user_avatar);
         username = (TextView) v.findViewById(R.id.userName);
-        tabLayout = (TabLayout) v.findViewById(R.id.profile_tab_layout);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
-
 
         Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
                 R.drawable.logo_icon_144);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
-
-        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
-        adapterFavourite = new RecyclerSquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
-//        adapterOwned = new SquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
-//        adapterFavourite = new SquareAdapter(getContext(), InSquareProfile.getFavouriteSquaresList());
 
         Bitmap bitmap = InSquareProfile.loadProfileImageFromStorage(getContext());
         if (bitmap == null) {
@@ -156,22 +156,7 @@ public class ProfileFragment extends Fragment implements
 
         username.setText(InSquareProfile.getUsername());
 
-        setupTabLayout();
-
         return v;
-    }
-
-    /**
-     * Sets up the TabLayout
-     */
-    private void setupTabLayout() {
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        TabLayout.Tab favouritesTab = tabLayout.newTab().setText(TAB_FAVOURITE);
-        tabLayout.addTab(favouritesTab, 0); // Il numero specifica dove
-        tabLayout.addTab(tabLayout.newTab().setText(TAB_OWNED), 1);
-        tabLayout.setOnTabSelectedListener(this);
-
-        onTabSelected(favouritesTab);
     }
 
     @Override
@@ -191,66 +176,14 @@ public class ProfileFragment extends Fragment implements
         super.onPause();
     }
 
-    /**
-     * Switches to the tab the user selected, checking if the lists have changed
-     * @param tab The tab selected
-     */
-    @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        Log.d(TAG, "onTabSelected: I've selected " + tab.getText());
-
-        if (tab.getText() == TAB_OWNED) {
-            fillTab(InSquareProfile.getOwnedSquaresList(), adapterOwned, getString(R.string.profile_empty_owned));
-        }
-
-        if(tab.getText() == TAB_FAVOURITE) {
-            fillTab(InSquareProfile.getFavouriteSquaresList(), adapterFavourite, getString(R.string.profile_empty_favourite));
-        }
-        adapterFavourite.notifyDataSetChanged();
-        adapterOwned.notifyDataSetChanged();
-    }
-
-    /**
-     * Fills the listAdapter with the list of squares, if the list is empty it shows the message
-     * @param list The list of squares to show
-     * @param listAdapter The adapter which manages the list of squares
-     * @param message The message shown if the list is empty
-     */
-    private void fillTab(ArrayList<Square> list, RecyclerSquareAdapter listAdapter, String message)
-    {
-        if(list.isEmpty())
-        {
-            squaresRecyclerView.setVisibility(View.INVISIBLE);
-            emptyText.setVisibility(View.VISIBLE);
-            emptyText.setText(message);
-        }else
-        {
-            squaresRecyclerView.setVisibility(View.VISIBLE);
-            squaresRecyclerView.setAdapter(listAdapter);
-            emptyText.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
-
-    }
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-        onTabSelected(tab);
-    }
-
     @Override
     public void onOwnedChanged() {
         Log.d(TAG, "onOwnedChanged!");
-        onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
+        adapterOwned.notifyDataSetChanged();
     }
 
     @Override
     public void onFavChanged() {
-        Log.d(TAG, "onFavChanged!");
-        onTabSelected(tabLayout.getTabAt(tabLayout.getSelectedTabPosition()));
     }
 
     @Override

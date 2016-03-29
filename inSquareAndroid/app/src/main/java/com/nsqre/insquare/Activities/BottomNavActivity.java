@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.nsqre.insquare.Fragments.BlankFragment;
+import com.nsqre.insquare.Fragments.FavSquaresFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
@@ -45,16 +45,19 @@ public class BottomNavActivity extends AppCompatActivity
 
         final String mapTabName = getString(R.string.bottom_nav_tab_map);
         final String profileTabName = getString(R.string.bottom_nav_tab_profile);
+        final String favTabName = getString(R.string.bottom_nav_tab_favs);
         final String recentsTabName = getString(R.string.bottom_nav_tab_recent);
         final String otherTabName = getString(R.string.bottom_nav_tab_other);
 
         AHBottomNavigationItem mapItem = new AHBottomNavigationItem(mapTabName, R.drawable.bottom_bar_map);
         AHBottomNavigationItem profileItem = new AHBottomNavigationItem(profileTabName, R.drawable.bottom_bar_profile);
+        AHBottomNavigationItem favsItem = new AHBottomNavigationItem(favTabName, R.drawable.heart_white);
         AHBottomNavigationItem recentsItem = new AHBottomNavigationItem(recentsTabName, R.drawable.bottom_bar_recent);
         AHBottomNavigationItem othersItem = new AHBottomNavigationItem(otherTabName, R.drawable.bottom_bar_more);
 
         bottomNavigation.addItem(mapItem);
         bottomNavigation.addItem(profileItem);
+        bottomNavigation.addItem(favsItem);
         bottomNavigation.addItem(recentsItem);
         bottomNavigation.addItem(othersItem);
 
@@ -62,7 +65,6 @@ public class BottomNavActivity extends AppCompatActivity
         // Set background color
         bottomNavigation.setDefaultBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
         bottomNavigation.setAccentColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
-
 
         bottomNavigation.setOnTabSelectedListener(
                 new AHBottomNavigation.OnTabSelectedListener() {
@@ -78,20 +80,25 @@ public class BottomNavActivity extends AppCompatActivity
                             case 1: // Selezionato Profilo
                                 f = ProfileFragment.newInstance();
                                 break;
-                            case 2: // Selezionato Recenti
+                            case 2:
+                                f = FavSquaresFragment.newInstance();
+                                break;
+                            case 3: // Selezionato Recenti
                                 f = RecentSquaresFragment.newInstance();
                                 break;
-                            case 3: // Selezionato Altro
+                            case 4: // Selezionato Altro
                                 f = new BlankFragment();
                                 break;
                             default:
                                 f = new BlankFragment();
                         }
-                        Log.d(TAG, "onTabSelected: " + position);
                         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, f).commit();
                     }
                 });
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        this.finishAffinity();
     }
 }

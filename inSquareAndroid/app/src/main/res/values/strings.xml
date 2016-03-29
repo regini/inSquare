@@ -55,6 +55,7 @@
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
+    <string name="profile_empty_recent">Non ha scritto in nessuna Square</string>
 
     <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
         send downstream messages to this app.</string>
@@ -107,8 +108,11 @@
     <string name="custom_invite">Custom Invite</string>
     <string name="title_activity_top_bar">TopBarActivity</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Bottom Nav Items -->
     <string name="bottom_nav_tab_map">Mappa</string>
     <string name="bottom_nav_tab_profile">Profilo</string>
+    <string name="bottom_nav_tab_favs">Preferiti</string>
     <string name="bottom_nav_tab_recent">Recenti</string>
     <string name="bottom_nav_tab_other">Altro</string>
 </resources>
