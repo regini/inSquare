@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,89 +7,59 @@
     android:id="@+id/profile_fragment"
     >
 
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/profile_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/profile_fragment_main_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccentLight"
         >
-        <!-- Profile Box -->
 
         <RelativeLayout
-            android:id="@+id/user_profile"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/colorAccentLight"
-            android:padding="8dp"
+            android:layout_height="wrap_content"
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/user_avatar"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/profile_profile_image"
+                android:layout_width="42dp"
                 android:layout_height="42dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
-                android:layout_toRightOf="@+id/user_avatar"
-                android:orientation="vertical"
-                >
-
-                <TextView
-                    android:id="@+id/userName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nome Cognome"
-                    android:textColor="@color/white"
-                    android:textSize="22sp"
-                    android:fontFamily="sans-serif-condensed"
-                    android:layout_marginTop="6dp"
-                    />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/profile_main_content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/user_profile"
-            >
-
-            <TextView
-                android:id="@+id/profile_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/search_bar_margin"
-                android:gravity="left"
-                android:text="Le mie Square"
-                android:textSize="27sp"
-                android:fontFamily="sans-serif-condensed-light"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
                 />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/profile_squares_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/profile_title"
-                />
             <TextView
-                android:id="@+id/profile_text_empty"
+                android:id="@+id/recents_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp"
-                android:layout_below="@id/profile_title"
-                android:textColor="#000"
-                android:textSize="22sp"
-                android:textAlignment="center"
-                android:fontFamily="sans-serif-condensed-light"
-                android:visibility="invisible"
+                android:layout_toRightOf="@+id/profile_profile_image"
+                android:layout_centerVertical="true"
+                android:text="Le mie Square"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-condensed"
                 />
+
         </RelativeLayout>
-    </RelativeLayout>
-</FrameLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_squares_owned"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        />
+
+    <TextView
+        android:id="@+id/profile_text_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:paddingTop="?attr/actionBarSize"
+        android:textColor="#000"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-condensed-light"
+        android:visibility="invisible"
+        />
+</android.support.design.widget.CoordinatorLayout>
