@@ -21,7 +21,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -34,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -53,13 +53,15 @@ import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
-import com.nsqre.insquare.Square.SquareState;
+import com.nsqre.insquare.SquareSuggestion;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -73,6 +75,8 @@ public class MapFragment extends Fragment
         InSquareProfile.InSquareProfileListener
 {
 
+
+    private List<Square> searchResult;
     private static MapFragment instance;
     private SupportMapFragment mapFragment;
 
@@ -104,7 +108,7 @@ public class MapFragment extends Fragment
     private HashMap<Marker, Square> squareHashMap;
 
     private CoordinatorLayout mapCoordinatorLayout;
-    private FloatingSearchView topSearchView;
+    private FloatingSearchView mSearchView;
 
     private Tracker mTracker;
     // Variabili per l'inizializzazione della Chat
@@ -137,6 +141,8 @@ public class MapFragment extends Fragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        searchResult = new ArrayList<>();
     }
 
     @Override
@@ -148,7 +154,7 @@ public class MapFragment extends Fragment
         // Recuperiamo un po' di riferimenti ai layout
         mapCoordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.map_coordinator_layout);
 
-        topSearchView = (FloatingSearchView) v.findViewById(R.id.main_map_floating_search_view);
+        mSearchView = (FloatingSearchView) v.findViewById(R.id.main_map_floating_search_view);
         setupSearchView();
 
         return v;
@@ -361,17 +367,74 @@ public class MapFragment extends Fragment
         }
     }
 
+
     private void setupSearchView() {
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+                    mSearchView.showProgress();
 
-        // Per aggiungere funzionalita'
-        // https://android-arsenal.com/details/1/2842
+                    VolleyManager.getInstance()
+                            .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
+                                @Override
+                                public void responseGET(Object object) {
+                                    searchResult = (ArrayList<Square>) object;
 
-        topSearchView.setOnMenuItemClickListener(
+                                    List<SquareSuggestion> result = new ArrayList<>();
+
+                                    for (Square s : searchResult) {
+                                        result.add(new SquareSuggestion(s));
+                                    }
+
+                                    mSearchView.swapSuggestions(result);
+                                    mSearchView.hideProgress();
+                                }
+
+                                @Override
+                                public void responsePOST(Object object) {
+
+                                }
+
+                                @Override
+                                public void responsePATCH(Object object) {
+
+                                }
+
+                                @Override
+                                public void responseDELETE(Object object) {
+
+                                }
+                            });
+                }
+            }
+        });
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                for(Square s : searchResult){
+                    if(s.getName().equals(searchSuggestion.getBody())){
+                        Location squareLocation = new Location("");
+                        squareLocation.setLongitude(s.getLon());
+                        squareLocation.setLatitude(s.getLat());
+                        moveToPosition(squareLocation);
+                    }
+                }
+            }
+
+            @Override
+            public void onSearchAction() {
+            }
+        });
+
+        mSearchView.setOnMenuItemClickListener(
                 new FloatingSearchView.OnMenuItemClickListener() {
                     @Override
                     public void onActionMenuItemSelected(MenuItem item) {
-                        switch (item.getItemId())
-                        {
+                        switch (item.getItemId()) {
                             case R.id.action_location_floating_search:
                                 moveToPosition(mCurrentLocation);
                                 break;
