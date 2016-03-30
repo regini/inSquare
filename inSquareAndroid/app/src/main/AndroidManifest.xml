@@ -116,7 +116,9 @@
         <activity
             android:name=".Activities.BottomNavActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
 
         <service
             android:name=".ChatService"
@@ -126,10 +128,6 @@
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Activities.BottomNavActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".Activities.TopBarActivity"
             android:label="@string/title_activity_top_bar"

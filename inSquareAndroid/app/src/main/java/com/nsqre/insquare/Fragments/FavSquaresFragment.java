@@ -167,20 +167,10 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
     };
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
         InSquareProfile.removeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override

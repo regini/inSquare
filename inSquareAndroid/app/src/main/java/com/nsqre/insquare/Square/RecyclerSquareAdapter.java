@@ -3,6 +3,7 @@ package com.nsqre.insquare.Square;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -100,7 +102,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
         SharedPreferences messagesPreferences = this.context.getSharedPreferences(listItem.getId(), Context.MODE_PRIVATE);
-        messagesPreferences.edit().clear().commit();
+//        messagesPreferences.edit().clear().commit();
         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
 
         int squaresNewMessages = sharedPreferences.getInt(listItem.getId(), 0);
@@ -108,6 +110,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             castHolder.squareNotifications.setVisibility(View.INVISIBLE);
         } else {
             castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
+            castHolder.squareNotifications.setVisibility(View.VISIBLE);
         }
     }
 
@@ -162,8 +165,16 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 });
     }
 
+    public void removeCard(SquareViewHolder viewholder) {
+        Log.d(TAG, "removeCard: I'm swiping at position " + viewholder.getAdapterPosition());
+
+        viewholder.squareCardBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+    }
+
     public static class SquareViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout squareCardBackground;
         CardView squareCardView;
         TextView squareName;
         TextView squareActivity;
@@ -173,6 +184,8 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         public SquareViewHolder(View itemView) {
             super(itemView);
+
+            squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_row);
 
             squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
             squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
