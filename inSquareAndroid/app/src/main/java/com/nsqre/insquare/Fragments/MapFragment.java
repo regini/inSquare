@@ -374,7 +374,7 @@ public class MapFragment extends Fragment
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
-                } else {
+                } else if(newQuery.length()>2){
                     mSearchView.showProgress();
 
                     VolleyManager.getInstance()
@@ -417,13 +417,23 @@ public class MapFragment extends Fragment
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 for(Square s : searchResult){
                     if(s.getName().equals(searchSuggestion.getBody())){
-                        Location squareLocation = new Location("");
+
+                        /*Location squareLocation = new Location("");
                         squareLocation.setLongitude(s.getLon());
                         squareLocation.setLatitude(s.getLat());
                         moveToPosition(squareLocation);
+                        */
+
+                        LatLng coords = new LatLng(s.getLat(), s.getLon());
+                        Marker m = createSquarePin(coords, s.getName());
+                        squareHashMap.put(m, s);
+                        mLastSelectedSquare=s;
+                        mLastSelectedSquareId=s.getId();
+                        onMarkerClick(m);
+                        break;
+                        }
                     }
                 }
-            }
 
             @Override
             public void onSearchAction() {
