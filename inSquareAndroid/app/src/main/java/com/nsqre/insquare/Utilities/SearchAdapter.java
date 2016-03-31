@@ -1,4 +1,4 @@
-package com.nsqre.insquare;
+package com.nsqre.insquare.Utilities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.Fragments.MapFragment;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 
 import java.util.ArrayList;

@@ -85,7 +85,7 @@ public class ProfileFragment extends Fragment implements
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        squaresRecyclerView = (RecyclerView) v.findViewById(R.id.profile_squares_recyclerview);
+        squaresRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview_squares_owned);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         squaresRecyclerView.setLayoutManager(linearLayoutManager);
 
@@ -113,8 +113,7 @@ public class ProfileFragment extends Fragment implements
         adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
         squaresRecyclerView.setAdapter(adapterOwned);
 
-        profileImage = (ImageView) v.findViewById(R.id.user_avatar);
-        username = (TextView) v.findViewById(R.id.userName);
+        profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
 
         setupProfile();
@@ -135,8 +134,6 @@ public class ProfileFragment extends Fragment implements
         } else {
             profileImage.setImageBitmap(bitmap);
         }
-
-        username.setText(InSquareProfile.getUsername());
     }
 
     /**
