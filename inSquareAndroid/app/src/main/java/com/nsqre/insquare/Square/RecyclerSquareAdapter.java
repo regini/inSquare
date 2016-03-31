@@ -34,6 +34,16 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     private ArrayList<Square> squaresArrayList;
     int i = 0;
 
+    int[] backgroundColors = new int[]{
+            R.color.md_amber_A100,
+            R.color.md_orange_A100,
+            R.color.colorAccentLightest,
+            R.color.md_purple_A100,
+            R.color.md_deep_purple_A200,
+            R.color.md_blue_100,
+            R.color.md_teal_A400
+    };
+
     public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
@@ -57,8 +67,11 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         setupNotifications(castHolder, listItem);
 
-        castHolder.squareName.setText(listItem.getName());
+        String squareName = listItem.getName();
+        castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
+
+        setupLeftSection(castHolder, squareName);
 
         castHolder.itemView.setOnClickListener(
                 new View.OnClickListener() {
@@ -67,14 +80,43 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra(MapFragment.SQUARE_TAG, listItem);
                         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
-                        if(sharedPreferences.contains(listItem.getId())) {
+                        if (sharedPreferences.contains(listItem.getId())) {
                             sharedPreferences.edit().remove(listItem.getId()).apply();
-                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
                         }
                         context.startActivity(intent);
                     }
                 }
         );
+    }
+
+    private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
+        int position = castHolder.getAdapterPosition()%(backgroundColors.length);
+
+//        castHolder.verticalColoredBar.setBackgroundColor(
+        castHolder.squareInitials.setTextColor(
+                ContextCompat.getColor(context, backgroundColors[position])
+        );
+
+        String initials = setupInitials(squareName);
+        castHolder.squareInitials.setText(initials);
+    }
+
+    private String setupInitials(String words) {
+        String[] division = words.split("\\s+");
+
+        if(division.length <= 1)
+        {
+            return words.substring(0,1).toUpperCase();
+        }
+        else if(division.length == 2)
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
+        }
+        else
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
+        }
     }
 
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {
@@ -101,15 +143,14 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     }
 
     private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
-        SharedPreferences messagesPreferences = this.context.getSharedPreferences(listItem.getId(), Context.MODE_PRIVATE);
-//        messagesPreferences.edit().clear().commit();
+
         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
 
         int squaresNewMessages = sharedPreferences.getInt(listItem.getId(), 0);
         if (squaresNewMessages == 0) {
             castHolder.squareNotifications.setVisibility(View.INVISIBLE);
         } else {
-            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
+//            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
             castHolder.squareNotifications.setVisibility(View.VISIBLE);
         }
     }
@@ -176,10 +217,11 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         LinearLayout squareCardBackground;
         CardView squareCardView;
+//        View verticalColoredBar;
+        TextView squareInitials;
         TextView squareName;
         TextView squareActivity;
         TextView squareNotifications;
-        ImageView squarePicture;
         ImageView squareFav;
 
         public SquareViewHolder(View itemView) {
@@ -191,8 +233,9 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
             squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
             squareNotifications = (TextView) itemView.findViewById(R.id.cardview_square_notification_counter);
+            squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
+//            verticalColoredBar = itemView.findViewById(R.id.cardview_vertical_colored_bar);
 
-            squarePicture = (ImageView) itemView.findViewById(R.id.cardview_square_picture);
             squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);
 
         }

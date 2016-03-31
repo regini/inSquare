@@ -96,9 +96,9 @@ public class ProfileFragment extends Fragment implements
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
                     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        Log.d(TAG, "onMove: I'm moving!");
                         return false;
                     }
+
 
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {

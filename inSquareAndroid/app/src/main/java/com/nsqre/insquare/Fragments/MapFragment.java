@@ -33,7 +33,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.view.BodyTextView;
+import com.arlib.floatingsearchview.util.view.IconImageView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -374,7 +377,7 @@ public class MapFragment extends Fragment
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
-                } else {
+                } else if(newQuery.length()>2){
                     mSearchView.showProgress();
 
                     VolleyManager.getInstance()
@@ -415,12 +418,20 @@ public class MapFragment extends Fragment
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                for(Square s : searchResult){
-                    if(s.getName().equals(searchSuggestion.getBody())){
+                for (Square s : searchResult) {
+                    if (s.getName().equals(searchSuggestion.getBody())) {
+
+                        LatLng coords = new LatLng(s.getLat(), s.getLon());
+                        Marker m = createSquarePin(coords, s.getName());
+                        squareHashMap.put(m, s);
+                        m.showInfoWindow();
+
                         Location squareLocation = new Location("");
                         squareLocation.setLongitude(s.getLon());
                         squareLocation.setLatitude(s.getLat());
                         moveToPosition(squareLocation);
+
+                        break;
                     }
                 }
             }
@@ -444,6 +455,32 @@ public class MapFragment extends Fragment
                     }
                 }
         );
+
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(IconImageView leftIcon, final BodyTextView bodyText, final SearchSuggestion item, final int itemPosition) {
+                leftIcon.setImageResource(R.drawable.button_send_chat);
+                leftIcon.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        for (Square s : searchResult) {
+                            if (s.getName().equals(item.getBody())) {
+                                LatLng coords = new LatLng(s.getLat(), s.getLon());
+                                Marker m = createSquarePin(coords, s.getName());
+                                squareHashMap.put(m, s);
+                                mLastSelectedSquare = s;
+                                mLastSelectedSquareId = s.getId();
+                                onMarkerClick(m);
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+
     }
 
     private void moveToPosition(Location toLocation) {
