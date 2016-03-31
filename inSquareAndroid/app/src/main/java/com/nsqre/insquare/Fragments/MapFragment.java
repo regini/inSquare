@@ -31,7 +31,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -426,10 +429,12 @@ public class MapFragment extends Fragment
                         squareHashMap.put(m, s);
                         m.showInfoWindow();
 
-                        Location squareLocation = new Location("");
-                        squareLocation.setLongitude(s.getLon());
-                        squareLocation.setLatitude(s.getLat());
-                        moveToPosition(squareLocation);
+//                        Location squareLocation = new Location("");
+//                        squareLocation.setLongitude(s.getLon());
+//                        squareLocation.setLatitude(s.getLat());
+                        // TODO ANIMATE
+                        setMapInPosition(s.getLat(), s.getLon());
+//                        moveToPosition(squareLocation);
 
                         break;
                     }
@@ -491,7 +496,7 @@ public class MapFragment extends Fragment
                 .bearing(0.0f)
                 .tilt(0.0f)
                 .build();
-        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
     private void initCamera() {
@@ -500,6 +505,7 @@ public class MapFragment extends Fragment
 
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
+        mGoogleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -929,17 +935,19 @@ public class MapFragment extends Fragment
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.setOnMapClickListener(this);
         mGoogleMap.setOnCameraChangeListener(this);
+        mGoogleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
     }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
+
+        final Square currentSquare = squareHashMap.get(marker);
 
         marker.showInfoWindow();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
                 null); // callback
-        final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
         if(currentSquare.getId().equals(mLastSelectedSquareId))
         {
@@ -1067,4 +1075,44 @@ public class MapFragment extends Fragment
         return mCurrentLocation;
     }
 
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private static final String TAG = "MarkerInfoWindowAdapter";
+
+        // Componenti della View
+        private ImageView heartButton;
+        private ImageView squareIcon;
+        private TextView squareName;
+        private TextView squareActivity;
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            View view = getActivity().getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+            squareName = (TextView) view.findViewById(R.id.info_window_square_name);
+            squareActivity = (TextView) view.findViewById(R.id.info_window_square_last_activity);
+            heartButton = (ImageView) view.findViewById(R.id.info_window_heart_button);
+
+            Square s = squareHashMap.get(marker);
+            setupSquare(s);
+
+            return view;
+        }
+
+        private void setupSquare(final Square square)
+        {
+            squareName.setText(square.getName());
+            squareActivity.setText(square.formatTime());
+
+            if(InSquareProfile.isFav(square.getId()))
+            {
+                heartButton.setImageResource(R.drawable.heart_black);
+            }
+        }
+    }
 }

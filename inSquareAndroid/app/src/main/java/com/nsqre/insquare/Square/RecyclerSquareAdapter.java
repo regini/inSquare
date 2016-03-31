@@ -164,7 +164,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         return this.squaresArrayList.size();
     }
 
-    public void favouriteSquare(final int method, final Square square) {
+    private void favouriteSquare(final int method, final Square square) {
 
         VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {

@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.User.InSquareProfile;
+import com.nsqre.insquare.Utilities.DividerItemDecoration;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
 
@@ -81,6 +82,7 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
 
         adapterFavs = new RecyclerSquareAdapter(getActivity(), InSquareProfile.getFavouriteSquaresList());
         recyclerListFavs.setAdapter(adapterFavs);
+
 
         favEmptyText = (TextView) v.findViewById(R.id.recents_text_empty);
 
