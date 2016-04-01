@@ -63,7 +63,7 @@
         android:layout_height="28dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/heart_border_black"
+        android:src="@drawable/like_96"
         />
     </RelativeLayout>
 </RelativeLayout>

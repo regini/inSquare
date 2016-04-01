@@ -1111,7 +1111,7 @@ public class MapFragment extends Fragment
 
             if(InSquareProfile.isFav(square.getId()))
             {
-                heartButton.setImageResource(R.drawable.heart_black);
+                heartButton.setImageResource(R.drawable.like_filled_96);
             }
         }
     }

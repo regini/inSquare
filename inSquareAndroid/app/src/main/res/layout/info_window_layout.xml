@@ -13,16 +13,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/info_window_background"
-        android:padding="8dp"
+        android:padding="@dimen/info_window_padding"
         >
 
         <ImageView
             android:id="@+id/info_window_heart_button"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/heart_border_black"
+            android:layout_marginRight="@dimen/info_window_padding"
+            android:src="@drawable/like_96"
             />
 
         <RelativeLayout
@@ -30,8 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/info_window_heart_button"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:layout_centerVertical="true"
             >
 
@@ -39,7 +37,7 @@
                 android:id="@+id/info_window_name_activity_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/info_window_padding"
                 android:orientation="vertical"
                 >
 
@@ -48,8 +46,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Square Name"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="17sp"
                     android:maxLines="4"
                     android:ellipsize="end"
                     android:fontFamily="sans-serif-condensed"
@@ -60,8 +58,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ultima attività"
-                    android:textSize="10sp"
-                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorTextSecondary"
                     android:fontFamily="sans-serif-condensed-light"
                     />
 

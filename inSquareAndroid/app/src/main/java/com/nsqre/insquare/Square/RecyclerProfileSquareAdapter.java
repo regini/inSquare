@@ -1,8 +1,6 @@
 package com.nsqre.insquare.Square;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,13 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
@@ -26,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Created by Umberto Sonnino on 29/03/2016.
  */
-public class RecyclerSquareAdapter extends RecyclerView.Adapter {
+public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = "SquareAdapter";
     public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
@@ -44,14 +42,14 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             R.color.md_teal_A400
     };
 
-    public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
+    public RecyclerProfileSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
     }
 
     @Override
     public SquareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.square_card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.square_card_profile, parent, false);
         SquareViewHolder squareViewHolder = new SquareViewHolder(v);
         return squareViewHolder;
     }
@@ -65,26 +63,35 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         setupHeart(castHolder, listItem);
 
-        setupNotifications(castHolder, listItem);
-
         String squareName = listItem.getName();
         castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
-
+        // Per sottolineare l'inizio
+        String description = listItem.getDescription();
+        if(description.length() > 0)
+        {
+            castHolder.squareDescription.setText("\t\t\t\t" + listItem.getDescription());
+        }else
+        {
+            castHolder.middleSection.setVisibility(View.GONE);
+        }
         setupLeftSection(castHolder, squareName);
 
-        castHolder.itemView.setOnClickListener(
+        castHolder.lowerSectionViews.setText("Vista " + listItem.getViews() + " volte");
+        castHolder.lowerSectionFavs.setText("Seguita da " + listItem.getViews() + " persone");
+        castHolder.editButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(context, ChatActivity.class);
-                        intent.putExtra(MapFragment.SQUARE_TAG, listItem);
-                        SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
-                        if (sharedPreferences.contains(listItem.getId())) {
-                            sharedPreferences.edit().remove(listItem.getId()).apply();
-                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
-                        }
-                        context.startActivity(intent);
+
+                    }
+                }
+        );
+        castHolder.trashButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
                     }
                 }
         );
@@ -93,7 +100,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
         int position = castHolder.getAdapterPosition()%(backgroundColors.length);
 
-//        castHolder.verticalColoredBar.setBackgroundColor(
         castHolder.squareInitials.setTextColor(
                 ContextCompat.getColor(context, backgroundColors[position])
         );
@@ -143,19 +149,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     }
                 }
         );
-    }
-
-    private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
-
-        SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
-
-        int squaresNewMessages = sharedPreferences.getInt(listItem.getId(), 0);
-        if (squaresNewMessages == 0) {
-            castHolder.squareNotifications.setVisibility(View.INVISIBLE);
-        } else {
-//            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
-            castHolder.squareNotifications.setVisibility(View.VISIBLE);
-        }
     }
 
     public long getItemId(int position) {
@@ -223,21 +216,63 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         TextView squareInitials;
         TextView squareName;
         TextView squareActivity;
-        TextView squareNotifications;
+        TextView squareDescription;
         ImageView squareFav;
+        ImageView expandArrow;
+
+        RelativeLayout middleSection;
+
+        LinearLayout lowerSectionExpanded;
+        TextView lowerSectionFavs;
+        TextView lowerSectionViews;
+
+        ImageButton trashButton;
+        ImageButton editButton;
+        ImageView unexpandArrow;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
 
-            squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_row);
+            squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_profile_row);
 
-            squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
-            squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
-            squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
-            squareNotifications = (TextView) itemView.findViewById(R.id.cardview_square_notification_counter);
-            squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
+            squareCardView = (CardView) itemView.findViewById(R.id.cardview_profile_square);
+            squareName = (TextView) itemView.findViewById(R.id.cardview_profile_square_name);
+            squareActivity = (TextView) itemView.findViewById(R.id.cardview_profile_square_last_activity);
+            squareInitials = (TextView) itemView.findViewById(R.id.cardview_profile_square_initials);
+            squareDescription = (TextView) itemView.findViewById(R.id.cardview_profile_description_text);
 
-            squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);
+            squareFav = (ImageView) itemView.findViewById(R.id.cardview_profile_square_heart);
+
+            middleSection = (RelativeLayout) itemView.findViewById(R.id.cardview_profile_middle_section);
+
+            expandArrow  = (ImageView) itemView.findViewById(R.id.cardview_profile_expand_button);
+            expandArrow.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            expandArrow.setVisibility(View.GONE);
+                            lowerSectionExpanded.setVisibility(View.VISIBLE);
+                        }
+                    }
+            );
+
+            lowerSectionExpanded = (LinearLayout) itemView.findViewById(R.id.cardview_profile_lower_section_expanded);
+            lowerSectionExpanded.setVisibility(View.GONE);
+
+            lowerSectionFavs = (TextView) itemView.findViewById(R.id.lower_section_square_favourites);
+            lowerSectionViews = (TextView) itemView.findViewById(R.id.lower_section_square_views);
+            trashButton = (ImageButton) itemView.findViewById(R.id.lower_section_trash_button);
+            editButton  = (ImageButton) itemView.findViewById(R.id.lower_section_edit_button);
+            unexpandArrow = (ImageView) itemView.findViewById(R.id.lower_section_unexpand_button);
+            unexpandArrow.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            expandArrow.setVisibility(View.VISIBLE);
+                            lowerSectionExpanded.setVisibility(View.GONE);
+                        }
+                    }
+            );
 
         }
 

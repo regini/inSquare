@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.Square.RecyclerSquareAdapter;
+import com.nsqre.insquare.Square.RecyclerProfileSquareAdapter;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.ImageConverter;
@@ -42,7 +41,7 @@ public class ProfileFragment extends Fragment implements
     private static final String TAB_FAVOURITE = "Preferite";
 
     private RecyclerView squaresRecyclerView;
-    private RecyclerSquareAdapter adapterOwned;
+    private RecyclerProfileSquareAdapter adapterOwned;
     private ImageView profileImage;
     private TextView username, emptyText;
     private TabLayout tabLayout;
@@ -91,26 +90,7 @@ public class ProfileFragment extends Fragment implements
 
         // TODO implementare comportamento sul swipe
 
-        ItemTouchHelper.SimpleCallback simpleCallback =
-                new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        return false;
-                    }
-
-
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                        Log.d(TAG, "onSwiped!");
-                        adapterOwned.removeCard((RecyclerSquareAdapter.SquareViewHolder) viewHolder);
-                    }
-        };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(squaresRecyclerView);
-
-
-        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+        adapterOwned = new RecyclerProfileSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
         squaresRecyclerView.setAdapter(adapterOwned);
 
         profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
