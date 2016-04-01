@@ -34,7 +34,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -67,7 +66,6 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -785,12 +783,12 @@ public class MapFragment extends Fragment
 
     private void descriptionDialog(String oldName, String oldDescription) {
         final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_description);
+        mDialog.setContentView(R.layout.dialog_edit_square);
 //        mDialog.setTitle("Modifica la descrizione");
         mDialog.setCancelable(true);
         mDialog.show();
 
-        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.et_dialog_name);
+        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_name_text);
         if(!oldDescription.isEmpty())
         {
             ((TextInputLayout) nameEditText.getParent()).setHint("Modifica il nome della piazza");
@@ -799,7 +797,7 @@ public class MapFragment extends Fragment
         }
 
 
-        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.et_dialog_description);
+        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_description_text);
         if(!oldDescription.isEmpty())
         {
             ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
@@ -807,7 +805,7 @@ public class MapFragment extends Fragment
             descriptionEditText.setText(oldDescription);
         }
 
-        final Button okButton = (Button) mDialog.findViewById(R.id.button_dialog_description);
+        final Button okButton = (Button) mDialog.findViewById(R.id.dialog_edit_ok_button);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
