@@ -65,8 +65,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.OnClick;
 import retrofit.Callback;
@@ -119,8 +121,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
 
-    private static final int REQUEST_READ_STORAGE = 0;
-    private static final int REQUEST_WRITE_STORAGE = 1;
+    private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 0;
 
     //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -233,45 +234,54 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     private void insertPhotoWrapper() {
-        int hasReadStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            List<String> permissionsNeeded = new ArrayList<String>();
 
-        if(hasReadStoragePermission != PackageManager.PERMISSION_GRANTED
-                ) {
+            final List<String> permissionsList = new ArrayList<String>();
+            if (!addPermission(permissionsList, Manifest.permission.READ_EXTERNAL_STORAGE))
+            if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE))
 
-            if (hasReadStoragePermission != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_READ_STORAGE);
+            if (permissionsList.size() > 0) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                return;
             }
-            if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_WRITE_STORAGE);
-            }
-            return;
-        }
         onChooseImage();
+    }
+
+    private boolean addPermission(List<String> permissionsList, String permission) {
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+            // Check for Rationale Option
+            if (!shouldShowRequestPermissionRationale(permission))
+                return false;
+        }
+        return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_READ_STORAGE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+            {
+                Map<String, Integer> perms = new HashMap<String, Integer>();
+                // Initial
+                perms.put(Manifest.permission.READ_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                // Fill with results
+                for (int i = 0; i < permissions.length; i++)
+                    perms.put(permissions[i], grantResults[i]);
+                // Check for ACCESS_FINE_LOCATION
+                if (perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    // All Permissions Granted
                     onChooseImage();
                 } else {
                     // Permission Denied
+                    Toast.makeText(this, "Some Permission is Denied", Toast.LENGTH_SHORT)
+                            .show();
                 }
-                break;
-            case REQUEST_WRITE_STORAGE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    onChooseImage();
-                } else {
-                    // Permission Denied
-                }
-                break;
-
+            }
+            break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }

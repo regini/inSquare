@@ -383,11 +383,8 @@ public class MapFragment extends Fragment
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
-                } else {
-                    mSearchView.showProgress();
-                    if (newQuery.length() > 2) {
-
-
+                } else if (newQuery.length() > 2) {
+                        mSearchView.showProgress();
                         VolleyManager.getInstance()
                                 .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
                                     @Override
@@ -421,7 +418,6 @@ public class MapFragment extends Fragment
                                 });
                     }
                 }
-            }
         });
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
