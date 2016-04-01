@@ -54,6 +54,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
@@ -656,9 +657,7 @@ public class MapFragment extends Fragment
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
         if(sharedPreferences.contains(s.getId())) {
             sharedPreferences.edit().remove(s.getId()).apply();
-            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
-            MapActivity rootActivity = (MapActivity) getActivity();
-            rootActivity.checkNotifications();
+            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
         }
         intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);

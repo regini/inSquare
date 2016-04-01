@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -273,8 +275,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onStart() {
         super.onStart();
 
-
         setTitle(mSquareName);
+        ColorDrawable toolbarColor = new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+        getSupportActionBar().setBackgroundDrawable(toolbarColor);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
