@@ -126,19 +126,10 @@
                 android:paddingRight="@dimen/activity_vertical_margin"
                 >
 
-                <View
-                    android:id="@+id/cardview_profile_middle_section_separator"
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="@color/colorDivider"
-                    android:layout_marginTop="8dp"
-                    />
-
                 <TextView
                     android:id="@+id/cardview_profile_description_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/cardview_profile_middle_section_separator"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:text="\t\t\t\This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellouse to go to"
                     android:textSize="15sp"

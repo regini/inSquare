@@ -34,7 +34,9 @@ import java.util.ArrayList;
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = "SquareAdapter";
-    public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
+    private static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
+    private static final String INDENTATION = "\t\t\t\t";
+
     private Context context;
     private ArrayList<Square> squaresArrayList;
     int i = 0;
@@ -77,7 +79,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         String description = listItem.getDescription().trim();
         if(description.length() > 0)
         {
-            castHolder.squareDescription.setText("\t\t\t\t" + listItem.getDescription());
+            castHolder.squareDescription.setText(INDENTATION + listItem.getDescription());
         }else
         {
             castHolder.middleSection.setVisibility(View.GONE);
@@ -215,7 +217,18 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                                             // Tutto OK!
                                             Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
                                             squareViewHolder.squareName.setText(newName);
-                                            squareViewHolder.squareDescription.setText(newDescription);
+                                            squareViewHolder.squareDescription.setText(INDENTATION + newDescription);
+                                            element.setName(newName);
+                                            element.setDescription(newDescription);
+
+                                            if(newDescription.isEmpty())
+                                            {
+                                                squareViewHolder.middleSection.setVisibility(View.GONE);
+                                            }else
+                                            {
+                                                squareViewHolder.middleSection.setVisibility(View.VISIBLE);
+                                            }
+
                                             Toast.makeText(context, "Modificata con successo!", Toast.LENGTH_SHORT).show();
                                             editDialog.dismiss();
                                         } else {
