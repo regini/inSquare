@@ -104,10 +104,13 @@ public class MapFragment extends Fragment
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private static final int REQUEST_COARSE_LOCATION = 1;
+
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute in milliseconds
-    private static String[] PERMISSIONS =
-            {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private static String[] PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
@@ -251,8 +254,9 @@ public class MapFragment extends Fragment
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             this.requestPermissions(PERMISSIONS,
                     REQUEST_COARSE_LOCATION);
@@ -379,40 +383,43 @@ public class MapFragment extends Fragment
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
-                } else if(newQuery.length()>2){
+                } else {
                     mSearchView.showProgress();
+                    if (newQuery.length() > 2) {
 
-                    VolleyManager.getInstance()
-                            .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    searchResult = (ArrayList<Square>) object;
 
-                                    List<SquareSuggestion> result = new ArrayList<>();
+                        VolleyManager.getInstance()
+                                .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
+                                    @Override
+                                    public void responseGET(Object object) {
+                                        searchResult = (ArrayList<Square>) object;
 
-                                    for (Square s : searchResult) {
-                                        result.add(new SquareSuggestion(s));
+                                        List<SquareSuggestion> result = new ArrayList<>();
+
+                                        for (Square s : searchResult) {
+                                            result.add(new SquareSuggestion(s));
+                                        }
+
+                                        mSearchView.swapSuggestions(result);
+                                        mSearchView.hideProgress();
                                     }
 
-                                    mSearchView.swapSuggestions(result);
-                                    mSearchView.hideProgress();
-                                }
+                                    @Override
+                                    public void responsePOST(Object object) {
 
-                                @Override
-                                public void responsePOST(Object object) {
+                                    }
 
-                                }
+                                    @Override
+                                    public void responsePATCH(Object object) {
 
-                                @Override
-                                public void responsePATCH(Object object) {
+                                    }
 
-                                }
+                                    @Override
+                                    public void responseDELETE(Object object) {
 
-                                @Override
-                                public void responseDELETE(Object object) {
-
-                                }
-                            });
+                                    }
+                                });
+                    }
                 }
             }
         });

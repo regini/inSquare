@@ -1,11 +1,14 @@
 package com.nsqre.insquare.Activities;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -62,6 +65,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.OnClick;
@@ -114,6 +118,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     //SHARE
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
+
+    private static final int REQUEST_READ_STORAGE = 0;
+    private static final int REQUEST_WRITE_STORAGE = 1;
 
     //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -170,7 +177,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onChooseImage();
+                insertPhotoWrapper();
             }
         });
 
@@ -225,6 +232,50 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     }
 
+    private void insertPhotoWrapper() {
+        int hasReadStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(hasReadStoragePermission != PackageManager.PERMISSION_GRANTED
+                ) {
+
+            if (hasReadStoragePermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_READ_STORAGE);
+            }
+            if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_STORAGE);
+            }
+            return;
+        }
+        onChooseImage();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    onChooseImage();
+                } else {
+                    // Permission Denied
+                }
+                break;
+            case REQUEST_WRITE_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    onChooseImage();
+                } else {
+                    // Permission Denied
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 
     /**
      * Creates a Volley request to download the messages present in a particular square, then it adds the results to the
