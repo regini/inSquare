@@ -479,8 +479,7 @@ public class MapFragment extends Fragment
                                 mLastSelectedSquare = s;
                                 mLastSelectedSquareId = s.getId();
                                 onMarkerClick(m);
-                                mSearchView.clearSuggestions();
-                                mSearchView.setSearchText("");
+                                mSearchView.clearSearchFocus();
                                 break;
                             }
                         }
@@ -489,6 +488,13 @@ public class MapFragment extends Fragment
             }
         });
 
+        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+            @Override
+            public void onHomeClicked() {
+                mSearchView.clearSearchFocus();
+                Log.d(TAG, "onHomeClicked()");
+            }
+        });
 
     }
 
