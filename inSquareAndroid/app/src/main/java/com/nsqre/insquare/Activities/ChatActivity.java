@@ -121,7 +121,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
 
-    private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 0;
+    private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
 
     //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -853,37 +853,34 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri returnUri;
+        switch(requestCode){
+            case REQUEST_INVITE:
+                if (resultCode == RESULT_OK) {
+                    // Check how many invitations were sent and log a message
+                    // The ids array contains the unique invitation ids for each invitation sent
+                    // (one for each contact select by the user). You can use these for analytics
+                    // as the ID will be consistent on the sending and receiving devices.
+                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
+                } else {
+                    // Sending failed or it was canceled, show failure message to the user
+                    //showMessage(getString(R.string.send_failed));
+                }
+                break;
+            case IntentHelper.FILE_PICK:
+                Uri returnUri;
 
-        if (requestCode != IntentHelper.FILE_PICK) {
-            return;
-        }
+                if (resultCode != RESULT_OK) {
+                    return;
+                }
 
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
-        returnUri = data.getData();
-        String filePath = DocumentHelper.getPath(this, returnUri);
-        //Safety check to prevent null pointer exception
-        if (filePath == null || filePath.isEmpty()) return;
-        chosenFile = new File(filePath);
-        uploadImage();
-
-        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-
-        if (requestCode == REQUEST_INVITE) {
-            if (resultCode == RESULT_OK) {
-                // Check how many invitations were sent and log a message
-                // The ids array contains the unique invitation ids for each invitation sent
-                // (one for each contact select by the user). You can use these for analytics
-                // as the ID will be consistent on the sending and receiving devices.
-                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-            } else {
-                // Sending failed or it was canceled, show failure message to the user
-                showMessage(getString(R.string.send_failed));
-            }
+                returnUri = data.getData();
+                String filePath = DocumentHelper.getPath(this, returnUri);
+                //Safety check to prevent null pointer exception
+                if (filePath == null || filePath.isEmpty()) return;
+                chosenFile = new File(filePath);
+                uploadImage();
+                break;
         }
     }
 
@@ -937,11 +934,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        showMessage(getString(R.string.google_play_services_error));
+        //showMessage(getString(R.string.google_play_services_error));
     }
 
+    /*
     private void showMessage(String msg) {
         ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
         Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
     }
+
+    */
 }
