@@ -466,7 +466,7 @@ public class MapFragment extends Fragment
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, final BodyTextView bodyText, final SearchSuggestion item, final int itemPosition) {
-                leftIcon.setImageResource(R.drawable.button_send_chat);
+                leftIcon.setImageResource(R.drawable.message_processing_black);
                 leftIcon.setOnClickListener(new View.OnClickListener() {
 
                     @Override
