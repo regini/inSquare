@@ -479,6 +479,8 @@ public class MapFragment extends Fragment
                                 mLastSelectedSquare = s;
                                 mLastSelectedSquareId = s.getId();
                                 onMarkerClick(m);
+                                mSearchView.clearSuggestions();
+                                mSearchView.setSearchText("");
                                 break;
                             }
                         }
