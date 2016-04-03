@@ -34,9 +34,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.github.developerpaul123.filepickerlibrary.FilePickerBuilder;
-import com.github.developerpaul123.filepickerlibrary.enums.MimeType;
-import com.github.developerpaul123.filepickerlibrary.enums.Scope;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
