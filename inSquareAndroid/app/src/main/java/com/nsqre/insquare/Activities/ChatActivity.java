@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,9 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.github.developerpaul123.filepickerlibrary.FilePickerBuilder;
+import com.github.developerpaul123.filepickerlibrary.enums.MimeType;
+import com.github.developerpaul123.filepickerlibrary.enums.Scope;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -234,20 +238,83 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     private void insertPhotoWrapper() {
-            List<String> permissionsNeeded = new ArrayList<String>();
+        List<String> permissionsNeeded = new ArrayList<String>();
 
-            final List<String> permissionsList = new ArrayList<String>();
-            if (!addPermission(permissionsList, Manifest.permission.READ_EXTERNAL_STORAGE))
-            if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        final List<String> permissionsList = new ArrayList<String>();
+        if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            permissionsNeeded.add("WRITE Storage");
+        if (!addPermission(permissionsList, Manifest.permission.READ_EXTERNAL_STORAGE))
+            permissionsNeeded.add("READ Storage");
 
-            if (permissionsList.size() > 0) {
-                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+        if (permissionsList.size() > 0) {
+            if (permissionsNeeded.size() > 0) {
+                // Need Rationale
+                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                for (int i = 1; i < permissionsNeeded.size(); i++)
+                    message = message + ", " + permissionsNeeded.get(i);
+                showMessageOKCancel(message,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                            }
+                        });
                 return;
             }
+            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            return;
+        }
+
         onChooseImage();
     }
 
+    public void onChooseImage() {
+        IntentHelper.chooseFileIntent(this);
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case REQUEST_INVITE:
+                if (resultCode == RESULT_OK) {
+                    // Check how many invitations were sent and log a message
+                    // The ids array contains the unique invitation ids for each invitation sent
+                    // (one for each contact select by the user). You can use these for analytics
+                    // as the ID will be consistent on the sending and receiving devices.
+                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
+                } else {
+                    // Sending failed or it was canceled, show failure message to the user
+                    //showMessage(getString(R.string.send_failed));
+                }
+                break;
+            case IntentHelper.FILE_PICK:
+                Uri returnUri;
+
+                if (resultCode != RESULT_OK) {
+                    return;
+                }
+
+                returnUri = data.getData();
+                String filePath = DocumentHelper.getPath(this, returnUri);
+                //Safety check to prevent null pointer exception
+                if (filePath == null || filePath.isEmpty()) return;
+                chosenFile = new File(filePath);
+                uploadImage();
+                break;
+        }
+    }
     private boolean addPermission(List<String> permissionsList, String permission) {
         if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission);
@@ -842,46 +909,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     public void onItemClick(int position, View v) {
         // TODO implementare onclick behavior per i messaggi nella chat
         Log.d(TAG, "onItemClick: I've just clicked item " + position);
-    }
-
-
-    @OnClick(R.id.chat_foto_button)
-    public void onChooseImage() {
-        IntentHelper.chooseFileIntent(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode){
-            case REQUEST_INVITE:
-                if (resultCode == RESULT_OK) {
-                    // Check how many invitations were sent and log a message
-                    // The ids array contains the unique invitation ids for each invitation sent
-                    // (one for each contact select by the user). You can use these for analytics
-                    // as the ID will be consistent on the sending and receiving devices.
-                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-                } else {
-                    // Sending failed or it was canceled, show failure message to the user
-                    //showMessage(getString(R.string.send_failed));
-                }
-                break;
-            case IntentHelper.FILE_PICK:
-                Uri returnUri;
-
-                if (resultCode != RESULT_OK) {
-                    return;
-                }
-
-                returnUri = data.getData();
-                String filePath = DocumentHelper.getPath(this, returnUri);
-                //Safety check to prevent null pointer exception
-                if (filePath == null || filePath.isEmpty()) return;
-                chosenFile = new File(filePath);
-                uploadImage();
-                break;
-        }
     }
 
 
