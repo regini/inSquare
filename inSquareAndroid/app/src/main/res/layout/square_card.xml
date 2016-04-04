@@ -20,6 +20,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="@dimen/search_bar_margin"
             >
 
             <!-- Parte Sinistra con Immagine -->
@@ -35,23 +36,22 @@
                     android:layout_height="@dimen/square_card_pic_size"
                     android:gravity="center"
                     android:textColor="@color/colorText"
-                    android:text="SN"
-                    android:textSize="30sp"
-                    android:fontFamily="sans-serif-condensed-light"
-                    android:background="@color/colorPrimaryDark"
+                    android:text="AVL"
+                    android:textSize="25sp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:background="@drawable/linear_layout_rounded_background"
                     />
 
                 <TextView
                     android:id="@+id/cardview_square_notification_counter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
                     android:layout_alignParentTop="true"
-                    android:layout_margin="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="11dp"
                     android:gravity="center"
                     android:background="@drawable/counter_bg"
-                    android:textColor="@color/colorPrimaryLight"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-bold"
                     />
 
             </RelativeLayout>
@@ -105,7 +105,6 @@
                     android:id="@+id/cardview_right_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
                     android:layout_gravity="center_vertical"
                     >
 
@@ -122,11 +121,16 @@
 
         </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorDivider"
+            android:layout_marginLeft="76dp"
+            android:layout_marginStart="76dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="bottom"
+            />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/colorDivider"
-        />
+    </android.support.v7.widget.CardView>
 </LinearLayout>

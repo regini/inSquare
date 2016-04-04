@@ -93,10 +93,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
         int position = castHolder.getAdapterPosition()%(backgroundColors.length);
 
-//        castHolder.verticalColoredBar.setBackgroundColor(
-        castHolder.squareInitials.setTextColor(
-                ContextCompat.getColor(context, backgroundColors[position])
-        );
+        castHolder.squareInitials.setBackgroundTintList(ContextCompat.getColorStateList(context, backgroundColors[position]));
 
         String initials = setupInitials(squareName);
         castHolder.squareInitials.setText(initials);

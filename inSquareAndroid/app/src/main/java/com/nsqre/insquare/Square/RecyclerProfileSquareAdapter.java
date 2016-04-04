@@ -3,8 +3,11 @@ package com.nsqre.insquare.Square;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -86,8 +89,8 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         }
         setupLeftSection(castHolder, squareName);
 
-        castHolder.lowerSectionViews.setText("Vista " + listItem.getViews() + " volte");
-        castHolder.lowerSectionFavs.setText("Seguita da " + listItem.getFavouredBy() + " persone");
+        castHolder.lowerSectionViews.setText("" + listItem.getViews());
+        castHolder.lowerSectionFavs.setText("" + listItem.getFavouredBy());
         castHolder.editButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -189,8 +192,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         final String newDescription = descriptionEditText.getText().toString().trim();
                         final String newName = nameEditText.getText().toString().trim();
 
-                        if(newName.isEmpty())
-                        {
+                        if (newName.isEmpty()) {
                             Toast.makeText(context, "Il nome non può essere vuoto!", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -221,11 +223,9 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                                             element.setName(newName);
                                             element.setDescription(newDescription);
 
-                                            if(newDescription.isEmpty())
-                                            {
+                                            if (newDescription.isEmpty()) {
                                                 squareViewHolder.middleSection.setVisibility(View.GONE);
-                                            }else
-                                            {
+                                            } else {
                                                 squareViewHolder.middleSection.setVisibility(View.VISIBLE);
                                             }
 
@@ -249,12 +249,19 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     }
 
+    /*
+        Cambia il colore del cerchio nella lista a seconda della posizione
+        Utilizza DrawableCompat per retrocompatibilità
+     */
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
         int position = castHolder.getAdapterPosition()%(backgroundColors.length);
 
-        castHolder.squareInitials.setTextColor(
-                ContextCompat.getColor(context, backgroundColors[position])
-        );
+        ColorStateList circleColor = ContextCompat.getColorStateList(context, backgroundColors[position]);
+
+        final Drawable originalDrawable = castHolder.squareInitials.getBackground();
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+        DrawableCompat.setTintList(wrappedDrawable, circleColor);
+        castHolder.squareInitials.setBackground(wrappedDrawable);
 
         String initials = setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
@@ -363,7 +370,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         TextView squareActivity;
         TextView squareDescription;
         ImageView squareFav;
-        ImageView expandArrow;
 
         RelativeLayout middleSection;
 
@@ -373,7 +379,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
         ImageButton trashButton;
         ImageButton editButton;
-        ImageView unexpandArrow;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
@@ -390,34 +395,12 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
             middleSection = (RelativeLayout) itemView.findViewById(R.id.cardview_profile_middle_section);
 
-            expandArrow  = (ImageView) itemView.findViewById(R.id.cardview_profile_expand_button);
-            expandArrow.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            expandArrow.setVisibility(View.GONE);
-                            lowerSectionExpanded.setVisibility(View.VISIBLE);
-                        }
-                    }
-            );
-
             lowerSectionExpanded = (LinearLayout) itemView.findViewById(R.id.cardview_profile_lower_section_expanded);
-            lowerSectionExpanded.setVisibility(View.GONE);
 
             lowerSectionFavs = (TextView) itemView.findViewById(R.id.lower_section_square_favourites);
             lowerSectionViews = (TextView) itemView.findViewById(R.id.lower_section_square_views);
             trashButton = (ImageButton) itemView.findViewById(R.id.lower_section_trash_button);
             editButton  = (ImageButton) itemView.findViewById(R.id.lower_section_edit_button);
-            unexpandArrow = (ImageView) itemView.findViewById(R.id.lower_section_unexpand_button);
-            unexpandArrow.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            expandArrow.setVisibility(View.VISIBLE);
-                            lowerSectionExpanded.setVisibility(View.GONE);
-                        }
-                    }
-            );
 
         }
 

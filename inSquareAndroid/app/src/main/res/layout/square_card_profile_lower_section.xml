@@ -9,70 +9,74 @@
     >
 
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:padding="@dimen/activity_vertical_margin"
-    android:orientation="horizontal"
-    >
-    <ImageView
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/heart_black"
-        />
-    <TextView
-        android:id="@+id/lower_section_square_favourites"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Seguita da # Persone"
-        />
-</LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_vertical_margin"
-        android:paddingTop="@dimen/search_bar_margin"
-        android:paddingBottom="@dimen/search_bar_margin"
-        android:orientation="horizontal"
-        >
-        <ImageView
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:src="@drawable/eye"
-            />
-        <TextView
-            android:id="@+id/lower_section_square_views"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Vista da # persone"
-            />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:background="@color/colorDivider"
-        android:layout_marginTop="8dp"
-        />
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/activity_vertical_margin"
+        android:padding="@dimen/search_bar_margin"
         >
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:gravity="center_vertical|end"
+            android:layout_marginLeft="@dimen/search_bar_margin"
+            android:layout_marginStart="@dimen/search_bar_margin"
+            android:orientation="horizontal"
             >
+
+            <ImageView
+                android:id="@+id/lower_section_image_heart"
+                android:layout_width="@dimen/mini_fab_size"
+                android:layout_height="@dimen/mini_fab_size"
+                android:src="@drawable/heart_black"
+                android:padding="8dp"
+                android:background="@drawable/circular_button_edit"
+                android:layout_marginRight="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                />
+            <TextView
+                android:id="@+id/lower_section_square_favourites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="43"
+                android:fontFamily="sans-serif-condensed-light"
+                android:layout_marginRight="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                />
+
+            <ImageView
+                android:id="@+id/lower_section_image_eye"
+                android:layout_width="@dimen/mini_fab_size"
+                android:layout_height="@dimen/mini_fab_size"
+                android:src="@drawable/eye"
+                android:padding="8dp"
+                android:background="@drawable/circular_button_edit"
+                android:layout_marginRight="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                />
+            <TextView
+                android:id="@+id/lower_section_square_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="120"
+                android:fontFamily="sans-serif-condensed-light"
+                android:layout_marginRight="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                />
+
+            <ImageButton
+                android:id="@+id/lower_section_edit_button"
+                android:layout_width="@dimen/mini_fab_size"
+                android:layout_height="@dimen/mini_fab_size"
+                android:src="@drawable/ic_mode_edit_black_48dp"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/circular_button_edit"
+                android:adjustViewBounds="true"
+                android:layout_marginRight="@dimen/search_bar_margin"
+                android:layout_marginEnd="@dimen/search_bar_margin"
+                />
+
             <ImageButton
                 android:id="@+id/lower_section_trash_button"
                 android:layout_width="@dimen/mini_fab_size"
@@ -82,31 +86,8 @@
                 android:padding="8dp"
                 android:background="@drawable/circular_button_delete"
                 />
-            <ImageButton
-                android:id="@+id/lower_section_edit_button"
-                android:layout_width="@dimen/mini_fab_size"
-                android:layout_height="@dimen/mini_fab_size"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginStart="@dimen/activity_vertical_margin"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                android:layout_toRightOf="@+id/lower_section_trash_button"
-                android:layout_toEndOf="@+id/lower_section_trash_button"
-                android:src="@drawable/ic_mode_edit_black_48dp"
-                android:padding="8dp"
-                android:scaleType="fitCenter"
-                android:background="@drawable/circular_button_edit"
-                android:adjustViewBounds="true"
-                />
-            <ImageView
-                android:id="@+id/lower_section_unexpand_button"
-                android:layout_width="@dimen/mini_fab_size"
-                android:layout_height="@dimen/mini_fab_size"
-                android:layout_toRightOf="@+id/lower_section_edit_button"
-                android:layout_toEndOf="@+id/lower_section_edit_button"
-                android:src="@drawable/arrow_up_black_48dp"
-                />
-        </RelativeLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
