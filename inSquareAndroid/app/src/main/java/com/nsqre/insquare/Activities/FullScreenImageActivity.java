@@ -57,24 +57,27 @@ public class FullScreenImageActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         Intent intent = getIntent();
-        String photoURL = (String) intent.getExtras().get("photoURL");
+        final String photoURL = (String) intent.getExtras().get("photoURL");
         ImageView imageView = (ImageView)findViewById(R.id.foto_full_content);
 
         Picasso.with(getApplicationContext())
                 .load(photoURL)
                 .placeholder(R.drawable.ic_photo_library_black)
                 .into(imageView);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, photoURL);
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "inSquare Sharing");
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, "Send To"));
+            }
+        });
     }
 
 
