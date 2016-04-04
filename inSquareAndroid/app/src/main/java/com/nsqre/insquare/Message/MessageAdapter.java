@@ -25,6 +25,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -35,12 +36,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private static ChatMessageClickListener myClickListener;
     private Context context;
     private TextCrawler textCrawler;
+    private List<MessageHolder> holders;
 
     public MessageAdapter(Context c)
     {
         this.context = c;
         this.mDataset = new ArrayList<Message>();
         textCrawler = new TextCrawler();
+        holders = new ArrayList<>();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -92,6 +95,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         }
         MessageHolder msgHld = new MessageHolder(view, viewType);  //va a 3
+        holders.add(msgHld);
         return msgHld;  //dopo aver creato il msgHld va su 4
     }
 
@@ -101,7 +105,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         Message m = mDataset.get(position);
         int type = getItemViewType(position);
         Transformation transformation = new Transformation() {
-
             @Override
             public Bitmap transform(Bitmap source) {
                 int targetWidth = holder.foto.getWidth();
@@ -127,13 +130,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
-                checkUrl(m.getText(),holder);
+                checkUrl(m.getText(), holder);
                 break;
             }
             case 1:
             case 5: {
                 holder.content.setText(m.getText());
-                checkUrl(m.getText(),holder);
+                checkUrl(m.getText(), holder);
                 break;
             }
             case 2: {
@@ -183,6 +186,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
 
         holder.datetime.setText(timetoShow);
+        holders.remove(holder);
     }
 
     private void checkUrl(String message, final MessageHolder holder) {

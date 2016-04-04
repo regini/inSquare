@@ -278,10 +278,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public static void chooseFileIntent(Activity activity){
+    public void chooseFileIntent(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        activity.startActivityForResult(intent, FILE_PICK);
+        startActivityForResult(intent, FILE_PICK);
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
