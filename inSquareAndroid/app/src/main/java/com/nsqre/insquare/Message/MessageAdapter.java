@@ -25,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -36,14 +35,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private static ChatMessageClickListener myClickListener;
     private Context context;
     private TextCrawler textCrawler;
-    private List<MessageHolder> holders;
 
     public MessageAdapter(Context c)
     {
         this.context = c;
         this.mDataset = new ArrayList<Message>();
         textCrawler = new TextCrawler();
-        holders = new ArrayList<>();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -95,7 +92,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         }
         MessageHolder msgHld = new MessageHolder(view, viewType);  //va a 3
-        holders.add(msgHld);
         return msgHld;  //dopo aver creato il msgHld va su 4
     }
 
@@ -130,13 +126,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
-                checkUrl(m.getText(), holder);
+                checkUrl(m);
                 break;
             }
             case 1:
             case 5: {
                 holder.content.setText(m.getText());
-                checkUrl(m.getText(), holder);
+                checkUrl(m);
                 break;
             }
             case 2: {
@@ -186,11 +182,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
 
         holder.datetime.setText(timetoShow);
-        holders.remove(holder);
+        if(m.getUrlProvider() != null) {
+            holder.urlProvider.setText(m.getUrlProvider());
+            holder.urlProvider.setVisibility(View.VISIBLE);
+        }
+        if(m.getUrlTitle() != null) {
+            holder.urlTitle.setText(m.getUrlTitle());
+            holder.urlTitle.setVisibility(View.VISIBLE);
+        }
+        if(m.getUrlDesription() != null) {
+            holder.urlDescription.setText(m.getUrlDesription());
+            holder.urlDescription.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void checkUrl(String message, final MessageHolder holder) {
-        Matcher m = Patterns.WEB_URL.matcher(message);
+    private void checkUrl(final Message message) {
+        Matcher m = Patterns.WEB_URL.matcher(message.getText());
         if(m.find()) {
             String url = m.group();
             Log.d("checkUrl", "URL extracted: " + url);
@@ -203,14 +210,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 @Override
                 public void onPos(SourceContent sourceContent, boolean isNull) {
                     if (!isNull && !sourceContent.getFinalUrl().equals("")) {
+
                         Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
                                 " " + sourceContent.getDescription());
-                        holder.urlProvider.setText(sourceContent.getCannonicalUrl().trim());
-                        holder.urlTitle.setText(sourceContent.getTitle().trim());
-                        holder.urlDescription.setText(sourceContent.getDescription().trim());
-                        holder.urlProvider.setVisibility(View.VISIBLE);
-                        holder.urlTitle.setVisibility(View.VISIBLE);
-                        holder.urlDescription.setVisibility(View.VISIBLE);
+                        message.setUrlProvider(sourceContent.getCannonicalUrl());
+                        message.setUrlTitle(sourceContent.getTitle());
+                        message.setUrlDesription(sourceContent.getDescription());
+                        notifyDataSetChanged();
                         /*if(sourceContent.getImages().size() > 0) {
                             urlImage.setVisibility(View.VISIBLE);
                             String image = sourceContent.getImages().get(0);

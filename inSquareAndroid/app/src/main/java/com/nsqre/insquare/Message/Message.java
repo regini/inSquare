@@ -41,6 +41,10 @@ public class Message implements Serializable {
      */
     private Boolean userSpot;
 
+    private String urlProvider;
+    private String urlTitle;
+    private String urlDesription;
+
     private Locale locale;
 
     public Message(String m, String username, String userId, Locale l)
@@ -106,6 +110,30 @@ public class Message implements Serializable {
 
     public Boolean getUserSpot() {
         return userSpot;
+    }
+
+    public String getUrlProvider() {
+        return urlProvider;
+    }
+
+    public void setUrlProvider(String urlProvider) {
+        this.urlProvider = urlProvider;
+    }
+
+    public String getUrlTitle() {
+        return urlTitle;
+    }
+
+    public void setUrlTitle(String urlTitle) {
+        this.urlTitle = urlTitle;
+    }
+
+    public String getUrlDesription() {
+        return urlDesription;
+    }
+
+    public void setUrlDesription(String urlDesription) {
+        this.urlDesription = urlDesription;
     }
 
     public void setTime() {
