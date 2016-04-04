@@ -1,7 +1,8 @@
 package com.nsqre.insquare.Activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -38,10 +39,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     AHBottomNavigation bottomNavigation;
     FrameLayout mainContentFrame;
 
-    private View bottomSheet;
-    private BottomSheetBehavior bottomSheetBehavior;
-    private RecyclerView bottomSheetMenu;
-    private BottomSheetItemAdapter bottomSheetItemAdapter;
+    private BottomSheetDialog bottomSheetDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,40 +54,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, MapFragment.newInstance()).commit();
 
-        setupLongClickMenu();
     }
 
-    private void setupLongClickMenu()
-    {
-        bottomSheet = findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-
-        bottomSheetBehavior.setBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(View bottomSheet, int newState) {
-
-                    }
-
-                    @Override
-                    public void onSlide(View bottomSheet, float slideOffset) {
-
-                    }
-                }
-        );
-
-        bottomSheetMenu = (RecyclerView) findViewById(R.id.bottom_sheet_list);
-        bottomSheetMenu.setHasFixedSize(true);
-        bottomSheetMenu.setLayoutManager(new LinearLayoutManager(this));
-
-        bottomSheetItemAdapter = new BottomSheetItemAdapter(
-                instiantiateListMenu(), this
-        );
-        bottomSheetMenu.setAdapter(bottomSheetItemAdapter);
-    }
-
-
-    private List<BottomSheetItem> instiantiateListMenu()
+    private List<BottomSheetItem> instantiateListMenu()
     {
         ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
 //        menuList.add(new BottomSheetItem(R.drawable.ic_mode_edit_black_48dp, "Modifica"));
@@ -159,13 +126,30 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     public void showBottomSheetDialog()
     {
-        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_menu, null);
+        final RecyclerView list = (RecyclerView) view.findViewById(R.id.bottom_sheet_list);
+        list.setHasFixedSize(true);
+        list.setLayoutManager(new LinearLayoutManager(this));
+        list.setAdapter(new BottomSheetItemAdapter(instantiateListMenu(), this));
+
+        bottomSheetDialog.setContentView(view);
+        bottomSheetDialog.show();
+        bottomSheetDialog.setOnDismissListener(
+                new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        bottomSheetDialog = null;
+                        list.setAdapter(null);
+                    }
+                }
+        );
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        bottomSheetItemAdapter.setListener(null);
     }
 
     /*
@@ -173,9 +157,12 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     */
     @Override
     public void onBottomMenuItemClick(BottomSheetItem item) {
-        // TODO implementare menuitemclick
-        Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if(bottomSheetDialog != null)
+        {
+            Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
+            // TODO implementare menuitemclick
+            bottomSheetDialog.dismiss();
+        }
     }
 
     @Override

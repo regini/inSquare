@@ -8,29 +8,6 @@
     android:background="@color/light_grey"
     >
 
-    <RelativeLayout
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:elevation="12dp"
-        android:background="@color/white"
-        android:orientation="vertical"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        >
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/bottom_sheet_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            />
-
-    </RelativeLayout>
-
-
     <!-- Main Content of the app -->
     <FrameLayout
         android:id="@+id/bottom_nav_content_frame"
