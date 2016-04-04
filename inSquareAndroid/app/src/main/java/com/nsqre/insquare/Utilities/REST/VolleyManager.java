@@ -83,7 +83,7 @@ public class VolleyManager {
         return instance;
     }
 
-    public void searchSquaresByName(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
+    public void searchSquares(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
     {
          
         String reqURL = baseURL + "squares?";
@@ -94,13 +94,13 @@ public class VolleyManager {
         reqURL += "&lon=" + lon;
         reqURL += "&userId=" + userId;
 
-        Log.d(TAG, "searchSquaresByName: " + reqURL);
+        Log.d(TAG, "searchSquares: " + reqURL);
 
-        StringRequest searchSquaresByNameRequest = new StringRequest(Request.Method.GET, reqURL,
+        StringRequest searchSquaresRequest = new StringRequest(Request.Method.GET, reqURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG, "searchSquaresByName: " + response);
+                        Log.d(TAG, "searchSquares: " + response);
                         List<Square> squares = deserializeSquares(response);
                         Log.d(TAG, "I found: " + squares.toString());
 
@@ -116,7 +116,7 @@ public class VolleyManager {
                 }
         );
 
-        requestQueue.add(searchSquaresByNameRequest);
+        requestQueue.add(searchSquaresRequest);
     }
 
     public void getClosestSquares(String distance,

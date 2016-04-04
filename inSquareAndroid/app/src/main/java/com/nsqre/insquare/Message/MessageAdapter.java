@@ -3,6 +3,9 @@ package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +13,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nsqre.insquare.User.InSquareProfile;
+import com.leocardz.link.preview.library.LinkPreviewCallback;
+import com.leocardz.link.preview.library.SourceContent;
+import com.leocardz.link.preview.library.TextCrawler;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -20,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>
 {
@@ -27,11 +34,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private ArrayList<Message> mDataset;
     private static ChatMessageClickListener myClickListener;
     private Context context;
+    private TextCrawler textCrawler;
 
     public MessageAdapter(Context c)
     {
         this.context = c;
         this.mDataset = new ArrayList<Message>();
+        textCrawler = new TextCrawler();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -107,10 +116,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
+                holder.checkUrl(m.getText());
                 break;
             }
             case 1: {
                 holder.content.setText(m.getText());
+                holder.checkUrl(m.getText());
                 break;
             }
             case 2: {
@@ -185,8 +196,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
-    public int size() {
-        return mDataset.size();
+    private int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 
     public boolean contains(Message msg) {
@@ -203,12 +216,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.myClickListener = clickListener;
     }
 
-    public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private TextView content;
         private ImageView foto;
         private TextView username;
         private TextView datetime;
+        private TextView urlProvider;
+        private TextView urlTitle;
+        private TextView urlDescription;
+        private ImageView urlImage;
         private RelativeLayout relativeLayout;
 
         //3: si prende questi dati
@@ -218,6 +235,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
             datetime =  (TextView) itemView.findViewById(R.id.message_timestamp);
+            urlProvider = (TextView) itemView.findViewById(R.id.url_provider);
+            urlTitle = (TextView) itemView.findViewById(R.id.url_title);
+            urlDescription = (TextView) itemView.findViewById(R.id.url_description);
+            urlImage = (ImageView) itemView.findViewById(R.id.url_image);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
 
             itemView.setOnClickListener(this);
@@ -226,6 +247,43 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         @Override
         public void onClick(View v) {
             myClickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+        public void checkUrl(String message) {
+            Matcher m = Patterns.WEB_URL.matcher(message);
+            if(m.find()) {
+                String url = m.group();
+                Log.d("checkUrl", "URL extracted: " + url);
+                textCrawler.makePreview(new LinkPreviewCallback() {
+                    @Override
+                    public void onPre() {
+
+                    }
+
+                    @Override
+                    public void onPos(SourceContent sourceContent, boolean isNull) {
+                        if (!isNull && !sourceContent.getFinalUrl().equals("")) {
+                            Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
+                                    " " + sourceContent.getDescription());
+                            urlProvider.setText(sourceContent.getCannonicalUrl().trim());
+                            urlTitle.setText(sourceContent.getTitle().trim());
+                            urlDescription.setText(sourceContent.getDescription().trim());
+                            urlProvider.setVisibility(View.VISIBLE);
+                            urlTitle.setVisibility(View.VISIBLE);
+                            urlDescription.setVisibility(View.VISIBLE);
+                        /*if(sourceContent.getImages().size() > 0) {
+                            urlImage.setVisibility(View.VISIBLE);
+                            String image = sourceContent.getImages().get(0);
+                            Picasso.with(context)
+                                    .load(image)
+                                    .resize(200,200)
+                                    .centerInside()
+                                    .into(holder.urlImage);
+                        }*/
+                        }
+                    }
+                }, url);
+            }
         }
 
     }

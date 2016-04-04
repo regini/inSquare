@@ -13,7 +13,6 @@ import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,22 +40,19 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.R;
-import com.nsqre.insquare.SearchAdapter;
+import com.nsqre.insquare.Utilities.SearchAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.DrawerListAdapter;
-import com.nsqre.insquare.Utilities.LocationService;
+import com.nsqre.insquare.Services.LocationService;
 import com.nsqre.insquare.Utilities.NavItem;
 import com.nsqre.insquare.Utilities.PushNotification.MyInstanceIDListenerService;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class  MapActivity extends AppCompatActivity
         implements InSquareProfile.InSquareProfileListener
@@ -727,27 +723,27 @@ public class  MapActivity extends AppCompatActivity
         String userId = InSquareProfile.getUserId();
 
 
-        VolleyManager.getInstance().searchSquaresByName(query, userId, latitude, longitude,
+        VolleyManager.getInstance().searchSquares(query, userId, latitude, longitude,
                 new VolleyManager.VolleyResponseListener() {
-            @Override
-            public void responseGET(Object object) {
-                searchItems = (List<Square>) object;
-            }
+                    @Override
+                    public void responseGET(Object object) {
+                        searchItems = (List<Square>) object;
+                    }
 
-            @Override
-            public void responsePOST(Object object) {
-                // Lasciare vuoto
-            }
+                    @Override
+                    public void responsePOST(Object object) {
+                        // Lasciare vuoto
+                    }
 
-            @Override
-            public void responsePATCH(Object object) {
-                // Lasciare vuoto
-            }
+                    @Override
+                    public void responsePATCH(Object object) {
+                        // Lasciare vuoto
+                    }
 
-            @Override
-            public void responseDELETE(Object object) {
-                // Lasciare vuoto
-            }
-        });
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Lasciare vuoto
+                    }
+                });
     }
 }

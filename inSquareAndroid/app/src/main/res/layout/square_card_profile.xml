@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_profile_row"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/light_grey"
+    >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview_profile_square"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:id="@+id/cardview_profile_top_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <!-- Parte Sinistra con Iniziali -->
+                <RelativeLayout
+                    android:id="@+id/cardview_profile_left_section"
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:paddingLeft="5dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/cardview_profile_square_initials"
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:text="SN"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-condensed-light"
+                        android:background="@color/colorPrimary"
+                        />
+
+                </RelativeLayout>
+
+
+
+                <!-- Parte destra con Nome, Attività e Notifiche -->
+                <LinearLayout
+                    android:id="@+id/cardview_profile_right_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/cardview_profile_left_section"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal"
+                    >
+
+                    <LinearLayout
+                        android:id="@+id/cardview_profile_square_name_activity_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/activity_vertical_margin"
+                        android:layout_marginRight="@dimen/activity_vertical_margin"
+                        android:orientation="vertical"
+                        android:layout_weight="9"
+                        >
+
+                        <TextView
+                            android:id="@+id/cardview_profile_square_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="A very long square name that should resemble ones that we might have in our db"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:maxLines="2"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif-condensed"
+                            />
+
+                        <TextView
+                            android:id="@+id/cardview_profile_square_last_activity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ultima attivita'"
+                            android:textColor="#000000"
+                            android:fontFamily="sans-serif-condensed-light"
+                            />
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/cardview_profile_right_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/activity_vertical_margin"
+                        android:layout_gravity="center_vertical"
+                        >
+
+                        <ImageView
+                            android:id="@+id/cardview_profile_square_heart"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/heart_border_black"
+                            />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimaryLight"
+                android:layout_marginTop="8dp"
+                />
+
+            <RelativeLayout
+                android:id="@+id/cardview_profile_middle_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/cardview_profile_description_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_vertical_margin"
+                    android:text="\t\t\t\tDescription: this is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellouse to go to"
+                    android:fontFamily="sans-serif-condensed-light"
+                    />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimaryLight"
+                android:layout_marginTop="8dp"
+                />
+
+            <RelativeLayout
+                android:id="@+id/cardview_profile_lower_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/arrow_down_black_48dp"
+                    />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</LinearLayout>

@@ -104,7 +104,7 @@
         <service
             android:name=".Utilities.PushNotification.RegistrationIntentService"
             android:exported="false" />
-        <service android:name=".Utilities.LocationService" />
+        <service android:name=".Services.LocationService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -116,20 +116,18 @@
         <activity
             android:name=".Activities.BottomNavActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
 
         <service
-            android:name=".ChatService"
+            android:name=".Services.ChatService"
             android:enabled="true"
             android:exported="true"></service>
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Activities.BottomNavActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".Activities.TopBarActivity"
             android:label="@string/title_activity_top_bar"

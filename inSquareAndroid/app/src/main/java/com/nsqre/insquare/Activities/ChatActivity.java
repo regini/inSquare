@@ -39,7 +39,7 @@ import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.nsqre.insquare.ChatService;
+import com.nsqre.insquare.Services.ChatService;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;

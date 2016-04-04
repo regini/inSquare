@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,9 +58,82 @@ public class ProfileFragment extends Fragment implements
         return instance;
     }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+
+    /**
+     * Initialized the view of this fragment setting the lists of favourite and owned squares
+     * and the profile image(downloading it if not saved in the local storage)
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return The view created
+     * @see DownloadImageTask
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        squaresRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview_squares_owned);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        squaresRecyclerView.setLayoutManager(linearLayoutManager);
+
+        // TODO implementare comportamento sul swipe
+
+        ItemTouchHelper.SimpleCallback simpleCallback =
+                new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        Log.d(TAG, "onSwiped!");
+                        adapterOwned.removeCard((RecyclerSquareAdapter.SquareViewHolder) viewHolder);
+                    }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(squaresRecyclerView);
+
+
+        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
+        squaresRecyclerView.setAdapter(adapterOwned);
+
+        profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
+        emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
+
+        setupProfile();
+
+        return v;
+    }
+
+    private void setupProfile() {
+        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
+                R.drawable.logo_icon_144);
+        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
+        profileImage.setImageBitmap(circularBitmap);
+
+        Bitmap bitmap = InSquareProfile.loadProfileImageFromStorage(getContext());
+        if (bitmap == null) {
+            if (!InSquareProfile.getPictureUrl().equals(""))
+                new DownloadImageTask(profileImage, getContext()).execute(InSquareProfile.getPictureUrl());
+        } else {
+            profileImage.setImageBitmap(bitmap);
+        }
     }
 
     /**
@@ -91,6 +165,19 @@ public class ProfileFragment extends Fragment implements
         }
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        InSquareProfile.removeListener(this);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
+    }
+
     /**
      * TODO ???
      */
@@ -114,67 +201,6 @@ public class ProfileFragment extends Fragment implements
             }
         }
     };
-
-    /**
-     * Initialized the view of this fragment setting the lists of favourite and owned squares
-     * and the profile image(downloading it if not saved in the local storage)
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return The view created
-     * @see DownloadImageTask
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        squaresRecyclerView = (RecyclerView) v.findViewById(R.id.profile_squares_recyclerview);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        squaresRecyclerView.setLayoutManager(linearLayoutManager);
-
-        adapterOwned = new RecyclerSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
-        squaresRecyclerView.setAdapter(adapterOwned);
-
-        profileImage = (ImageView) v.findViewById(R.id.user_avatar);
-        username = (TextView) v.findViewById(R.id.userName);
-        emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
-
-        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
-                R.drawable.logo_icon_144);
-        Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
-        profileImage.setImageBitmap(circularBitmap);
-
-        Bitmap bitmap = InSquareProfile.loadProfileImageFromStorage(getContext());
-        if (bitmap == null) {
-            if (!InSquareProfile.getPictureUrl().equals(""))
-                new DownloadImageTask(profileImage, getContext()).execute(InSquareProfile.getPictureUrl());
-        } else {
-            profileImage.setImageBitmap(bitmap);
-        }
-
-        username.setText(InSquareProfile.getUsername());
-
-        return v;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        InSquareProfile.removeListener(this);
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
 
     @Override
     public void onOwnedChanged() {

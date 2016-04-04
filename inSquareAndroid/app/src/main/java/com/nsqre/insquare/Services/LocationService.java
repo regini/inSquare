@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Utilities;
+package com.nsqre.insquare.Services;
 
 /**
  * Created by Regini on 05/03/16.

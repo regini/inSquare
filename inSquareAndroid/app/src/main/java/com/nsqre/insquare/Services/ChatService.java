@@ -1,4 +1,4 @@
-package com.nsqre.insquare;
+package com.nsqre.insquare.Services;
 
 import android.app.Service;
 import android.content.Intent;

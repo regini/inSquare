@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_row"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,82 +12,130 @@
         android:id="@+id/cardview_square"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/search_bar_margin"
-        android:layout_marginBottom="@dimen/search_bar_margin"
-        android:layout_marginLeft="@dimen/search_bar_margin"
-        android:layout_marginRight="@dimen/search_bar_margin"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="4dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="0dp"
+        app:cardPreventCornerOverlap="true"
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_vertical_margin"
             >
 
-            <ImageView
-                android:id="@+id/cardview_square_picture"
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:src="@drawable/nsqre_map_pin_empty_inside"
-                />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toRightOf="@id/cardview_square_picture"
-                android:layout_centerVertical="true"
+            <!-- Parte Sinistra con Immagine -->
+            <RelativeLayout
+                android:id="@+id/cardview_left_section"
+                android:layout_width="@dimen/square_card_pic_size"
+                android:layout_height="@dimen/square_card_pic_size"
                 >
 
                 <TextView
-                    android:id="@+id/cardview_square_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Square Name"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-condensed"
+                    android:id="@+id/cardview_square_initials"
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="SN"
+                    android:textSize="30sp"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:background="@color/colorPrimary"
                     />
+
+                <!--<View-->
+                    <!--android:id="@+id/cardview_vertical_colored_bar"-->
+                    <!--android:layout_width="@dimen/activity_vertical_margin"-->
+                    <!--android:layout_height="@dimen/square_card_pic_size"-->
+                    <!--android:background="@color/colorAccentLightest"-->
+                    <!--android:layout_toRightOf="@+id/cardview_square_initials"-->
+                    <!--/>-->
 
                 <TextView
-                    android:id="@+id/cardview_square_last_activity"
+                    android:id="@+id/cardview_square_notification_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ultima attivita'"
-                    android:textColor="#000000"
-                    android:fontFamily="sans-serif-condensed-light"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/counter_bg"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-bold"
                     />
 
-            </LinearLayout>
+            </RelativeLayout>
 
-            <TextView android:id="@+id/cardview_square_notification_counter"
-                android:layout_width="wrap_content"
+
+
+            <!-- Parte destra con Nome, Attività e Notifiche -->
+            <LinearLayout
+                android:id="@+id/cardview_right_section"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/cardview_square_heart"
-                android:layout_marginRight="8dp"
+                android:layout_toRightOf="@+id/cardview_left_section"
                 android:layout_centerVertical="true"
-                android:background="@drawable/counter_bg"
-                android:textColor="@color/white"
-                android:text="1"
-                />
+                android:orientation="horizontal"
+                >
 
-            <ImageView
-                android:id="@+id/cardview_square_heart"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/heart_border_black"
-                />
+                <LinearLayout
+                    android:id="@+id/cardview_square_name_activity_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"
+                    android:orientation="vertical"
+                    android:layout_weight="9"
+                    >
+
+                    <TextView
+                        android:id="@+id/cardview_square_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A very long square name that should resemble ones that we might have in our db"
+                        android:textColor="#000000"
+                        android:textSize="18sp"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-condensed"
+                        />
+
+                    <TextView
+                        android:id="@+id/cardview_square_last_activity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ultima attivita'"
+                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-condensed-light"
+                        />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/cardview_right_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"
+                    android:layout_gravity="center_vertical"
+                    >
+
+                    <ImageView
+                        android:id="@+id/cardview_square_heart"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/heart_border_black"
+                        />
+
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/light_grey"
+        />
 </LinearLayout>
