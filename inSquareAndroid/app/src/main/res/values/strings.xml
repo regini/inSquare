@@ -24,7 +24,7 @@
     <string name="nome_square">Inserisci il nome della Square</string>
     <string name="descrizione_square">Inserisci la descrizione della Square</string>
     <string name="crea_square">Crea!</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="feedback">Feedback</string>
     <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
     <string name="send">Invia</string>
@@ -32,7 +32,7 @@
     <string name="error_feedback">Qualcosa è andato storto :(</string>
     <string name="connFail">Connessione fallita.</string>
     <string name="square_placeholder">Select a Square on the map</string>
-    <string name="hint_cerca_squares">Cerca un luogo</string>
+    <string name="hint_cerca_squares">Cerca un luogo...</string>
     <string name="square_removed">Questa square è stata cancellata!</string>
     <plurals name="message_participants">
         <item quantity="one">There\'s %d participant</item>

@@ -3,6 +3,7 @@ package com.nsqre.insquare.Square;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -31,6 +33,16 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<Square> squaresArrayList;
     int i = 0;
+
+    int[] backgroundColors = new int[]{
+            R.color.md_amber_A100,
+            R.color.md_orange_A100,
+            R.color.colorAccentDark,
+            R.color.md_purple_A100,
+            R.color.md_deep_purple_A200,
+            R.color.md_blue_100,
+            R.color.md_teal_A400
+    };
 
     public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
@@ -55,8 +67,11 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         setupNotifications(castHolder, listItem);
 
-        castHolder.squareName.setText(listItem.getName());
+        String squareName = listItem.getName();
+        castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
+
+        setupLeftSection(castHolder, squareName);
 
         castHolder.itemView.setOnClickListener(
                 new View.OnClickListener() {
@@ -65,9 +80,9 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra(MapFragment.SQUARE_TAG, listItem);
                         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
-                        if(sharedPreferences.contains(listItem.getId())) {
+                        if (sharedPreferences.contains(listItem.getId())) {
                             sharedPreferences.edit().remove(listItem.getId()).apply();
-                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
                         }
                         context.startActivity(intent);
                     }
@@ -75,9 +90,39 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         );
     }
 
+    private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
+        int position = castHolder.getAdapterPosition()%(backgroundColors.length);
+
+//        castHolder.verticalColoredBar.setBackgroundColor(
+        castHolder.squareInitials.setTextColor(
+                ContextCompat.getColor(context, backgroundColors[position])
+        );
+
+        String initials = setupInitials(squareName);
+        castHolder.squareInitials.setText(initials);
+    }
+
+    private String setupInitials(String words) {
+        String[] division = words.split("\\s+");
+
+        if(division.length <= 1)
+        {
+            return words.substring(0,1).toUpperCase();
+        }
+        else if(division.length == 2)
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
+        }
+        else
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
+        }
+    }
+
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {
         if(InSquareProfile.isFav(listItem.getId())){
-            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+//            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+            castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
         }
 
         castHolder.squareFav.setOnClickListener(
@@ -87,11 +132,13 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
+//                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
+                            castHolder.squareFav.setImageResource(R.drawable.like_96);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+//                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+                            castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
                         }
                     }
                 }
@@ -99,15 +146,15 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     }
 
     private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
-        SharedPreferences messagesPreferences = this.context.getSharedPreferences(listItem.getId(), Context.MODE_PRIVATE);
-        messagesPreferences.edit().clear().commit();
+
         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
 
         int squaresNewMessages = sharedPreferences.getInt(listItem.getId(), 0);
         if (squaresNewMessages == 0) {
             castHolder.squareNotifications.setVisibility(View.INVISIBLE);
         } else {
-            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
+//            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
+            castHolder.squareNotifications.setVisibility(View.VISIBLE);
         }
     }
 
@@ -120,7 +167,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         return this.squaresArrayList.size();
     }
 
-    public void favouriteSquare(final int method, final Square square) {
+    private void favouriteSquare(final int method, final Square square) {
 
         VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {
@@ -162,24 +209,34 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 });
     }
 
+    public void removeCard(SquareViewHolder viewholder) {
+        Log.d(TAG, "removeCard: I'm swiping at position " + viewholder.getAdapterPosition());
+
+        viewholder.squareCardBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+    }
+
     public static class SquareViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout squareCardBackground;
         CardView squareCardView;
+        TextView squareInitials;
         TextView squareName;
         TextView squareActivity;
         TextView squareNotifications;
-        ImageView squarePicture;
         ImageView squareFav;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
 
+            squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_row);
+
             squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
             squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
             squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
             squareNotifications = (TextView) itemView.findViewById(R.id.cardview_square_notification_counter);
+            squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
 
-            squarePicture = (ImageView) itemView.findViewById(R.id.cardview_square_picture);
             squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);
 
         }

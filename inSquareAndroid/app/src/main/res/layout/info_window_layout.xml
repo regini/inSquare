@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_vertical_margin"
+    >
+
+    <RelativeLayout
+        android:id="@+id/info_window_top_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/info_window_background"
+        android:padding="@dimen/info_window_padding"
+        >
+
+        <ImageView
+            android:id="@+id/info_window_heart_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/info_window_padding"
+            android:src="@drawable/like_96"
+            />
+
+        <RelativeLayout
+            android:id="@+id/info_window_top_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/info_window_heart_button"
+            android:layout_centerVertical="true"
+            >
+
+            <LinearLayout
+                android:id="@+id/info_window_name_activity_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/info_window_padding"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/info_window_square_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Square Name"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="17sp"
+                    android:maxLines="4"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+                <TextView
+                    android:id="@+id/info_window_square_last_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ultima attività"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorTextSecondary"
+                    android:fontFamily="sans-serif-condensed-light"
+                    />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/info_window_bottom_section"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/triangle"
+        android:layout_gravity="center_horizontal"
+        >
+
+    </RelativeLayout>
+
+</LinearLayout>

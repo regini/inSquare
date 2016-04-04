@@ -70,7 +70,7 @@
             android:layout_gravity="center_vertical"
             android:background="@null"
             android:src="@drawable/ic_add_a_photo_black_48dp"
-            android:tint="@color/bb_inActiveBottomBarItemColor"
+            android:tint="@color/primary"
             android:layout_marginEnd="6dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="1dp"

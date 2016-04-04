@@ -1,17 +1,18 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nsqre.insquare.Fragments.ProfileFragment"
     android:background="@color/light_grey"
-    android:id="@+id/profile_fragment"
+    tools:context="com.nsqre.insquare.Fragments.ProfileFragment"
     >
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/profile_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentLight"
+        android:background="@color/colorAccent"
+        android:elevation="4dp"
         >
 
         <RelativeLayout

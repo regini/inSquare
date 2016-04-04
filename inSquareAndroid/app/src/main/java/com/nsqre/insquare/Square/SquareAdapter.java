@@ -85,7 +85,8 @@ public class SquareAdapter extends BaseAdapter {
 //            if (InSquareProfile.favouriteSquaresList.contains(square)) {
             if(InSquareProfile.isFav(square.getId()))
             {
-                star.setImageResource(R.drawable.heart_black);
+//                star.setImageResource(R.drawable.heart_black);
+                star.setImageResource(R.drawable.like_filled_96);
             }
             //click sulla stella
             star.setOnClickListener(new View.OnClickListener() {
@@ -94,9 +95,11 @@ public class SquareAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     if (InSquareProfile.isFav(square.getId())) {
                         favouriteSquare(Request.Method.DELETE, square);
-                        star.setImageResource(R.drawable.heart_border_black);
+//                        star.setImageResource(R.drawable.heart_border_black);
+                        star.setImageResource(R.drawable.like_96);
                     } else {
-                        star.setImageResource(R.drawable.heart_black);
+//                        star.setImageResource(R.drawable.heart_black);
+                        star.setImageResource(R.drawable.like_filled_96);
                         favouriteSquare(Request.Method.POST, square);
                     }
                 }

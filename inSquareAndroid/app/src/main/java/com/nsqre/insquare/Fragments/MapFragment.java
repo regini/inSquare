@@ -31,9 +31,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.view.BodyTextView;
+import com.arlib.floatingsearchview.util.view.IconImageView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,6 +54,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
@@ -61,7 +67,6 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -99,10 +104,13 @@ public class MapFragment extends Fragment
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private static final int REQUEST_COARSE_LOCATION = 1;
+
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute in milliseconds
-    private static String[] PERMISSIONS =
-            {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private static String[] PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
@@ -246,8 +254,9 @@ public class MapFragment extends Fragment
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             this.requestPermissions(PERMISSIONS,
                     REQUEST_COARSE_LOCATION);
@@ -374,53 +383,62 @@ public class MapFragment extends Fragment
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
-                } else {
-                    mSearchView.showProgress();
+                } else if (newQuery.length() > 2) {
+                        mSearchView.showProgress();
+                        VolleyManager.getInstance()
+                                .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
+                                    @Override
+                                    public void responseGET(Object object) {
+                                        searchResult = (ArrayList<Square>) object;
 
-                    VolleyManager.getInstance()
-                            .searchSquares(newQuery, InSquareProfile.getUserId(), mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    searchResult = (ArrayList<Square>) object;
+                                        List<SquareSuggestion> result = new ArrayList<>();
 
-                                    List<SquareSuggestion> result = new ArrayList<>();
+                                        for (Square s : searchResult) {
+                                            result.add(new SquareSuggestion(s));
+                                        }
 
-                                    for (Square s : searchResult) {
-                                        result.add(new SquareSuggestion(s));
+                                        mSearchView.swapSuggestions(result);
+                                        mSearchView.hideProgress();
                                     }
 
-                                    mSearchView.swapSuggestions(result);
-                                    mSearchView.hideProgress();
-                                }
+                                    @Override
+                                    public void responsePOST(Object object) {
 
-                                @Override
-                                public void responsePOST(Object object) {
+                                    }
 
-                                }
+                                    @Override
+                                    public void responsePATCH(Object object) {
 
-                                @Override
-                                public void responsePATCH(Object object) {
+                                    }
 
-                                }
+                                    @Override
+                                    public void responseDELETE(Object object) {
 
-                                @Override
-                                public void responseDELETE(Object object) {
-
-                                }
-                            });
+                                    }
+                                });
+                    }
                 }
-            }
         });
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                for(Square s : searchResult){
-                    if(s.getName().equals(searchSuggestion.getBody())){
-                        Location squareLocation = new Location("");
-                        squareLocation.setLongitude(s.getLon());
-                        squareLocation.setLatitude(s.getLat());
-                        moveToPosition(squareLocation);
+                for (Square s : searchResult) {
+                    if (s.getName().equals(searchSuggestion.getBody())) {
+
+                        LatLng coords = new LatLng(s.getLat(), s.getLon());
+                        Marker m = createSquarePin(coords, s.getName());
+                        squareHashMap.put(m, s);
+                        m.showInfoWindow();
+
+//                        Location squareLocation = new Location("");
+//                        squareLocation.setLongitude(s.getLon());
+//                        squareLocation.setLatitude(s.getLat());
+                        // TODO ANIMATE
+                        setMapInPosition(s.getLat(), s.getLon());
+//                        moveToPosition(squareLocation);
+
+                        break;
                     }
                 }
             }
@@ -444,6 +462,40 @@ public class MapFragment extends Fragment
                     }
                 }
         );
+
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(IconImageView leftIcon, final BodyTextView bodyText, final SearchSuggestion item, final int itemPosition) {
+                leftIcon.setImageResource(R.drawable.message_processing_black);
+                leftIcon.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        for (Square s : searchResult) {
+                            if (s.getName().equals(item.getBody())) {
+                                LatLng coords = new LatLng(s.getLat(), s.getLon());
+                                Marker m = createSquarePin(coords, s.getName());
+                                squareHashMap.put(m, s);
+                                mLastSelectedSquare = s;
+                                mLastSelectedSquareId = s.getId();
+                                onMarkerClick(m);
+                                mSearchView.clearSearchFocus();
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+            @Override
+            public void onHomeClicked() {
+                mSearchView.clearSearchFocus();
+                Log.d(TAG, "onHomeClicked()");
+            }
+        });
+
     }
 
     private void moveToPosition(Location toLocation) {
@@ -454,7 +506,7 @@ public class MapFragment extends Fragment
                 .bearing(0.0f)
                 .tilt(0.0f)
                 .build();
-        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
     private void initCamera() {
@@ -463,6 +515,7 @@ public class MapFragment extends Fragment
 
         mGoogleMap.setMapType(MAP_TYPES[curMapTypeIndex]);
         mGoogleMap.setTrafficEnabled(false);
+        mGoogleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -615,9 +668,7 @@ public class MapFragment extends Fragment
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("NOTIFICATION_MAP", Context.MODE_PRIVATE);
         if(sharedPreferences.contains(s.getId())) {
             sharedPreferences.edit().remove(s.getId()).apply();
-            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
-            MapActivity rootActivity = (MapActivity) getActivity();
-            rootActivity.checkNotifications();
+            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
         }
         intent.putExtra(SQUARE_TAG, s);
         startActivity(intent);
@@ -742,12 +793,12 @@ public class MapFragment extends Fragment
 
     private void descriptionDialog(String oldName, String oldDescription) {
         final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_description);
+        mDialog.setContentView(R.layout.dialog_edit_square);
 //        mDialog.setTitle("Modifica la descrizione");
         mDialog.setCancelable(true);
         mDialog.show();
 
-        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.et_dialog_name);
+        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_name_text);
         if(!oldDescription.isEmpty())
         {
             ((TextInputLayout) nameEditText.getParent()).setHint("Modifica il nome della piazza");
@@ -756,7 +807,7 @@ public class MapFragment extends Fragment
         }
 
 
-        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.et_dialog_description);
+        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_description_text);
         if(!oldDescription.isEmpty())
         {
             ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
@@ -764,7 +815,7 @@ public class MapFragment extends Fragment
             descriptionEditText.setText(oldDescription);
         }
 
-        final Button okButton = (Button) mDialog.findViewById(R.id.button_dialog_description);
+        final Button okButton = (Button) mDialog.findViewById(R.id.dialog_edit_ok_button);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -892,17 +943,19 @@ public class MapFragment extends Fragment
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.setOnMapClickListener(this);
         mGoogleMap.setOnCameraChangeListener(this);
+        mGoogleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
     }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
+
+        final Square currentSquare = squareHashMap.get(marker);
 
         marker.showInfoWindow();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()),
                 400, // Tempo di spostamento in ms
                 null); // callback
-        final Square currentSquare = squareHashMap.get(marker);
         String text = marker.getTitle();
         if(currentSquare.getId().equals(mLastSelectedSquareId))
         {
@@ -1030,4 +1083,44 @@ public class MapFragment extends Fragment
         return mCurrentLocation;
     }
 
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private static final String TAG = "MarkerInfoWindowAdapter";
+
+        // Componenti della View
+        private ImageView heartButton;
+        private ImageView squareIcon;
+        private TextView squareName;
+        private TextView squareActivity;
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            View view = getActivity().getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+            squareName = (TextView) view.findViewById(R.id.info_window_square_name);
+            squareActivity = (TextView) view.findViewById(R.id.info_window_square_last_activity);
+            heartButton = (ImageView) view.findViewById(R.id.info_window_heart_button);
+
+            Square s = squareHashMap.get(marker);
+            setupSquare(s);
+
+            return view;
+        }
+
+        private void setupSquare(final Square square)
+        {
+            squareName.setText(square.getName());
+            squareActivity.setText(square.formatTime());
+
+            if(InSquareProfile.isFav(square.getId()))
+            {
+                heartButton.setImageResource(R.drawable.like_filled_96);
+            }
+        }
+    }
 }

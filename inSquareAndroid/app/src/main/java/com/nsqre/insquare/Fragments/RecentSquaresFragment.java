@@ -168,8 +168,9 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
     };
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: I've just paused!");
     }
 
     @Override
@@ -177,12 +178,6 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         super.onDetach();
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
         InSquareProfile.removeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: I've just paused!");
     }
 
     @Override
