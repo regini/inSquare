@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nsqre.insquare.Activities.FullScreenImageActivity;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.squareup.picasso.Picasso;
@@ -89,7 +91,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     //4: con la position nel dataset, si prende i messaggi, e setta il text nell'item, se gli id sono uguali cambia bubble
     @Override
     public void onBindViewHolder(final MessageHolder holder, int position) {
-        Message m = mDataset.get(position);
+        final Message m = mDataset.get(position);
         int type = getItemViewType(position);
         Transformation transformation = new Transformation() {
 
@@ -132,6 +134,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         .placeholder(R.drawable.ic_photo_library_black)
                         .transform(transformation)
                         .into(holder.foto);
+                holder.foto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String photoURL = m.getText();
+
+                        Intent fullScreenIntent = new Intent(v.getContext(), FullScreenImageActivity.class);
+                        fullScreenIntent.putExtra("photoURL", photoURL);
+
+                        v.getContext().startActivity(fullScreenIntent);
+                    }
+                });
                 break;
             }
             case 3:
@@ -141,6 +154,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         .placeholder(R.drawable.ic_photo_library_black)
                         .transform(transformation)
                         .into(holder.foto);
+                holder.foto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String photoURL = m.getText();
+
+                        Intent fullScreenIntent = new Intent(v.getContext(), FullScreenImageActivity.class);
+                        fullScreenIntent.putExtra("photoURL", photoURL);
+
+                        v.getContext().startActivity(fullScreenIntent);
+                    }
+                });
                 break;
             }
         }

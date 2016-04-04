@@ -133,10 +133,14 @@
             android:label="@string/title_activity_top_bar"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activities.FullScreenImage"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_full_screen_image"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:name=".Activities.FullScreenImageActivity"
+            android:label="@string/title_activity_full_sceen_image"
+            android:parentActivityName=".Activities.ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nsqre.insquare.Activities.ChatActivity" />
+        </activity>
     </application>
 
 </manifest>

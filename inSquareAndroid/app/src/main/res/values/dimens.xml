@@ -24,4 +24,5 @@
     <dimen name="search_bar_margin">8dp</dimen>
     <dimen name="square_card_pic_size">68dp</dimen>
     <dimen name="info_window_padding">8dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 </resources>
