@@ -1,5 +1,6 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +12,7 @@ import java.util.TimeZone;
 /**
  * Message is the class that represents the concept of message inside the application
  */
-public class Message {
+public class Message implements Serializable {
 
     private static final String TAG = "Message";
     /**
@@ -40,6 +41,8 @@ public class Message {
      */
     private Boolean userSpot;
 
+    private Locale locale;
+
     public Message(String m, String username, String userId, Locale l)
     {
         //this.msg_id
@@ -50,6 +53,8 @@ public class Message {
         this.calendar = Calendar.getInstance();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         this.createdAt = df.format(this.calendar.getTime());
+
+        this.locale = l;
     }
 
     public Message(String mes_id, String contents, String username, String userId, String date, Boolean userSpot, Locale l)
@@ -71,6 +76,8 @@ public class Message {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        this.locale = l;
     }
 
     public String getText() {
@@ -101,6 +108,12 @@ public class Message {
         return userSpot;
     }
 
+    public void setTime() {
+        this.calendar = Calendar.getInstance();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", this.locale);
+        this.createdAt = df.format(this.calendar.getTime());
+    }
+
     @Override
     public String toString() {
         return this.name + " " + " said: " + this.text + "\nMessage #(" + this.msg_id + ") created: "+ this.createdAt;
@@ -113,7 +126,7 @@ public class Message {
 
         Message message = (Message) o;
 
-        return msg_id.equals(message.getId());
+        return createdAt.equals(message.getCreatedAt()) && from.equals(message.getFrom());
 
     }
 

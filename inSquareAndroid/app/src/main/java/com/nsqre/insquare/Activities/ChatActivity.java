@@ -1,16 +1,22 @@
 package com.nsqre.insquare.Activities;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +53,6 @@ import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Photo.helpers.DocumentHelper;
-import com.nsqre.insquare.Utilities.Photo.helpers.IntentHelper;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
 import com.nsqre.insquare.Utilities.Photo.services.UploadService;
@@ -60,9 +64,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
-import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -70,6 +77,7 @@ import retrofit.client.Response;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
+@RuntimePermissions
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -103,27 +111,30 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
-
+    private HashMap<String, ArrayList<Message>> outgoingMessages;
 
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
 
-
+    private ChatActivity ca;
     //SHARE
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
+    public final static int FILE_PICK = 1001;
 
-    //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
+
+    private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
+
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            //se mettiamo degli extra nell'intent di chat service
-            if (bundle != null) {
-                //HO INVIATO IL MESSAGGIO
-                Log.d(TAG, "onReceive: messaggio inviato con chatservice");
-            }
-            //se non mettiamo gli extra
+            Log.d(TAG, "onReceive: messaggio inviato con chatservice");
+            Message m = (Message) intent.getSerializableExtra("messageSent");
+            outgoingMessages.get(mSquareId).remove(m);
+            Message messageFromAdapter = messageAdapter.getMessage(m);
+            messageFromAdapter.setTime();
+            messageAdapter.notifyDataSetChanged();
+            //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -139,7 +150,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         //FOTO
         //ButterKnife.bind(this);
-
+        ca = this;
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -168,7 +179,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onChooseImage();
+                //insertPhotoWrapper();
+                //ca.chooseFileIntent(ca);
             }
         });
 
@@ -221,8 +233,148 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
         }
+
+        outgoingMessages = mProfile.getOutgoingMessages();
+
+        if (outgoingMessages.keySet().contains(mSquareId)) {
+            for (Message m : outgoingMessages.get(mSquareId)) {
+                addMessage(m);
+            }
+        }
+    }
+    /*
+    private void insertPhotoWrapper() {
+        List<String> permissionsNeeded = new ArrayList<String>();
+
+        final List<String> permissionsList = new ArrayList<String>();
+        if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            permissionsNeeded.add("WRITE Storage");
+        if (!addPermission(permissionsList, Manifest.permission.READ_EXTERNAL_STORAGE))
+            permissionsNeeded.add("READ Storage");
+
+        if (permissionsList.size() > 0) {
+            if (permissionsNeeded.size() > 0) {
+                // Need Rationale
+                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                for (int i = 1; i < permissionsNeeded.size(); i++)
+                    message = message + ", " + permissionsNeeded.get(i);
+                showMessageOKCancel(message,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                            }
+                        });
+                return;
+            }
+            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            return;
+        }
+
+        onChooseImage();
+    }*/
+
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public static void chooseFileIntent(Activity activity){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, FILE_PICK);
     }
 
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case REQUEST_INVITE:
+                if (resultCode == RESULT_OK) {
+                    // Check how many invitations were sent and log a message
+                    // The ids array contains the unique invitation ids for each invitation sent
+                    // (one for each contact select by the user). You can use these for analytics
+                    // as the ID will be consistent on the sending and receiving devices.
+                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
+                } else {
+                    // Sending failed or it was canceled, show failure message to the user
+                    //showMessage(getString(R.string.send_failed));
+                }
+                break;
+            case FILE_PICK:
+                test(resultCode,data);
+                break;
+        }
+    }
+   // @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void test(int resultCode, Intent data){
+        Uri returnUri;
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        returnUri = data.getData();
+        String filePath = DocumentHelper.getPath(this, returnUri);
+        //Safety check to prevent null pointer exception
+        if (filePath == null || filePath.isEmpty()) return;
+        chosenFile = new File(filePath);
+        uploadImage();
+    }
+
+    private boolean addPermission(List<String> permissionsList, String permission) {
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+            // Check for Rationale Option
+            if (!shouldShowRequestPermissionRationale(permission))
+                return false;
+        }
+        return true;
+    }
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+            {
+                Map<String, Integer> perms = new HashMap<String, Integer>();
+                // Initial
+                perms.put(Manifest.permission.READ_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                // Fill with results
+                for (int i = 0; i < permissions.length; i++)
+                    perms.put(permissions[i], grantResults[i]);
+                // Check for ACCESS_FINE_LOCATION
+                if (perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    // All Permissions Granted
+                    onChooseImage();
+                } else {
+                    // Permission Denied
+                    Toast.makeText(this, "Some Permission is Denied", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+            break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+*/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        //MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
 
     /**
      * Creates a Volley request to download the messages present in a particular square, then it adds the results to the
@@ -273,8 +425,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onStart() {
         super.onStart();
 
-
         setTitle(mSquareName);
+        ColorDrawable toolbarColor = new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+        getSupportActionBar().setBackgroundDrawable(toolbarColor);
 
         Log.d(TAG, "onCreate: " + mSquareId);
         Log.d(TAG, "onCreate: " + mSquareName);
@@ -333,7 +486,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if(isScrolled) {
+                if (isScrolled) {
                     isScrolled = false;
                     return;
                 }
@@ -455,14 +608,19 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText.setText("");
 
+        Message m = new Message(message, mUsername, mUserId, format);
+        if (outgoingMessages.get(mSquareId) == null) {
+            outgoingMessages.put(mSquareId, new ArrayList<Message>());
+        }
+        outgoingMessages.get(mSquareId).add(m);
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
-        intent.putExtra("username", mUsername);
-        intent.putExtra("userid", mUserId);
-        intent.putExtra("message", message);
+        intent.putExtra("message", m);
+        //intent.putExtra("username", mUsername);
+        //intent.putExtra("userid", mUserId);
+        //intent.putExtra("message", message);
         startService(intent);
-
-        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
+        addMessage(m);
     }
 
     /**
@@ -781,49 +939,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
-    @OnClick(R.id.chat_foto_button)
-    public void onChooseImage() {
-        IntentHelper.chooseFileIntent(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Uri returnUri;
-
-        if (requestCode != IntentHelper.FILE_PICK) {
-            return;
-        }
-
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
-        returnUri = data.getData();
-        String filePath = DocumentHelper.getPath(this, returnUri);
-        //Safety check to prevent null pointer exception
-        if (filePath == null || filePath.isEmpty()) return;
-        chosenFile = new File(filePath);
-        uploadImage();
-
-        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-
-        if (requestCode == REQUEST_INVITE) {
-            if (resultCode == RESULT_OK) {
-                // Check how many invitations were sent and log a message
-                // The ids array contains the unique invitation ids for each invitation sent
-                // (one for each contact select by the user). You can use these for analytics
-                // as the ID will be consistent on the sending and receiving devices.
-                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-            } else {
-                // Sending failed or it was canceled, show failure message to the user
-                showMessage(getString(R.string.send_failed));
-            }
-        }
-    }
-
-
     public void uploadImage() {
     /*
       Create the @Upload object
@@ -873,11 +988,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        showMessage(getString(R.string.google_play_services_error));
+        //showMessage(getString(R.string.google_play_services_error));
     }
 
+    /*
     private void showMessage(String msg) {
         ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
         Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
     }
+
+    */
 }

@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Deep Orange 900 -->
-    <!--<color name="colorPrimary">#BF360C</color>-->
-    <!-- Not Material -->
-    <!--<color name="colorPrimaryDark">#af310b</color>-->
-    <!-- Material Grey 900 -->
-    <!--<color name="colorAccent">#212121</color>-->
-    <!-- Material Grey 700 -->
-    <!--<color name="colorAccentLight">#616161</color>-->
-    <!-- Material Grey 300 -->
-    <!--<color name="colorAccentLightest">#E0E0E0</color>-->
+    <color name="colorPrimaryDark">@color/md_grey_800</color>
+    <color name="colorPrimary">@color/md_blue_grey_600</color>
+    <color name="colorPrimaryLight">#CFD8DC</color>
+    <color name="colorAccentDark">@color/md_red_700</color>
+    <color name="colorAccent">@color/md_red_A200</color>
+    <color name="colorAccentLight">@color/md_red_A100</color>
+    <color name="colorAccentLightest">@color/md_red_100</color>
 
-    <color name="colorPrimary">#424242</color>
-    <color name="colorPrimaryLight">#BDBDBD</color>
-    <color name="colorPrimaryDark">#212121</color>
-    <color name="colorAccent">#af310b</color>
-    <color name="colorAccentLight">#D84315</color>
-    <color name="colorAccentLightest">#e57373</color>
-
+    <color name="colorTextPrimary">#212121</color>
+    <color name="colorText">@color/white</color>
+    <color name="colorTextSecondary">#727272</color>
+    <color name="colorDivider">#B6B6B6</color>
 
     <color name="grey_background">#424242</color>
     <color name="blue_button">#0D47A1</color>
@@ -41,4 +35,6 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

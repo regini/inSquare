@@ -6,10 +6,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
@@ -21,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * InSquareProfile is the class that handles most of the user data.
@@ -44,6 +48,7 @@ public class InSquareProfile {
     private static final String OWNED_SQUARES_KEY = "OWNED_SQUARES_KEY";
     private static final String FAVOURITE_SQUARES_KEY = "FAVOURITE_SQUARES_KEY";
     private static final String RECENT_SQUARES_KEY = "RECENT_SQUARES_KEY";
+    private static final String OUTGOING_MESSAGES = "OUTGOING_MESSAGES";
 
     private static final String FACEBOOK_ID_KEY = "FACEBOOK_ID_KEY";
     private static final String FACEBOOK_TOKEN_KEY = "FACEBOOK_TOKEN_KEY";
@@ -70,6 +75,10 @@ public class InSquareProfile {
      * The list of the squares recently used by the user
      */
     private static ArrayList<Square> recentSquaresList;
+    /**
+     * The map of the messages I'm currently trying to send
+     */
+    private static HashMap<String, ArrayList<Message>> outgoingMessages;
 
     public static String userId;
     public static String username;
@@ -110,6 +119,7 @@ public class InSquareProfile {
 
         Gson gs = new Gson();
         Type type = new TypeToken<ArrayList<Square>>(){}.getType();
+        Type type2 = new TypeToken<HashMap<String, ArrayList<Message>>>(){}.getType();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
         profile.userId = prefs.getString(USER_ID_KEY, null);
@@ -135,6 +145,12 @@ public class InSquareProfile {
         {
             profile.recentSquaresList = new ArrayList<>();
             Log.d(TAG, "recentSquaresList was null");
+        }
+        profile.outgoingMessages = gs.fromJson(prefs.getString(OUTGOING_MESSAGES, null), type2);
+        if(profile.outgoingMessages == null)
+        {
+            profile.outgoingMessages = new HashMap<>();
+            Log.d(TAG, "outgoingMessages was null");
         }
 
         profile.facebookId = prefs.getString(FACEBOOK_ID_KEY, null);
@@ -173,6 +189,7 @@ public class InSquareProfile {
         editor.putString(OWNED_SQUARES_KEY, gs.toJson(ownedSquaresList));
         editor.putString(FAVOURITE_SQUARES_KEY, gs.toJson(favouriteSquaresList));
         editor.putString(RECENT_SQUARES_KEY, gs.toJson(recentSquaresList));
+        editor.putString(OUTGOING_MESSAGES, gs.toJson(outgoingMessages));
 
         editor.putString(FACEBOOK_ID_KEY, facebookId);
         editor.putString(FACEBOOK_TOKEN_KEY, facebookToken);
@@ -468,6 +485,8 @@ public class InSquareProfile {
     public static ArrayList<Square> getRecentSquaresList() {
         return recentSquaresList;
     }
+
+    public static HashMap<String, ArrayList<Message>> getOutgoingMessages() { return outgoingMessages; }
 
     public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
         InSquareProfile.ownedSquaresList = ownedSquaresList;

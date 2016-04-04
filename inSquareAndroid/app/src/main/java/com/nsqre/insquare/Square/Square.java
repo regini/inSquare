@@ -241,6 +241,7 @@ public class Square implements Serializable {
         return "Ultimo messaggio: " + timetoShow;
     }
 
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;

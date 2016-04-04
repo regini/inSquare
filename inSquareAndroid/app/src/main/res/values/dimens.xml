@@ -8,6 +8,7 @@
     <dimen name="input_bar_height">56dp</dimen>
     <dimen name="input_margin_side">16dp</dimen>
     <dimen name="button_size">36dp</dimen>
+    <dimen name="mini_fab_size">40dp</dimen>
 
     <dimen name="login_button_height">45dp</dimen>
     <dimen name="margin_button_height">30dp</dimen>
@@ -22,4 +23,5 @@
 
     <dimen name="search_bar_margin">8dp</dimen>
     <dimen name="square_card_pic_size">68dp</dimen>
+    <dimen name="info_window_padding">8dp</dimen>
 </resources>

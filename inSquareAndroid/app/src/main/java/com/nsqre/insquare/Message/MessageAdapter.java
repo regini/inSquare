@@ -47,15 +47,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     //  1 Messaggio TEXT from ME
     //  2 Messaggio PHOTO from OTHER USER
     //  3 Messaggio PHOTO from ME
+    //  4 Messaggio PHOTO outgoing
+    //  5 Messaggio TEXT outgoing
     @Override
     public int getItemViewType(int position) {
         Message m = mDataset.get(position);
 
         if(m.getFrom().equals(InSquareProfile.getUserId())) {
-            if(m.getText().contains("http://i.imgur.com/")){
+            if(m.getText().contains("http://i.imgur.com/") && isOutgoing(m)){
+                return 4;
+            } else if (m.getText().contains("http://i.imgur.com/")) {
                 return 3;
             }
-            return 1;
+            if (isOutgoing(m))
+                return 5;
+            else
+                return 1;
         } else if(m.getText().contains("http://i.imgur.com/")){
             return 2;
         }
@@ -72,16 +79,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false);
                 break;
             case 1:
+            case 5:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item_me, parent, false);
                 break;
             case 2:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.foto_item, parent, false);
                 break;
             case 3:
+            case 4:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.foto_item_me, parent, false);
                 break;
+
         }
-        MessageHolder msgHld = new MessageHolder(view);  //va a 3
+        MessageHolder msgHld = new MessageHolder(view, viewType);  //va a 3
         return msgHld;  //dopo aver creato il msgHld va su 4
     }
 
@@ -111,17 +121,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 return "transformation" + " desiredWidth";
             }
         };
+
         switch (type)
         {
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
-                holder.checkUrl(m.getText());
+                checkUrl(m.getText(),holder);
                 break;
             }
-            case 1: {
+            case 1:
+            case 5: {
                 holder.content.setText(m.getText());
-                holder.checkUrl(m.getText());
+                checkUrl(m.getText(),holder);
                 break;
             }
             case 2: {
@@ -133,7 +145,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         .into(holder.foto);
                 break;
             }
-            case 3: {
+            case 3:
+            case 4: {
                 Picasso.with(context)
                         .load(m.getText())
                         .placeholder(R.drawable.ic_photo_library_black)
@@ -172,6 +185,43 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         holder.datetime.setText(timetoShow);
     }
 
+    private void checkUrl(String message, final MessageHolder holder) {
+        Matcher m = Patterns.WEB_URL.matcher(message);
+        if(m.find()) {
+            String url = m.group();
+            Log.d("checkUrl", "URL extracted: " + url);
+            textCrawler.makePreview(new LinkPreviewCallback() {
+                @Override
+                public void onPre() {
+
+                }
+
+                @Override
+                public void onPos(SourceContent sourceContent, boolean isNull) {
+                    if (!isNull && !sourceContent.getFinalUrl().equals("")) {
+                        Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
+                                " " + sourceContent.getDescription());
+                        holder.urlProvider.setText(sourceContent.getCannonicalUrl().trim());
+                        holder.urlTitle.setText(sourceContent.getTitle().trim());
+                        holder.urlDescription.setText(sourceContent.getDescription().trim());
+                        holder.urlProvider.setVisibility(View.VISIBLE);
+                        holder.urlTitle.setVisibility(View.VISIBLE);
+                        holder.urlDescription.setVisibility(View.VISIBLE);
+                        /*if(sourceContent.getImages().size() > 0) {
+                            urlImage.setVisibility(View.VISIBLE);
+                            String image = sourceContent.getImages().get(0);
+                            Picasso.with(context)
+                                    .load(image)
+                                    .resize(200,200)
+                                    .centerInside()
+                                    .into(holder.urlImage);
+                        }*/
+                    }
+                }
+            }, url);
+        }
+    }
+
 
     //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
     public void addItem(Message msg)
@@ -183,6 +233,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public Message getMessage(int position)
     {
         return this.mDataset.get(position);
+    }
+
+    public Message getMessage(Message message) {
+        return getMessage(this.mDataset.indexOf(message));
     }
 
     public void removeItem(int position) {
@@ -216,8 +270,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.myClickListener = clickListener;
     }
 
-    public class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
+    private boolean isOutgoing(Message m) {
+        InSquareProfile mProfile = InSquareProfile.getInstance(context);
+        for (ArrayList<Message> arr : mProfile.getOutgoingMessages().values()) {
+            for (Message message : arr) {
+                if (message == m)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView content;
         private ImageView foto;
         private TextView username;
@@ -227,9 +291,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         private TextView urlDescription;
         private ImageView urlImage;
         private RelativeLayout relativeLayout;
+        private ImageView outgoingIcon;
 
         //3: si prende questi dati
-        public MessageHolder(View itemView) {
+        public MessageHolder(View itemView, int viewType) {
             super(itemView);
             foto = (ImageView) itemView.findViewById((R.id.foto_content));
             content = (TextView) itemView.findViewById(R.id.message_content);
@@ -240,6 +305,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             urlDescription = (TextView) itemView.findViewById(R.id.url_description);
             urlImage = (ImageView) itemView.findViewById(R.id.url_image);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
+            outgoingIcon = (ImageView) itemView.findViewById(R.id.message_outgoing_icon);
+
+            if (viewType == 4 || viewType == 5) {
+                datetime.setVisibility(View.INVISIBLE);
+                outgoingIcon.setVisibility(View.VISIBLE);
+            }
+            else if (viewType == 1 || viewType == 3){
+                datetime.setVisibility(View.VISIBLE);
+                outgoingIcon.setVisibility(View.INVISIBLE);
+            }
 
             itemView.setOnClickListener(this);
         }
@@ -247,43 +322,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         @Override
         public void onClick(View v) {
             myClickListener.onItemClick(getAdapterPosition(), v);
-        }
-
-        public void checkUrl(String message) {
-            Matcher m = Patterns.WEB_URL.matcher(message);
-            if(m.find()) {
-                String url = m.group();
-                Log.d("checkUrl", "URL extracted: " + url);
-                textCrawler.makePreview(new LinkPreviewCallback() {
-                    @Override
-                    public void onPre() {
-
-                    }
-
-                    @Override
-                    public void onPos(SourceContent sourceContent, boolean isNull) {
-                        if (!isNull && !sourceContent.getFinalUrl().equals("")) {
-                            Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
-                                    " " + sourceContent.getDescription());
-                            urlProvider.setText(sourceContent.getCannonicalUrl().trim());
-                            urlTitle.setText(sourceContent.getTitle().trim());
-                            urlDescription.setText(sourceContent.getDescription().trim());
-                            urlProvider.setVisibility(View.VISIBLE);
-                            urlTitle.setVisibility(View.VISIBLE);
-                            urlDescription.setVisibility(View.VISIBLE);
-                        /*if(sourceContent.getImages().size() > 0) {
-                            urlImage.setVisibility(View.VISIBLE);
-                            String image = sourceContent.getImages().get(0);
-                            Picasso.with(context)
-                                    .load(image)
-                                    .resize(200,200)
-                                    .centerInside()
-                                    .into(holder.urlImage);
-                        }*/
-                        }
-                    }
-                }, url);
-            }
         }
 
     }

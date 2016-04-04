@@ -37,7 +37,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     int[] backgroundColors = new int[]{
             R.color.md_amber_A100,
             R.color.md_orange_A100,
-            R.color.colorAccentLightest,
+            R.color.colorAccentDark,
             R.color.md_purple_A100,
             R.color.md_deep_purple_A200,
             R.color.md_blue_100,
@@ -93,10 +93,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
         int position = castHolder.getAdapterPosition()%(backgroundColors.length);
 
-//        castHolder.verticalColoredBar.setBackgroundColor(
-        castHolder.squareInitials.setTextColor(
-                ContextCompat.getColor(context, backgroundColors[position])
-        );
+        castHolder.squareInitials.setBackgroundTintList(ContextCompat.getColorStateList(context, backgroundColors[position]));
 
         String initials = setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
@@ -121,7 +118,8 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {
         if(InSquareProfile.isFav(listItem.getId())){
-            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+//            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+            castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
         }
 
         castHolder.squareFav.setOnClickListener(
@@ -131,11 +129,13 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
+//                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
+                            castHolder.squareFav.setImageResource(R.drawable.like_96);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+//                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
+                            castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
                         }
                     }
                 }
@@ -217,7 +217,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         LinearLayout squareCardBackground;
         CardView squareCardView;
-//        View verticalColoredBar;
         TextView squareInitials;
         TextView squareName;
         TextView squareActivity;
@@ -234,7 +233,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
             squareNotifications = (TextView) itemView.findViewById(R.id.cardview_square_notification_counter);
             squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
-//            verticalColoredBar = itemView.findViewById(R.id.cardview_vertical_colored_bar);
 
             squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);
 

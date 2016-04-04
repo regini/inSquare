@@ -8,6 +8,7 @@ import android.util.Log;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.nsqre.insquare.Message.Message;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ public class ChatService extends Service {
     private Socket mSocket;
     private final int MAX_RETRY = 10;
     private int retryNumber;
+    private Message message;
     
     public ChatService() {
     }
@@ -35,9 +37,10 @@ public class ChatService extends Service {
         if (intent != null) {
             Log.d(TAG, "onHandleIntent: " + this.getClass().getName());
             String mSquareId = intent.getStringExtra("squareid");
-            String mUsername = intent.getStringExtra("username");
-            String mUserId = intent.getStringExtra("userid");
-            String message = intent.getStringExtra("message");
+            Message message = (Message) intent.getSerializableExtra("message");
+            String mUsername = message.getName();
+            String mUserId = message.getFrom();
+            String messageText = message.getText();
 
             JSONObject data = new JSONObject();
 
@@ -45,11 +48,11 @@ public class ChatService extends Service {
                 data.put("room", mSquareId);
                 data.put("username", mUsername);
                 data.put("userid", mUserId);
-                data.put("message", message);
+                data.put("message", messageText);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(data);
+            sendMessage(data, message);
         }
         return Service.START_REDELIVER_INTENT;
     }
@@ -59,7 +62,7 @@ public class ChatService extends Service {
         return null;
     }
 
-    private void sendMessage(final JSONObject data) {
+    private void sendMessage(final JSONObject data, final Message m) {
         try {
             String url = "http://recapp-insquare.rhcloud.com/squares";
             mSocket = IO.socket(url);
@@ -75,7 +78,7 @@ public class ChatService extends Service {
                     if (args.length > 0) {
                         //args[0] è un JSONObject ed ha gli stessi dati inviati
                         Log.d(TAG, "call: ho avuto acknowledgement per: " + args[0].toString());
-                        publishResults();
+                        publishResults(m);
                     }
                 }
             });
@@ -89,7 +92,7 @@ public class ChatService extends Service {
                             @Override
                             public void run() {
                                 Log.d(TAG, "run: Eseguo sendmessage tentativo num: " + retryNumber);
-                                sendMessage(data);
+                                sendMessage(data, m);
                             }
                         },
                         5000);
@@ -102,8 +105,9 @@ public class ChatService extends Service {
     }
 
     //notifica che l'invio è stato effettuato
-    private void publishResults() {
+    private void publishResults(Message m) {
         Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra("messageSent", m);
         sendBroadcast(intent);
     }
 }

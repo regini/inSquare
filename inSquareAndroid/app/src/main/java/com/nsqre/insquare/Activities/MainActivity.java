@@ -1,5 +1,6 @@
 package com.nsqre.insquare.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,8 +11,13 @@ import android.util.Log;
 
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
+import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Services.ChatService;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
     implements TabLayout.OnTabSelectedListener
@@ -28,6 +34,8 @@ public class MainActivity extends AppCompatActivity
     TabLayout tabLayout;
     Toolbar toolbar;
 
+    private InSquareProfile mProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +46,20 @@ public class MainActivity extends AppCompatActivity
 
         Fragment f = selectFragmentFromName(TAB_MAP);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame,f).commit();
+
+        mProfile = InSquareProfile.getInstance(getApplicationContext());
+
+        for(String squareid : mProfile.getOutgoingMessages().keySet()) {
+            for (Message m : mProfile.getOutgoingMessages().get(squareid)) {
+                Intent intent = new Intent(this, ChatService.class);
+                intent.putExtra("squareid", squareid);
+                intent.putExtra("message", m);
+                //intent.putExtra("username", m.getName());
+                //intent.putExtra("userid", m.getFrom());
+                //intent.putExtra("message", m.getText());
+                startService(intent);
+            }
+        }
     }
 
     private void setupToolbar()

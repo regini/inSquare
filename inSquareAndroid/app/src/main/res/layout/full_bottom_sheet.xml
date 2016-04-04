@@ -62,7 +62,7 @@
                 android:layout_height="36dp"
                 android:layout_marginLeft="@dimen/input_margin_side"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/heart_border_black"
+                android:background="@drawable/like_96"
                 />
 
         </LinearLayout>

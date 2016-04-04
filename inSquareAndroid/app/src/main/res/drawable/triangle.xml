@@ -12,7 +12,7 @@
                     android:height="15dp"/>
                 <stroke android:color="@color/transparent" android:width="3dp"/>
                 <solid
-                    android:color="@color/white" />
+                    android:color="@color/colorAccent" />
             </shape>
         </rotate>
     </item>

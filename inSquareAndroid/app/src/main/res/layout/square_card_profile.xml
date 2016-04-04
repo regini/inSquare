@@ -15,7 +15,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="2dp"
         app:cardCornerRadius="5dp"
-        app:cardUseCompatPadding="true"
+        android:layout_margin="8dp"
         >
 
         <LinearLayout
@@ -27,6 +27,7 @@
                 android:id="@+id/cardview_profile_top_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/search_bar_margin"
                 >
 
                 <!-- Parte Sinistra con Iniziali -->
@@ -34,7 +35,7 @@
                     android:id="@+id/cardview_profile_left_section"
                     android:layout_width="@dimen/square_card_pic_size"
                     android:layout_height="@dimen/square_card_pic_size"
-                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     >
 
                     <TextView
@@ -43,23 +44,25 @@
                         android:layout_height="@dimen/square_card_pic_size"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="SN"
-                        android:textSize="30sp"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:background="@color/colorPrimary"
+                        android:text="AVL"
+                        android:textSize="25sp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:background="@drawable/linear_layout_rounded_background"
+                        android:backgroundTint="@color/colorAccent"
                         />
 
                 </RelativeLayout>
 
 
 
-                <!-- Parte destra con Nome, Attività e Notifiche -->
+                <!-- Parte destra con Nome, Attività e Preferito -->
                 <LinearLayout
                     android:id="@+id/cardview_profile_right_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/cardview_profile_left_section"
                     android:layout_centerVertical="true"
+                    android:paddingLeft="@dimen/search_bar_margin"
                     android:orientation="horizontal"
                     >
 
@@ -67,10 +70,9 @@
                         android:id="@+id/cardview_profile_square_name_activity_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/activity_vertical_margin"
-                        android:layout_marginRight="@dimen/activity_vertical_margin"
                         android:orientation="vertical"
                         android:layout_weight="9"
+                        android:paddingRight="@dimen/search_bar_margin"
                         >
 
                         <TextView
@@ -78,7 +80,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A very long square name that should resemble ones that we might have in our db"
-                            android:textColor="#000000"
+                            android:textColor="@color/colorTextPrimary"
                             android:textSize="18sp"
                             android:maxLines="2"
                             android:ellipsize="end"
@@ -90,7 +92,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Ultima attivita'"
-                            android:textColor="#000000"
+                            android:textColor="@color/colorTextSecondary"
                             android:fontFamily="sans-serif-condensed-light"
                             />
 
@@ -100,7 +102,6 @@
                         android:id="@+id/cardview_profile_right_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/activity_vertical_margin"
                         android:layout_gravity="center_vertical"
                         >
 
@@ -108,7 +109,7 @@
                             android:id="@+id/cardview_profile_square_heart"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/heart_border_black"
+                            android:src="@drawable/like_96"
                             />
 
                     </RelativeLayout>
@@ -117,56 +118,29 @@
 
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:background="@color/colorPrimaryLight"
-                android:layout_marginTop="8dp"
-                />
-
             <RelativeLayout
                 android:id="@+id/cardview_profile_middle_section"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_vertical_margin"
+                >
 
                 <TextView
                     android:id="@+id/cardview_profile_description_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_vertical_margin"
-                    android:text="\t\t\t\tDescription: this is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellouse to go to"
+                    android:text="\t\t\t\This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
+                    android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed-light"
+                    android:layout_marginBottom="@dimen/search_bar_margin"
                     />
 
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:background="@color/colorPrimaryLight"
-                android:layout_marginTop="8dp"
+            <include
+                layout="@layout/square_card_profile_lower_section"
                 />
-
-            <RelativeLayout
-                android:id="@+id/cardview_profile_lower_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/arrow_down_black_48dp"
-                    />
-            </RelativeLayout>
 
         </LinearLayout>
 

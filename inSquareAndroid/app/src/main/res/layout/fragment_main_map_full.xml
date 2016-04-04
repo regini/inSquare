@@ -21,7 +21,7 @@
         app:floatingSearch_searchBarMarginLeft="@dimen/search_bar_margin"
         app:floatingSearch_searchBarMarginTop="@dimen/search_bar_margin"
         app:floatingSearch_searchBarMarginRight="@dimen/search_bar_margin"
-        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_searchHint="@string/hint_cerca_squares"
         app:floatingSearch_showSearchKey="false"
         app:floatingSearch_dismissOnOutsideTouch="true"
         app:floatingSearch_leftActionMode="showSearch"

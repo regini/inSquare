@@ -116,14 +116,14 @@
         <activity
             android:name=".Activities.BottomNavActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".Services.ChatService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main"
@@ -131,7 +131,12 @@
         <activity
             android:name=".Activities.TopBarActivity"
             android:label="@string/title_activity_top_bar"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.FullScreenImage"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_full_screen_image"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>
