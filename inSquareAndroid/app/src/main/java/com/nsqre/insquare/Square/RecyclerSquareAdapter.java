@@ -142,8 +142,10 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {
         if(InSquareProfile.isFav(listItem.getId())){
-//            castHolder.squareFav.setImageResource(R.drawable.heart_black);
             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
+        }else
+        {
+            castHolder.squareFav.setImageResource(R.drawable.like_96);
         }
 
         castHolder.squareFav.setOnClickListener(
@@ -153,12 +155,10 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-//                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                             castHolder.squareFav.setImageResource(R.drawable.like_96);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
-//                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
                             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
                         }
                     }
@@ -174,7 +174,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         if (squaresNewMessages == 0) {
             castHolder.squareNotifications.setVisibility(View.INVISIBLE);
         } else {
-//            castHolder.squareNotifications.setText(String.valueOf(squaresNewMessages));
             castHolder.squareNotifications.setVisibility(View.VISIBLE);
         }
     }
@@ -205,7 +204,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
                         }else
                         {
-                            notifyDataSetChanged();
                             InSquareProfile.addFav(square);
                         }
                     }
@@ -223,18 +221,10 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                             Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
                         }else
                         {
-                            notifyDataSetChanged();
                             InSquareProfile.removeFav(square.getId());
                         }
                     }
                 });
-    }
-
-    public void removeCard(SquareViewHolder viewholder) {
-        Log.d(TAG, "removeCard: I'm swiping at position " + viewholder.getAdapterPosition());
-
-        viewholder.squareCardBackground.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
-
     }
 
     public static class SquareViewHolder extends RecyclerView.ViewHolder {

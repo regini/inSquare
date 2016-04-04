@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
-import android.util.ArrayMap;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * InSquareProfile is the class that handles most of the user data.
@@ -398,8 +396,8 @@ public class InSquareProfile {
         // Notifica gli ascoltatori
         for(InSquareProfileListener ispl : listeners)
         {
-            ispl.onFavChanged();
             Log.d(TAG, "removeFav: notifying listeners!");
+            ispl.onFavChanged();
         }
     }
 
