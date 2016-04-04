@@ -60,6 +60,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.OnClick;
@@ -103,7 +104,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
-
+    private HashMap<String, ArrayList<Message>> outgoingMessages;
 
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
@@ -113,17 +114,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
 
-    //TODO dovrebbe cambiare il segnalino di invio messaggio in un segnalino di messaggio inviato
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            //se mettiamo degli extra nell'intent di chat service
-            if (bundle != null) {
-                //HO INVIATO IL MESSAGGIO
-                Log.d(TAG, "onReceive: messaggio inviato con chatservice");
-            }
-            //se non mettiamo gli extra
+            Log.d(TAG, "onReceive: messaggio inviato con chatservice");
+            Message m = (Message) intent.getSerializableExtra("messageSent");
+            outgoingMessages.get(mSquareId).remove(m);
+            Message messageFromAdapter = messageAdapter.getMessage(m);
+            messageFromAdapter.setTime();
+            messageAdapter.notifyDataSetChanged();
+            Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -220,6 +220,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         if(sharedPreferences.contains(mSquareId)) {
             sharedPreferences.edit().remove(mSquareId).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount",0) - 1).apply();
+        }
+
+        outgoingMessages = mProfile.getOutgoingMessages();
+
+        if (outgoingMessages.keySet().contains(mSquareId)) {
+            for (Message m : outgoingMessages.get(mSquareId)) {
+                addMessage(m);
+            }
         }
     }
 
@@ -333,7 +341,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if(isScrolled) {
+                if (isScrolled) {
                     isScrolled = false;
                     return;
                 }
@@ -455,14 +463,19 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText.setText("");
 
+        Message m = new Message(message, mUsername, mUserId, format);
+        if (outgoingMessages.get(mSquareId) == null) {
+            outgoingMessages.put(mSquareId, new ArrayList<Message>());
+        }
+        outgoingMessages.get(mSquareId).add(m);
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
-        intent.putExtra("username", mUsername);
-        intent.putExtra("userid", mUserId);
-        intent.putExtra("message", message);
+        intent.putExtra("message", m);
+        //intent.putExtra("username", mUsername);
+        //intent.putExtra("userid", mUserId);
+        //intent.putExtra("message", message);
         startService(intent);
-
-        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
+        addMessage(m);
     }
 
     /**

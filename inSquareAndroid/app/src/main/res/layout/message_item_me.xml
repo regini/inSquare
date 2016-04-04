@@ -43,6 +43,15 @@
             android:textSize="12sp"
             android:fontFamily="sans-serif-condensed-light"
             />
-        />
+        <ImageView
+            android:id="@+id/message_outgoing_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/message_content"
+            android:layout_alignRight="@+id/message_content"
+            android:layout_alignEnd="@+id/message_content"
+            android:src="@drawable/ic_schedule_black_48dp"
+            android:layout_alignBottom="@+id/message_timestamp"
+            android:visibility="invisible"/>
     </RelativeLayout>
 </RelativeLayout>
