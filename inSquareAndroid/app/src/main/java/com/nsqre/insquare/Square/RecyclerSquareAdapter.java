@@ -3,7 +3,10 @@ package com.nsqre.insquare.Square;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.R;
@@ -88,12 +92,32 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     }
                 }
         );
+
+        castHolder.itemView.setOnLongClickListener(
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if(context instanceof BottomNavActivity)
+                        {
+                            BottomNavActivity madre = (BottomNavActivity)context;
+                            madre.showBottomSheetDialog();
+                            Log.d(TAG, "onLongClick: long clicking in BottomNavActivity!");
+                        }
+                        return true;
+                    }
+                }
+        );
     }
 
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
         int position = castHolder.getAdapterPosition()%(backgroundColors.length);
 
-        castHolder.squareInitials.setBackgroundTintList(ContextCompat.getColorStateList(context, backgroundColors[position]));
+        ColorStateList circleColor = ContextCompat.getColorStateList(context, backgroundColors[position]);
+
+        final Drawable originalDrawable = castHolder.squareInitials.getBackground();
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+        DrawableCompat.setTintList(wrappedDrawable, circleColor);
+        castHolder.squareInitials.setBackground(wrappedDrawable);
 
         String initials = setupInitials(squareName);
         castHolder.squareInitials.setText(initials);

@@ -63,6 +63,7 @@
                     android:layout_toRightOf="@+id/cardview_profile_left_section"
                     android:layout_centerVertical="true"
                     android:paddingLeft="@dimen/search_bar_margin"
+                    android:paddingStart="@dimen/search_bar_margin"
                     android:orientation="horizontal"
                     >
 

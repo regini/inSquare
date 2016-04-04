@@ -27,15 +27,17 @@ import com.nsqre.insquare.Utilities.ImageConverter;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
 /**
  * This fragment show the recent squares used by the user. The recent squares are those in which he wrote at least a message
  */
-public class RecentSquaresFragment extends Fragment implements InSquareProfile.InSquareProfileListener {
+public class RecentSquaresFragment extends Fragment implements
+        InSquareProfile.InSquareProfileListener
+{
 
     private static RecentSquaresFragment instance;
     private static final String TAG = "RecentSquaresFragment";
 
-//    private ListView listRecent;
     private RecyclerView recyclerListRecent;
     private RecyclerSquareAdapter adapterRecents;
     private Toolbar toolbar;
@@ -111,7 +113,6 @@ public class RecentSquaresFragment extends Fragment implements InSquareProfile.I
         TextView title = (TextView) v.findViewById(R.id.recents_title);
         title.setText(getString(R.string.bottom_nav_tab_recent));
     }
-
 
     /**
      * TODO ???

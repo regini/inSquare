@@ -269,7 +269,7 @@ public class  MapActivity extends AppCompatActivity
         }
 
 
-//        MenuItem searchItem = menu.findItem(R.id.search_squares_action);
+//        BottomSheetItem searchItem = menu.findItem(R.id.search_squares_action);
 //
 //        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 //        searchView.setQueryHint(getString(R.string.hint_cerca_squares));

@@ -1,9 +1,14 @@
 package com.nsqre.insquare.Activities;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -14,9 +19,15 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItem;
+import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
 
-public class BottomNavActivity extends AppCompatActivity
-{
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class BottomNavActivity extends AppCompatActivity implements BottomSheetItemAdapter.BottomSheetItemListener {
+
     private enum TABS
     {
         MAP, RECENT, PROFILE, OTHER
@@ -26,6 +37,11 @@ public class BottomNavActivity extends AppCompatActivity
 
     AHBottomNavigation bottomNavigation;
     FrameLayout mainContentFrame;
+
+    private View bottomSheet;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private RecyclerView bottomSheetMenu;
+    private BottomSheetItemAdapter bottomSheetItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +55,51 @@ public class BottomNavActivity extends AppCompatActivity
         mainContentFrame = (FrameLayout) findViewById(R.id.bottom_nav_content_frame);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, MapFragment.newInstance()).commit();
+
+        setupLongClickMenu();
     }
+
+    private void setupLongClickMenu()
+    {
+        bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        bottomSheetBehavior.setBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(View bottomSheet, int newState) {
+
+                    }
+
+                    @Override
+                    public void onSlide(View bottomSheet, float slideOffset) {
+
+                    }
+                }
+        );
+
+        bottomSheetMenu = (RecyclerView) findViewById(R.id.bottom_sheet_list);
+        bottomSheetMenu.setHasFixedSize(true);
+        bottomSheetMenu.setLayoutManager(new LinearLayoutManager(this));
+
+        bottomSheetItemAdapter = new BottomSheetItemAdapter(
+                instiantiateListMenu(), this
+        );
+        bottomSheetMenu.setAdapter(bottomSheetItemAdapter);
+    }
+
+
+    private List<BottomSheetItem> instiantiateListMenu()
+    {
+        ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
+//        menuList.add(new BottomSheetItem(R.drawable.ic_mode_edit_black_48dp, "Modifica"));
+        menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, "Condividi"));
+        menuList.add(new BottomSheetItem(R.drawable.ic_volume_off_black_48dp, "Muto"));
+//        menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, "Elimina"));
+
+        return menuList;
+    }
+
 
     private void setupBottomNavigation() {
 
@@ -95,6 +155,27 @@ public class BottomNavActivity extends AppCompatActivity
                         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, f).commit();
                     }
                 });
+    }
+
+    public void showBottomSheetDialog()
+    {
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        bottomSheetItemAdapter.setListener(null);
+    }
+
+    /*
+        Questo e' il click dell'oggetto nel menu che viene istanziato sul long click di una Square nella lista
+    */
+    @Override
+    public void onBottomMenuItemClick(BottomSheetItem item) {
+        // TODO implementare menuitemclick
+        Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Override
