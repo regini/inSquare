@@ -115,4 +115,8 @@
     <string name="bottom_nav_tab_favs">Preferiti</string>
     <string name="bottom_nav_tab_recent">Recenti</string>
     <string name="bottom_nav_tab_other">Altro</string>
+
+    <string name="title_activity_full_screen_image">FullScreenImage</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

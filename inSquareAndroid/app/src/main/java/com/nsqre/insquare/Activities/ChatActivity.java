@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -26,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +53,6 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.Photo.helpers.DocumentHelper;
-import com.nsqre.insquare.Utilities.Photo.helpers.IntentHelper;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.ImageResponse;
 import com.nsqre.insquare.Utilities.Photo.imgurmodel.Upload;
 import com.nsqre.insquare.Utilities.Photo.services.UploadService;
@@ -69,9 +67,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -79,6 +77,7 @@ import retrofit.client.Response;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
+@RuntimePermissions
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -117,10 +116,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
 
-
+    private ChatActivity ca;
     //SHARE
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_INVITE = 0;
+    public final static int FILE_PICK = 1001;
 
 
     private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
@@ -150,7 +150,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         //FOTO
         //ButterKnife.bind(this);
-
+        ca = this;
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -179,7 +179,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                insertPhotoWrapper();
+                //insertPhotoWrapper();
+                //ca.chooseFileIntent(ca);
             }
         });
 
@@ -241,7 +242,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         }
     }
-
+    /*
     private void insertPhotoWrapper() {
         List<String> permissionsNeeded = new ArrayList<String>();
 
@@ -273,10 +274,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
 
         onChooseImage();
-    }
+    }*/
 
-    public void onChooseImage() {
-        IntentHelper.chooseFileIntent(this);
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public static void chooseFileIntent(Activity activity){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, FILE_PICK);
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
@@ -304,22 +309,27 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     //showMessage(getString(R.string.send_failed));
                 }
                 break;
-            case IntentHelper.FILE_PICK:
-                Uri returnUri;
-
-                if (resultCode != RESULT_OK) {
-                    return;
-                }
-
-                returnUri = data.getData();
-                String filePath = DocumentHelper.getPath(this, returnUri);
-                //Safety check to prevent null pointer exception
-                if (filePath == null || filePath.isEmpty()) return;
-                chosenFile = new File(filePath);
-                uploadImage();
+            case FILE_PICK:
+                test(resultCode,data);
                 break;
         }
     }
+   // @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void test(int resultCode, Intent data){
+        Uri returnUri;
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        returnUri = data.getData();
+        String filePath = DocumentHelper.getPath(this, returnUri);
+        //Safety check to prevent null pointer exception
+        if (filePath == null || filePath.isEmpty()) return;
+        chosenFile = new File(filePath);
+        uploadImage();
+    }
+
     private boolean addPermission(List<String> permissionsList, String permission) {
         if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission);
@@ -329,7 +339,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
         return true;
     }
-
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -357,6 +367,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+*/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        //MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     /**
