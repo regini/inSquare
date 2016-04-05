@@ -23,8 +23,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.transition.Fade;
-import android.transition.Slide;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -176,14 +175,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         setContentView(R.layout.activity_chat);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            Fade fade = new Fade();
-            fade.setDuration(500);
-            getWindow().setEnterTransition(fade);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Explode explode = new Explode();
+            explode.setDuration(200);
 
-            Slide slide = new Slide();
-            slide.setDuration(500);
-            getWindow().setExitTransition(slide);
+            getWindow().setEnterTransition(explode);
+            getWindow().setExitTransition(explode);
         }
 
         ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
