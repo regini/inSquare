@@ -40,6 +40,7 @@
                     android:textSize="25sp"
                     android:fontFamily="sans-serif-condensed"
                     android:background="@drawable/linear_layout_rounded_background"
+                    android:transitionName="@string/transition_name_square_circle"
                     />
 
                 <TextView
@@ -88,6 +89,7 @@
                         android:maxLines="2"
                         android:ellipsize="end"
                         android:fontFamily="sans-serif-condensed"
+                        android:transitionName="@string/transition_name_square_name"
                         />
 
                     <TextView

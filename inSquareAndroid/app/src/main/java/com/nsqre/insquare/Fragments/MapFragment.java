@@ -56,7 +56,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.SquareSuggestion;
@@ -67,6 +66,7 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -670,7 +670,14 @@ public class MapFragment extends Fragment
             sharedPreferences.edit().remove(s.getId()).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
         }
+
         intent.putExtra(SQUARE_TAG, s);
+        intent.putExtra(BottomNavActivity.INITIALS_TAG, BottomNavActivity.setupInitials(s.getName()));
+
+        int max = BottomNavActivity.backgroundColors.length;
+        int randomBackgroundIndex = (new Random()).nextInt(max + 1);
+        intent.putExtra(BottomNavActivity.INITIALS_COLOR_TAG, BottomNavActivity.backgroundColors[randomBackgroundIndex]);
+
         startActivity(intent);
     }
 

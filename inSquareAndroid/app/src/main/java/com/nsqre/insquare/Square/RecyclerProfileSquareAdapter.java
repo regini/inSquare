@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
@@ -44,15 +45,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
     private ArrayList<Square> squaresArrayList;
     int i = 0;
 
-    int[] backgroundColors = new int[]{
-            R.color.md_amber_A100,
-            R.color.md_orange_A100,
-            R.color.colorAccentDark,
-            R.color.md_purple_A100,
-            R.color.md_deep_purple_A200,
-            R.color.md_blue_100,
-            R.color.md_teal_A400
-    };
 
     public RecyclerProfileSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
@@ -254,9 +246,9 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         Utilizza DrawableCompat per retrocompatibilità
      */
     private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
-        int position = castHolder.getAdapterPosition()%(backgroundColors.length);
+        int position = castHolder.getAdapterPosition()%(BottomNavActivity.backgroundColors.length);
 
-        ColorStateList circleColor = ContextCompat.getColorStateList(context, backgroundColors[position]);
+        ColorStateList circleColor = ContextCompat.getColorStateList(context, BottomNavActivity.backgroundColors[position]);
 
         final Drawable originalDrawable = castHolder.squareInitials.getBackground();
         final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);

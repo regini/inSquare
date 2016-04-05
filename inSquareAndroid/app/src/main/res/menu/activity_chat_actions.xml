@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/share_action"
-        android:icon="@drawable/ic_share_white_48dp"
+        android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share_action"
         app:showAsAction="ifRoom|collapseActionView">
     </item>
@@ -10,11 +10,13 @@
         android:id="@+id/favourite_square_action"
         android:title="@string/chat_favourite_action"
         app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
         />
     <item android:id="@+id/menu_entry_feedback"
         android:icon="@drawable/ic_more_vert_white_48dp"
         app:showAsAction="collapseActionView"
-        android:title="@string/feedback">
+        android:title="@string/feedback"
+        >
     </item>
 
     <FrameLayout

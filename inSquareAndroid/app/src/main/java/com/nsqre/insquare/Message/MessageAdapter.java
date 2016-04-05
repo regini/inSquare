@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.leocardz.link.preview.library.LinkPreviewCallback;
 import com.leocardz.link.preview.library.SourceContent;
 import com.leocardz.link.preview.library.TextCrawler;
+import com.nsqre.insquare.Activities.FullScreenImageActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.squareup.picasso.Picasso;
@@ -25,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -35,12 +38,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private static ChatMessageClickListener myClickListener;
     private Context context;
     private TextCrawler textCrawler;
+    private LinkedList<Integer> urlPositionsQueue;
 
     public MessageAdapter(Context c)
     {
         this.context = c;
-        this.mDataset = new ArrayList<Message>();
+        this.mDataset = new ArrayList<>();
         textCrawler = new TextCrawler();
+        urlPositionsQueue = new LinkedList<>();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -98,7 +103,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     //4: con la position nel dataset, si prende i messaggi, e setta il text nell'item, se gli id sono uguali cambia bubble
     @Override
     public void onBindViewHolder(final MessageHolder holder, int position) {
-        Message m = mDataset.get(position);
+        final Message m = mDataset.get(position);
         int type = getItemViewType(position);
         Transformation transformation = new Transformation() {
             @Override
@@ -126,13 +131,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
-                checkUrl(m, position);
                 break;
             }
             case 1:
             case 5: {
                 holder.content.setText(m.getText());
-                checkUrl(m, position);
                 break;
             }
             case 2: {
@@ -142,6 +145,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         .placeholder(R.drawable.ic_photo_library_black)
                         .transform(transformation)
                         .into(holder.foto);
+                holder.foto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String photoURL = m.getText();
+
+                        Intent fullScreenIntent = new Intent(v.getContext(), FullScreenImageActivity.class);
+                        fullScreenIntent.putExtra("photoURL", photoURL);
+
+                        v.getContext().startActivity(fullScreenIntent);
+                    }
+                });
                 break;
             }
             case 3:
@@ -151,6 +165,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         .placeholder(R.drawable.ic_photo_library_black)
                         .transform(transformation)
                         .into(holder.foto);
+                holder.foto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String photoURL = m.getText();
+
+                        Intent fullScreenIntent = new Intent(v.getContext(), FullScreenImageActivity.class);
+                        fullScreenIntent.putExtra("photoURL", photoURL);
+
+                        v.getContext().startActivity(fullScreenIntent);
+                    }
+                });
                 break;
             }
         }
@@ -182,19 +207,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
 
         holder.datetime.setText(timetoShow);
-        if(m.getUrlProvider() != null) {
+        if(m.getUrlProvider() != null && !"".equals(m.getUrlProvider())) {
             holder.urlProvider.setText(m.getUrlProvider());
             holder.urlProvider.setVisibility(View.VISIBLE);
         } else if(holder.urlProvider != null) {
             holder.urlProvider.setVisibility(View.GONE);
         }
-        if(m.getUrlTitle() != null) {
+        if(m.getUrlTitle() != null && !"".equals(m.getUrlTitle())) {
             holder.urlTitle.setText(m.getUrlTitle());
             holder.urlTitle.setVisibility(View.VISIBLE);
         } else if(holder.urlTitle!= null) {
             holder.urlTitle.setVisibility(View.GONE);
         }
-        if(m.getUrlDesription() != null) {
+        if(m.getUrlDesription() != null && !"".equals(m.getUrlProvider())) {
             holder.urlDescription.setText(m.getUrlDesription());
             holder.urlDescription.setVisibility(View.VISIBLE);
         } else if(holder.urlDescription != null) {
@@ -202,10 +227,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
-    private void checkUrl(final Message message, final int position) {
+    private void checkUrl(final Message message, int position) {
         Matcher m = Patterns.WEB_URL.matcher(message.getText());
-        if(m.find()) {
+        if(m.find() && message.getUrlProvider() == null
+                && message.getUrlTitle() == null
+                && message.getUrlDesription() == null) {
             String url = m.group();
+            if(m.group().contains("http://i.imgur.com/")) {
+                return;
+            }
+            urlPositionsQueue.add(position);
             Log.d("checkUrl", "URL extracted: " + url);
             textCrawler.makePreview(new LinkPreviewCallback() {
                 @Override
@@ -216,16 +247,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 @Override
                 public void onPos(SourceContent sourceContent, boolean isNull) {
                     if (!isNull && !sourceContent.getFinalUrl().equals("")) {
-
                         Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
                                 " " + sourceContent.getDescription());
-                        if(message.getUrlProvider() == null && message.getUrlTitle() == null
-                                && message.getUrlDesription() == null) {
-                            message.setUrlProvider(sourceContent.getCannonicalUrl());
-                            message.setUrlTitle(sourceContent.getTitle());
-                            message.setUrlDesription(sourceContent.getDescription());
-                            notifyItemChanged(position);
-                        }
+                        Message m = mDataset.get(urlPositionsQueue.getFirst());
+                        m.setUrlProvider(sourceContent.getCannonicalUrl());
+                        m.setUrlTitle(sourceContent.getTitle());
+                        m.setUrlDesription(sourceContent.getDescription());
+                        notifyItemChanged(urlPositionsQueue.getFirst());
+                        urlPositionsQueue.remove(0);
                         /*if(sourceContent.getImages().size() > 0) {
                             urlImage.setVisibility(View.VISIBLE);
                             String image = sourceContent.getImages().get(0);
@@ -243,9 +272,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
 
     //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
-    public void addItem(Message msg)
-    {
+    public void addItem(Message msg) {
         mDataset.add(msg);
+        checkUrl(msg,mDataset.size()-1);
         notifyItemInserted(mDataset.size() - 1);
     }
 

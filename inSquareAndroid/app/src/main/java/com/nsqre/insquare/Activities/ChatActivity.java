@@ -1,6 +1,5 @@
 package com.nsqre.insquare.Activities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -10,18 +9,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +36,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -44,11 +51,11 @@ import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.nsqre.insquare.Services.ChatService;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Services.ChatService;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
@@ -68,8 +75,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -105,6 +110,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private String mSquareName;
     private String mUsername;
     private String mUserId;
+
+    private Toolbar toolbar;
+    private TextView toolbarName;
+    private TextView toolbarCircle;
+    private int toolbarCircleColor;
+    private String toolbarInitials;
 
     private boolean isScrolled;
 
@@ -166,6 +177,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         setContentView(R.layout.activity_chat);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            Fade fade = new Fade();
+            fade.setDuration(500);
+            getWindow().setEnterTransition(fade);
+
+            Slide slide = new Slide();
+            slide.setDuration(500);
+            getWindow().setExitTransition(slide);
+        }
+
         ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,7 +244,23 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Intent intent = getIntent();
 
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
-        Log.d("CHAT", mSquare.toString());
+        Log.d(TAG, mSquare.toString());
+
+        toolbarInitials = intent.getStringExtra(BottomNavActivity.INITIALS_TAG);
+        if(toolbarInitials == null || toolbarInitials.isEmpty())
+        {
+            Log.d(TAG, "onCreate: no initials!");
+        }else{
+            Log.d(TAG, "onCreate: " + toolbarInitials);
+        }
+        toolbarCircleColor = intent.getIntExtra(BottomNavActivity.INITIALS_COLOR_TAG, 0);
+        if(toolbarCircleColor == 0)
+        {
+            Log.d(TAG, "onCreate: we have no circle color =(");
+        }else
+        {
+            Log.d(TAG, "onCreate: we have circle color " + toolbarCircleColor);
+        }
 
         mSquareId = mSquare.getId();
         mSquareName = mSquare.getName();
@@ -241,6 +278,45 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 addMessage(m);
             }
         }
+        setupToolbar();
+    }
+
+    private void setupToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+        setSupportActionBar(toolbar);
+
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }else
+        {
+            Log.d(TAG, "setupToolbar: it was null!");
+        }
+
+        toolbarName = (TextView) findViewById(R.id.chat_square_name);
+        toolbarCircle = (TextView) findViewById(R.id.chat_square_initials);
+
+        toolbarName.setText(mSquareName);
+        toolbarCircle.setText(toolbarInitials);
+        // Cambia colore
+        ColorStateList color = ContextCompat.getColorStateList(getApplicationContext(), toolbarCircleColor);
+        final Drawable originalDrawable = toolbarCircle.getBackground();
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+        DrawableCompat.setTintList(wrappedDrawable, color);
+        toolbarCircle.setBackground(wrappedDrawable);
+        
+        toolbarName.setOnLongClickListener(
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int xOffset = (int) toolbarName.getX();
+                        Toast message = Toast.makeText(ChatActivity.this, mSquareName, Toast.LENGTH_SHORT);
+                        message.setGravity(Gravity.TOP, 0, toolbar.getHeight());
+                        message.show();
+                        return true;
+                    }
+                }
+        );
     }
     /*
     private void insertPhotoWrapper() {
@@ -333,11 +409,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     private boolean addPermission(List<String> permissionsList, String permission) {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(permission);
-            // Check for Rationale Option
-            if (!shouldShowRequestPermissionRationale(permission))
-                return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsList.add(permission);
+                // Check for Rationale Option
+                if (!shouldShowRequestPermissionRationale(permission))
+                    return false;
+            }
         }
         return true;
     }
@@ -426,14 +504,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onStart() {
         super.onStart();
-
-        setTitle(mSquareName);
-        ColorDrawable toolbarColor = new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-        getSupportActionBar().setBackgroundDrawable(toolbarColor);
-
-        Log.d(TAG, "onCreate: " + mSquareId);
-        Log.d(TAG, "onCreate: " + mSquareName);
-
     }
 
     @Override
@@ -800,8 +870,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
 //        if (mProfile.favouriteSquaresList.contains(mSquare))
         if(InSquareProfile.isFav(mSquare.getId()))
-            menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
-        else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+            menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.ic_favorite_white_24dp);
+        else menu.findItem(R.id.favourite_square_action).setIcon(R.drawable.ic_favorite_border_white_24dp);
 
         return true;
     }
@@ -816,6 +886,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                break;
             case R.id.menu_entry_feedback:
                 // [START feedback_event]
                 mTracker.send(new HitBuilders.EventBuilder()
@@ -917,7 +990,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
                         } else {
                             InSquareProfile.addFav(square);
-                            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_white);
+                            mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.ic_favorite_white_24dp);
                         }
                     }
 
@@ -929,7 +1002,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     @Override
                     public void responseDELETE(Object object) {
                         InSquareProfile.removeFav(square.getId());
-                        mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.heart_border_white);
+                        mMenu.findItem(R.id.favourite_square_action).setIcon(R.drawable.ic_favorite_border_white_24dp);
                     }
                 });
     }
