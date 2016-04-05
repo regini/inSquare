@@ -90,12 +90,17 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
                         // ====
                         BottomNavActivity madre = (BottomNavActivity) context;
+                        Pair rowPair = new Pair<>(v.findViewById(R.id.cardview_square),
+                                context.getString(R.string.transition_name_square_row));
                         Pair namePair = new Pair<>(v.findViewById(R.id.cardview_square_name),
                                 context.getString(R.string.transition_name_square_name));
                         Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_square_initials),
                                 context.getString(R.string.transition_name_square_circle));
+                        Pair heartPair = new Pair<>(v.findViewById(R.id.cardview_square_heart),
+                                context.getString(R.string.transition_name_square_heart));
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                madre, namePair, initialsPair
+                                madre, namePair, initialsPair, rowPair
+
                         );
 
                         ActivityCompat.startActivity(madre, intent, options.toBundle());
@@ -109,7 +114,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     public boolean onLongClick(View v) {
                         if (context instanceof BottomNavActivity) {
                             BottomNavActivity madre = (BottomNavActivity) context;
-                            madre.showBottomSheetDialog();
+                            madre.showBottomSheetDialog(listItem.getName());
                         }
                         return true;
                     }

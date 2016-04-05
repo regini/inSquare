@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
         android:elevation="4dp"
+        android:transitionName="@string/transition_name_square_row"
         >
 
         <RelativeLayout

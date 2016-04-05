@@ -15,6 +15,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="0dp"
         app:cardCornerRadius="0dp"
+        android:transitionName="@string/transition_name_square_row"
         >
 
         <RelativeLayout

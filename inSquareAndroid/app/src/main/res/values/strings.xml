@@ -111,10 +111,10 @@
 
     <!-- Bottom Nav Items -->
     <string name="bottom_nav_tab_map">Mappa</string>
-    <string name="bottom_nav_tab_profile">Profilo</string>
+    <string name="bottom_nav_tab_created">Create</string>
     <string name="bottom_nav_tab_favs">Preferiti</string>
     <string name="bottom_nav_tab_recent">Recenti</string>
-    <string name="bottom_nav_tab_other">Altro</string>
+    <string name="bottom_nav_tab_settings">Impostazioni</string>
 
     <string name="title_activity_full_screen_image">FullScreenImage</string>
     <string name="dummy_button">Dummy Button</string>
@@ -123,7 +123,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!-- Lollipop+ animations -->
+    <string name="transition_name_square_row">transition:ROW</string>
     <string name="transition_name_square_name">transition:NAME</string>
+    <string name="transition_name_square_heart">transition:HEART</string>
     <string name="transition_name_square_circle">transition:CIRCLE</string>
 
 </resources>

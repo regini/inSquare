@@ -9,10 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -21,6 +21,7 @@ import com.nsqre.insquare.Fragments.FavSquaresFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
+import com.nsqre.insquare.Fragments.SettingsFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItem;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
@@ -61,12 +62,10 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_nav);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            Slide slide = new Slide();
-            slide.setDuration(500);
-            getWindow().setExitTransition(slide);
-
             Fade fade = new Fade();
-            fade.setDuration(500);
+            fade.setDuration(1000);
+
+            getWindow().setExitTransition(fade);
             getWindow().setEnterTransition(fade);
         }
 
@@ -95,16 +94,16 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     private void setupBottomNavigation() {
 
         final String mapTabName = getString(R.string.bottom_nav_tab_map);
-        final String profileTabName = getString(R.string.bottom_nav_tab_profile);
+        final String mySquaresTabName = getString(R.string.bottom_nav_tab_created);
         final String favTabName = getString(R.string.bottom_nav_tab_favs);
         final String recentsTabName = getString(R.string.bottom_nav_tab_recent);
-        final String otherTabName = getString(R.string.bottom_nav_tab_other);
+        final String otherTabName = getString(R.string.bottom_nav_tab_settings);
 
         AHBottomNavigationItem mapItem = new AHBottomNavigationItem(mapTabName, R.drawable.bottom_bar_map);
-        AHBottomNavigationItem profileItem = new AHBottomNavigationItem(profileTabName, R.drawable.bottom_bar_profile);
+        AHBottomNavigationItem profileItem = new AHBottomNavigationItem(mySquaresTabName, R.drawable.ic_assignment_white_48dp);
         AHBottomNavigationItem favsItem = new AHBottomNavigationItem(favTabName, R.drawable.heart_white);
         AHBottomNavigationItem recentsItem = new AHBottomNavigationItem(recentsTabName, R.drawable.bottom_bar_recent);
-        AHBottomNavigationItem othersItem = new AHBottomNavigationItem(otherTabName, R.drawable.bottom_bar_more);
+        AHBottomNavigationItem othersItem = new AHBottomNavigationItem(otherTabName, R.drawable.ic_settings_white_48dp);
 
         bottomNavigation.addItem(mapItem);
         bottomNavigation.addItem(profileItem);
@@ -112,6 +111,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         bottomNavigation.addItem(recentsItem);
         bottomNavigation.addItem(othersItem);
 
+        bottomNavigation.setBehaviorTranslationEnabled(false);
         bottomNavigation.setColored(false);
         // Set background color
         bottomNavigation.setDefaultBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
@@ -138,7 +138,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                                 f = RecentSquaresFragment.newInstance();
                                 break;
                             case 4: // Selezionato Altro
-                                f = new BlankFragment();
+                                f = new SettingsFragment();
                                 break;
                             default:
                                 f = new BlankFragment();
@@ -165,10 +165,12 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
-    public void showBottomSheetDialog()
+    public void showBottomSheetDialog(String name)
     {
         bottomSheetDialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_menu, null);
+        TextView dialogSquareName = (TextView) view.findViewById(R.id.bottom_sheet_name);
+        dialogSquareName.setText(name);
         final RecyclerView list = (RecyclerView) view.findViewById(R.id.bottom_sheet_list);
         list.setHasFixedSize(true);
         list.setLayoutManager(new LinearLayoutManager(this));
