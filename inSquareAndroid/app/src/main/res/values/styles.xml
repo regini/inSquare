@@ -12,8 +12,8 @@
         <!-- Add custom logo -->
         <item name="android:icon">@drawable/white_nsqre_logo</item>
 
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/colorText</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/colorAccentDark</item>
     </style>
