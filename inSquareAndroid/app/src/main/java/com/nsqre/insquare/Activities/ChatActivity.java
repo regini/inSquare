@@ -23,6 +23,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -53,7 +55,6 @@ import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
-import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
@@ -175,6 +176,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         setContentView(R.layout.activity_chat);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            Fade fade = new Fade();
+            fade.setDuration(500);
+            getWindow().setEnterTransition(fade);
+
+            Slide slide = new Slide();
+            slide.setDuration(500);
+            getWindow().setExitTransition(slide);
+        }
+
         ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,14 +245,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
         Log.d(TAG, mSquare.toString());
 
-        toolbarInitials = intent.getStringExtra(RecyclerSquareAdapter.INITIALS_TAG);
+        toolbarInitials = intent.getStringExtra(BottomNavActivity.INITIALS_TAG);
         if(toolbarInitials == null || toolbarInitials.isEmpty())
         {
             Log.d(TAG, "onCreate: no initials!");
         }else{
             Log.d(TAG, "onCreate: " + toolbarInitials);
         }
-        toolbarCircleColor = intent.getIntExtra(RecyclerSquareAdapter.INITIALS_COLOR_TAG, 0);
+        toolbarCircleColor = intent.getIntExtra(BottomNavActivity.INITIALS_COLOR_TAG, 0);
         if(toolbarCircleColor == 0)
         {
             Log.d(TAG, "onCreate: we have no circle color =(");

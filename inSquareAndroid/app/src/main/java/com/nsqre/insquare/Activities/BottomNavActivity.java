@@ -8,6 +8,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -36,6 +38,19 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     private static final String TAG = "BottomNavActivity";
 
+    public static final String INITIALS_TAG = "INITIALS";
+    public static final String INITIALS_COLOR_TAG = "INITIALS_COLOR";
+
+    public static int[] backgroundColors = new int[]{
+            R.color.md_amber_A100,
+            R.color.md_orange_A100,
+            R.color.colorAccentDark,
+            R.color.md_purple_A100,
+            R.color.md_deep_purple_A200,
+            R.color.md_blue_100,
+            R.color.md_teal_A400
+    };
+
     AHBottomNavigation bottomNavigation;
     FrameLayout mainContentFrame;
 
@@ -45,6 +60,15 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_nav);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Slide slide = new Slide();
+            slide.setDuration(500);
+            getWindow().setExitTransition(slide);
+
+            Fade fade = new Fade();
+            fade.setDuration(500);
+            getWindow().setEnterTransition(fade);
+        }
 
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_nav_bar);
 
@@ -122,6 +146,23 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, f).commit();
                     }
                 });
+    }
+
+    public static String setupInitials(String words) {
+        String[] division = words.split("\\s+");
+
+        if(division.length <= 1)
+        {
+            return words.substring(0,1).toUpperCase();
+        }
+        else if(division.length == 2)
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
+        }
+        else
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
+        }
     }
 
     public void showBottomSheetDialog()
