@@ -126,13 +126,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             case 0: {
                 holder.content.setText(m.getText());
                 holder.username.setText(m.getName());
-                checkUrl(m);
+                checkUrl(m, position);
                 break;
             }
             case 1:
             case 5: {
                 holder.content.setText(m.getText());
-                checkUrl(m);
+                checkUrl(m, position);
                 break;
             }
             case 2: {
@@ -185,18 +185,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         if(m.getUrlProvider() != null) {
             holder.urlProvider.setText(m.getUrlProvider());
             holder.urlProvider.setVisibility(View.VISIBLE);
+        } else if(holder.urlProvider != null) {
+            holder.urlProvider.setVisibility(View.GONE);
         }
         if(m.getUrlTitle() != null) {
             holder.urlTitle.setText(m.getUrlTitle());
             holder.urlTitle.setVisibility(View.VISIBLE);
+        } else if(holder.urlTitle!= null) {
+            holder.urlTitle.setVisibility(View.GONE);
         }
         if(m.getUrlDesription() != null) {
             holder.urlDescription.setText(m.getUrlDesription());
             holder.urlDescription.setVisibility(View.VISIBLE);
+        } else if(holder.urlDescription != null) {
+            holder.urlDescription.setVisibility(View.GONE);
         }
     }
 
-    private void checkUrl(final Message message) {
+    private void checkUrl(final Message message, final int position) {
         Matcher m = Patterns.WEB_URL.matcher(message.getText());
         if(m.find()) {
             String url = m.group();
@@ -213,10 +219,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
                         Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
                                 " " + sourceContent.getDescription());
-                        message.setUrlProvider(sourceContent.getCannonicalUrl());
-                        message.setUrlTitle(sourceContent.getTitle());
-                        message.setUrlDesription(sourceContent.getDescription());
-                        notifyDataSetChanged();
+                        if(message.getUrlProvider() == null && message.getUrlTitle() == null
+                                && message.getUrlDesription() == null) {
+                            message.setUrlProvider(sourceContent.getCannonicalUrl());
+                            message.setUrlTitle(sourceContent.getTitle());
+                            message.setUrlDesription(sourceContent.getDescription());
+                            notifyItemChanged(position);
+                        }
                         /*if(sourceContent.getImages().size() > 0) {
                             urlImage.setVisibility(View.VISIBLE);
                             String image = sourceContent.getImages().get(0);

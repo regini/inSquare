@@ -77,7 +77,7 @@ import retrofit.client.Response;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
-@RuntimePermissions
+//@RuntimePermissions
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -277,12 +277,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }*/
 
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public void chooseFileIntent(){
+
+    //@NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public static void chooseFileIntent(Activity activity){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(intent, FILE_PICK);
+        activity.startActivityForResult(intent, FILE_PICK);
     }
+
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
