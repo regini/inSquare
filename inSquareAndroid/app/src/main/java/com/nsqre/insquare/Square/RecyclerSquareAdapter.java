@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +37,10 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = "SquareAdapter";
     public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
+
+    public static final String INITIALS_TAG = "INITIALS";
+    public static final String INITIALS_COLOR_TAG = "INITIALS_COLOR";
+
     private Context context;
     private ArrayList<Square> squaresArrayList;
     int i = 0;
@@ -83,12 +90,28 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     public void onClick(View v) {
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra(MapFragment.SQUARE_TAG, listItem);
+                        intent.putExtra(INITIALS_TAG, castHolder.squareInitials.getText().toString());
+                        int position = castHolder.getAdapterPosition()%(backgroundColors.length);
+                        intent.putExtra(INITIALS_COLOR_TAG, backgroundColors[position]);
+
                         SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
                         if (sharedPreferences.contains(listItem.getId())) {
                             sharedPreferences.edit().remove(listItem.getId()).apply();
                             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
                         }
-                        context.startActivity(intent);
+//                        context.startActivity(intent);
+
+                        // ====
+                        BottomNavActivity madre = (BottomNavActivity)context;
+                        Pair namePair = new Pair<>(v.findViewById(R.id.cardview_square_name),
+                                context.getString(R.string.transition_name_square_name));
+                        Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_square_initials),
+                                context.getString(R.string.transition_name_square_circle));
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                madre, namePair, initialsPair
+                        );
+
+                        ActivityCompat.startActivity(madre, intent, options.toBundle());
                     }
                 }
         );
@@ -101,7 +124,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         {
                             BottomNavActivity madre = (BottomNavActivity)context;
                             madre.showBottomSheetDialog();
-                            Log.d(TAG, "onLongClick: long clicking in BottomNavActivity!");
                         }
                         return true;
                     }

@@ -9,10 +9,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,6 +53,7 @@ import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
@@ -107,6 +112,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Toolbar toolbar;
     private TextView toolbarName;
     private TextView toolbarCircle;
+    private int toolbarCircleColor;
+    private String toolbarInitials;
 
     private boolean isScrolled;
 
@@ -225,7 +232,23 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Intent intent = getIntent();
 
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
-        Log.d("CHAT", mSquare.toString());
+        Log.d(TAG, mSquare.toString());
+
+        toolbarInitials = intent.getStringExtra(RecyclerSquareAdapter.INITIALS_TAG);
+        if(toolbarInitials == null || toolbarInitials.isEmpty())
+        {
+            Log.d(TAG, "onCreate: no initials!");
+        }else{
+            Log.d(TAG, "onCreate: " + toolbarInitials);
+        }
+        toolbarCircleColor = intent.getIntExtra(RecyclerSquareAdapter.INITIALS_COLOR_TAG, 0);
+        if(toolbarCircleColor == 0)
+        {
+            Log.d(TAG, "onCreate: we have no circle color =(");
+        }else
+        {
+            Log.d(TAG, "onCreate: we have circle color " + toolbarCircleColor);
+        }
 
         mSquareId = mSquare.getId();
         mSquareName = mSquare.getName();
@@ -262,7 +285,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         toolbarCircle = (TextView) findViewById(R.id.chat_square_initials);
 
         toolbarName.setText(mSquareName);
-        toolbarCircle.setText("AVL");
+        toolbarCircle.setText(toolbarInitials);
+        // Cambia colore
+        ColorStateList color = ContextCompat.getColorStateList(getApplicationContext(), toolbarCircleColor);
+        final Drawable originalDrawable = toolbarCircle.getBackground();
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+        DrawableCompat.setTintList(wrappedDrawable, color);
+        toolbarCircle.setBackground(wrappedDrawable);
         
         toolbarName.setOnLongClickListener(
                 new View.OnLongClickListener() {

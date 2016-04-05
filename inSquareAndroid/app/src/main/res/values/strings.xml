@@ -119,14 +119,11 @@
     <string name="title_activity_full_screen_image">FullScreenImage</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-<<<<<<< Updated upstream
     <string name="title_activity_full_sceen_image">FullSceenImageActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
-=======
 
     <!-- Lollipop+ animations -->
     <string name="transition_name_square_name">transition:NAME</string>
     <string name="transition_name_square_circle">transition:CIRCLE</string>
 
->>>>>>> Stashed changes
 </resources>
