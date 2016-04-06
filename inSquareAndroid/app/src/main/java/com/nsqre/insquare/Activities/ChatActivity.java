@@ -239,7 +239,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText = (EditText) findViewById(R.id.message_text);
 
-        // Recuperiamo i dati passati dalla MapActivity
+        // Recuperiamo i dati passati dalla BottomNavActivity
         Intent intent = getIntent();
 
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);

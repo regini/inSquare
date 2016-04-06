@@ -654,7 +654,7 @@ public class MapFragment extends Fragment
 
         // [START PinButton_event]
         mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("MapActivity")
+                .setCategory("BottomNavActivity")
                 .setAction("PinButton")
                 .build());
         // [END PinButton_event]

@@ -1,32 +1,16 @@
 package com.nsqre.insquare.Utilities;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.MapActivity;
-import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
