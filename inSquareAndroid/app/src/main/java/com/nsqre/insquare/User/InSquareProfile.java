@@ -484,7 +484,14 @@ public class InSquareProfile {
         return recentSquaresList;
     }
 
-    public static HashMap<String, ArrayList<Message>> getOutgoingMessages() { return outgoingMessages; }
+    public static HashMap<String, ArrayList<Message>> getOutgoingMessages()
+    {
+        if(outgoingMessages == null)
+        {
+            outgoingMessages = new HashMap<>();
+        }
+        return outgoingMessages;
+    }
 
     public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
         InSquareProfile.ownedSquaresList = ownedSquaresList;

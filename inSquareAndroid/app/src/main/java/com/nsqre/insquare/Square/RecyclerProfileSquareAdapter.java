@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -12,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,24 +32,32 @@ import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
  */
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
+    private static final int PENDING_REMOVAL_TIMEOUT = 5000; // 5 secs
     private static final String TAG = "SquareAdapter";
     private static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
     private static final String INDENTATION = "\t\t\t\t";
 
     private Context context;
     private ArrayList<Square> squaresArrayList;
+
+    private ArrayList<Square> squaresPendingRemoval;
+    private Handler handler = new Handler();
+    private HashMap<String, Runnable> pendingRunnables = new HashMap<>();
+
     int i = 0;
 
 
     public RecyclerProfileSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
+        squaresPendingRemoval = new ArrayList<>();
     }
 
     @Override
@@ -66,7 +76,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
         setupHeart(castHolder, listItem);
 
-        String squareName = listItem.getName();
+        final String squareName = listItem.getName();
         castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
         // Per sottolineare l'inizio
@@ -90,9 +100,28 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                     }
                 }
         );
+
+        ((LinearLayout)castHolder.lowerSectionViews.getParent()).setOnLongClickListener(
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int[] array = new int[2];
+                        v.getLocationOnScreen(array);
+                        Toast message = Toast.makeText(context, castHolder.lowerSectionViews.getText() + " visite", Toast.LENGTH_SHORT);
+                        int xOffset = (int) (v.getX() + 1.5 * v.getWidth());
+                        int yOffset = (int) (array[1] - 1.5 * v.getHeight());
+                        message.setGravity(Gravity.TOP | Gravity.LEFT, xOffset, yOffset);
+                        message.show();
+
+
+                        return true;
+                    }
+                }
+        );
+
     }
 
-    private void handleDelete(final Square listItem, SquareViewHolder squareViewHolder, final Dialog editDialog) {
+    private void handleDelete(final Square listItem, final int position) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(context);
 
@@ -125,9 +154,8 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                                 if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
                                     Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
-                                    editDialog.dismiss();
-                                    squaresArrayList.remove(listItem);
-                                    notifyDataSetChanged();
+                                    squaresArrayList.remove(position);
+                                    notifyItemRemoved(position);
                                 } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
                                     Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
@@ -138,6 +166,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                 });
         builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                squaresPendingRemoval.remove(listItem);
                 dialog.dismiss();
             }
         });
@@ -167,15 +196,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             descriptionEditText.setText(oldDescription);
         }
 
-        final Button deleteButton = (Button) editDialog.findViewById(R.id.dialog_delete_button);
-        deleteButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handleDelete(element, squareViewHolder, editDialog);
-                    }
-                }
-        );
         final Button okButton = (Button) editDialog.findViewById(R.id.dialog_edit_ok_button);
         okButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -347,6 +367,44 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         }
                     }
                 });
+    }
+
+    public void pendingRemoval(final int position)
+    {
+        Square toRemove = squaresArrayList.get(position);
+//        Log.d(TAG, "pendingRemoval: " + toRemove.getName());
+        if(!squaresPendingRemoval.contains(toRemove))
+        {
+            squaresPendingRemoval.add(toRemove);
+            notifyItemChanged(position);
+            handleDelete(toRemove, position);
+            /*
+            Runnable pendingRemovalRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    remove(position);
+                }
+            };
+
+            handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
+            pendingRunnables.put(toRemove.getId(), pendingRemovalRunnable);
+            */
+        }
+    }
+
+    public void remove(final int position)
+    {
+        Square item = squaresArrayList.get(position);
+       /* if(squaresPendingRemoval.contains(item))
+        {
+            Log.d(TAG, "remove: I really want to remove " + item.getName());
+            squaresPendingRemoval.remove(item);
+        }*/
+        if(squaresArrayList.contains(item))
+        {
+            squaresArrayList.remove(position);
+            notifyItemChanged(position);
+        }
     }
 
     public static class SquareViewHolder extends RecyclerView.ViewHolder {

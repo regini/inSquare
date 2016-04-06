@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.nsqre.insquare.Fragments.SearchSquareFragment"
-    android:background="@color/light_grey">
+    android:background="@color/lightGrey">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -6,12 +6,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +99,7 @@ public class ProfileFragment extends Fragment implements
         squaresRecyclerView.setAdapter(adapterOwned);
 
         // TODO implementare comportamento sul swipe
+        setupSwipeGesture();
 
         profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
@@ -116,6 +122,101 @@ public class ProfileFragment extends Fragment implements
         } else {
             profileImage.setImageBitmap(bitmap);
         }
+    }
+
+    private void setupSwipeGesture()
+    {
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
+        {
+            Drawable background;
+            Drawable trashCan;
+            float rightMargin;
+            boolean isTouchHelperCreated;
+
+            private void instantiateDrawables()
+            {
+                int backgroundColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
+                background = new ColorDrawable(backgroundColor);
+                trashCan = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete_white_48dp);
+                rightMargin = getContext().getResources().getDimension(R.dimen.activity_vertical_margin);
+                isTouchHelperCreated = true;
+            }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                // TODO implement wait while pending undo
+                return super.getSwipeDirs(recyclerView, viewHolder);
+            }
+
+            // Drag & Drop Handler
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            // Chiamato al termine del Swipe Gesture
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction)
+            {
+                int viewPosition = viewHolder.getAdapterPosition();
+                adapterOwned.pendingRemoval(viewPosition);
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView,
+                                    RecyclerView.ViewHolder viewHolder,
+                                    float dX, float dY, int actionState,
+                                    boolean isCurrentlyActive) {
+                if(viewHolder.getAdapterPosition() < 0)
+                {
+                    return;
+                } else if(!isTouchHelperCreated)
+                {
+                    instantiateDrawables();
+                }
+                if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    View itemView = viewHolder.itemView;
+                    int viewPosition = viewHolder.getAdapterPosition();
+
+                    float width = itemView.getWidth();
+                    float delta = 1.0f - Math.abs(dX) / width;
+                    itemView.setAlpha(delta * delta);
+//                    itemView.setTranslationX(dX);
+
+//                    Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
+
+                    if (delta < 1) {
+                        // Sfondo rosso
+                        background.setBounds(
+                                itemView.getRight() + (int) dX,
+                                itemView.getTop(),
+                                itemView.getRight(),
+                                itemView.getBottom()
+                        );
+                        background.draw(c);
+                        // Cestino
+                        int itemHeight = itemView.getBottom() - itemView.getTop();
+                        int trashWidth = trashCan.getIntrinsicWidth();
+                        int trashHeight = trashWidth;
+                        int trashLeft = (int) (itemView.getRight() - rightMargin - trashWidth);
+                        int trashRight = (int) (itemView.getRight() - rightMargin);
+                        int trashTop = itemView.getTop() + (itemHeight - trashHeight)/2;
+                        int trashBottom = trashTop + trashHeight;
+
+                        trashCan.setBounds(trashLeft, trashTop, trashRight, trashBottom);
+                        trashCan.draw(c);
+
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+
+        };
+
+        ItemTouchHelper swipeTouchHelper = new ItemTouchHelper(swipeCallback);
+        swipeTouchHelper.attachToRecyclerView(squaresRecyclerView);
+//        squaresRecyclerView.addItemDecoration(new RecyclerProfileSquareDecoration(getContext()));
     }
 
     /**

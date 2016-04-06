@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
@@ -45,7 +46,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     public static int[] backgroundColors = new int[]{
             R.color.md_amber_A100,
             R.color.md_orange_A100,
-            R.color.colorAccentDark,
+            R.color.colorAccent,
             R.color.md_purple_A100,
             R.color.md_deep_purple_A200,
             R.color.md_blue_100,
@@ -81,9 +82,13 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     private List<BottomSheetItem> instantiateListMenu()
     {
+        String shareString = getResources().getString(R.string.share_action);
+        String editString = getResources().getString(R.string.edit_action);
+        String muteString = getResources().getString(R.string.mute_action);
+        String deleteString = getResources().getString(R.string.delete_action);
         ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
 //        menuList.add(new BottomSheetItem(R.drawable.ic_mode_edit_black_48dp, "Modifica"));
-        menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, "Condividi"));
+        menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, shareString));
         menuList.add(new BottomSheetItem(R.drawable.ic_volume_off_black_48dp, "Muto"));
 //        menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, "Elimina"));
 
@@ -202,7 +207,19 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     public void onBottomMenuItemClick(BottomSheetItem item) {
         if(bottomSheetDialog != null)
         {
+            String shareString = getResources().getString(R.string.share_action);
+            if(item.getTitle() == shareString)
+            {
+                String text = "Vieni anche tu su InSquare! - https://play.google.com/store/apps/details?id=com.nsqre.insquare";
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "inSquare Sharing");
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, "Send To"));
+            }
             Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
+
             // TODO implementare menuitemclick
             bottomSheetDialog.dismiss();
         }
