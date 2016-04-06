@@ -113,6 +113,17 @@
                             android:src="@drawable/like_96"
                             />
 
+                        <TextView
+                            android:id="@+id/carview_profile_heart_favorites"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="43"
+                            android:textSize="10sp"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-condensed"
+                            />
+
                     </RelativeLayout>
 
                 </LinearLayout>
@@ -134,7 +145,6 @@
                     android:text="\t\t\t\This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed-light"
-                    android:layout_marginBottom="@dimen/search_bar_margin"
                     />
 
             </RelativeLayout>

@@ -566,7 +566,7 @@ public class InSquareProfile {
         downloadRecentSquares();
     }
 
-    private static void downloadRecentSquares()
+    public static void downloadRecentSquares()
     {
         VolleyManager.getInstance().getRecentSquares(
                 InSquareProfile.getUserId(),
@@ -598,7 +598,7 @@ public class InSquareProfile {
         );
     }
 
-    private static void downloadFavoriteSquares()
+    public static void downloadFavoriteSquares()
     {
         VolleyManager.getInstance().getFavoriteSquares(InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {
@@ -629,7 +629,7 @@ public class InSquareProfile {
                 });
     }
 
-    private static void downloadOwnedSquares()
+    public static void downloadOwnedSquares()
     {
         VolleyManager.getInstance().getOwnedSquares("true", InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {

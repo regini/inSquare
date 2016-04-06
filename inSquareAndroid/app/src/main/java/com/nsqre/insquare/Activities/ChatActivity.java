@@ -35,6 +35,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,7 +113,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private Toolbar toolbar;
     private TextView toolbarName;
-    private TextView toolbarCircle;
+    private TextView toolbarCircleInitials;
+    private ImageView toolbarCircle;
     private int toolbarCircleColor;
     private String toolbarInitials;
 
@@ -290,11 +292,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "setupToolbar: it was null!");
         }
 
-        toolbarName = (TextView) findViewById(R.id.chat_square_name);
-        toolbarCircle = (TextView) findViewById(R.id.chat_square_initials);
+        toolbarName = (TextView) findViewById(R.id.chat_toolbar_square_name);
+        toolbarCircle = (ImageView) findViewById(R.id.chat_toolbar_square_circle);
+        toolbarCircleInitials = (TextView) findViewById(R.id.chat_square_initials);
 
         toolbarName.setText(mSquareName);
-        toolbarCircle.setText(toolbarInitials);
+        toolbarCircleInitials.setText(toolbarInitials);
         // Cambia colore
         ColorStateList color = ContextCompat.getColorStateList(getApplicationContext(), toolbarCircleColor);
         final Drawable originalDrawable = toolbarCircle.getBackground();

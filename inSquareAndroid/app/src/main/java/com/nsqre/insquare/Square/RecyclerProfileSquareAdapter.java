@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -82,7 +81,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         setupLeftSection(castHolder, squareName);
 
         castHolder.lowerSectionViews.setText("" + listItem.getViews());
-        castHolder.lowerSectionFavs.setText("" + listItem.getFavouredBy());
+        castHolder.heartFavs.setText("" + listItem.getFavouredBy());
         castHolder.editButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -91,25 +90,16 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                     }
                 }
         );
-        castHolder.trashButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handleDelete(listItem, castHolder);
-                    }
-                }
-        );
     }
 
-    private void handleDelete(final Square listItem, SquareViewHolder squareViewHolder) {
+    private void handleDelete(final Square listItem, SquareViewHolder squareViewHolder, final Dialog editDialog) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(context);
 
         builder.setTitle("Attenzione!")
                 .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
         builder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener()
-                {
+                new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         final String ownerId = InSquareProfile.getUserId();
                         final String squareId = listItem.getId();
@@ -132,19 +122,20 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                             @Override
                             public void responseDELETE(Object object) {
                                 boolean response = (boolean) object;
-                                if(response) {
+                                if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
                                     Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
+                                    editDialog.dismiss();
                                     squaresArrayList.remove(listItem);
                                     notifyDataSetChanged();
-                                }else {
+                                } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
                                     Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
                                 }
                             }
+                        });
+                    }
                 });
-            }
-        });
         builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
@@ -176,6 +167,15 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             descriptionEditText.setText(oldDescription);
         }
 
+        final Button deleteButton = (Button) editDialog.findViewById(R.id.dialog_delete_button);
+        deleteButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handleDelete(element, squareViewHolder, editDialog);
+                    }
+                }
+        );
         final Button okButton = (Button) editDialog.findViewById(R.id.dialog_edit_ok_button);
         okButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -322,12 +322,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
                     @Override
                     public void responsePOST(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
-                        }else
-                        {
+                        } else {
                             notifyDataSetChanged();
                             InSquareProfile.addFav(square);
                         }
@@ -340,12 +338,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
                     @Override
                     public void responseDELETE(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
-                        }else
-                        {
+                        } else {
                             notifyDataSetChanged();
                             InSquareProfile.removeFav(square.getId());
                         }
@@ -362,15 +358,14 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         TextView squareActivity;
         TextView squareDescription;
         ImageView squareFav;
+        TextView heartFavs;
 
         RelativeLayout middleSection;
 
         LinearLayout lowerSectionExpanded;
-        TextView lowerSectionFavs;
         TextView lowerSectionViews;
 
-        ImageButton trashButton;
-        ImageButton editButton;
+        Button editButton;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
@@ -389,10 +384,9 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
             lowerSectionExpanded = (LinearLayout) itemView.findViewById(R.id.cardview_profile_lower_section_expanded);
 
-            lowerSectionFavs = (TextView) itemView.findViewById(R.id.lower_section_square_favourites);
+            heartFavs = (TextView) itemView.findViewById(R.id.carview_profile_heart_favorites);
             lowerSectionViews = (TextView) itemView.findViewById(R.id.lower_section_square_views);
-            trashButton = (ImageButton) itemView.findViewById(R.id.lower_section_trash_button);
-            editButton  = (ImageButton) itemView.findViewById(R.id.lower_section_edit_button);
+            editButton  = (Button) itemView.findViewById(R.id.lower_section_edit_button);
 
         }
 

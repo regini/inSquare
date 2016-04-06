@@ -88,10 +88,12 @@ public class ProfileFragment extends Fragment implements
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         squaresRecyclerView.setLayoutManager(linearLayoutManager);
 
-        // TODO implementare comportamento sul swipe
+
 
         adapterOwned = new RecyclerProfileSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
         squaresRecyclerView.setAdapter(adapterOwned);
+
+        // TODO implementare comportamento sul swipe
 
         profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
         emptyText = (TextView) v.findViewById(R.id.profile_text_empty);
