@@ -196,7 +196,7 @@ public class ProfileFragment extends Fragment implements
                         background.draw(c);
                         // Cestino
                         int itemHeight = itemView.getBottom() - itemView.getTop();
-                        int trashWidth = trashCan.getIntrinsicWidth();
+                        int trashWidth = (trashCan.getIntrinsicWidth()/3)*2;
                         int trashHeight = trashWidth;
                         int trashLeft = (int) (itemView.getRight() - rightMargin - trashWidth);
                         int trashRight = (int) (itemView.getRight() - rightMargin);

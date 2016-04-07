@@ -42,7 +42,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
     private static final int PENDING_REMOVAL_TIMEOUT = 5000; // 5 secs
     private static final String TAG = "SquareAdapter";
     private static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
-    private static final String INDENTATION = "\t\t\t\t";
 
     private Context context;
     private ArrayList<Square> squaresArrayList;
@@ -83,7 +82,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         String description = listItem.getDescription().trim();
         if(description.length() > 0)
         {
-            castHolder.squareDescription.setText(INDENTATION + listItem.getDescription());
+            castHolder.squareDescription.setText(listItem.getDescription());
         }else
         {
             castHolder.middleSection.setVisibility(View.GONE);
@@ -231,7 +230,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                                             // Tutto OK!
                                             Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
                                             squareViewHolder.squareName.setText(newName);
-                                            squareViewHolder.squareDescription.setText(INDENTATION + newDescription);
+                                            squareViewHolder.squareDescription.setText(newDescription);
                                             element.setName(newName);
                                             element.setDescription(newDescription);
 
@@ -310,7 +309,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
 //                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
-                            castHolder.squareFav.setImageResource(R.drawable.like_96);
+                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);

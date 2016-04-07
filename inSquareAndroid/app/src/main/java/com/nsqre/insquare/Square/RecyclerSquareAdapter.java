@@ -139,7 +139,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
         }else
         {
-            castHolder.squareFav.setImageResource(R.drawable.like_96);
+            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
         }
 
         castHolder.squareFav.setOnClickListener(
@@ -149,7 +149,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.like_96);
+                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);

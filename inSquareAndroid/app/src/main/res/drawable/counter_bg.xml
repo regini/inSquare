@@ -3,7 +3,7 @@
     android:shape="oval" >
 
     <!-- view background color -->
-    <solid android:color="@color/md_teal_A200" />
+    <solid android:color="@color/colorAccentLight" />
 
     <size android:width="12dp" android:height="12dp" />
 

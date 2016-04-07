@@ -27,12 +27,7 @@
                 android:id="@+id/cardview_profile_top_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/search_bar_margin"
-                android:paddingLeft="@dimen/activity_vertical_margin"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/search_bar_margin"
-                android:paddingRight="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:padding="@dimen/search_bar_margin"
                 >
 
                 <!-- Parte Sinistra con Iniziali -->
@@ -40,7 +35,6 @@
                     android:id="@+id/cardview_profile_left_section"
                     android:layout_width="@dimen/square_card_pic_size"
                     android:layout_height="@dimen/square_card_pic_size"
-                    android:paddingRight="5dp"
                     >
 
                     <TextView
@@ -50,7 +44,7 @@
                         android:gravity="center"
                         android:textColor="@color/white"
                         android:text="AVL"
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:fontFamily="sans-serif-condensed"
                         android:background="@drawable/linear_layout_rounded_background"
                         android:backgroundTint="@color/colorAccent"
@@ -66,10 +60,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/cardview_profile_left_section"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="@dimen/search_bar_margin"
-                    android:paddingStart="@dimen/search_bar_margin"
-                    android:orientation="horizontal"
+                    android:layout_marginLeft="@dimen/search_bar_margin"
+                    android:layout_marginStart="@dimen/search_bar_margin"
+                    android:orientation="vertical"
                     >
 
                     <LinearLayout
@@ -78,7 +71,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_weight="9"
-                        android:paddingRight="@dimen/search_bar_margin"
                         >
 
                         <TextView
@@ -104,32 +96,19 @@
 
                     </LinearLayout>
 
-                    <RelativeLayout
-                        android:id="@+id/cardview_profile_right_layout"
+                    <TextView
+                        android:id="@+id/cardview_profile_description_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        >
+                        android:layout_marginTop="@dimen/search_bar_margin"
+                        android:text="This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
+                        android:textColor="@color/colorTextPrimary"
+                        android:fontFamily="sans-serif-condensed-light"
+                        />
 
-                        <ImageView
-                            android:id="@+id/cardview_profile_square_heart"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@drawable/like_96"
-                            />
-
-                        <TextView
-                            android:id="@+id/carview_profile_heart_favorites"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:text="43"
-                            android:textSize="10sp"
-                            android:textColor="@color/white"
-                            android:fontFamily="sans-serif-condensed"
-                            />
-
-                    </RelativeLayout>
+                    <include
+                        layout="@layout/square_card_profile_lower_section"
+                        />
 
                 </LinearLayout>
 
@@ -143,20 +122,9 @@
                 android:paddingRight="@dimen/activity_vertical_margin"
                 >
 
-                <TextView
-                    android:id="@+id/cardview_profile_description_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="\t\t\t\This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
-                    android:textColor="@color/colorTextPrimary"
-                    android:fontFamily="sans-serif-condensed-light"
-                    />
-
             </RelativeLayout>
 
-            <include
-                layout="@layout/square_card_profile_lower_section"
-                />
+
 
         </LinearLayout>
 
