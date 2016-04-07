@@ -81,7 +81,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'org.jsoup:jsoup:1.8.3'
     compile 'com.leocardz:link-preview:1.2.1@aar'
-    compile 'com.aurelhubert:ahbottomnavigation:1.0.3'
+    compile 'com.aurelhubert:ahbottomnavigation:1.0.5'
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
     compile 'com.github.hotchemi:permissionsdispatcher:2.0.0'
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'

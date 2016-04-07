@@ -112,7 +112,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     public boolean onLongClick(View v) {
                         if (context instanceof BottomNavActivity) {
                             BottomNavActivity madre = (BottomNavActivity) context;
-                            madre.showBottomSheetDialog(listItem.getName());
+                            madre.showBottomSheetDialog(listItem);
                         }
                         return true;
                     }

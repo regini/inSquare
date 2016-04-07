@@ -52,10 +52,10 @@
     <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
     <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
 
-    <string name="share_action">Condividi</string>
-    <string name="mute_action">Silenzia notifiche</string>
-    <string name="edit_action">Modifica</string>
-    <string name="delete_action">Elimina</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_mute">Gestisci notifiche</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_delete">Elimina</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
