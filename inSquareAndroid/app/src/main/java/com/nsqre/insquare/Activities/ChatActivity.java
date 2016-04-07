@@ -725,8 +725,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
 
     /**
-     * TODO TENERE ANCORA SOLO PER TEST
-     * Notifies the user if the connection to the socket has failed
+     * Notifies if the connection to the socket has failed
      */
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
@@ -735,24 +734,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 @Override
                 public void run() {
                     Log.d(TAG, getString(R.string.error_connect));
-                    Toast.makeText(getApplicationContext(), getString(R.string.error_connect), Toast.LENGTH_SHORT).show();
-                    /*
-                    try {
-                        String url = getString(R.string.squaresUrl);
-                        mSocket = IO.socket(url);
-
-                        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-                        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-
-                        mSocket.on("sendMessage", onSendMessage);
-                        mSocket.on("newMessage", onNewMessage);
-                        mSocket.on("ping", onPing);
-
-                        mSocket.connect();
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    */
+                    //Toast.makeText(getApplicationContext(), getString(R.string.error_connect), Toast.LENGTH_SHORT).show();
                 }
             });
         }
