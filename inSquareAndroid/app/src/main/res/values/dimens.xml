@@ -26,4 +26,5 @@
     <dimen name="square_card_pic_size">48dp</dimen>
     <dimen name="info_window_padding">8dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="settings_row_height">48dp</dimen>
 </resources>

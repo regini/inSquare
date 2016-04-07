@@ -283,7 +283,7 @@ public class LoginActivity extends AppCompatActivity
     /**
      * This method is called after the login is considered successful. It creates an intent to BottomNavActivity to open the map
      * or the ProfileFragment, depending on the extras that are put in it.
-     * @see MapActivity
+     * @see BottomNavActivity
      */
     private void launchInSquare() {
         Log.d(TAG, "launchInSquare: launching!");
