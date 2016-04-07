@@ -21,46 +21,29 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:gravity="center_vertical|start"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:layout_marginLeft="@dimen/search_bar_margin"
+                android:layout_marginStart="@dimen/search_bar_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
                 >
-                <ImageView
-                    android:id="@+id/lower_section_image_heart"
-                    android:layout_width="@dimen/mini_fab_size"
-                    android:layout_height="@dimen/mini_fab_size"
-                    android:src="@drawable/heart_black"
-                    android:padding="8dp"
-                    android:background="@drawable/circular_button_edit"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginEnd="4dp"
-                    />
-                <TextView
-                    android:id="@+id/lower_section_square_favourites"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="43"
-                    android:fontFamily="sans-serif-condensed-light"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_marginEnd="@dimen/activity_vertical_margin"
-                    />
 
                 <ImageView
                     android:id="@+id/lower_section_image_eye"
                     android:layout_width="@dimen/mini_fab_size"
                     android:layout_height="@dimen/mini_fab_size"
+                    android:tint="@color/colorPrimaryDark"
                     android:src="@drawable/eye"
                     android:padding="8dp"
-                    android:background="@drawable/circular_button_edit"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginEnd="4dp"
                     />
                 <TextView
                     android:id="@+id/lower_section_square_views"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="120"
                     android:fontFamily="sans-serif-condensed-light"
                     />
@@ -68,27 +51,15 @@
             </LinearLayout>
 
 
-            <ImageButton
+            <Button
                 android:id="@+id/lower_section_edit_button"
-                android:layout_width="@dimen/mini_fab_size"
-                android:layout_height="@dimen/mini_fab_size"
-                android:src="@drawable/ic_mode_edit_black_48dp"
-                android:padding="8dp"
-                android:scaleType="fitCenter"
-                android:background="@drawable/circular_button_edit"
-                android:adjustViewBounds="true"
-                android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                />
-
-            <ImageButton
-                android:id="@+id/lower_section_trash_button"
-                android:layout_width="@dimen/mini_fab_size"
-                android:layout_height="@dimen/mini_fab_size"
-                android:src="@drawable/ic_delete_white_48dp"
-                android:scaleType="fitCenter"
-                android:padding="8dp"
-                android:background="@drawable/circular_button_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="EDIT"
+                android:textColor="@color/md_grey_600"
+                style="?attr/borderlessButtonStyle"
                 />
 
         </LinearLayout>

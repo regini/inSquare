@@ -25,6 +25,7 @@
     <string name="descrizione_square">Inserisci la descrizione della Square</string>
     <string name="crea_square">Crea!</string>
     <string name="ok">OK</string>
+    <string name="delete">Delete</string>
     <string name="feedback">Feedback</string>
     <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
     <string name="send">Invia</string>
@@ -51,7 +52,10 @@
     <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
     <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
 
-    <string name="share_action">Share</string>
+    <string name="share_action">Condividi</string>
+    <string name="mute_action">Silenzia notifiche</string>
+    <string name="edit_action">Modifica</string>
+    <string name="delete_action">Elimina</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
@@ -111,10 +115,10 @@
 
     <!-- Bottom Nav Items -->
     <string name="bottom_nav_tab_map">Mappa</string>
-    <string name="bottom_nav_tab_profile">Profilo</string>
+    <string name="bottom_nav_tab_created">Create</string>
     <string name="bottom_nav_tab_favs">Preferiti</string>
     <string name="bottom_nav_tab_recent">Recenti</string>
-    <string name="bottom_nav_tab_other">Altro</string>
+    <string name="bottom_nav_tab_settings">Impostazioni</string>
 
     <string name="title_activity_full_screen_image">FullScreenImage</string>
     <string name="dummy_button">Dummy Button</string>
@@ -123,7 +127,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!-- Lollipop+ animations -->
+    <string name="transition_name_square_row">transition:ROW</string>
     <string name="transition_name_square_name">transition:NAME</string>
+    <string name="transition_name_square_heart">transition:HEART</string>
     <string name="transition_name_square_circle">transition:CIRCLE</string>
 
 </resources>

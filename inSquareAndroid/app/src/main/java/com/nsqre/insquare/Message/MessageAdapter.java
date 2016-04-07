@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +14,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.leocardz.link.preview.library.LinkPreviewCallback;
+import com.leocardz.link.preview.library.SourceContent;
+import com.leocardz.link.preview.library.TextCrawler;
 import com.nsqre.insquare.Activities.FullScreenImageActivity;
-import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -21,7 +27,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.Locale;
+import java.util.regex.Matcher;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>
 {
@@ -29,11 +37,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private ArrayList<Message> mDataset;
     private static ChatMessageClickListener myClickListener;
     private Context context;
+    private TextCrawler textCrawler;
+    private LinkedList<Integer> urlPositionsQueue;
 
     public MessageAdapter(Context c)
     {
         this.context = c;
-        this.mDataset = new ArrayList<Message>();
+        this.mDataset = new ArrayList<>();
+        textCrawler = new TextCrawler();
+        urlPositionsQueue = new LinkedList<>();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -94,7 +106,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         final Message m = mDataset.get(position);
         int type = getItemViewType(position);
         Transformation transformation = new Transformation() {
-
             @Override
             public Bitmap transform(Bitmap source) {
                 int targetWidth = holder.foto.getWidth();
@@ -196,13 +207,74 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 //        Log.d(TAG, "onBindViewHolder: calendar is " + mYear + " " + mDay);
 
         holder.datetime.setText(timetoShow);
+        if(m.getUrlProvider() != null && !"".equals(m.getUrlProvider())) {
+            holder.urlProvider.setText(m.getUrlProvider());
+            holder.urlProvider.setVisibility(View.VISIBLE);
+        } else if(holder.urlProvider != null) {
+            holder.urlProvider.setVisibility(View.GONE);
+        }
+        if(m.getUrlTitle() != null && !"".equals(m.getUrlTitle())) {
+            holder.urlTitle.setText(m.getUrlTitle());
+            holder.urlTitle.setVisibility(View.VISIBLE);
+        } else if(holder.urlTitle!= null) {
+            holder.urlTitle.setVisibility(View.GONE);
+        }
+        if(m.getUrlDesription() != null && !"".equals(m.getUrlProvider())) {
+            holder.urlDescription.setText(m.getUrlDesription());
+            holder.urlDescription.setVisibility(View.VISIBLE);
+        } else if(holder.urlDescription != null) {
+            holder.urlDescription.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkUrl(final Message message, int position) {
+        Matcher m = Patterns.WEB_URL.matcher(message.getText());
+        if(m.find() && message.getUrlProvider() == null
+                && message.getUrlTitle() == null
+                && message.getUrlDesription() == null) {
+            String url = m.group();
+            if(m.group().contains("http://i.imgur.com/")) {
+                return;
+            }
+            urlPositionsQueue.add(position);
+            Log.d("checkUrl", "URL extracted: " + url);
+            textCrawler.makePreview(new LinkPreviewCallback() {
+                @Override
+                public void onPre() {
+
+                }
+
+                @Override
+                public void onPos(SourceContent sourceContent, boolean isNull) {
+                    if (!isNull && !sourceContent.getFinalUrl().equals("")) {
+                        Log.d("checkUrl", sourceContent.getCannonicalUrl() + " " + sourceContent.getTitle() +
+                                " " + sourceContent.getDescription());
+                        Message m = mDataset.get(urlPositionsQueue.getFirst());
+                        m.setUrlProvider(sourceContent.getCannonicalUrl());
+                        m.setUrlTitle(sourceContent.getTitle());
+                        m.setUrlDesription(sourceContent.getDescription());
+                        notifyItemChanged(urlPositionsQueue.getFirst());
+                        urlPositionsQueue.remove(0);
+                        /*if(sourceContent.getImages().size() > 0) {
+                            urlImage.setVisibility(View.VISIBLE);
+                            String image = sourceContent.getImages().get(0);
+                            Picasso.with(context)
+                                    .load(image)
+                                    .resize(200,200)
+                                    .centerInside()
+                                    .into(holder.urlImage);
+                        }*/
+                    }
+                }
+            }, url);
+        }
     }
 
 
     //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
-    public void addItem(Message msg)
-    {
+    public void addItem(Message msg) {
         mDataset.add(msg);
+        checkUrl(msg,mDataset.size()-1);
         notifyItemInserted(mDataset.size() - 1);
     }
 
@@ -226,8 +298,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
-    public int size() {
-        return mDataset.size();
+    private int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 
     public boolean contains(Message msg) {
@@ -255,12 +329,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         return false;
     }
 
-    public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
+    public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView content;
         private ImageView foto;
         private TextView username;
         private TextView datetime;
+        private TextView urlProvider;
+        private TextView urlTitle;
+        private TextView urlDescription;
+        private ImageView urlImage;
         private RelativeLayout relativeLayout;
         private ImageView outgoingIcon;
 
@@ -271,6 +348,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             content = (TextView) itemView.findViewById(R.id.message_content);
             username = (TextView) itemView.findViewById(R.id.message_sender);
             datetime =  (TextView) itemView.findViewById(R.id.message_timestamp);
+            urlProvider = (TextView) itemView.findViewById(R.id.url_provider);
+            urlTitle = (TextView) itemView.findViewById(R.id.url_title);
+            urlDescription = (TextView) itemView.findViewById(R.id.url_description);
+            urlImage = (ImageView) itemView.findViewById(R.id.url_image);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.message_relative_layout);
             outgoingIcon = (ImageView) itemView.findViewById(R.id.message_outgoing_icon);
 

@@ -1,11 +1,9 @@
 package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,7 +12,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -56,7 +53,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.MapActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.SquareSuggestion;
@@ -67,6 +63,7 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
@@ -657,7 +654,7 @@ public class MapFragment extends Fragment
 
         // [START PinButton_event]
         mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("MapActivity")
+                .setCategory("BottomNavActivity")
                 .setAction("PinButton")
                 .build());
         // [END PinButton_event]
@@ -670,7 +667,14 @@ public class MapFragment extends Fragment
             sharedPreferences.edit().remove(s.getId()).apply();
             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
         }
+
         intent.putExtra(SQUARE_TAG, s);
+        intent.putExtra(BottomNavActivity.INITIALS_TAG, BottomNavActivity.setupInitials(s.getName()));
+
+        int max = BottomNavActivity.backgroundColors.length;
+        int randomBackgroundIndex = (new Random()).nextInt(max);
+        intent.putExtra(BottomNavActivity.INITIALS_COLOR_TAG, BottomNavActivity.backgroundColors[randomBackgroundIndex]);
+
         startActivity(intent);
     }
 
@@ -717,6 +721,8 @@ public class MapFragment extends Fragment
                             Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
                         } else {
                             Square postedSquare = (Square) object;
+                            InSquareProfile.addFav(postedSquare);
+                            InSquareProfile.addOwned(postedSquare);
                             squareHashMap.put(marker, postedSquare);
                             marker.setVisible(true);
                             Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
@@ -734,134 +740,6 @@ public class MapFragment extends Fragment
                     }
                 }
         );
-    }
-    
-    private void deleteDialog(String name) {
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(getActivity());
-        }
-        builder.setTitle("Vuoi veramente cancellare la square?")
-                .setMessage("Tutti i messaggi associati a " + name + " andranno perduti.");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                final String ownerId = InSquareProfile.getUserId();
-                final String squareId = mLastSelectedSquareId;
-                VolleyManager.getInstance().deleteSquare(squareId, ownerId, new VolleyManager.VolleyResponseListener() {
-                    @Override
-                    public void responseGET(Object object) {
-                        // Lasciare vuoto
-                    }
-
-                    @Override
-                    public void responsePOST(Object object) {
-                        // Lasciare vuoto
-                    }
-
-                    @Override
-                    public void responsePATCH(Object object) {
-                        // Lasciare vuoto
-                    }
-
-                    @Override
-                    public void responseDELETE(Object object) {
-                        boolean response = (boolean) object;
-                        if(response) {
-                            Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                            for(Marker m : squareHashMap.keySet()) {
-                                if(squareHashMap.get(m).getId().equals(mLastSelectedSquareId)) {
-                                    squareHashMap.remove(m);
-                                    m.remove();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
-
-        builder.create().show();
-    }
-
-    private void descriptionDialog(String oldName, String oldDescription) {
-        final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_edit_square);
-//        mDialog.setTitle("Modifica la descrizione");
-        mDialog.setCancelable(true);
-        mDialog.show();
-
-        final EditText nameEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_name_text);
-        if(!oldDescription.isEmpty())
-        {
-            ((TextInputLayout) nameEditText.getParent()).setHint("Modifica il nome della piazza");
-            nameEditText.setText("");
-            nameEditText.setText(oldName);
-        }
-
-
-        final EditText descriptionEditText = (EditText) mDialog.findViewById(R.id.dialog_edit_description_text);
-        if(!oldDescription.isEmpty())
-        {
-            ((TextInputLayout) descriptionEditText.getParent()).setHint("Modifica la descrizione");
-            descriptionEditText.setText("");
-            descriptionEditText.setText(oldDescription);
-        }
-
-        final Button okButton = (Button) mDialog.findViewById(R.id.dialog_edit_ok_button);
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String description = descriptionEditText.getText().toString().trim();
-                final String name = nameEditText.getText().toString().trim();
-                if (name.isEmpty()) {
-                    Snackbar.make(mapCoordinatorLayout, "Il nome non puo' essere vuoto!", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-
-//                Log.d(TAG, "onClick: stai tentando di modificare la descrizione:\n" + description);
-//                Log.d(TAG, "onClick: stai tentando di modificare il nome:\n" + name);
-                VolleyManager.getInstance().patchDescription(name, description, mLastSelectedSquareId, InSquareProfile.getUserId(),
-                        new VolleyManager.VolleyResponseListener() {
-                            @Override
-                            public void responseGET(Object object) {
-                                // Lasciare vuoto
-                            }
-
-                            @Override
-                            public void responsePOST(Object object) {
-                                // Lasciare vuoto
-
-                            }
-
-                            @Override
-                            public void responsePATCH(Object object) {
-                                boolean response = (boolean) object;
-                                if (response) {
-                                    // Tutto OK!
-                                    Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
-                                    Snackbar.make(mapCoordinatorLayout, "Descrizione modificata!", Snackbar.LENGTH_SHORT).show();
-                                    mDialog.dismiss();
-                                } else {
-                                    Snackbar.make(mapCoordinatorLayout, "Descrizione NON modificata!", Snackbar.LENGTH_SHORT).show();
-                                    mDialog.dismiss();
-                                }
-                            }
-
-                            @Override
-                            public void responseDELETE(Object object) {
-                                // Lasciare vuoto
-                            }
-                        });
-            }
-        });
     }
 
     @Override

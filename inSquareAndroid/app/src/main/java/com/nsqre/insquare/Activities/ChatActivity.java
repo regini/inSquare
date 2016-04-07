@@ -13,6 +13,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -23,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -33,6 +35,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +56,6 @@ import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
-import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
@@ -111,7 +113,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private Toolbar toolbar;
     private TextView toolbarName;
-    private TextView toolbarCircle;
+    private TextView toolbarCircleInitials;
+    private ImageView toolbarCircle;
     private int toolbarCircleColor;
     private String toolbarInitials;
 
@@ -175,6 +178,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         setContentView(R.layout.activity_chat);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Explode explode = new Explode();
+            explode.setDuration(200);
+
+            getWindow().setEnterTransition(explode);
+            getWindow().setExitTransition(explode);
+        }
+
         ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,20 +239,20 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         chatEditText = (EditText) findViewById(R.id.message_text);
 
-        // Recuperiamo i dati passati dalla MapActivity
+        // Recuperiamo i dati passati dalla BottomNavActivity
         Intent intent = getIntent();
 
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
         Log.d(TAG, mSquare.toString());
 
-        toolbarInitials = intent.getStringExtra(RecyclerSquareAdapter.INITIALS_TAG);
+        toolbarInitials = intent.getStringExtra(BottomNavActivity.INITIALS_TAG);
         if(toolbarInitials == null || toolbarInitials.isEmpty())
         {
             Log.d(TAG, "onCreate: no initials!");
         }else{
             Log.d(TAG, "onCreate: " + toolbarInitials);
         }
-        toolbarCircleColor = intent.getIntExtra(RecyclerSquareAdapter.INITIALS_COLOR_TAG, 0);
+        toolbarCircleColor = intent.getIntExtra(BottomNavActivity.INITIALS_COLOR_TAG, 0);
         if(toolbarCircleColor == 0)
         {
             Log.d(TAG, "onCreate: we have no circle color =(");
@@ -281,11 +292,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "setupToolbar: it was null!");
         }
 
-        toolbarName = (TextView) findViewById(R.id.chat_square_name);
-        toolbarCircle = (TextView) findViewById(R.id.chat_square_initials);
+        toolbarName = (TextView) findViewById(R.id.chat_toolbar_square_name);
+        toolbarCircle = (ImageView) findViewById(R.id.chat_toolbar_square_circle);
+        toolbarCircleInitials = (TextView) findViewById(R.id.chat_square_initials);
 
         toolbarName.setText(mSquareName);
-        toolbarCircle.setText(toolbarInitials);
+        toolbarCircleInitials.setText(toolbarInitials);
         // Cambia colore
         ColorStateList color = ContextCompat.getColorStateList(getApplicationContext(), toolbarCircleColor);
         final Drawable originalDrawable = toolbarCircle.getBackground();
@@ -339,6 +351,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         onChooseImage();
     }*/
+
 
 
     //@NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -396,11 +409,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     private boolean addPermission(List<String> permissionsList, String permission) {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(permission);
-            // Check for Rationale Option
-            if (!shouldShowRequestPermissionRationale(permission))
-                return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsList.add(permission);
+                // Check for Rationale Option
+                if (!shouldShowRequestPermissionRationale(permission))
+                    return false;
+            }
         }
         return true;
     }

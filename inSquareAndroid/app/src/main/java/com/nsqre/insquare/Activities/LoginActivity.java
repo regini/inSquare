@@ -281,13 +281,12 @@ public class LoginActivity extends AppCompatActivity
     }
 
     /**
-     * This method is called after the login is considered successful. It creates an intent to MapActivity to open the map
+     * This method is called after the login is considered successful. It creates an intent to BottomNavActivity to open the map
      * or the ProfileFragment, depending on the extras that are put in it.
      * @see MapActivity
      */
     private void launchInSquare() {
         Log.d(TAG, "launchInSquare: launching!");
-//        Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         Intent intent = new Intent(getApplicationContext(), BottomNavActivity.class);
         if(getIntent().getExtras() != null) {
             if(getIntent().getExtras().getInt("profile") == 2) {

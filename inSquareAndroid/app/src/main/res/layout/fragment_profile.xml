@@ -3,7 +3,7 @@
     android:id="@+id/profile_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey"
+    android:background="@color/lightGrey"
     tools:context="com.nsqre.insquare.Fragments.ProfileFragment"
     >
 

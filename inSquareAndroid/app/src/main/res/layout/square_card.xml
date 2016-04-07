@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/light_grey"
+    android:background="@color/lightGrey"
     >
 
     <android.support.v7.widget.CardView
@@ -15,6 +15,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="0dp"
         app:cardCornerRadius="0dp"
+        android:transitionName="@string/transition_name_square_row"
         >
 
         <RelativeLayout
@@ -28,22 +29,27 @@
                 android:id="@+id/cardview_left_section"
                 android:layout_width="@dimen/square_card_pic_size"
                 android:layout_height="@dimen/square_card_pic_size"
+                android:transitionName="@string/transition_name_square_circle"
                 >
 
+                <ImageView
+                    android:id="@+id/cardview_left_section_circle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/linear_layout_rounded_background"
+                    />
                 <TextView
                     android:id="@+id/cardview_square_initials"
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:textColor="@color/colorText"
                     android:text="AVL"
                     android:textSize="25sp"
                     android:fontFamily="sans-serif-condensed"
-                    android:background="@drawable/linear_layout_rounded_background"
-                    android:transitionName="@string/transition_name_square_circle"
                     />
 
-                <TextView
+                <ImageView
                     android:id="@+id/cardview_square_notification_counter"
                     android:layout_width="10dp"
                     android:layout_height="10dp"
