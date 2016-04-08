@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.BottomNavActivity;
@@ -195,14 +195,16 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                             @Override
                             public void responseDELETE(Object object) {
                                 boolean response = (boolean) object;
+                                BottomNavActivity madre = (BottomNavActivity) context;
+
                                 if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                                    Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
                                     squaresArrayList.remove(position);
                                     notifyItemRemoved(position);
                                 } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
-                                    Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
