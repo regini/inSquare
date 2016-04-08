@@ -181,7 +181,7 @@ public class ProfileFragment extends Fragment implements
                     float width = itemView.getWidth();
                     float delta = 1.0f - Math.abs(dX) / width;
                     itemView.setAlpha(delta * delta);
-//                    itemView.setTranslationX(dX);
+                    itemView.setTranslationX(dX);
 
                     Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
 
