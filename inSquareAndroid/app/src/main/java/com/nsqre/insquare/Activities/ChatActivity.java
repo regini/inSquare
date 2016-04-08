@@ -23,7 +23,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.Gravity;
@@ -149,6 +151,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
         }
     };
+    private ImageButton sendButton;
 
     //TODO aggiungere slider "nuovi messaggi" se sto guardando messaggi vecchi, risolvere problema download messaggi
     /**
@@ -186,7 +189,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             getWindow().setExitTransition(explode);
         }
 
-        ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
+        sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -238,6 +241,40 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         chatEditText = (EditText) findViewById(R.id.message_text);
+        chatEditText.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        Drawable originalDrawable = sendButton.getBackground();
+                        Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+                        ColorStateList color;
+
+                        if(count > 0)
+                        {
+                            color = ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent);
+                            sendButton.setClickable(true);
+                        }else
+                        {
+                            sendButton.setClickable(false);
+                            color = ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimaryLight);
+                        }
+
+                        DrawableCompat.setTintList(wrappedDrawable, color);
+                        sendButton.setBackground(wrappedDrawable);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                }
+        );
 
         // Recuperiamo i dati passati dalla BottomNavActivity
         Intent intent = getIntent();

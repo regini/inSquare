@@ -107,12 +107,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         v.getLocationOnScreen(array);
 
                         Snackbar.make(madre.coordinatorLayout, castHolder.lowerSectionViews.getText() + " visite", Snackbar.LENGTH_SHORT).show();
-//                        Toast message = Toast.makeText(context, castHolder.lowerSectionViews.getText() + " visite", Toast.LENGTH_SHORT);
-//                        int xOffset = (int) (v.getX() + 1.5 * v.getWidth());
-//                        int yOffset = (int) (array[1] - 1.5 * v.getHeight());
-//                        message.setGravity(Gravity.TOP | Gravity.LEFT, xOffset, yOffset);
-//                        message.show();
-
 
                         return true;
                     }

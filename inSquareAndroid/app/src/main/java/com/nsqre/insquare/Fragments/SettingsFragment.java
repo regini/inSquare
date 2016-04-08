@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,10 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
@@ -40,7 +41,7 @@ public class SettingsFragment extends Fragment implements
     private TextView facebookConnectButton;
     private TextView googleConnectButton;
 
-    private LinearLayout feedbackRow;
+    private TextView feedbackSendButton;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -91,8 +92,8 @@ public class SettingsFragment extends Fragment implements
 
     private void setupFeedbackButton(View layout)
     {
-        feedbackRow = (LinearLayout) layout.findViewById(R.id.settings_send_feedback);
-        feedbackRow.setOnClickListener(
+        feedbackSendButton = (TextView) layout.findViewById(R.id.settings_send_feedback);
+        feedbackSendButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -168,16 +169,16 @@ public class SettingsFragment extends Fragment implements
 
     private void setupLoginButtons(View layout)
     {
+        View.OnClickListener WIP = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomNavActivity madre = (BottomNavActivity) getContext();
+                Snackbar.make(madre.coordinatorLayout, "Ci stiamo lavorando!", Snackbar.LENGTH_SHORT).show();
+            }
+        };
+
         facebookConnectButton = (TextView) layout.findViewById(R.id.settings_facebook_connect);
-        facebookConnectButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Context c = getContext();
-                        Toast.makeText(getContext(), "Ci stiamo lavorando!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
+        facebookConnectButton.setOnClickListener(WIP);
 
         if(InSquareProfile.isFacebookConnected())
         {
@@ -210,15 +211,7 @@ public class SettingsFragment extends Fragment implements
         {
             googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
         }
-        googleConnectButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Context c = getContext();
-                        Toast.makeText(getContext(), "Ci stiamo lavorando!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
+        googleConnectButton.setOnClickListener(WIP);
     }
 
     /**

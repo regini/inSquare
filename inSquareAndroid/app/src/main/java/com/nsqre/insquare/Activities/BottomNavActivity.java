@@ -98,7 +98,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, deleteString));
         }
         menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, shareString));
-        menuList.add(new BottomSheetItem(R.drawable.ic_volume_off_black_48dp, muteString));
+        menuList.add(new BottomSheetItem(R.drawable.ic_sms_failed_black_24dp, muteString));
 
         return menuList;
     }
