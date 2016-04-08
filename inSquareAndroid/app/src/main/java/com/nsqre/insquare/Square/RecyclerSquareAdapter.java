@@ -42,7 +42,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
 
     private Context context;
-    private ArrayList<Square> squaresArrayList;
+    public ArrayList<Square> squaresArrayList;
     int i = 0;
 
     public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {

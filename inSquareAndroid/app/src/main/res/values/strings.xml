@@ -133,4 +133,10 @@
     <string name="transition_name_square_circle">transition:CIRCLE</string>
     <string name="settings_connect_facebook">Aggiungi il tuo Facebook</string>
 
+    <string name="mute_1h">1h</string>
+    <string name="mute_8h">8h</string>
+    <string name="mute_2d">2d</string>
+    <string name="mute_on">on</string>
+    <string name="mute_off">off</string>
+
 </resources>

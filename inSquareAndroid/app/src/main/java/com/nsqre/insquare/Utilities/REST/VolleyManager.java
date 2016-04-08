@@ -11,11 +11,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageDeserializer;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.Square.SquareDeserializer;
+import com.nsqre.insquare.User.InSquareProfile;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class VolleyManager {
     private static final String TAG = "VolleyManager";
     private static VolleyManager instance = null;
     private static Locale locale;
+    private Context context;
 
     private String[] URL_Array;
     private String baseURL = "http://recapp-insquare.rhcloud.com/";
@@ -59,6 +61,7 @@ public class VolleyManager {
     {
         Log.d(TAG, "VolleyManager: just instantiated the object privately!");
         requestQueue = Volley.newRequestQueue(c.getApplicationContext());
+        this.context = c;
     }
 
     public static synchronized VolleyManager getInstance(Context c)
@@ -649,11 +652,82 @@ public class VolleyManager {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "onErrorResponse: " + error.toString());
+                Log.d(TAG, "onErrorDeleteSquare Response: " + error.toString());
                 listener.responseDELETE(false);
             }
         });
         requestQueue.add(deleteSquareRequest);
+    }
+
+    public void muteSquare(
+            final String userId,
+            final String squareId,
+            final int which,
+            final VolleyResponseListener listener
+    )
+    {
+        /*
+         * Valori possibili di expireTime:
+         *  off - Notifiche attive
+         *  on - Notifiche mute
+         *  1h - Notifiche mute per 1 ora
+         *  8h - Notifiche mute per 8 ore
+         *  2d - Notifiche in 2 dimensioni? :|
+        */
+
+        String expireTime = "";
+        switch (which)
+        {
+            case 0:
+                expireTime = context.getString(R.string.mute_off);
+                break;
+            case 1:
+                expireTime = context.getString(R.string.mute_1h);
+                break;
+            case 2:
+                expireTime = context.getString(R.string.mute_8h);
+                break;
+            case 3:
+                expireTime = context.getString(R.string.mute_2d);
+                break;
+            case 4:
+                expireTime = context.getString(R.string.mute_on);
+                break;
+        }
+
+        String volleyURL = baseURL + "mute?";
+        volleyURL += "userId=" + userId;
+        volleyURL += "&squareId=" + squareId;
+        volleyURL += "&expireTime=" + expireTime;
+
+        Log.d(TAG, "muteSquare: " + volleyURL);
+
+        StringRequest muteSquareRequest = new StringRequest(
+                Request.Method.PATCH,
+                volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "patchMuteResponse: " + response);
+                        if(response.toLowerCase().contains("storto"))
+                        {
+                            listener.responsePATCH(false);
+                        }else
+                        {
+                            listener.responsePATCH(true);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorPatchMute Response: " + error.toString());
+                        listener.responseDELETE(false);
+                    }
+                }
+        );
+
+        requestQueue.add(muteSquareRequest);
     }
 
     private String emptySpacesForParams(String urlParameter)

@@ -212,7 +212,8 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     */
     @Override
     public void onBottomMenuItemClick(BottomSheetItem item,
-                                      final RecyclerSquareAdapter fragmentListElementAdapter, final int listHolderPosition
+                                      final RecyclerSquareAdapter fragmentListElementAdapter,
+                                      final int listHolderPosition
     )
     {
         if(bottomSheetDialog != null)
@@ -234,7 +235,8 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             }
             if(item.getTitle().equals(muteString))
             {
-                (new DialogHandler()).handleMuteRequest(this, coordinatorLayout, TAG);
+                String squareId = fragmentListElementAdapter.squaresArrayList.get(listHolderPosition).getId();
+                (new DialogHandler()).handleMuteRequest(this, coordinatorLayout, TAG, squareId);
             }
             if(item.getTitle().equals(deleteString))
             {

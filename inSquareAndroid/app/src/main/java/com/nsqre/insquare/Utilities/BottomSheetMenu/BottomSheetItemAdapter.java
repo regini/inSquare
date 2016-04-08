@@ -12,7 +12,7 @@ import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 
 import java.util.List;
 
-public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItemAdapter.ViewHolder> {
+public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItemAdapter.BottomSheetViewHolder> {
 
     private List<BottomSheetItem> menuItems;
     private BottomSheetItemListener mListener;
@@ -35,13 +35,13 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).
+    public BottomSheetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new BottomSheetViewHolder(LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.bottom_sheet_menu_item_adapter, parent, false ));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(BottomSheetViewHolder holder, int position) {
         holder.setData(menuItems.get(position));
     }
 
@@ -50,13 +50,13 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
         return menuItems.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class BottomSheetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView bottomSheetIcon;
         TextView bottomSheetTitle;
         BottomSheetItem bottomSheetItem;
 
-        public ViewHolder(View itemView) {
+        public BottomSheetViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 

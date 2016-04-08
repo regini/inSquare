@@ -19,13 +19,19 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 public class DialogHandler {
 
-    public static void handleMuteRequest(final Context where, final View snackbarContainer, final String TAG)
+    public static void handleMuteRequest(
+            final Context where,
+            final View snackbarContainer,
+            final String TAG,
+            final String squareId
+    )
     {
         final CharSequence options[] = new CharSequence[]{
                 "Abilita",
                 "Disabilita per 1h",
                 "Disabilita per 8h",
-                "Disabilita per 2 giorni"
+                "Disabilita per 2 giorni",
+                "Disabilita indefinitamente"
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(where);
@@ -36,7 +42,7 @@ public class DialogHandler {
                     boolean valid = true;
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, final int which) {
                         // TODO implementare MUTE in VolleyManager
                         Snackbar showResult = Snackbar.make(snackbarContainer, "", Snackbar.LENGTH_LONG);
                         Log.d(TAG, "onCheckedChanged: " + which + " " + options[which]);
@@ -50,7 +56,6 @@ public class DialogHandler {
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        Log.d(TAG, "onClick: undoing!");
                                         valid = false;
                                     }
                                 });
@@ -60,7 +65,39 @@ public class DialogHandler {
                                     public void onDismissed(Snackbar snackbar, int event) {
                                         super.onDismissed(snackbar, event);
                                         if(valid) {
-                                            Log.d(TAG, "onDismissed: i've just disappeared!");
+                                            VolleyManager.getInstance().muteSquare(
+                                                    InSquareProfile.getUserId(),
+                                                    squareId,
+                                                    which,
+                                                    new VolleyManager.VolleyResponseListener() {
+                                                        @Override
+                                                        public void responseGET(Object object) {
+                                                            // Rimane vuota
+                                                        }
+
+                                                        @Override
+                                                        public void responsePOST(Object object) {
+                                                            // Rimane vuota
+                                                        }
+
+                                                        @Override
+                                                        public void responsePATCH(Object object) {
+                                                            boolean muteResponse = (boolean) object;
+                                                            if(muteResponse)
+                                                            {
+
+                                                            }else
+                                                            {
+
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void responseDELETE(Object object) {
+                                                            // Rimane vuota
+                                                        }
+                                                    }
+                                            );
                                         }
                                         else {
                                             Log.d(TAG, "onDismissed: well, I've been undone!");
