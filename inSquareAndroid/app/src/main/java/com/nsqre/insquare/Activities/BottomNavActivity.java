@@ -1,13 +1,11 @@
 package com.nsqre.insquare.Activities;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,10 +26,12 @@ import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItem;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
+import com.nsqre.insquare.Utilities.DialogHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,13 +90,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     private List<BottomSheetItem> instantiateListMenu(Square square)
     {
         String shareString = getResources().getString(R.string.action_share);
-        String editString = getResources().getString(R.string.action_edit);
         String muteString = getResources().getString(R.string.action_mute);
         String deleteString = getResources().getString(R.string.action_delete);
         ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
         if(InSquareProfile.isOwned(square.getId()))
         {
-            menuList.add(new BottomSheetItem(R.drawable.ic_mode_edit_black_48dp, editString));
             menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, deleteString));
         }
         menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, shareString));
@@ -179,7 +177,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
-    public void showBottomSheetDialog(Square square)
+    public void showBottomSheetDialog(Square square, RecyclerSquareAdapter adapter, int viewHolderPosition)
     {
         bottomSheetDialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_menu, null);
@@ -188,7 +186,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         final RecyclerView list = (RecyclerView) view.findViewById(R.id.bottom_sheet_list);
         list.setHasFixedSize(true);
         list.setLayoutManager(new LinearLayoutManager(this));
-        list.setAdapter(new BottomSheetItemAdapter(instantiateListMenu(square), this));
+        list.setAdapter(new BottomSheetItemAdapter(instantiateListMenu(square), this, adapter, viewHolderPosition));
 
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.show();
@@ -213,14 +211,16 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         Questo e' il click dell'oggetto nel menu che viene istanziato sul long click di una Square nella lista
     */
     @Override
-    public void onBottomMenuItemClick(BottomSheetItem item) {
+    public void onBottomMenuItemClick(BottomSheetItem item,
+                                      final RecyclerSquareAdapter fragmentListElementAdapter, final int listHolderPosition
+    )
+    {
         if(bottomSheetDialog != null)
         {
             Resources res = getResources();
             final String shareString = res.getString(R.string.action_share);
             final String muteString = res.getString(R.string.action_mute);
             final String deleteString = res.getString(R.string.action_delete);
-            final String editString = res.getString(R.string.action_edit);
 
             if(item.getTitle().equals(shareString))
             {
@@ -234,16 +234,13 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             }
             if(item.getTitle().equals(muteString))
             {
-                handleMuteRequest();
-            }
-            if(item.getTitle().equals(editString))
-            {
-                // TODO edit
+                (new DialogHandler()).handleMuteRequest(this, coordinatorLayout, TAG);
             }
             if(item.getTitle().equals(deleteString))
             {
-                // TODO delete
+                fragmentListElementAdapter.removeElement(listHolderPosition);
             }
+
 
             Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
 
@@ -251,62 +248,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             bottomSheetDialog.dismiss();
         }
     }
-
-    private void handleMuteRequest()
-    {
-        final CharSequence options[] = new CharSequence[]{
-                "Abilita",
-                "Disabilita per 1h",
-                "Disabilita per 8h",
-                "Disabilita per 2 giorni"
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Gestisci notifiche");
-        builder.setItems(options,
-                new DialogInterface.OnClickListener() {
-
-                    boolean valid = true;
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO implementare MUTE in VolleyManager
-                        Snackbar showResult = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_LONG);
-                        Log.d(TAG, "onCheckedChanged: " + which + " " + options[which]);
-                        if (which == 0) {
-                            showResult.setText("Notifiche Abilitate");
-                        } else {
-                            showResult.setText("Notifiche Disabilitate");
-                        }
-
-                        showResult.setAction("Annulla",
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Log.d(TAG, "onClick: undoing!");
-                                        valid = false;
-                                    }
-                                });
-                        showResult.setCallback(
-                                new Snackbar.Callback() {
-                                    @Override
-                                    public void onDismissed(Snackbar snackbar, int event) {
-                                        super.onDismissed(snackbar, event);
-                                        if(valid)
-                                            Log.d(TAG, "onDismissed: i've just disappeared!");
-                                        else
-                                            Log.d(TAG, "onDismissed: well, I've been undone!");
-                                    }
-                                }
-                        );
-
-                        showResult.show();
-                    }
-                });
-
-        builder.show();
-    }
-
     @Override
     public void onBackPressed() {
         this.finishAffinity();

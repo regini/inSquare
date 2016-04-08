@@ -39,25 +39,26 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         /*
        Input Example:
        ==============
-       {
+        {
         "_index": "squares",
         "_type": "square",
-        "_id": "56cc47e2ee9a60fe92ca47a2",
+        "_id": "56fd531ee9ac22b3a1224a12",
         "_score": null,
         "_source": {
-          "name": "Prova",
-          "description": "cose",
-          "searchName": "Prova",
-          "geo_loc": "41.566872185995614,12.440877668559551",
-          "messages": [
-            "56cc48d5ee9a60fe92ca47a4",
-            "56d0651fda98e2a49986c2a5"...
-          ],
-          "ownerId": "56bf62fb01469357eaabb167",
-          "views": 50,
-          "favouredBy": 0,
-          "state": "AWOKEN",
-          "lastMessageDate": "2016-02-28T17:57:44.357Z"
+            "name": "Circo Massimo",
+            "searchName": "Circo Massimo",
+            "createdAt": "2016-03-31T16:41:02.168Z",
+            "geo_loc": "41.88593924930288,12.484685853123665",
+            "messages": [],
+            "ownerId": "56c095658b4cc88bba9b32c8",
+            "views": 22,
+            "favouredBy": 1,
+            "userLocated": 0,
+            "description": "Circus Maximus, luogo dove gli antichi romani effettuavano corse, combattimenti. Oggi utilizzato per concerti e avvenimenti di qualunque genere",
+            "state": "asleep",
+            "lastMessageDate": "2016-03-31T16:41:02.168Z",
+            "type": 0,
+            "expireTime": "9999-01-01T00:00:00.000Z"
         }
        ==============
          */

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 
 import java.util.List;
 
@@ -15,11 +16,17 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
 
     private List<BottomSheetItem> menuItems;
     private BottomSheetItemListener mListener;
+    private RecyclerSquareAdapter listAdapter;
+    private int listHolderPosition;
 
-    public BottomSheetItemAdapter(List<BottomSheetItem> items, BottomSheetItemListener listener)
+    public BottomSheetItemAdapter(List<BottomSheetItem> items, BottomSheetItemListener listener,
+                                  RecyclerSquareAdapter adapter, int viewHolderPosition
+    )
     {
         this.menuItems = items;
         this.mListener = listener;
+        this.listAdapter = adapter;
+        this.listHolderPosition = viewHolderPosition;
     }
 
     public void setListener(BottomSheetItemListener listener)
@@ -68,13 +75,13 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
         public void onClick(View v) {
             if(mListener != null)
             {
-                mListener.onBottomMenuItemClick(this.bottomSheetItem);
+                mListener.onBottomMenuItemClick(this.bottomSheetItem, listAdapter, listHolderPosition);
             }
         }
     }
 
     public interface BottomSheetItemListener
     {
-        void onBottomMenuItemClick(BottomSheetItem item);
+        void onBottomMenuItemClick(BottomSheetItem item, RecyclerSquareAdapter fragmentListElementAdapter, int listHolderPosition);
     }
 }

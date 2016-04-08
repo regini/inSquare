@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Square;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -10,6 +11,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.BottomNavActivity;
@@ -55,7 +58,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
         final SquareViewHolder castHolder = (SquareViewHolder) holder;
 
@@ -112,7 +115,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     public boolean onLongClick(View v) {
                         if (context instanceof BottomNavActivity) {
                             BottomNavActivity madre = (BottomNavActivity) context;
-                            madre.showBottomSheetDialog(listItem);
+                            madre.showBottomSheetDialog(listItem, RecyclerSquareAdapter.this, castHolder.getAdapterPosition());
                         }
                         return true;
                     }
@@ -159,6 +162,62 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 }
         );
     }
+
+    public void removeElement(final int position)
+    {
+        final Square listItem = squaresArrayList.get(position);
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("Attenzione!")
+                .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        final String ownerId = InSquareProfile.getUserId();
+                        final String squareId = listItem.getId();
+                        VolleyManager.getInstance().deleteSquare(squareId, ownerId, new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responsePATCH(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responseDELETE(Object object) {
+                                boolean response = (boolean) object;
+                                if (response) {
+                                    Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
+                                    Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
+                                    squaresArrayList.remove(position);
+                                    notifyItemRemoved(position);
+                                } else {
+                                    Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
+                                    Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+
+    }
+
 
     private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
 
@@ -226,7 +285,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         LinearLayout squareCardBackground;
         CardView squareCardView;
         TextView squareInitials;
-        TextView squareName;
+        public TextView squareName;
         TextView squareActivity;
         ImageView squareNotifications;
         ImageView squareFav;
