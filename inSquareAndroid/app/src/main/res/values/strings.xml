@@ -25,6 +25,7 @@
     <string name="descrizione_square">Inserisci la descrizione della Square</string>
     <string name="crea_square">Crea!</string>
     <string name="ok">OK</string>
+    <string name="delete">Delete</string>
     <string name="feedback">Feedback</string>
     <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
     <string name="send">Invia</string>
@@ -51,7 +52,10 @@
     <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
     <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
 
-    <string name="share_action">Share</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_mute">Gestisci notifiche</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_delete">Elimina</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
@@ -127,5 +131,12 @@
     <string name="transition_name_square_name">transition:NAME</string>
     <string name="transition_name_square_heart">transition:HEART</string>
     <string name="transition_name_square_circle">transition:CIRCLE</string>
+    <string name="settings_connect_facebook">Connetti con Facebook</string>
+
+    <string name="mute_1h">1h</string>
+    <string name="mute_8h">8h</string>
+    <string name="mute_2d">2d</string>
+    <string name="mute_on">on</string>
+    <string name="mute_off">off</string>
 
 </resources>

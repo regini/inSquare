@@ -1,15 +1,18 @@
 package com.nsqre.insquare.Square;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -39,7 +42,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
 
     private Context context;
-    private ArrayList<Square> squaresArrayList;
+    public ArrayList<Square> squaresArrayList;
     int i = 0;
 
     public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
@@ -55,7 +58,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
         final SquareViewHolder castHolder = (SquareViewHolder) holder;
 
@@ -94,10 +97,8 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                                 context.getString(R.string.transition_name_square_row));
                         Pair namePair = new Pair<>(v.findViewById(R.id.cardview_square_name),
                                 context.getString(R.string.transition_name_square_name));
-                        Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_square_initials),
+                        Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_left_section_circle),
                                 context.getString(R.string.transition_name_square_circle));
-                        Pair heartPair = new Pair<>(v.findViewById(R.id.cardview_square_heart),
-                                context.getString(R.string.transition_name_square_heart));
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 madre, namePair, initialsPair, rowPair
 
@@ -114,7 +115,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                     public boolean onLongClick(View v) {
                         if (context instanceof BottomNavActivity) {
                             BottomNavActivity madre = (BottomNavActivity) context;
-                            madre.showBottomSheetDialog(listItem.getName());
+                            madre.showBottomSheetDialog(listItem, RecyclerSquareAdapter.this, castHolder.getAdapterPosition());
                         }
                         return true;
                     }
@@ -127,10 +128,10 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         ColorStateList circleColor = ContextCompat.getColorStateList(context, BottomNavActivity.backgroundColors[position]);
 
-        final Drawable originalDrawable = castHolder.squareInitials.getBackground();
+        final Drawable originalDrawable = castHolder.squareCircle.getBackground();
         final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
         DrawableCompat.setTintList(wrappedDrawable, circleColor);
-        castHolder.squareInitials.setBackground(wrappedDrawable);
+        castHolder.squareCircle.setBackground(wrappedDrawable);
 
         String initials = BottomNavActivity.setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
@@ -141,7 +142,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
         }else
         {
-            castHolder.squareFav.setImageResource(R.drawable.like_96);
+            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
         }
 
         castHolder.squareFav.setOnClickListener(
@@ -151,7 +152,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-                            castHolder.squareFav.setImageResource(R.drawable.like_96);
+                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
@@ -161,6 +162,64 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 }
         );
     }
+
+    public void removeElement(final int position)
+    {
+        final Square listItem = squaresArrayList.get(position);
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("Attenzione!")
+                .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        final String ownerId = InSquareProfile.getUserId();
+                        final String squareId = listItem.getId();
+                        VolleyManager.getInstance().deleteSquare(squareId, ownerId, new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responsePATCH(Object object) {
+                                // Lasciare vuoto
+                            }
+
+                            @Override
+                            public void responseDELETE(Object object) {
+                                boolean response = (boolean) object;
+                                BottomNavActivity madre = (BottomNavActivity) context;
+
+                                if (response) {
+                                    Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
+                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
+                                    squaresArrayList.remove(position);
+                                    notifyItemRemoved(position);
+                                } else {
+                                    Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
+                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+
+    }
+
 
     private void setupNotifications(SquareViewHolder castHolder, Square listItem) {
 
@@ -228,10 +287,11 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         LinearLayout squareCardBackground;
         CardView squareCardView;
         TextView squareInitials;
-        TextView squareName;
+        public TextView squareName;
         TextView squareActivity;
-        TextView squareNotifications;
+        ImageView squareNotifications;
         ImageView squareFav;
+        ImageView squareCircle;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
@@ -241,7 +301,8 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
             squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
             squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
             squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
-            squareNotifications = (TextView) itemView.findViewById(R.id.cardview_square_notification_counter);
+            squareNotifications = (ImageView) itemView.findViewById(R.id.cardview_square_notification_counter);
+            squareCircle = (ImageView) itemView.findViewById(R.id.cardview_left_section_circle);
             squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
 
             squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);

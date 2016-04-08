@@ -23,7 +23,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,6 +37,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,7 +115,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private Toolbar toolbar;
     private TextView toolbarName;
-    private TextView toolbarCircle;
+    private TextView toolbarCircleInitials;
+    private ImageView toolbarCircle;
     private int toolbarCircleColor;
     private String toolbarInitials;
 
@@ -147,6 +151,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
         }
     };
+    private ImageButton sendButton;
 
     //TODO aggiungere slider "nuovi messaggi" se sto guardando messaggi vecchi, risolvere problema download messaggi
     /**
@@ -184,7 +189,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             getWindow().setExitTransition(explode);
         }
 
-        ImageButton sendButton = (ImageButton) findViewById(R.id.chat_send_button);
+        sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -236,8 +241,42 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         chatEditText = (EditText) findViewById(R.id.message_text);
+        chatEditText.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        // Recuperiamo i dati passati dalla MapActivity
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        Drawable originalDrawable = sendButton.getBackground();
+                        Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+                        ColorStateList color;
+
+                        if(count > 0)
+                        {
+                            color = ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent);
+                            sendButton.setClickable(true);
+                        }else
+                        {
+                            sendButton.setClickable(false);
+                            color = ContextCompat.getColorStateList(getApplicationContext(), R.color.colorPrimaryLight);
+                        }
+
+                        DrawableCompat.setTintList(wrappedDrawable, color);
+                        sendButton.setBackground(wrappedDrawable);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                }
+        );
+
+        // Recuperiamo i dati passati dalla BottomNavActivity
         Intent intent = getIntent();
 
         mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
@@ -290,11 +329,12 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "setupToolbar: it was null!");
         }
 
-        toolbarName = (TextView) findViewById(R.id.chat_square_name);
-        toolbarCircle = (TextView) findViewById(R.id.chat_square_initials);
+        toolbarName = (TextView) findViewById(R.id.chat_toolbar_square_name);
+        toolbarCircle = (ImageView) findViewById(R.id.chat_toolbar_square_circle);
+        toolbarCircleInitials = (TextView) findViewById(R.id.chat_square_initials);
 
         toolbarName.setText(mSquareName);
-        toolbarCircle.setText(toolbarInitials);
+        toolbarCircleInitials.setText(toolbarInitials);
         // Cambia colore
         ColorStateList color = ContextCompat.getColorStateList(getApplicationContext(), toolbarCircleColor);
         final Drawable originalDrawable = toolbarCircle.getBackground();
@@ -737,8 +777,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
 
     /**
-     * TODO TENERE ANCORA SOLO PER TEST
-     * Notifies the user if the connection to the socket has failed
+     * Notifies if the connection to the socket has failed
      */
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
@@ -747,24 +786,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 @Override
                 public void run() {
                     Log.d(TAG, getString(R.string.error_connect));
-                    Toast.makeText(getApplicationContext(), getString(R.string.error_connect), Toast.LENGTH_SHORT).show();
-                    /*
-                    try {
-                        String url = getString(R.string.squaresUrl);
-                        mSocket = IO.socket(url);
-
-                        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-                        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-
-                        mSocket.on("sendMessage", onSendMessage);
-                        mSocket.on("newMessage", onNewMessage);
-                        mSocket.on("ping", onPing);
-
-                        mSocket.connect();
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    */
+                    //Toast.makeText(getApplicationContext(), getString(R.string.error_connect), Toast.LENGTH_SHORT).show();
                 }
             });
         }

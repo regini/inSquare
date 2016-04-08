@@ -242,6 +242,46 @@ public class InSquareProfile {
         return userId!= null && username!= null && email != null;
     }
 
+    public static boolean isFacebookConnected()
+    {
+        return facebookToken != null;
+    }
+
+    public static void clearFacebookCredentials(Context c)
+    {
+        facebookName = null;
+        facebookEmail = null;
+        facebookId = null;
+        facebookToken = null;
+
+        save(c);
+    }
+
+    public static boolean isGoogleConnected()
+    {
+        return googleToken != null;
+    }
+
+    public static void clearGoogleCredentials(Context c)
+    {
+        googleName = null;
+        googleEmail = null;
+        googleId = null;
+        googleToken = null;
+
+        save(c);
+    }
+
+    public static void clearProfileCredentials(Context c)
+    {
+        userId = null;
+        username = null;
+        email = null;
+        pictureUrl = null;
+
+        save(c);
+    }
+
     @Override
     public String toString() {
         return "==== USER  ====" +
@@ -258,23 +298,6 @@ public class InSquareProfile {
                 "\nEmail: " + googleEmail +
                 "\nName: " + googleEmail;
 
-    }
-
-    public static String printProfile()
-    {
-        return "==== USER  ====" +
-                "\nID: " + userId +
-                "\nUsername: " + username +
-                "\nEmail: " + email +
-                "\nPicture URL: " + pictureUrl +
-                "\n==== FACEBOOK  ====" +
-                "\nID: " + facebookId +
-                "\nEmail: " + facebookEmail +
-                "\nName : " + facebookName +
-                "\n==== GOOGLE ====" +
-                "\nID: " + googleId +
-                "\nEmail: " + googleEmail +
-                "\nName: " + googleEmail;
     }
 
     public static void addListener(InSquareProfileListener listener)
@@ -484,7 +507,14 @@ public class InSquareProfile {
         return recentSquaresList;
     }
 
-    public static HashMap<String, ArrayList<Message>> getOutgoingMessages() { return outgoingMessages; }
+    public static HashMap<String, ArrayList<Message>> getOutgoingMessages()
+    {
+        if(outgoingMessages == null)
+        {
+            outgoingMessages = new HashMap<>();
+        }
+        return outgoingMessages;
+    }
 
     public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
         InSquareProfile.ownedSquaresList = ownedSquaresList;
@@ -566,7 +596,7 @@ public class InSquareProfile {
         downloadRecentSquares();
     }
 
-    private static void downloadRecentSquares()
+    public static void downloadRecentSquares()
     {
         VolleyManager.getInstance().getRecentSquares(
                 InSquareProfile.getUserId(),
@@ -598,7 +628,7 @@ public class InSquareProfile {
         );
     }
 
-    private static void downloadFavoriteSquares()
+    public static void downloadFavoriteSquares()
     {
         VolleyManager.getInstance().getFavoriteSquares(InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {
@@ -629,7 +659,7 @@ public class InSquareProfile {
                 });
     }
 
-    private static void downloadOwnedSquares()
+    public static void downloadOwnedSquares()
     {
         VolleyManager.getInstance().getOwnedSquares("true", InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {

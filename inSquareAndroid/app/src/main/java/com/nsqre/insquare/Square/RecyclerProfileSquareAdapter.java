@@ -1,11 +1,11 @@
 package com.nsqre.insquare.Square;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.TextInputLayout;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
@@ -16,39 +16,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
+import com.nsqre.insquare.Utilities.DialogHandler;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
  */
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
+    private static final int PENDING_REMOVAL_TIMEOUT = 5000; // 5 secs
     private static final String TAG = "SquareAdapter";
     private static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
-    private static final String INDENTATION = "\t\t\t\t";
 
     private Context context;
     private ArrayList<Square> squaresArrayList;
+
+    private ArrayList<Square> squaresPendingRemoval;
+    private Handler handler = new Handler();
+    private HashMap<String, Runnable> pendingRunnables = new HashMap<>();
+
     int i = 0;
 
 
     public RecyclerProfileSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
+        squaresPendingRemoval = new ArrayList<>();
     }
 
     @Override
@@ -67,14 +72,14 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
         setupHeart(castHolder, listItem);
 
-        String squareName = listItem.getName();
+        final String squareName = listItem.getName();
         castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
         // Per sottolineare l'inizio
         String description = listItem.getDescription().trim();
         if(description.length() > 0)
         {
-            castHolder.squareDescription.setText(INDENTATION + listItem.getDescription());
+            castHolder.squareDescription.setText(listItem.getDescription());
         }else
         {
             castHolder.middleSection.setVisibility(View.GONE);
@@ -82,34 +87,42 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         setupLeftSection(castHolder, squareName);
 
         castHolder.lowerSectionViews.setText("" + listItem.getViews());
-        castHolder.lowerSectionFavs.setText("" + listItem.getFavouredBy());
+        castHolder.heartFavs.setText("" + listItem.getFavouredBy());
         castHolder.editButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        handleEdit(listItem, castHolder);
+                        new DialogHandler().handleProfileEdit(listItem, castHolder, ((BottomNavActivity)context).coordinatorLayout, TAG);
                     }
                 }
         );
-        castHolder.trashButton.setOnClickListener(
-                new View.OnClickListener() {
+
+        ((LinearLayout)castHolder.lowerSectionViews.getParent()).setOnLongClickListener(
+                new View.OnLongClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        handleDelete(listItem, castHolder);
+                    public boolean onLongClick(View v) {
+                        BottomNavActivity madre = (BottomNavActivity) context;
+
+                        int[] array = new int[2];
+                        v.getLocationOnScreen(array);
+
+                        Snackbar.make(madre.coordinatorLayout, castHolder.lowerSectionViews.getText() + " visite", Snackbar.LENGTH_SHORT).show();
+
+                        return true;
                     }
                 }
         );
+
     }
 
-    private void handleDelete(final Square listItem, SquareViewHolder squareViewHolder) {
+    private void handleDelete(final Square listItem, final int position) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(context);
 
         builder.setTitle("Attenzione!")
                 .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
         builder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener()
-                {
+                new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         final String ownerId = InSquareProfile.getUserId();
                         final String squareId = listItem.getId();
@@ -132,113 +145,29 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                             @Override
                             public void responseDELETE(Object object) {
                                 boolean response = (boolean) object;
-                                if(response) {
+                                BottomNavActivity madre = (BottomNavActivity) context;
+
+                                if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                                    Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
-                                    squaresArrayList.remove(listItem);
-                                    notifyDataSetChanged();
-                                }else {
+                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
+                                    squaresArrayList.remove(position);
+                                    notifyItemRemoved(position);
+                                } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
-                                    Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
+                        });
+                    }
                 });
-            }
-        });
         builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                squaresPendingRemoval.remove(listItem);
                 dialog.dismiss();
             }
         });
 
         builder.create().show();
-    }
-
-
-    private void handleEdit(final Square element, final SquareViewHolder squareViewHolder) {
-        String oldDescription = element.getDescription().trim();
-        String oldName = element.getName().trim();
-
-        final Dialog editDialog = new Dialog(context);
-        editDialog.setContentView(R.layout.dialog_edit_square);
-        editDialog.setCancelable(true);
-        editDialog.show();
-
-        final EditText nameEditText = (EditText) editDialog.findViewById(R.id.dialog_edit_name_text);
-
-        ((TextInputLayout)nameEditText.getParent()).setHint("Modifica il nome");
-        nameEditText.setText(oldName);
-
-        final EditText descriptionEditText = (EditText) editDialog.findViewById(R.id.dialog_edit_description_text);
-        if(!oldDescription.isEmpty())
-        {
-            ((TextInputLayout)descriptionEditText.getParent()).setHint("Modifica la descrizione");
-            descriptionEditText.setText(oldDescription);
-        }
-
-        final Button okButton = (Button) editDialog.findViewById(R.id.dialog_edit_ok_button);
-        okButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String newDescription = descriptionEditText.getText().toString().trim();
-                        final String newName = nameEditText.getText().toString().trim();
-
-                        if (newName.isEmpty()) {
-                            Toast.makeText(context, "Il nome non può essere vuoto!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        Log.d(TAG, "onClick: stai tentando di modificare la descrizione:\n" + newDescription);
-                        Log.d(TAG, "onClick: stai tentando di modificare il nome:\n" + newName);
-                        VolleyManager.getInstance().patchDescription(newName, newDescription, element.getId(), InSquareProfile.getUserId(),
-                                new VolleyManager.VolleyResponseListener() {
-                                    @Override
-                                    public void responseGET(Object object) {
-                                        // Lasciare vuoto
-                                    }
-
-                                    @Override
-                                    public void responsePOST(Object object) {
-                                        // Lasciare vuoto
-
-                                    }
-
-                                    @Override
-                                    public void responsePATCH(Object object) {
-                                        boolean response = (boolean) object;
-                                        if (response) {
-                                            // Tutto OK!
-                                            Log.d(TAG, "responsePATCH: sono riuscito a patchare correttamente!");
-                                            squareViewHolder.squareName.setText(newName);
-                                            squareViewHolder.squareDescription.setText(INDENTATION + newDescription);
-                                            element.setName(newName);
-                                            element.setDescription(newDescription);
-
-                                            if (newDescription.isEmpty()) {
-                                                squareViewHolder.middleSection.setVisibility(View.GONE);
-                                            } else {
-                                                squareViewHolder.middleSection.setVisibility(View.VISIBLE);
-                                            }
-
-                                            Toast.makeText(context, "Modificata con successo!", Toast.LENGTH_SHORT).show();
-                                            editDialog.dismiss();
-                                        } else {
-                                            // Errore
-                                            Toast.makeText(context, "Ho avuto un problema con la connessione. Riprova..?", Toast.LENGTH_SHORT).show();
-                                            editDialog.dismiss();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void responseDELETE(Object object) {
-                                        // Lasciare vuoto
-                                    }
-                                });
-                    }
-                }
-        );
-
     }
 
     /*
@@ -290,7 +219,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
 //                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
-                            castHolder.squareFav.setImageResource(R.drawable.like_96);
+                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
@@ -322,12 +251,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
                     @Override
                     public void responsePOST(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responsePOST - non sono riuscito ad inserire il fav " + square.toString());
-                        }else
-                        {
+                        } else {
                             notifyDataSetChanged();
                             InSquareProfile.addFav(square);
                         }
@@ -340,12 +267,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
                     @Override
                     public void responseDELETE(Object object) {
-                        if(object == null)
-                        {
+                        if (object == null) {
                             //La richiesta e' fallita
                             Log.d(TAG, "responseDELETE - non sono riuscito ad rimuovere il fav " + square.toString());
-                        }else
-                        {
+                        } else {
                             notifyDataSetChanged();
                             InSquareProfile.removeFav(square.getId());
                         }
@@ -353,24 +278,61 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                 });
     }
 
+    public void pendingRemoval(final int position)
+    {
+        Square toRemove = squaresArrayList.get(position);
+//        Log.d(TAG, "pendingRemoval: " + toRemove.getName());
+        if(!squaresPendingRemoval.contains(toRemove))
+        {
+            squaresPendingRemoval.add(toRemove);
+            notifyItemChanged(position);
+            handleDelete(toRemove, position);
+            /*
+            Runnable pendingRemovalRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    remove(position);
+                }
+            };
+
+            handler.postDelayed(pendingRemovalRunnable, PENDING_REMOVAL_TIMEOUT);
+            pendingRunnables.put(toRemove.getId(), pendingRemovalRunnable);
+            */
+        }
+    }
+
+    public void remove(final int position)
+    {
+        Square item = squaresArrayList.get(position);
+       /* if(squaresPendingRemoval.contains(item))
+        {
+            Log.d(TAG, "remove: I really want to remove " + item.getName());
+            squaresPendingRemoval.remove(item);
+        }*/
+        if(squaresArrayList.contains(item))
+        {
+            squaresArrayList.remove(position);
+            notifyItemChanged(position);
+        }
+    }
+
     public static class SquareViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout squareCardBackground;
         CardView squareCardView;
         TextView squareInitials;
-        TextView squareName;
+        public TextView squareName;
         TextView squareActivity;
-        TextView squareDescription;
+        public TextView squareDescription;
         ImageView squareFav;
+        TextView heartFavs;
 
         RelativeLayout middleSection;
 
         LinearLayout lowerSectionExpanded;
-        TextView lowerSectionFavs;
         TextView lowerSectionViews;
 
-        ImageButton trashButton;
-        ImageButton editButton;
+        Button editButton;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
@@ -389,10 +351,9 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
             lowerSectionExpanded = (LinearLayout) itemView.findViewById(R.id.cardview_profile_lower_section_expanded);
 
-            lowerSectionFavs = (TextView) itemView.findViewById(R.id.lower_section_square_favourites);
+            heartFavs = (TextView) itemView.findViewById(R.id.carview_profile_heart_favorites);
             lowerSectionViews = (TextView) itemView.findViewById(R.id.lower_section_square_views);
-            trashButton = (ImageButton) itemView.findViewById(R.id.lower_section_trash_button);
-            editButton  = (ImageButton) itemView.findViewById(R.id.lower_section_edit_button);
+            editButton  = (Button) itemView.findViewById(R.id.lower_section_edit_button);
 
         }
 

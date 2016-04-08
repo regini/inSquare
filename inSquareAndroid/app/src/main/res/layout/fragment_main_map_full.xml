@@ -10,14 +10,13 @@
         android:id="@+id/main_map_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_grey"
+        android:background="@color/lightGrey"
         />
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/main_map_floating_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"
         app:floatingSearch_searchBarMarginLeft="@dimen/search_bar_margin"
         app:floatingSearch_searchBarMarginTop="@dimen/search_bar_margin"
         app:floatingSearch_searchBarMarginRight="@dimen/search_bar_margin"
