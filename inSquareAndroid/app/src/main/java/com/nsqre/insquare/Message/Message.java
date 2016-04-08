@@ -44,6 +44,7 @@ public class Message implements Serializable {
     private String urlProvider;
     private String urlTitle;
     private String urlDesription;
+    private boolean isLineVisible;
 
     private Locale locale;
 
@@ -57,7 +58,7 @@ public class Message implements Serializable {
         this.calendar = Calendar.getInstance();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         this.createdAt = df.format(this.calendar.getTime());
-
+        isLineVisible = false;
         this.locale = l;
     }
 
@@ -68,6 +69,7 @@ public class Message implements Serializable {
         this.name = username;
         this.from = userId;
         this.userSpot = userSpot;
+        isLineVisible = false;
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", l);
         try {
@@ -134,6 +136,14 @@ public class Message implements Serializable {
 
     public void setUrlDesription(String urlDesription) {
         this.urlDesription = urlDesription;
+    }
+
+    public boolean isLineVisible() {
+        return isLineVisible;
+    }
+
+    public void setIsLineVisible(boolean isLineVisible) {
+        this.isLineVisible = isLineVisible;
     }
 
     public void setTime() {
