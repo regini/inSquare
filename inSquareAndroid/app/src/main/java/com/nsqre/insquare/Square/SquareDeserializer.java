@@ -1,5 +1,7 @@
 package com.nsqre.insquare.Square;
 
+import android.util.Log;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -11,7 +13,7 @@ import java.util.Locale;
 
 /**
  * SquareDeserializer is the class that Gson uses to deserialize the JSON strings that represent squares
- * @see com.nsqre.insquare.Activities.MapActivity
+ * @see com.nsqre.insquare.Activities.BottomNavActivity
  * @see com.nsqre.insquare.Fragments.MapFragment
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
@@ -65,37 +67,76 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
 
 //        Log.d(TAG, "deserialize: " + json.toString());
 
-        final JsonObject jsonObject = json.getAsJsonObject();
-        final String id = jsonObject.get("_id").getAsString();
-        final JsonObject source = jsonObject.get("_source").getAsJsonObject();
-        final String name = source.get("name").getAsString();
+        final String id;
+        final String name;
+        final String geoloc;
+        final String ownerid;
+        final String views;
+        final String favouredby;
+        final String userLocated;
         final String description;
+        final String state;
+        final String lastMessageDate;
+        final String type;
+
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final JsonObject source = jsonObject.get("_source").getAsJsonObject();
+
+        Log.d(TAG, "deserialize: " + json.toString());
+
+        // ID
+        id = jsonObject.get("_id").getAsString();
+        // Name
+        name = source.get("name").getAsString();
+
+        // Description
         if(source.get("description") != null){
             description = source.get("description").getAsString();
         }
         else {
             description = "";
         }
-        final String geoloc = source.get("geo_loc").getAsString();
-        final String ownerid;
+
+        // Coordinates
+        geoloc = source.get("geo_loc").getAsString();
+
+        // OwnerID
         if(source.get("ownerId") != null){
             ownerid = source.get("ownerId").getAsString();
         }
         else {
             ownerid = "";
         }
-        final String favouredby = source.get("favouredBy").getAsString();
-        final String views = source.get("views").getAsString();
-        final String state = source.get("state").getAsString();
+
+        // View Count
+        views = source.get("views").getAsString();
+        // Favorite Count
+        favouredby = source.get("favouredBy").getAsString();
+
+        // Square State
+        state = source.get("state").getAsString();
+
+        // Last Message Date
         String lmd = "";
         try {
-            final String lastMessageDate = source.get("lastMessageDate").getAsString();
+            lastMessageDate = source.get("lastMessageDate").getAsString();
             lmd = lastMessageDate;
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
+
+        // Tipo
+        JsonElement typeElement = source.get("type");
+        if(typeElement == null)
+        {
+            type = "0";
+        }else
+        {
+            type = typeElement.getAsString();
+        }
+
+        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, type, this.locale);
         return square;
     }
 }
