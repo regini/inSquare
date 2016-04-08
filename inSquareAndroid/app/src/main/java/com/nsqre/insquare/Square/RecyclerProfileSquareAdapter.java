@@ -5,13 +5,13 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.BottomNavActivity;
@@ -102,13 +101,17 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                 new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
+                        BottomNavActivity madre = (BottomNavActivity) context;
+
                         int[] array = new int[2];
                         v.getLocationOnScreen(array);
-                        Toast message = Toast.makeText(context, castHolder.lowerSectionViews.getText() + " visite", Toast.LENGTH_SHORT);
-                        int xOffset = (int) (v.getX() + 1.5 * v.getWidth());
-                        int yOffset = (int) (array[1] - 1.5 * v.getHeight());
-                        message.setGravity(Gravity.TOP | Gravity.LEFT, xOffset, yOffset);
-                        message.show();
+
+                        Snackbar.make(madre.coordinatorLayout, castHolder.lowerSectionViews.getText() + " visite", Snackbar.LENGTH_SHORT).show();
+//                        Toast message = Toast.makeText(context, castHolder.lowerSectionViews.getText() + " visite", Toast.LENGTH_SHORT);
+//                        int xOffset = (int) (v.getX() + 1.5 * v.getWidth());
+//                        int yOffset = (int) (array[1] - 1.5 * v.getHeight());
+//                        message.setGravity(Gravity.TOP | Gravity.LEFT, xOffset, yOffset);
+//                        message.show();
 
 
                         return true;
@@ -148,14 +151,16 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                             @Override
                             public void responseDELETE(Object object) {
                                 boolean response = (boolean) object;
+                                BottomNavActivity madre = (BottomNavActivity) context;
+
                                 if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                                    Toast.makeText(context, "Cancellazione avvenuta con successo!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
                                     squaresArrayList.remove(position);
                                     notifyItemRemoved(position);
                                 } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
-                                    Toast.makeText(context, "C'e' stato un problema con la cancellazione!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
