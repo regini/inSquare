@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +11,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -166,6 +170,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //FOTO
         //ButterKnife.bind(this);
         ca = this;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.logo_icon_144);
+            ActivityManager.TaskDescription taskDesc =
+                    new ActivityManager.TaskDescription(getString(R.string.app_name),
+                            icon, Color.parseColor("#D32F2F"));
+            setTaskDescription(taskDesc);
+        }
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -251,11 +263,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
                         Drawable originalDrawable = sendButton.getBackground();
                         Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
                         ColorStateList color;
 
-                        if(count > 0)
+                        if(s.length() > 0)
                         {
                             color = ContextCompat.getColorStateList(getApplicationContext(), R.color.colorAccent);
                             sendButton.setClickable(true);
@@ -267,11 +284,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
                         DrawableCompat.setTintList(wrappedDrawable, color);
                         sendButton.setBackground(wrappedDrawable);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
                     }
                 }
         );

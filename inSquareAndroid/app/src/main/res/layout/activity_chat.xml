@@ -144,6 +144,7 @@
             android:layout_marginLeft="@dimen/input_margin_side"
             android:layout_gravity="center_vertical"
             android:background="@drawable/button_send_chat"
+            android:backgroundTint="@color/colorPrimaryLight"
             />
     </LinearLayout>
 </RelativeLayout>

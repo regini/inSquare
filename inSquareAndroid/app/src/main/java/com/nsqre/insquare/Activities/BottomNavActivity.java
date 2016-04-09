@@ -1,8 +1,13 @@
 package com.nsqre.insquare.Activities;
 
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
@@ -26,6 +31,7 @@ import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Services.LocationService;
 import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
@@ -69,13 +75,21 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_nav);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Fade fade = new Fade();
             fade.setDuration(1000);
 
             getWindow().setExitTransition(fade);
             getWindow().setEnterTransition(fade);
+
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.logo_icon_144);
+            ActivityManager.TaskDescription taskDesc =
+                    new ActivityManager.TaskDescription(getString(R.string.app_name),
+                            icon, Color.parseColor("#D32F2F"));
+            setTaskDescription(taskDesc);
         }
+
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.bottom_nav_coordinator_layout);
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_nav_bar);
 
@@ -84,6 +98,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         mainContentFrame = (FrameLayout) findViewById(R.id.bottom_nav_content_frame);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, MapFragment.newInstance()).commit();
+
+        Intent intent = new Intent(this, LocationService.class);
+        startService(intent);
 
     }
 

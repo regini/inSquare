@@ -1,5 +1,6 @@
 package com.nsqre.insquare.Square;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -11,7 +12,7 @@ import java.util.Locale;
 
 /**
  * SquareDeserializer is the class that Gson uses to deserialize the JSON strings that represent squares
- * @see com.nsqre.insquare.Activities.MapActivity
+ * @see com.nsqre.insquare.Activities.BottomNavActivity
  * @see com.nsqre.insquare.Fragments.MapFragment
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
@@ -85,6 +86,14 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
             ownerid = "";
         }
         final String favouredby = source.get("favouredBy").getAsString();
+        String[] fav = new String[]{};
+        if(source.get("favourers") != null) {
+            final JsonArray favourers = source.get("favourers").getAsJsonArray();
+            fav = new String[favourers.size()];
+            for(int i = 0; i<favourers.size(); i++) {
+                fav[i] = favourers.get(i).getAsString();
+            }
+        }
         final String views = source.get("views").getAsString();
         final String state = source.get("state").getAsString();
         String lmd = "";
@@ -95,7 +104,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         catch (Exception e) {
             e.printStackTrace();
         }
-        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
+        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, fav, views, state, lmd, this.locale);
         return square;
     }
 }

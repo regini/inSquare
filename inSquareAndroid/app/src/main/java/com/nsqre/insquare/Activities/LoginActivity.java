@@ -1,11 +1,16 @@
 package com.nsqre.insquare.Activities;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -112,6 +117,15 @@ public class LoginActivity extends AppCompatActivity
         // Profilo statico perché non deve cambiare.
         // Singleton -> non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.logo_icon_144);
+            ActivityManager.TaskDescription taskDesc =
+                    new ActivityManager.TaskDescription(getString(R.string.app_name),
+                            icon, Color.parseColor("#D32F2F"));
+            setTaskDescription(taskDesc);
+        }
 
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");

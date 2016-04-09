@@ -3,7 +3,6 @@ package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,7 +39,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     private Context context;
     private TextCrawler textCrawler;
     private LinkedList<Integer> urlPositionsQueue;
-    private Handler mHandler;
 
     public MessageAdapter(Context c)
     {
@@ -48,7 +46,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.mDataset = new ArrayList<>();
         textCrawler = new TextCrawler();
         urlPositionsQueue = new LinkedList<>();
-        mHandler = new Handler();
     }
 
     //  0 Messaggio TEXT from OTHER USER
@@ -230,13 +227,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             holder.urlDescription.setText("description");
             holder.urlDescription.setVisibility(View.GONE);
         }
-        /*if(m.isLineVisible()) {
-            holder.urlLine.getLayoutParams().height = holder.urlProvider.getHeight() +
-                    holder.urlTitle.getHeight() + holder.urlDescription.getHeight();
+        if(m.isLineVisible()) {
             holder.urlLine.setVisibility(View.VISIBLE);
         } else if(holder.urlLine != null) {
             holder.urlLine.setVisibility(View.GONE);
-        }*/
+        }
     }
 
     private void checkUrl(final Message message, int position) {
@@ -267,7 +262,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         m.setUrlDesription(sourceContent.getDescription());
                         m.setIsLineVisible(true);
                         notifyItemChanged(urlPositionsQueue.getFirst());
-                        //mUpdateTimeTask(urlPositionsQueue.getFirst());
                         urlPositionsQueue.remove(0);
                         /*if(sourceContent.getImages().size() > 0) {
                             urlImage.setVisibility(View.VISIBLE);
@@ -282,19 +276,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 }
             }, url);
         }
-    }
-
-    private void mUpdateTimeTask(int position) {
-        class OneShotTask implements Runnable {
-            private int position;
-            OneShotTask(int position) {
-                this.position = position;
-            }
-            public void run() {
-                notifyItemChanged(position);
-            }
-        }
-        mHandler.postDelayed(new OneShotTask(position), 1000);
     }
 
     //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo

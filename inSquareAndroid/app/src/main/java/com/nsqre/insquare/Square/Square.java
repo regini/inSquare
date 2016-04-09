@@ -44,6 +44,7 @@ public class Square implements Serializable {
      * The number of how many people are following the square
      */
     private long favouredBy;
+    private String[] favourers;
     /**
      * The number of how many people have seen this square
      */
@@ -69,7 +70,7 @@ public class Square implements Serializable {
         this.ownerId = ownerId;
     }
 
-    public Square(String id, String name, String description, String geoloc, String ownerId, String favouredBy, String views, String state, String lastMessageDate, Locale l) {
+    public Square(String id, String name, String description, String geoloc, String ownerId, String favouredBy, String[] favourers, String views, String state, String lastMessageDate, Locale l) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -79,7 +80,8 @@ public class Square implements Serializable {
         lon = Double.parseDouble(parts[1]);
 
         this.ownerId = ownerId;
-        this.favouredBy = Long.parseLong(favouredBy);
+        this.favourers = favourers;
+        this.favouredBy = favourers.length;
         this.views = Long.parseLong(views);
 
         switch (state.toLowerCase()) {
