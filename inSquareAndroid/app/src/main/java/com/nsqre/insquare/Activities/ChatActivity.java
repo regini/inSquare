@@ -140,13 +140,16 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: messaggio inviato con chatservice");
-            Message m = (Message) intent.getSerializableExtra("messageSent");
-            outgoingMessages.get(mSquareId).remove(m);
-            Message messageFromAdapter = messageAdapter.getMessage(m);
-            messageFromAdapter.setTime();
-            messageAdapter.notifyDataSetChanged();
-            //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
+            try {
+                Log.d(TAG, "onReceive: messaggio inviato con chatservice");
+                Message m = (Message) intent.getSerializableExtra("messageSent");
+                outgoingMessages.get(mSquareId).remove(m);
+                Message messageFromAdapter = messageAdapter.getMessage(m);
+                messageFromAdapter.setTime();
+                messageAdapter.notifyDataSetChanged();
+                //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e) {}
         }
     };
 
@@ -274,7 +277,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         if (outgoingMessages.keySet().contains(mSquareId)) {
             for (Message m : outgoingMessages.get(mSquareId)) {
-                addMessage(m);
+                if (!messageAdapter.contains(m))
+                    addMessage(m);
             }
         }
         setupToolbar();
