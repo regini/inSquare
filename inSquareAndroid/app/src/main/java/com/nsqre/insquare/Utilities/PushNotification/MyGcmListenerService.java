@@ -154,18 +154,19 @@ public class MyGcmListenerService extends GcmListenerService {
 
         SharedPreferences mutePreferences = getSharedPreferences("NOTIFICATION_MUTE_MAP", MODE_PRIVATE);
 
+
         if(mutePreferences.contains(squareId)){
-            Log.d("nikkkk1","nikkkk");
+
             String expireDate = mutePreferences.getString(squareId, "");
-            if(!expireDate.equals("")) {
+
                 long myExpireDate = Long.parseLong(expireDate, 10);
                 if (myExpireDate < (new Date().getTime())) {
                     mutePreferences.edit().remove(squareId).apply();
                     notificationManager.notify(0, notificationBuilder.build());
                 }
-            }
+
         } else {
-            Log.d("nikkkk2","nikkkk");
+
             notificationManager.notify(0, notificationBuilder.build());
         }
 

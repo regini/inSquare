@@ -71,10 +71,7 @@ public class DialogHandler {
                                             SharedPreferences sharedPreferences = where.getSharedPreferences("NOTIFICATION_MUTE_MAP", where.MODE_PRIVATE);
 
                                             if(sharedPreferences.contains(squareId)){
-                                                Log.d("NIKKKKKKKK0", sharedPreferences.getString(squareId, ""));
                                                 sharedPreferences.edit().remove(squareId).apply();
-                                                Log.d("sharedPreferences", "aggiorno il mute di una square già mutata");
-
                                             }
 
                                             long expireTime = 0;
