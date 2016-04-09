@@ -1,5 +1,7 @@
 package com.nsqre.insquare.Square;
 
+import android.util.Log;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -11,7 +13,7 @@ import java.util.Locale;
 
 /**
  * SquareDeserializer is the class that Gson uses to deserialize the JSON strings that represent squares
- * @see com.nsqre.insquare.Activities.MapActivity
+ * @see com.nsqre.insquare.Activities.BottomNavActivity
  * @see com.nsqre.insquare.Fragments.MapFragment
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
@@ -39,62 +41,102 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         /*
        Input Example:
        ==============
-       {
+        {
         "_index": "squares",
         "_type": "square",
-        "_id": "56cc47e2ee9a60fe92ca47a2",
+        "_id": "56fd531ee9ac22b3a1224a12",
         "_score": null,
         "_source": {
-          "name": "Prova",
-          "description": "cose",
-          "searchName": "Prova",
-          "geo_loc": "41.566872185995614,12.440877668559551",
-          "messages": [
-            "56cc48d5ee9a60fe92ca47a4",
-            "56d0651fda98e2a49986c2a5"...
-          ],
-          "ownerId": "56bf62fb01469357eaabb167",
-          "views": 50,
-          "favouredBy": 0,
-          "state": "AWOKEN",
-          "lastMessageDate": "2016-02-28T17:57:44.357Z"
+            "name": "Circo Massimo",
+            "searchName": "Circo Massimo",
+            "createdAt": "2016-03-31T16:41:02.168Z",
+            "geo_loc": "41.88593924930288,12.484685853123665",
+            "messages": [],
+            "ownerId": "56c095658b4cc88bba9b32c8",
+            "views": 22,
+            "favouredBy": 1,
+            "userLocated": 0,
+            "description": "Circus Maximus, luogo dove gli antichi romani effettuavano corse, combattimenti. Oggi utilizzato per concerti e avvenimenti di qualunque genere",
+            "state": "asleep",
+            "lastMessageDate": "2016-03-31T16:41:02.168Z",
+            "type": 0,
+            "expireTime": "9999-01-01T00:00:00.000Z"
         }
        ==============
          */
 
 //        Log.d(TAG, "deserialize: " + json.toString());
 
-        final JsonObject jsonObject = json.getAsJsonObject();
-        final String id = jsonObject.get("_id").getAsString();
-        final JsonObject source = jsonObject.get("_source").getAsJsonObject();
-        final String name = source.get("name").getAsString();
+        final String id;
+        final String name;
+        final String geoloc;
+        final String ownerid;
+        final String views;
+        final String favouredby;
+        final String userLocated;
         final String description;
+        final String state;
+        final String lastMessageDate;
+        final String type;
+
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final JsonObject source = jsonObject.get("_source").getAsJsonObject();
+
+        Log.d(TAG, "deserialize: " + json.toString());
+
+        // ID
+        id = jsonObject.get("_id").getAsString();
+        // Name
+        name = source.get("name").getAsString();
+
+        // Description
         if(source.get("description") != null){
             description = source.get("description").getAsString();
         }
         else {
             description = "";
         }
-        final String geoloc = source.get("geo_loc").getAsString();
-        final String ownerid;
+
+        // Coordinates
+        geoloc = source.get("geo_loc").getAsString();
+
+        // OwnerID
         if(source.get("ownerId") != null){
             ownerid = source.get("ownerId").getAsString();
         }
         else {
             ownerid = "";
         }
-        final String favouredby = source.get("favouredBy").getAsString();
-        final String views = source.get("views").getAsString();
-        final String state = source.get("state").getAsString();
+
+        // View Count
+        views = source.get("views").getAsString();
+        // Favorite Count
+        favouredby = source.get("favouredBy").getAsString();
+
+        // Square State
+        state = source.get("state").getAsString();
+
+        // Last Message Date
         String lmd = "";
         try {
-            final String lastMessageDate = source.get("lastMessageDate").getAsString();
+            lastMessageDate = source.get("lastMessageDate").getAsString();
             lmd = lastMessageDate;
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, this.locale);
+
+        // Tipo
+        JsonElement typeElement = source.get("type");
+        if(typeElement == null)
+        {
+            type = "0";
+        }else
+        {
+            type = typeElement.getAsString();
+        }
+
+        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, views, state, lmd, type, this.locale);
         return square;
     }
 }

@@ -242,6 +242,46 @@ public class InSquareProfile {
         return userId!= null && username!= null && email != null;
     }
 
+    public static boolean isFacebookConnected()
+    {
+        return facebookToken != null;
+    }
+
+    public static void clearFacebookCredentials(Context c)
+    {
+        facebookName = null;
+        facebookEmail = null;
+        facebookId = null;
+        facebookToken = null;
+
+        save(c);
+    }
+
+    public static boolean isGoogleConnected()
+    {
+        return googleToken != null;
+    }
+
+    public static void clearGoogleCredentials(Context c)
+    {
+        googleName = null;
+        googleEmail = null;
+        googleId = null;
+        googleToken = null;
+
+        save(c);
+    }
+
+    public static void clearProfileCredentials(Context c)
+    {
+        userId = null;
+        username = null;
+        email = null;
+        pictureUrl = null;
+
+        save(c);
+    }
+
     @Override
     public String toString() {
         return "==== USER  ====" +
@@ -258,23 +298,6 @@ public class InSquareProfile {
                 "\nEmail: " + googleEmail +
                 "\nName: " + googleEmail;
 
-    }
-
-    public static String printProfile()
-    {
-        return "==== USER  ====" +
-                "\nID: " + userId +
-                "\nUsername: " + username +
-                "\nEmail: " + email +
-                "\nPicture URL: " + pictureUrl +
-                "\n==== FACEBOOK  ====" +
-                "\nID: " + facebookId +
-                "\nEmail: " + facebookEmail +
-                "\nName : " + facebookName +
-                "\n==== GOOGLE ====" +
-                "\nID: " + googleId +
-                "\nEmail: " + googleEmail +
-                "\nName: " + googleEmail;
     }
 
     public static void addListener(InSquareProfileListener listener)

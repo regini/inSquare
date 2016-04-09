@@ -160,6 +160,7 @@ public class ProfileFragment extends Fragment implements
             {
                 int viewPosition = viewHolder.getAdapterPosition();
                 adapterOwned.pendingRemoval(viewPosition);
+                Log.d(TAG, "onSwiped: swiped from " + direction);
             }
 
             @Override
@@ -176,14 +177,13 @@ public class ProfileFragment extends Fragment implements
                 }
                 if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     View itemView = viewHolder.itemView;
-                    int viewPosition = viewHolder.getAdapterPosition();
 
                     float width = itemView.getWidth();
                     float delta = 1.0f - Math.abs(dX) / width;
                     itemView.setAlpha(delta * delta);
-//                    itemView.setTranslationX(dX);
+                    itemView.setTranslationX(dX);
 
-//                    Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
+                    Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
 
                     if (delta < 1) {
                         // Sfondo rosso
@@ -194,9 +194,10 @@ public class ProfileFragment extends Fragment implements
                                 itemView.getBottom()
                         );
                         background.draw(c);
-                        // Cestino
+
+                        // Immagine Cestino
                         int itemHeight = itemView.getBottom() - itemView.getTop();
-                        int trashWidth = trashCan.getIntrinsicWidth();
+                        int trashWidth = (trashCan.getIntrinsicWidth()/3)*2;
                         int trashHeight = trashWidth;
                         int trashLeft = (int) (itemView.getRight() - rightMargin - trashWidth);
                         int trashRight = (int) (itemView.getRight() - rightMargin);

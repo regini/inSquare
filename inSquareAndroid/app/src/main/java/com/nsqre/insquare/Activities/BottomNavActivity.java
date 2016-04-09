@@ -2,8 +2,10 @@ package com.nsqre.insquare.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,8 +26,12 @@ import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Square.RecyclerSquareAdapter;
+import com.nsqre.insquare.Square.Square;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItem;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
+import com.nsqre.insquare.Utilities.DialogHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +59,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             R.color.md_teal_A400
     };
 
-    AHBottomNavigation bottomNavigation;
-    FrameLayout mainContentFrame;
+    public AHBottomNavigation bottomNavigation;
+    public FrameLayout mainContentFrame;
+    public CoordinatorLayout coordinatorLayout;
 
     private BottomSheetDialog bottomSheetDialog;
 
@@ -69,7 +76,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             getWindow().setExitTransition(fade);
             getWindow().setEnterTransition(fade);
         }
-
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.bottom_nav_coordinator_layout);
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_nav_bar);
 
         setupBottomNavigation();
@@ -80,17 +87,18 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     }
 
-    private List<BottomSheetItem> instantiateListMenu()
+    private List<BottomSheetItem> instantiateListMenu(Square square)
     {
-        String shareString = getResources().getString(R.string.share_action);
-        String editString = getResources().getString(R.string.edit_action);
-        String muteString = getResources().getString(R.string.mute_action);
-        String deleteString = getResources().getString(R.string.delete_action);
+        String shareString = getResources().getString(R.string.action_share);
+        String muteString = getResources().getString(R.string.action_mute);
+        String deleteString = getResources().getString(R.string.action_delete);
         ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
-//        menuList.add(new BottomSheetItem(R.drawable.ic_mode_edit_black_48dp, "Modifica"));
+        if(InSquareProfile.isOwned(square.getId()))
+        {
+            menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, deleteString));
+        }
         menuList.add(new BottomSheetItem(R.drawable.ic_share_black_48dp, shareString));
-        menuList.add(new BottomSheetItem(R.drawable.ic_volume_off_black_48dp, "Muto"));
-//        menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, "Elimina"));
+        menuList.add(new BottomSheetItem(R.drawable.ic_sms_failed_black_24dp, muteString));
 
         return menuList;
     }
@@ -116,11 +124,10 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         bottomNavigation.addItem(recentsItem);
         bottomNavigation.addItem(othersItem);
 
-        bottomNavigation.setBehaviorTranslationEnabled(false);
         bottomNavigation.setColored(false);
         // Set background color
-        bottomNavigation.setDefaultBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark));
-        bottomNavigation.setAccentColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        bottomNavigation.setDefaultBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        bottomNavigation.setAccentColor(ContextCompat.getColor(this, R.color.white));
 
         bottomNavigation.setOnTabSelectedListener(
                 new AHBottomNavigation.OnTabSelectedListener() {
@@ -170,16 +177,16 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
-    public void showBottomSheetDialog(String name)
+    public void showBottomSheetDialog(Square square, RecyclerSquareAdapter adapter, int viewHolderPosition)
     {
         bottomSheetDialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_menu, null);
         TextView dialogSquareName = (TextView) view.findViewById(R.id.bottom_sheet_name);
-        dialogSquareName.setText(name);
+        dialogSquareName.setText(square.getName());
         final RecyclerView list = (RecyclerView) view.findViewById(R.id.bottom_sheet_list);
         list.setHasFixedSize(true);
         list.setLayoutManager(new LinearLayoutManager(this));
-        list.setAdapter(new BottomSheetItemAdapter(instantiateListMenu(), this));
+        list.setAdapter(new BottomSheetItemAdapter(instantiateListMenu(square), this, adapter, viewHolderPosition));
 
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.show();
@@ -204,11 +211,19 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         Questo e' il click dell'oggetto nel menu che viene istanziato sul long click di una Square nella lista
     */
     @Override
-    public void onBottomMenuItemClick(BottomSheetItem item) {
+    public void onBottomMenuItemClick(BottomSheetItem item,
+                                      final RecyclerSquareAdapter fragmentListElementAdapter,
+                                      final int listHolderPosition
+    )
+    {
         if(bottomSheetDialog != null)
         {
-            String shareString = getResources().getString(R.string.share_action);
-            if(item.getTitle() == shareString)
+            Resources res = getResources();
+            final String shareString = res.getString(R.string.action_share);
+            final String muteString = res.getString(R.string.action_mute);
+            final String deleteString = res.getString(R.string.action_delete);
+
+            if(item.getTitle().equals(shareString))
             {
                 String text = "Vieni anche tu su InSquare! - https://play.google.com/store/apps/details?id=com.nsqre.insquare";
                 Intent sendIntent = new Intent();
@@ -218,13 +233,23 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent, "Send To"));
             }
+            if(item.getTitle().equals(muteString))
+            {
+                String squareId = fragmentListElementAdapter.squaresArrayList.get(listHolderPosition).getId();
+                (new DialogHandler()).handleMuteRequest(this, coordinatorLayout, TAG, squareId);
+            }
+            if(item.getTitle().equals(deleteString))
+            {
+                fragmentListElementAdapter.removeElement(listHolderPosition);
+            }
+
+
             Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
 
             // TODO implementare menuitemclick
             bottomSheetDialog.dismiss();
         }
     }
-
     @Override
     public void onBackPressed() {
         this.finishAffinity();
