@@ -13,6 +13,7 @@
         android:layout_height="100dp"
         android:background="@color/colorAccent"
         android:padding="8dp"
+        android:elevation="2dp"
         >
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -40,19 +41,12 @@
 
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/drop_shadow"
-        android:rotation="180"
-        />
-
     <!-- Sezione delle connessioni Social -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorPrimaryLight"
+        android:background="@color/white"
         android:gravity="center_vertical"
         >
 
@@ -63,13 +57,9 @@
             android:gravity="center_vertical"
             android:fontFamily="sans-serif-condensed"
             android:paddingLeft="@dimen/activity_vertical_margin"
+            android:background="@color/colorPrimaryLight"
             />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            />
         <TextView
             android:id="@+id/settings_facebook_connect"
             android:layout_width="match_parent"
@@ -79,23 +69,26 @@
             android:text="@string/settings_connect_facebook"
             android:textColor="@color/colorTextPrimary"
             android:fontFamily="sans-serif-condensed"
-            android:background="@color/background"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            android:rotation="180"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@color/white"
             />
 
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/drop_shadow"
+        android:rotation="180"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
+        android:background="@color/white"
         >
 
         <TextView
@@ -105,37 +98,35 @@
             android:gravity="center_vertical"
             android:fontFamily="sans-serif-condensed"
             android:paddingLeft="@dimen/activity_vertical_margin"
+            android:background="@color/colorPrimaryLight"
             />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            />
         <TextView
             android:id="@+id/settings_google_connect"
             android:layout_width="match_parent"
             android:layout_height="@dimen/settings_row_height"
             android:gravity="center_vertical"
-            android:background="@color/background"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingLeft="@dimen/activity_vertical_margin"
             android:text="Connetti con Google"
             android:textColor="@color/colorTextPrimary"
             android:fontFamily="sans-serif-condensed"
             />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            android:rotation="180"
-            />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/drop_shadow"
+        android:rotation="180"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_vertical"
+        android:background="@color/white"
         >
 
         <TextView
@@ -148,28 +139,22 @@
             android:background="@color/colorPrimaryLight"
             />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            />
         <TextView
             android:id="@+id/settings_send_feedback"
             android:layout_width="match_parent"
             android:layout_height="@dimen/settings_row_height"
             android:paddingLeft="@dimen/activity_vertical_margin"
             android:gravity="center_vertical"
-            android:background="@color/background"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="Invia un Feedback"
             android:textColor="@color/colorTextPrimary"
             android:fontFamily="sans-serif-condensed"
         />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/drop_shadow"
-            android:rotation="180"
-            />
-
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/drop_shadow"
+        android:rotation="180"
+        />
 </LinearLayout>

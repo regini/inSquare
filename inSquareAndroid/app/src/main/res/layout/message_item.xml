@@ -65,7 +65,7 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="2dp"
                     android:background="@color/accent"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
                 <TextView
                     android:id="@+id/url_provider"
                     android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
                     android:textSize="15sp"
                     android:layout_below="@+id/url_line"
                     android:text="provider"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:fontFamily="sans-serif-condensed"
                     android:textColor="@color/blue_button"/>
                 <TextView
@@ -83,7 +83,7 @@
                     android:layout_below="@+id/url_provider"
                     android:text="Url title"
                     android:textStyle="bold"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:fontFamily="sans-serif-condensed"
                     android:textSize="18sp"/>
                 <TextView
@@ -93,7 +93,7 @@
                     android:layout_below="@+id/url_title"
                     android:fontFamily="sans-serif-condensed"
                     android:text="Url description"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:maxLines="8"
                     android:ellipsize="end"
                     android:textSize="15sp"/>
@@ -108,7 +108,7 @@
                     android:layout_alignParentRight="true"
                     android:paddingStart="5dp"
                     android:paddingLeft="5dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
             </RelativeLayout>
         </RelativeLayout>
 

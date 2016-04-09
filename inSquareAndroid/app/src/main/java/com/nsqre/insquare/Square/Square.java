@@ -59,6 +59,7 @@ public class Square implements Serializable {
      */
     private Calendar lastMessageDate;
     private String lastMessageDateString;
+
     private Locale myLocale;
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
@@ -70,7 +71,18 @@ public class Square implements Serializable {
         this.ownerId = ownerId;
     }
 
-    public Square(String id, String name, String description, String geoloc, String ownerId, String favouredBy, String[] favourers, String views, String state, String lastMessageDate, Locale l) {
+    public Square(String id,
+                  String name,
+                  String description,
+                  String geoloc,
+                  String ownerId,
+                  String favouredBy,
+                  String[] favourers,
+                  String views,
+                  String state,
+                  String lastMessageDate,
+                  String type,
+                  Locale l) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -107,6 +119,9 @@ public class Square implements Serializable {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        this.type = type;
+
         this.myLocale = l;
 //        Log.d(TAG, "NEWSQUARE:\n" + this.toString());
     }

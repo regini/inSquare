@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
@@ -17,6 +18,8 @@ import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
+import java.util.Date;
+
 public class DialogHandler {
 
     public static void handleMuteRequest(
@@ -27,11 +30,11 @@ public class DialogHandler {
     )
     {
         final CharSequence options[] = new CharSequence[]{
-                "Abilita",
-                "Disabilita per 1h",
-                "Disabilita per 8h",
-                "Disabilita per 2 giorni",
-                "Disabilita indefinitamente"
+                "Abilita", //0
+                "Disabilita per 1h", //1
+                "Disabilita per 8h", //2
+                "Disabilita per 2 giorni",//3
+                "Disabilita indefinitamente"//4
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(where);
@@ -65,6 +68,43 @@ public class DialogHandler {
                                     public void onDismissed(Snackbar snackbar, int event) {
                                         super.onDismissed(snackbar, event);
                                         if(valid) {
+                                            SharedPreferences sharedPreferences = where.getSharedPreferences("NOTIFICATION_MUTE_MAP", where.MODE_PRIVATE);
+
+                                            if(sharedPreferences.contains(squareId)){
+                                                Log.d("NIKKKKKKKK0", sharedPreferences.getString(squareId, ""));
+                                                sharedPreferences.edit().remove(squareId).apply();
+                                                Log.d("sharedPreferences", "aggiorno il mute di una square già mutata");
+
+                                            }
+
+                                            long expireTime = 0;
+
+                                            long minutes = 1000 * 60;
+                                            long hours = minutes * 60;
+                                            long days = hours * 24;
+
+                                            long years = 365 * days;
+
+                                            switch (which)
+                                            {
+                                                case 0:
+                                                    expireTime = new Date().getTime() - hours;
+                                                    break;
+                                                case 1:
+                                                    expireTime = new Date().getTime() + hours;
+                                                    break;
+                                                case 2:
+                                                    expireTime = new Date().getTime() + 8 * hours;
+                                                    break;
+                                                case 3:
+                                                    expireTime = new Date().getTime() + 2 * days;
+                                                    break;
+                                                case 4:
+                                                    expireTime = new Date().getTime() + 10 * years;
+                                                    break;
+                                            }
+                                            sharedPreferences.edit().putString(squareId, Long.toString(expireTime)).apply();
+/*
                                             VolleyManager.getInstance().muteSquare(
                                                     InSquareProfile.getUserId(),
                                                     squareId,
@@ -97,7 +137,7 @@ public class DialogHandler {
                                                             // Rimane vuota
                                                         }
                                                     }
-                                            );
+                                            );*/
                                         }
                                         else {
                                             Log.d(TAG, "onDismissed: well, I've been undone!");
