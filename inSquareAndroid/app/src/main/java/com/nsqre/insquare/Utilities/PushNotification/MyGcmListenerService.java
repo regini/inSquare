@@ -34,6 +34,8 @@ import com.google.android.gms.gcm.GcmListenerService;
 import com.nsqre.insquare.Activities.LoginActivity;
 import com.nsqre.insquare.R;
 
+import java.util.Date;
+
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
@@ -82,6 +84,7 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotification(String message, String squareName, String squareId) {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
         int squareCount = notificationPreferences.getInt("squareCount", 0);
@@ -110,6 +113,7 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
         notificationBuilder.setSmallIcon(R.drawable.nsqre_map_pin_empty_inside);
         notificationBuilder.setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+
         if(squareCount == 1) {
             SharedPreferences messagePreferences = getSharedPreferences(squareId, MODE_PRIVATE);
             intent.putExtra("squareId", squareId);
@@ -147,7 +151,24 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         updateSquares("","","update");
-        notificationManager.notify(0, notificationBuilder.build());
+
+        SharedPreferences mutePreferences = getSharedPreferences("NOTIFICATION_MUTE_MAP", MODE_PRIVATE);
+
+        if(mutePreferences.contains(squareId)){
+            Log.d("nikkkk1","nikkkk");
+            String expireDate = mutePreferences.getString(squareId, "");
+            if(!expireDate.equals("")) {
+                long myExpireDate = Long.parseLong(expireDate, 10);
+                if (myExpireDate < (new Date().getTime())) {
+                    mutePreferences.edit().remove(squareId).apply();
+                    notificationManager.notify(0, notificationBuilder.build());
+                }
+            }
+        } else {
+            Log.d("nikkkk2","nikkkk");
+            notificationManager.notify(0, notificationBuilder.build());
+        }
+
     }
 
     public static class QuickstartPreferences {
