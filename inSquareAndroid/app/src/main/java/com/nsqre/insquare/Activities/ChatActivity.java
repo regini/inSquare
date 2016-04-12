@@ -149,7 +149,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             try {
                 Log.d(TAG, "onReceive: messaggio inviato con chatservice");
                 Message m = (Message) intent.getSerializableExtra("messageSent");
-                outgoingMessages.get(mSquareId).remove(m);
                 Message messageFromAdapter = messageAdapter.getMessage(m);
                 messageFromAdapter.setTime();
                 messageAdapter.notifyDataSetChanged();
@@ -734,10 +733,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chatEditText.setText("");
 
         Message m = new Message(message, mUsername, mUserId, format);
-        if (outgoingMessages.get(mSquareId) == null) {
-            outgoingMessages.put(mSquareId, new ArrayList<Message>());
-        }
-        outgoingMessages.get(mSquareId).add(m);
+        mProfile.addOutgoing(mSquareId, m, getApplicationContext());
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
         intent.putExtra("message", m);

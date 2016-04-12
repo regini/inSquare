@@ -9,6 +9,7 @@ import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.nsqre.insquare.Message.Message;
+import com.nsqre.insquare.User.InSquareProfile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +25,7 @@ public class ChatService extends Service {
     private Socket mSocket;
     private final int MAX_RETRY = 10;
     private int retryNumber;
-    private Message message;
+    private String mSquareId;
     
     public ChatService() {
     }
@@ -36,7 +37,7 @@ public class ChatService extends Service {
         //Log.d(TAG, "onStartCommand: questo è il service " + this.toString());
         if (intent != null) {
             Log.d(TAG, "onHandleIntent: " + this.getClass().getName());
-            String mSquareId = intent.getStringExtra("squareid");
+            mSquareId = intent.getStringExtra("squareid");
             Message message = (Message) intent.getSerializableExtra("message");
             String mUsername = message.getName();
             String mUserId = message.getFrom();
@@ -98,7 +99,6 @@ public class ChatService extends Service {
                         5000);
             }
             else {
-                //TODO NON c'è notifica dal server
                 Log.d(TAG, "sendMessage: messaggio non inviato per num tentativi troppo alto");
             }
         }
@@ -108,6 +108,11 @@ public class ChatService extends Service {
     private void publishResults(Message m) {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra("messageSent", m);
+        InSquareProfile profile = InSquareProfile.getInstance(getApplicationContext());
+        Log.d(TAG, "publishResults: " + profile.getOutgoingMessages());
+        Log.d(TAG, "publishResults: " + mSquareId);
+        profile.removeOutgoing(mSquareId, m);
         sendBroadcast(intent);
+        stopSelf();
     }
 }
