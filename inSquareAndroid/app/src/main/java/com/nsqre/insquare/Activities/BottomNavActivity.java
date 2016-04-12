@@ -1,8 +1,12 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +17,7 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -70,6 +75,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     public CoordinatorLayout coordinatorLayout;
 
     private BottomSheetDialog bottomSheetDialog;
+    private AHBottomNavigation.OnTabSelectedListener mTambleSelectedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +103,70 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
         mainContentFrame = (FrameLayout) findViewById(R.id.bottom_nav_content_frame);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, MapFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, MapFragment.newInstance()).commitAllowingStateLoss();
 
         Intent intent = new Intent(this, LocationService.class);
         startService(intent);
 
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("update_squares"));
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if(intent.getStringExtra("squareId") != null && !"".equals(intent.getStringExtra("squareId"))) {
+            MapFragment mapFragment = MapFragment.newInstance();
+            if(!mapFragment.isAdded()) {
+                mTambleSelectedListener.onTabSelected(0, true);
+                bottomNavigation.setCurrentItem(0);
+            } else {
+                mapFragment.checkActivityIntent(intent);
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        calculateNotifications();
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("event");
+            Log.d("receiver", "Got message: " + message);
+            if("update".equals(intent.getStringExtra("action"))) {
+                calculateNotifications();
+                InSquareProfile.getInstance(getApplicationContext());
+                InSquareProfile.downloadAllSquares();
+            }
+        }
+    };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    private void calculateNotifications() {
+        if(bottomNavigation != null) {
+            SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
+            int recents = 0;
+            int favourites = 0;
+            for(String k : notificationPreferences.getAll().keySet()) {
+                if(InSquareProfile.isFav(k)) {
+                    favourites += notificationPreferences.getInt(k,0);
+                }
+                if(InSquareProfile.isRecent(k)) {
+                    recents += notificationPreferences.getInt(k,0);
+                }
+            }
+            bottomNavigation.setNotification(favourites,2);
+            bottomNavigation.setNotification(recents,3);
+        }
     }
 
     private List<BottomSheetItem> instantiateListMenu(Square square)
@@ -135,6 +200,8 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         AHBottomNavigationItem recentsItem = new AHBottomNavigationItem(recentsTabName, R.drawable.bottom_bar_recent);
         AHBottomNavigationItem othersItem = new AHBottomNavigationItem(otherTabName, R.drawable.ic_settings_white_48dp);
 
+        bottomNavigation.removeAllItems();
+
         bottomNavigation.addItem(mapItem);
         bottomNavigation.addItem(profileItem);
         bottomNavigation.addItem(favsItem);
@@ -151,6 +218,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                     @Override
                     public void onTabSelected(int position, boolean wasSelected) {
                         Fragment f;
+                        mTambleSelectedListener = this;
 
                         // position dipende dall'ordine di inserimento tramite bottomNavigation#addItem()
                         switch (position) {
@@ -175,6 +243,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                         getSupportFragmentManager().beginTransaction().replace(R.id.bottom_nav_content_frame, f).commit();
                     }
                 });
+        calculateNotifications();
     }
 
     public static String setupInitials(String words) {
@@ -222,6 +291,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     @Override
     public void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
     }
 
     /*

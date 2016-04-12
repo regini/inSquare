@@ -43,7 +43,8 @@ public class Message implements Serializable {
 
     private String urlProvider;
     private String urlTitle;
-    private String urlDesription;
+    private String urlDescription;
+    private String urlImage;
     private boolean isLineVisible;
 
     private Locale locale;
@@ -130,12 +131,20 @@ public class Message implements Serializable {
         this.urlTitle = urlTitle;
     }
 
-    public String getUrlDesription() {
-        return urlDesription;
+    public String getUrlDescription() {
+        return urlDescription;
     }
 
-    public void setUrlDesription(String urlDesription) {
-        this.urlDesription = urlDesription;
+    public void setUrlDescription(String urlDescription) {
+        this.urlDescription = urlDescription;
+    }
+
+    public String getUrlImage() {
+        return urlImage;
+    }
+
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
     }
 
     public boolean isLineVisible() {

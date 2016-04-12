@@ -303,10 +303,10 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "launchInSquare: launching!");
         Intent intent = new Intent(getApplicationContext(), BottomNavActivity.class);
         if(getIntent().getExtras() != null) {
-            if(getIntent().getExtras().getInt("profile") == 2) {
-                intent.putExtra("profile", getIntent().getExtras().getInt("profile"));
+            if(getIntent().getExtras().getInt("map") == 0) {
+                intent.putExtra("map", getIntent().getIntExtra("map",0));
             }
-            if(getIntent().getStringExtra("squareId") != null) {
+            else if(getIntent().getStringExtra("squareId") != null) {
                 intent.putExtra("squareId", getIntent().getStringExtra("squareId"));
             }
             getIntent().getExtras().clear();

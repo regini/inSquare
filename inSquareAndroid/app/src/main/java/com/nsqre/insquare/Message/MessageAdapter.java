@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Patterns;
@@ -20,6 +21,7 @@ import com.leocardz.link.preview.library.TextCrawler;
 import com.nsqre.insquare.Activities.FullScreenImageActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
+import com.nsqre.insquare.Utilities.MyLeadingMarginSpan2;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -220,8 +222,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             holder.urlTitle.setText("Title");
             holder.urlTitle.setVisibility(View.GONE);
         }
-        if(m.getUrlDesription() != null && !"".equals(m.getUrlProvider())) {
-            holder.urlDescription.setText(m.getUrlDesription());
+        if(m.getUrlImage() != null && !"".equals(m.getUrlImage())) {
+            Picasso.with(context)
+                    .load(m.getUrlImage())
+                    .resize(dpToPx(50),dpToPx(50))
+                    .centerCrop()
+                    .into(holder.urlImage);
+            holder.urlImage.setVisibility(View.VISIBLE);
+        } else if(holder.urlImage != null) {
+            holder.urlImage.setVisibility(View.GONE);
+        }
+        if(m.getUrlDescription() != null && !"".equals(m.getUrlProvider())) {
+            if(m.getUrlImage() != null && !"".equals(m.getUrlImage())) {
+                SpannableStringBuilder spannableString = new SpannableStringBuilder(m.getUrlDescription());
+                spannableString.setSpan(new MyLeadingMarginSpan2(3, dpToPx(60)),
+                        0, spannableString.length(), 0);
+                holder.urlDescription.setText(spannableString);
+            } else {
+                holder.urlDescription.setText(m.getUrlDescription());
+            }
             holder.urlDescription.setVisibility(View.VISIBLE);
         } else if(holder.urlDescription != null) {
             holder.urlDescription.setText("description");
@@ -234,11 +253,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
+
     private void checkUrl(final Message message, int position) {
         Matcher m = Patterns.WEB_URL.matcher(message.getText());
         if(m.find() && message.getUrlProvider() == null
                 && message.getUrlTitle() == null
-                && message.getUrlDesription() == null) {
+                && message.getUrlDescription() == null) {
             String url = m.group();
             if(m.group().contains("http://i.imgur.com/")) {
                 return;
@@ -259,19 +284,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         Message m = mDataset.get(urlPositionsQueue.getFirst());
                         m.setUrlProvider(sourceContent.getCannonicalUrl());
                         m.setUrlTitle(sourceContent.getTitle());
-                        m.setUrlDesription(sourceContent.getDescription());
+                        m.setUrlDescription(sourceContent.getDescription());
+                        if(sourceContent.getImages().size() > 0) {
+                            m.setUrlImage(sourceContent.getImages().get(0));
+                        }
                         m.setIsLineVisible(true);
                         notifyItemChanged(urlPositionsQueue.getFirst());
                         urlPositionsQueue.remove(0);
-                        /*if(sourceContent.getImages().size() > 0) {
-                            urlImage.setVisibility(View.VISIBLE);
-                            String image = sourceContent.getImages().get(0);
-                            Picasso.with(context)
-                                    .load(image)
-                                    .resize(200,200)
-                                    .centerInside()
-                                    .into(holder.urlImage);
-                        }*/
                     }
                 }
             }, url);
@@ -303,12 +322,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         for(int i = 0; i<mDataset.size(); i++) {
             removeItem(i);
         }
-    }
-
-    private int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
     }
 
     public boolean contains(Message msg) {

@@ -43,13 +43,15 @@
             />
         <ImageView
             android:id="@+id/message_outgoing_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_below="@+id/message_content"
-            android:layout_alignRight="@+id/message_content"
-            android:layout_alignEnd="@+id/message_content"
+            android:layout_alignRight="@+id/message_timestamp"
+            android:layout_alignEnd="@+id/message_timestamp"
             android:src="@drawable/ic_schedule_black_48dp"
+            android:paddingTop="2dp"
             android:layout_alignBottom="@+id/message_timestamp"
-            android:visibility="invisible"/>
+            android:tint="@color/primary"
+            android:visibility="gone"/>
     </RelativeLayout>
 </RelativeLayout>

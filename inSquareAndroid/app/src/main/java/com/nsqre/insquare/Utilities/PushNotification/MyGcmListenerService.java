@@ -31,7 +31,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.nsqre.insquare.Activities.LoginActivity;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 
 import java.util.Date;
@@ -82,8 +82,8 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message, String squareName, String squareId) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(this, BottomNavActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
         int notificationCount = 0;
@@ -134,7 +134,8 @@ public class MyGcmListenerService extends GcmListenerService {
                     .setSummaryText("inSquare"));
             notificationBuilder.setContentText(notificationCount > 1 ? "Hai " + notificationCount + " nuovi messaggi" : message);
         } else {
-            intent.putExtra("profile", 2);
+            intent.putExtra("map", 0);
+            intent.removeExtra("squareId");
             notificationBuilder.setContentTitle("inSquare");
             notificationBuilder.setContentText("Hai " + (notificationCount) + " nuovi messaggi in "
                     + squareCount + " piazze");
@@ -144,7 +145,7 @@ public class MyGcmListenerService extends GcmListenerService {
         notificationBuilder.setVibrate(new long[] { 300, 300, 300, 300, 300 });
         notificationBuilder.setLights(Color.RED, 1000, 3000);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =

@@ -81,11 +81,10 @@
                 android:id="@+id/url_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/url_provider"
-                android:layout_toRightOf="@+id/url_title"
-                android:layout_toEndOf="@+id/url_title"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_below="@id/url_title"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="2dp"
                 android:paddingStart="5dp"
                 android:paddingLeft="5dp"
                 android:visibility="gone"/>
@@ -103,13 +102,15 @@
             />
         <ImageView
             android:id="@+id/message_outgoing_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_below="@+id/message_content"
-            android:layout_alignRight="@+id/message_content"
-            android:layout_alignEnd="@+id/message_content"
+            android:layout_alignRight="@+id/message_timestamp"
+            android:layout_alignEnd="@+id/message_timestamp"
             android:src="@drawable/ic_schedule_black_48dp"
+            android:paddingTop="2dp"
             android:layout_alignBottom="@+id/message_timestamp"
-            android:visibility="invisible"/>
+            android:tint="@color/primary"
+            android:visibility="gone"/>
     </RelativeLayout>
 </RelativeLayout>

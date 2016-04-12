@@ -79,7 +79,7 @@ public class MapFragment extends Fragment
 
 
     private List<Square> searchResult;
-    private static MapFragment instance;
+    public static MapFragment instance;
     private SupportMapFragment mapFragment;
 
     private static final String TAG = "MapFragment";
@@ -219,7 +219,7 @@ public class MapFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(TAG, "onDetach: removing the fraggment from the system!");
+        Log.d(TAG, "onDetach: removing the fragment from the system!");
         InSquareProfile.removeListener(this);
     }
 
@@ -516,11 +516,16 @@ public class MapFragment extends Fragment
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        if(getActivity().getIntent().getStringExtra("squareId") != null) {
-            String squareId = getActivity().getIntent().getStringExtra("squareId");
+        checkActivityIntent(getActivity().getIntent());
+    }
+
+    public void checkActivityIntent(Intent intent) {
+        if(intent.getStringExtra("squareId") != null) {
+            String squareId = intent.getStringExtra("squareId");
             if(InSquareProfile.isFav(squareId)) {
                 for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                     if(squareId.equals(s.getId())) {
+                        intent.getExtras().clear();
                         startChatActivity(s);
                         break;
                     }
@@ -528,12 +533,12 @@ public class MapFragment extends Fragment
             } else if(InSquareProfile.isRecent(squareId)) {
                 for(Square s : InSquareProfile.getRecentSquaresList()) {
                     if(squareId.equals(s.getId())) {
+                        intent.getExtras().clear();
                         startChatActivity(s);
                         break;
                     }
                 }
             }
-            getActivity().getIntent().getExtras().clear();
         }
     }
 
