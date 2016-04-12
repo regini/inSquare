@@ -47,7 +47,6 @@ import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
 import com.nsqre.insquare.Utilities.DialogHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
