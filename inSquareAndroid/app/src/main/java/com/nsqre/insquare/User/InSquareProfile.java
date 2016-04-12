@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -116,8 +117,8 @@ public class InSquareProfile {
         profile = new InSquareProfile();
 
         Gson gs = new Gson();
-        Type type = new TypeToken<ArrayList<Square>>(){}.getType();
-        Type type2 = new TypeToken<HashMap<String, ArrayList<Message>>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<Square>>(){}.getType();
+        Type hashmapType = new TypeToken<HashMap<String, ArrayList<Message>>>(){}.getType();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
         profile.userId = prefs.getString(USER_ID_KEY, null);
@@ -126,25 +127,25 @@ public class InSquareProfile {
         profile.pictureUrl = prefs.getString(PICTURE_URL_KEY, null);
 
         profile.listeners = new ArrayList<>();
-        profile.ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), type);
+        profile.ownedSquaresList = gs.fromJson(prefs.getString(OWNED_SQUARES_KEY, null), listType);
         if(profile.ownedSquaresList == null)
         {
             profile.ownedSquaresList = new ArrayList<>();
             Log.d(TAG, "ownedSquaresList was null");
         }
-        profile.favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), type);
+        profile.favouriteSquaresList = gs.fromJson(prefs.getString(FAVOURITE_SQUARES_KEY, null), listType);
         if(profile.favouriteSquaresList == null)
         {
             profile.favouriteSquaresList = new ArrayList<>();
             Log.d(TAG, "favourtieSquaresList was null");
         }
-        profile.recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), type);
+        profile.recentSquaresList = gs.fromJson(prefs.getString(RECENT_SQUARES_KEY, null), listType);
         if(profile.recentSquaresList == null)
         {
             profile.recentSquaresList = new ArrayList<>();
             Log.d(TAG, "recentSquaresList was null");
         }
-        profile.outgoingMessages = gs.fromJson(prefs.getString(OUTGOING_MESSAGES, null), type2);
+        profile.outgoingMessages = gs.fromJson(prefs.getString(OUTGOING_MESSAGES, null), hashmapType);
         if(profile.outgoingMessages == null)
         {
             profile.outgoingMessages = new HashMap<>();
@@ -325,6 +326,26 @@ public class InSquareProfile {
                 return;
             }
         }
+    }
+
+    /**
+     * TODO
+     */
+    public static void addOutgoing(String mSquareId, Message message, Context c) {
+        if (outgoingMessages.get(mSquareId) == null) {
+            outgoingMessages.put(mSquareId, new ArrayList<Message>());
+        }
+        outgoingMessages.get(mSquareId).add(message);
+        Log.d(TAG, "addOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size() );
+        save(c);
+    }
+
+    /**
+     * TODO
+     */
+    public static void removeOutgoing(String mSquareId, Message message) {
+        outgoingMessages.get(mSquareId).remove(message);
+        Log.d(TAG, "removeOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
     }
 
     /**

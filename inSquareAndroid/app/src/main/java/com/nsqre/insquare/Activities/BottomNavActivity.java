@@ -30,7 +30,9 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
+import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Services.ChatService;
 import com.nsqre.insquare.Services.LocationService;
 import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 import com.nsqre.insquare.Square.Square;
@@ -40,6 +42,7 @@ import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
 import com.nsqre.insquare.Utilities.DialogHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -71,6 +74,8 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     private BottomSheetDialog bottomSheetDialog;
 
+    private InSquareProfile mProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +106,19 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
         Intent intent = new Intent(this, LocationService.class);
         startService(intent);
+
+        //outgoing
+        mProfile = InSquareProfile.getInstance(getApplicationContext());
+        for (String squareid : mProfile.getOutgoingMessages().keySet()) {
+            for (Message mess : mProfile.getOutgoingMessages().get(squareid)) {
+                Intent chatIntent = new Intent(this, ChatService.class);
+                chatIntent.putExtra("squareid", squareid);
+                chatIntent.putExtra("message", mess);
+                startService(chatIntent);
+                Log.d(TAG, "onCreate: sto tentando l'invio di un messaggio che sta nella coda: {"
+                 + squareid + ", " + mess.toString());
+            }
+        }
 
     }
 
