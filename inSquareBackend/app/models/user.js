@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var bcrypt = require('bcrypt-nodejs');
 var Message = require('./message');
-var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
+var db = process.env.OPENSHIFT_FACETFLOW;
 
 // schema for our user model
 var userSchema = mongoose.Schema({
@@ -34,6 +34,11 @@ var userSchema = mongoose.Schema({
   	es_schema: Message}],
 	favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Square',
 		es_schema: Square}],
+	mute: [{
+		square: {type: mongoose.Schema.Types.ObjectId, ref: 'Square',
+			es_schema: Square},
+		expireTime: {type: Date}
+	}],
 	gcmToken: String,
 	lastLocation: {
     type: String,

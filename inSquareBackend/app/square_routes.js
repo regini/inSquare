@@ -4,6 +4,7 @@ var User = require('./models/user');
 var async = require('async');
 var gcm = require('node-gcm');
 var fs = require('fs');
+var arrayUniq = require('array-uniq');
 
 module.exports = function(router, passport)
 {
@@ -31,15 +32,21 @@ module.exports = function(router, passport)
       res.send("done");
     });
 */
-    //Documentata
+
     router.post('/squares', function(req, res)
     //FARE CONTROLLO SU LAT E LON che devono essere float
     {
-      var squareName = req.body.name;
-      var latitude = parseFloat(req.body.lat);
-      var longitude = parseFloat(req.body.lon);
-      var ownerId = req.body.ownerId;
-      var description = req.body.description;
+      var squareName = req.query.name;
+      var latitude = parseFloat(req.query.lat);
+      var longitude = parseFloat(req.query.lon);
+      var ownerId = req.query.ownerId;
+      var description = req.query.description;
+      var type = req.query.type;
+      var expireTime = undefined;
+
+      if(req.query.expireTime != undefined && req.query.expireTime != null && req.query.expireTime != ""){
+        expireTime = Date.parse(req.query.expireTime);
+      }
 
       if(squareName == undefined || squareName == null || squareName == "")
       {
@@ -57,7 +64,10 @@ module.exports = function(router, passport)
         res.send("Bisogna specificare delle coordinate valide!");
       }
 
-      createSquare(squareName, latitude, longitude, description, ownerId, function(square) {
+      createSquare(squareName, latitude, longitude, description, ownerId, type, expireTime, function(square) {
+        if(square == null) {
+          res.status(500);
+        }
         User.findById(ownerId, function(err,user) {
           if(err) console.log(err);
           user.favourites.push(square["_id"]);
@@ -69,26 +79,74 @@ module.exports = function(router, passport)
       });
     });
 
-    //Documentata
+
     router.patch('/squares?', function(req,res) {
       var description = req.query.description;
+      var name = req.query.name;
+      var expireTime = req.query.expireTime;
+
       var squareId = req.query.squareId;
-      if(req.query.update=='true' && description!=null && description!=undefined
-        && description!='' && squareId!=null && squareId!='' && squareId!=undefined) {
+      var ownerId = req.query.ownerId;
+
+      if(squareId!=null && squareId!='' && squareId!=undefined){
         Square.findById(req.query.squareId, function(err,square) {
           if(err) console.log(err);
-          square.description=req.query.description;
-          square.save(function(err) {
-            if(err) console.log(err);
-            res.send("La descrizione square è stata modificata");
-            notifyEvent(square.ownedBy, squareId, "update")
-         });
+          if( ownerId==undefined || ownerId==null || ownerId=='' || square.ownerId==ownerId ){
+              if( description!=null && description!=undefined && description!='') {
+                square.description=description;
+              }
+              if( name!=null && name!=undefined && name!='') {
+                square.name=name;
+              }
+              if(expireTime != undefined && expireTime != null && expireTime != ""){
+                square.expireTime = Date.parse(req.query.expireTime);
+              }
+              square.save(function(err) {
+                if(err) console.log(err);
+                res.send("La descrizione square è stata modificata");
+                notifyEvent(square.ownedBy, squareId, "update")
+              });
+            } else {
+                console.log("Errore");
+                res.send("I campi della Square NON sono stati modificati");
+            }
         })
-      }else{
+
+    } else {
       console.log("Errore");
-      res.send("La descrizione square NON è stata modificata");
+      res.send("I campi della Square NON sono stati modificati");
     }
     })
+
+
+    router.delete('/recentSquares', function(req, res) {
+      var squareId = req.query.squareId;
+      if(squareId != null && squareId != undefined && squareId != "") {
+        var userId = req.query.userId;
+        if(userId != null && userId != undefined && userId != "") {
+          User.findById(userId, function(err, usr){
+            if(err) console.log(err);
+            async.forEachOf(usr.recents, function(item, k, callback) {
+              console.log(item);
+              if(item != undefined && item.square == squareId) {
+                usr.recents.splice(k, 1);
+                usr.save();
+              }
+              callback();
+            }, function(err) {
+              if(err) console.log(err);
+              res.status(200).send("La square è stata eliminata dalle recenti");
+            })
+          });
+        } else {
+          res.status(403).send("Errore La square NON è stata eliminata dalle recenti. UserId mancante: " + userId);
+        }
+      } else {
+        res.status(403).send("Errore La square NON è stata eliminata dalle recenti. SquareId mancante: " + squareId);
+      }
+    })
+
+
 
     //Documentata
     router.get('/favouritesquares/:id', function(req, res) {
@@ -122,7 +180,10 @@ module.exports = function(router, passport)
               ],
               size:1000
             }, function(err, squares){
-                if(err) console.log(err);
+                if(err) {
+                  console.log(err);
+                  res.json(err);
+                } else {
                 console.log(squares);
                 res.header("Cache-Control", "no-cache, no-store, must-revalidate");
                 res.header("Pragma", "no-cache");
@@ -130,6 +191,7 @@ module.exports = function(router, passport)
                 res.header("expires", 0);
                 console.log(squares);
                 res.json(squares.hits.hits);
+              }
             });
           })
         });
@@ -157,22 +219,25 @@ module.exports = function(router, passport)
                   if(err) console.log(err);
                   console.log(usr);
                 })
-                sqr.favouredBy = sqr.favouredBy+1;
+                if(sqr.favourers.indexOf(usr.id) == (-1)) {
+                  sqr.favourers.push(usr.id);
+                  sqr.favouredBy = sqr.favouredBy+1;
+                }
                 sqr.save(function(err) {
                   if(err) console.log(err);
-                  res.send("La square è stata aggiunta come preferita");
+                  res.status(200).send("La square è stata aggiunta come preferita");
                   notifyEvent(user, square, "update")
-               });
+                });
               } else {
-                res.send("Errore la square è già tra i preferiti");
+                res.status(400).send("Errore la square è già tra i preferiti");
               }
             })
           });
         } else {
-          res.send("Errore la square NON è stata aggiunta come preferita. userId mancante: " + user);
+          res.status(400).send("Errore la square NON è stata aggiunta come preferita. userId mancante: " + user);
         }
       } else {
-        res.send("Errore la square NON è stata aggiunta come preferita. squareId mancante: " + square);
+        res.status(400).send("Errore la square NON è stata aggiunta come preferita. squareId mancante: " + square);
       }
     });
 
@@ -191,14 +256,17 @@ module.exports = function(router, passport)
               if(err) console.log(err);
               console.log(usr);
             });
-          });
-          Square.findById(squareId, function(err, sqr) {
-            if(err) console.log(err);
-            sqr.favouredBy = sqr.favouredBy-1;
-            sqr.save(function(err) {
+            Square.findById(squareId, function(err, sqr) {
               if(err) console.log(err);
-              console.log(sqr);
-              notifyEvent(userId, squareId, "update")
+              if(square.favourers.indexOf(usr.id) >= 0) {
+                sqr.favouredBy = sqr.favouredBy-1;
+                sqr.favourers.splice(squares.favourers.indexOf(usr.id), 1);
+              }
+              sqr.save(function(err) {
+                if(err) console.log(err);
+                console.log(sqr);
+                notifyEvent(userId, squareId, "update")
+              });
             });
           });
           res.status(200).send("La square è stata eliminata dai preferiti");
@@ -341,8 +409,7 @@ module.exports = function(router, passport)
             res.json(squares.hits.hits);
         });
       }
-      else if(req.query.autocomplete=='true') {
-        if(req.query.name != '' && req.query.name != undefined && req.query.name != null) {
+      else if(req.query.name != '' && req.query.name != undefined && req.query.name != null) {
           var name = req.query.name;
           if(req.query.lat != '' && req.query.lat != undefined && req.query.lon != null) {
             var lat = req.query.lat;
@@ -385,10 +452,9 @@ module.exports = function(router, passport)
             }
           }
         }
-      }
       //RICERCA PER TOPIC
       //TODO MESSAGGI RECENTI IN ORDINE DI CREATED BY
-      else if(req.query.topic=='true' && req.query.name!=undefined &&
+      else if(req.query.name!=undefined &&
             req.query.name!=null && req.query.name!='' &&
             req.query.lat != undefined && req.query.lat != null &&
             req.query.lat !=  '' && req.query.lon != undefined &&
@@ -437,10 +503,24 @@ module.exports = function(router, passport)
       }
       else if(req.query.name!=undefined) {
         console.log("REQ QUERY NAME:\n" + req.query.name);
-        Square.findOne({ 'name' : req.query.name }, function(err,square) {
-            if(err) res.send(err);
-            if(square) res.json(square);
-            else res.send("No square with this name");});
+        Square.search({
+          bool:{
+              should:
+              [
+                {
+                  fuzzy:{
+                    name:{
+                      value: req.query.name
+                    }
+                  }
+                }
+              ]
+            }
+        }, function(err, squares){
+          if (err) console.log(err);
+          console.log(squares);
+          res.json(squares.hits.hits);
+        })
       }
       else if(req.query.distance != undefined && req.query.lat != undefined
         && req.query.lon != undefined) {
@@ -479,9 +559,32 @@ module.exports = function(router, passport)
 };
 
 
+/*
+module.exports = {
+
+  updateMute: function() {
+    console.log("Updating mute squares");
+    var date = (new Date()).getTime();
+    console.log("Time now is: " + date);
+    User.find({}, function(err,users) {
+      if(err) console.log(err);
+      for(var i=0; i<users.length; i++){
+        for(var j=0; j<users[i].mute.length; j++){
+          console.log(users[i].mute[j].expireTime.getTime());
+          if(users[i].mute[j].expireTime.getTime() < date ){
+            users[i].mute.splice(j, 1);
+            users[i].save();
+          }
+        }
+      }
+    })
+  }
+
+}; //FINE module.exports
+*/
 
 //Aggiunto ownerID
-function createSquare(squareName, latitude, longitude, description, ownerId, callback) {
+function createSquare(squareName, latitude, longitude, description, ownerId, type, expireTime, callback) {
 	var square = new Square();
 
 	square.name = squareName;
@@ -492,27 +595,33 @@ function createSquare(squareName, latitude, longitude, description, ownerId, cal
   square.description = description;
   square.favouredBy = square.favouredBy+1;
   square.lastMessageDate = square.createdAt;
+  square.type = type;
+  square.expireTime = expireTime;
   square.save(function(err) {
-		if(err) console.log(err);
-    Square.findOne({'name' : squareName}, function(err,sqr) {
-      if(err) console.log(err);
-      var square = {};
-      square["_id"] = sqr.id;
-      square["_source"] = {};
-      square["_source"].name = sqr.name;
-      square["_source"].description = sqr.description;
-      square["_source"].searchName = sqr.searchName;
-      square["_source"].geo_loc = sqr.geo_loc;
-      square["_source"].messages = sqr.messages;
-      square["_source"].ownerId = sqr.ownerId;
-      square["_source"].views = sqr.views;
-      square["_source"].favouredBy = sqr.favouredBy;
-      square["_source"].state = sqr.state;
-      square["_source"].lastMessageDate = sqr.lastMessageDate;
-      console.log(square);
-      notifyEvent(ownerId, sqr.id, "creation");
-      callback(square);
-    })
+		if(err) {
+      console.log(err);
+      callback(null);
+    } else {
+      var sqr = {};
+      sqr["_id"] = square._id;
+      sqr["_source"] = {};
+      sqr["_source"].name = square.name;
+      sqr["_source"].description = square.description;
+      sqr["_source"].searchName = square.searchName;
+      sqr["_source"].geo_loc = square.geo_loc;
+      sqr["_source"].messages = square.messages;
+      sqr["_source"].ownerId = square.ownerId;
+      sqr["_source"].views = square.views;
+      sqr["_source"].favouredBy = square.favouredBy;
+      sqr["_source"].favourers = square.favourers;
+      sqr["_source"].state = square.state;
+      sqr["_source"].lastMessageDate = square.lastMessageDate;
+      sqr["_source"].type = sqr.type;
+      sqr["_source"].expireTime = sqr.expireTime;
+      console.log(sqr);
+      notifyEvent(ownerId, square._id, "creation");
+      callback(sqr);
+    }
 	})
 }
 
@@ -545,6 +654,17 @@ function forgetSquare(squareId) {
       var index = users[i].favourites.indexOf(squareId);
       users[i].favourites.splice(index, 1);
       users[i].save(function(err) {
+        if(err) console.log(err);
+      })
+
+      async.forEachOf(users[i].mute, function(item, k, callback) {
+        console.log(item);
+        if(item != undefined && item.square == squareId) {
+          users[i].mute.splice(k, 1);
+          users[i].save();
+        }
+        callback();
+      }, function(err) {
         if(err) console.log(err);
       })
       forgetRecent(squareId);
@@ -580,7 +700,7 @@ function indexSquare(squareId, squares, callback) {
 }
 
 function notifyEvent(userId, squareId, event) {
-  var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+  var sender = new gcm.Sender(process.env.GCM_SERVER_TOKEN);
   var message = new gcm.Message();
   message.addData("event", event);
   message.addData("userId", userId);
@@ -633,6 +753,34 @@ function findSquares(squares, lat, lon, callback){
   });
 }
 
+/*setTimeout(populateFavuorers, 5000);
+
+function populateFavuorers() {
+  console.log("populating")
+  Square.find({}, function(err,squares) {
+    if(err) {
+      console.log(err);
+    } else {
+      async.forEachOf(squares, function(square, k, callback1) {
+        square.favourers = [];
+        User.find({"favourites" : square.id}, function(err, users) {
+          if(err) {
+            console.log(err);
+            return callback1(err);
+          } else {
+            async.forEachOf(users, function(user, k2, callback2) {
+              square.favourers.push(user.id);
+              callback2();
+            }.bind({square : square}), function(err) {
+              square.save();
+              callback1();
+            })
+          }
+        })
+      })
+    }
+  })
+}*/
 
 setInterval(updateSquareState, 2*60*1000);
 
@@ -648,6 +796,7 @@ function updateSquareState() {
     }
   });
 }
+
 
 function getCurrentState(square, callback) {
   Message.esCount({

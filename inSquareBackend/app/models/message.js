@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var Square = require('./square');
 var User = require('./user');
-var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
+var db = process.env.OPENSHIFT_FACETFLOW;
 
 // schema for our messages model
 var messageSchema = mongoose.Schema({

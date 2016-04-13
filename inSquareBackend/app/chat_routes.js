@@ -55,7 +55,7 @@ module.exports = function(router, passport, squares)
 			socket.to( roomName ).emit('heyThere', msg, socket.id );
 		});
 
-		socket.on('sendMessage', function(msg)
+		socket.on('sendMessage', function(msg, callback)
 		{
 			var message = {};
 			var room = msg.room;
@@ -76,12 +76,15 @@ module.exports = function(router, passport, squares)
 						message.profile = usr.google.profilePhoto;
 					else if(usr.facebook.name)
 						message.profile = usr.facebook.profilePhoto;
-					socket.to(room).broadcast.emit('newMessage', message);
+						sendMessage(msg.message, msg.userid, room, function(m) {
+							message.msg_id = m._id;
+							message.userSpot = false;
+							socket.to(room).broadcast.emit('newMessage', message);
+							callback(message);
+						}.bind({message : message}));
 				})
 
 				// socket.emit('newMessage', data.user, data.message);
-
-				sendMessage(msg.message, msg.userid, room);
 				addToRecents(room, msg.userid);
 				notifyFavourers(room, msg.userid, msg.message);
 				notifyRecents(room, msg.userid, msg.message);
@@ -139,29 +142,6 @@ module.exports = function(router, passport, squares)
 
 		setTimeout(sendHeartbeat, 8000);
 	});
-
-		//Documentata
-		router.post('/gcmToken', function(req, res){
-			console.log("GCM: " + req.body.gcm + "userId: " + req.body.userId);
-			if(req.body.gcm && req.body.userId){
-				User.findById(req.body.userId, function(err, usr){
-					if (err) console.log(err)
-					usr.gcmToken = req.body.gcm;
-					usr.save(function(err){
-						if (err) console.log(err);
-						res.send("GCM TOKEN on Server");
-					})
-				})
-			}
-		});
-
-		//COSA FA??
-		router.get('/testToken/:id', function(req,res){
-			findPushTokensByRecentSquares(req.params.id, req.query.userId, function(result){
-				console.log(result);
-				res.send(result);
-			});
-		})
 
 		/*
     router.get('/get_messages', isLoggedIn, function(req, res)
@@ -259,35 +239,37 @@ module.exports = function(router, passport, squares)
 						}
 
 						for(var i = 0; i<messages.length; i++) {
-							var msg = {}
-							if(messages[i].senderId.google.name) {
-								msg.name = messages[i].senderId.google.name;
-								msg.picture = messages[i].senderId.google.profilePhoto;
-							}
-							else if(messages[i].senderId.facebook.name) {
-								msg.name = messages[i].senderId.facebook.name;
-								msg.picture = messages[i].senderId.google.profilePhoto;
-							}
-							msg.userSpot = 'false';
-							if(messages[i].senderId.lastLocation!=undefined){
-								var userLocation = (messages[i].senderId.lastLocation).split(',');
-								var userLocationObject = {};
-								userLocationObject.latitude = userLocation[0];
-								userLocationObject.longitude = userLocation[1];
+							if(messages[i].senderId!=undefined && messages[i].senderId!=null && messages[i].senderId!=""){
+								var msg = {}
+								if(messages[i].senderId.google.name) {
+									msg.name = messages[i].senderId.google.name;
+									msg.picture = messages[i].senderId.google.profilePhoto;
+								}
+								else if(messages[i].senderId.facebook.name) {
+									msg.name = messages[i].senderId.facebook.name;
+									msg.picture = messages[i].senderId.google.profilePhoto;
+								}
+								msg.userSpot = 'false';
+								if(messages[i].senderId.lastLocation!=undefined){
+									var userLocation = (messages[i].senderId.lastLocation).split(',');
+									var userLocationObject = {};
+									userLocationObject.latitude = userLocation[0];
+									userLocationObject.longitude = userLocation[1];
 
-								//482 metri è la distanza da n1 a n11 roma tre
-								if(geolib.getDistance(squareLocationObject, userLocationObject)<482){
-								msg.userSpot = 'true';
+									//482 metri è la distanza da n1 a n11 roma tre
+									if(geolib.getDistance(squareLocationObject, userLocationObject)<482){
+										msg.userSpot = 'true';
+									}
+								}
+
+
+								msg.text = messages[i].text;
+								msg.createdAt = messages[i].createdAt;
+								msg.msg_id = messages[i].id;
+								msg.from = messages[i].senderId.id;
+								result.push(msg);
 								}
 							}
-
-
-							msg.text = messages[i].text;
-							msg.createdAt = messages[i].createdAt;
-							msg.msg_id = messages[i].id;
-							msg.from = messages[i].senderId.id;
-							result.push(msg);
-						}
 					}
 					res.header("Cache-Control", "no-cache, no-store, must-revalidate");
 					res.header("Pragma", "no-cache");
@@ -395,7 +377,7 @@ function isLoggedIn(req, res, next)
 	res.redirect('/');
 }
 
-function sendMessage(text, user, square)
+function sendMessage(text, user, square, callback)
 {
 	var mes = new Message();
 
@@ -425,10 +407,11 @@ function sendMessage(text, user, square)
 		})
 	});
 
-	mes.save(function(err){
+	mes.save(function(err) {
 		if(err) console.log(err);
+		callback(mes);
 		console.log(mes);
-	});
+	}.bind({callback : callback}));
 
 }
 
@@ -467,7 +450,7 @@ function notifyFavourers(squareId, userId, text) {
 			if(err) console.log(err);
 			User.findById(userId, function(err, user) {
 				if(err) console.log(err);
-				var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+				var sender = new gcm.Sender(process.env.GCM_SERVER_TOKEN);
 				var message = new gcm.Message();
 				var name;
 				if(user.google.name)
@@ -492,7 +475,7 @@ function notifyRecents(squareId, userId, text) {
 			if(err) console.log(err);
 			User.findById(userId, function(err, user) {
 				if(err) console.log(err);
-				var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+				var sender = new gcm.Sender(process.env.GCM_SERVER_TOKEN);
 				var message = new gcm.Message();
 				var name;
 				if(user.google.name)
@@ -536,6 +519,11 @@ function findPushTokensByRecentSquares(squareId, userId, callback) {
 					}
 				},
 				{
+    			term: {
+        		'mute.square': squareId
+    			}
+				},
+				{
 					match : {
 						favourites : squareId
 					}
@@ -574,8 +562,13 @@ function findPushTokenByFavouriteSquares(squareId, userId, callback){
 					ids: {
 						values: [userId]
 					}
-				}
-			]
+				},
+				{
+    			term: {
+        		'mute.square': squareId
+    		}
+			}
+		]
 		}
 	},
 	{
@@ -633,7 +626,7 @@ function getState(count, callback) {
 }
 
 function notifyEvent(userId, squareId, event) {
-  var sender = new gcm.Sender("AIzaSyAyKlOD_EyfZBP2vDEOusMq97W_gE_aQzA");
+  var sender = new gcm.Sender(process.env.GCM_SERVER_TOKEN);
   var message = new gcm.Message();
   message.addData("event", event);
   message.addData("userId", userId);

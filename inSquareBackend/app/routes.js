@@ -10,6 +10,11 @@ module.exports = function(router, passport)
 		res.render('index.ejs'); //load index.ejs file
 	});
 
+	router.get('/ping', function(req, res)
+	{
+		res.send("pong");
+	});
+
 	// LOGIN
 	// =====
 	router.get('/login', function(req,res)

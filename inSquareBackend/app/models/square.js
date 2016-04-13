@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 var Message = require('./message');
 var User = require('./user');
-var db = process.env.OPENSHIFT_NODEJS_ELASTIC_URL;
+var db = process.env.OPENSHIFT_FACETFLOW;
 
 var squareSchema = mongoose.Schema({
   name: {
@@ -26,10 +26,14 @@ var squareSchema = mongoose.Schema({
    es_schema: User},
   views: {type: Number, default: 0},
   favouredBy: {type: Number, default: 0},
+  favourers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User',
+   es_schema: User}],
   userLocated: {type: Number, default: 0},
   description: {type: String},
   state: {type: String, default: "asleep"},
-  lastMessageDate: {type: Date}
+  lastMessageDate: {type: Date},
+  type: {type: Number, default: 0},
+  expireTime: {type: Date}
 });
 
 
