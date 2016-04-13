@@ -9,6 +9,7 @@ import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.nsqre.insquare.Message.Message;
+import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 
 import org.json.JSONException;
@@ -65,7 +66,7 @@ public class ChatService extends Service {
 
     private void sendMessage(final JSONObject data, final Message m) {
         try {
-            String url = "http://recapp-insquare.rhcloud.com/squares";
+            String url = getString(R.string.baseUrl) + "squares";
             mSocket = IO.socket(url);
             mSocket.connect();
 

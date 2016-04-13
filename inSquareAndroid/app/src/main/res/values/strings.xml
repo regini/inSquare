@@ -1,5 +1,10 @@
 <resources>
 
+    <!-- URL -->
+    <string name="baseUrl">http://cloud.insquare.it/</string>
+    <string name="squaresUrl">http://cloud.insquare.it/squares</string>
+    <!-- END URL -->
+
     <string name="app_name">inSquare</string>
 
     <string name="google_api_key">AIzaSyDqLoMQ7XqXUtffExOJlsSZJ23P1lSxu5Q</string>
@@ -41,17 +46,7 @@
         <item quantity="other">There are %d participants</item>
     </plurals>
 
-    <!-- URL -->
-    <string name="baseUrl0">http://recapp-insquare.rhcloud.com/</string>
-    <string name="squaresUrl">http://recapp-insquare.rhcloud.com/squares</string>
-    <string name="recentSquaresUrl">http://recapp-insquare.rhcloud.com/recentSquares</string>
-    <string name="userUrl">http://recapp-insquare.rhcloud.com/user</string>
-    <string name="messagesUrl">http://recapp-insquare.rhcloud.com/messages</string>
-    <string name="feedbackUrl">http://recapp-insquare.rhcloud.com/feedback</string>
-    <string name="favouritesquaresUrl">http://recapp-insquare.rhcloud.com/favouritesquares</string>
-    <string name="facebookTokenUrl">http://recapp-insquare.rhcloud.com/auth/facebook/token</string>
-    <string name="googleTokenUrl">http://recapp-insquare.rhcloud.com/auth/google/token</string>
-    <string name="gcmTokenUrl">http://recapp-insquare.rhcloud.com/gcmToken</string>
+
 
     <string name="action_share">Condividi</string>
     <string name="action_mute">Gestisci notifiche</string>
