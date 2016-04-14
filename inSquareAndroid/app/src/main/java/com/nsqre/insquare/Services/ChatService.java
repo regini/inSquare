@@ -66,7 +66,7 @@ public class ChatService extends Service {
 
     private void sendMessage(final JSONObject data, final Message m) {
         try {
-            String url = getString(R.string.baseUrl) + "squares";
+            String url = getString(R.string.socket);
             mSocket = IO.socket(url);
             mSocket.connect();
 

@@ -1,8 +1,8 @@
 <resources>
 
     <!-- URL -->
-    <string name="baseUrl">http://cloud.insquare.it/</string>
-    <string name="squaresUrl">http://cloud.insquare.it/squares</string>
+    <string name="baseUrl">http://recapp-insquare.rhcloud.com/</string>
+    <string name="socket">http://recapp-insquare.rhcloud.com/squares</string>
     <!-- END URL -->
 
     <string name="app_name">inSquare</string>
