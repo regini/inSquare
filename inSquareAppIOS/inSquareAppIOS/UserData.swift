@@ -65,7 +65,7 @@ var navigationBarHeight:CGFloat = 44
 
 //http://recapp-insquare.rhcloud.com/ log:
 //rhc tail recapp --namespace insquare 
-// new tail rhc tail insquarerecapp —namespace insquare
+// new tail rhc tail insquarerecapp --namespace insquare
 
 //pw v*******
 

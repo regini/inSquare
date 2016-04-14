@@ -3,6 +3,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Login View Controller-->
@@ -830,12 +831,20 @@
                                 <action selector="backButton:" destination="bBJ-et-D7k" id="R69-P4-DyR"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="Like-50.png" id="K9a-3I-npo">
-                            <color key="tintColor" red="0.64705882349999999" green="0.2470588235" blue="0.2274509804" alpha="1" colorSpace="calibratedRGB"/>
-                            <connections>
-                                <action selector="likeButton:" destination="bBJ-et-D7k" id="B5i-pj-ces"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem image="Like-50.png" id="K9a-3I-npo">
+                                <color key="tintColor" red="0.64705882349999999" green="0.2470588235" blue="0.2274509804" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="likeButton:" destination="bBJ-et-D7k" id="B5i-pj-ces"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="stop" id="M1N-nO-eLc">
+                                <color key="tintColor" red="0.64705882349999999" green="0.2470588235" blue="0.2274509804" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="reportAbuse:" destination="bBJ-et-D7k" id="262-vk-JYO"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>

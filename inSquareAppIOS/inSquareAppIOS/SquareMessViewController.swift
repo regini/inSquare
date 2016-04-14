@@ -43,6 +43,73 @@ class SquareMessViewController: JSQMessagesViewController
         }
     }
     
+    
+    @IBAction func reportAbuse(sender: AnyObject)
+    {
+        print("HERE WE ARE")
+        //1. Create the alert controller.
+        var alert = UIAlertController(title: "REPORT AN ABUSE", message: "Enter The Offensive Username", preferredStyle: .Alert)
+        //2. Add the text field. You can configure it however you need.
+        alert.addTextFieldWithConfigurationHandler({ (textField) -> Void in
+            textField.text = ""
+        })
+        //3. Grab the value from the text field, and print it when the user clicks OK.
+        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action) -> Void in
+            let textField = alert.textFields![0] as UITextField
+            if (textField.text == "")
+            {
+                print("Abuse not reported.")
+                return
+            }
+            else
+            {
+                let abuseReportText = "ABUSE REPORTED, SQUARE: \(self.squareName) USER:\(textField.text)"
+                
+                var jsnResult = JSON(data: NSData())
+                print("TEXT: \(textField.text)")
+                
+                var urlPostSquare = "\(serverMainUrl)/feedback?feedback=\(textField.text!)&username=\(username)&activity=ABUSE REPORT IN SQUARE \(self.squareId)"
+                urlPostSquare = urlPostSquare.stringByReplacingOccurrencesOfString(" ", withString: "%20")
+                
+                print("REQUEST URL: \(urlPostSquare)")
+                
+                var dataForBody:JSON = ["feedback": textField.text!, "username": username, "activity" : "ABUSE REPORT IN SQUARE \(self.squareId)"]
+                
+                print(dataForBody)
+                
+                request(.POST, urlPostSquare, parameters: ["feedback": textField.text!, "username": serverId, "activity" : "ABUSE REPORT IN SQUARE \(self.squareId)"]).validate().responseString { response in
+                    print("REQUEST POST SQUARE: \(response.request)")
+                    switch response.result {
+                    case .Success:
+                        print("RESULT \(response.result)")
+                        print("RESULT \(response.result.value)")
+                        
+                        if let value = response.result.value
+                        {
+                            jsnResult = JSON(value)
+                            print("qwert \(jsnResult)")
+                            
+                            
+                            
+                            //Analitycs
+                            var tracker = GAI.sharedInstance().defaultTracker
+                            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Reported an abuse", action: "Reporter: \(username), Abuser: \(textField.text!), Square: \(self.squareId), Squarename: \(self.squareName)", label: "User \(serverId) reported an abuse", value: nil).build() as [NSObject : AnyObject])
+                            
+                        }
+                    case .Failure(let error):
+                        print("FALLITO \(error)")
+                        //make analitics
+                        //                        Answers.logCustomEventWithName("Error",
+                        //                            customAttributes: ["Error Debug Description": error.debugDescription])
+                    }
+                }
+                
+            }
+        }))
+        // 4. Present the alert.
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
     @IBOutlet var likeButtonOutlet: UIBarButtonItem!
     @IBAction func likeButton(sender: AnyObject)
     {
