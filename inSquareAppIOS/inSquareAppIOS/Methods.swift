@@ -17,13 +17,95 @@ import Crashlytics
 
 //saved
 
+func updateFavouriteSquares()
+{
+    request(.GET, "\(serverMainUrl)/favouritesquares/\(serverId)").validate().responseJSON { response in
+        switch response.result {
+        case .Success:
+            if let value = response.result.value {
+                userFavouriteSquare = JSON(value)
+                print("FAVOURITESQUARES \(userFavouriteSquare)")
+
+
+            }
+        case .Failure(let error):
+            print(error)
+            //cambia con analitics
+            //                Answers.logCustomEventWithName("Error",
+            //                    customAttributes: ["Error Debug Description": error.debugDescription])
+        }
+    }//ENDREQUEST
+}
+
+func updateRecentSquares()
+{
+    request(.GET, "\(serverMainUrl)/recentsquares/\(serverId)").validate().responseJSON { response in
+        switch response.result {
+        case .Success:
+            if let value = response.result.value {
+                userRecentSquare = JSON(value)
+                print("RECENTSQUARES \(userRecentSquare)")
+
+                
+            }
+        case .Failure(let error):
+            print(error)
+            //cambia con analitics
+            //                Answers.logCustomEventWithName("Error",
+            //                    customAttributes: ["Error Debug Description": error.debugDescription])
+        }
+    }//ENDREQUEST
+}
+
+func isFavourite(squareId: String) -> Bool
+{
+    for (index, value):(String, JSON) in userFavouriteSquare
+    {
+        let i:Int=Int(index)!
+        
+        if userFavouriteSquare[i]["_id"].string == squareId
+        {
+            return true
+        }
+        
+//        let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+//        let latitude = (coordinates[0] as NSString).doubleValue
+//        let longitude = (coordinates[1] as NSString).doubleValue
+//        let title = self.jsonSq[i]["_source"]["name"].string
+//        let identifier = self.jsonSq[i]["_id"].string
+        
+    }
+    return false
+}
+
+func isRecent(squareId: String) -> Bool
+{
+    for (index, value):(String, JSON) in userRecentSquare
+    {
+        let i:Int=Int(index)!
+        
+        if userFavouriteSquare[i]["_id"].string == squareId
+        {
+            return true
+        }
+        
+        //        let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+        //        let latitude = (coordinates[0] as NSString).doubleValue
+        //        let longitude = (coordinates[1] as NSString).doubleValue
+        //        let title = self.jsonSq[i]["_source"]["name"].string
+        //        let identifier = self.jsonSq[i]["_id"].string
+        
+    }
+    return false
+}
+
 //seved outside
 
 func getSquare(latitude: Double, longitude: Double, distanceInKm: Int) -> JSON
 {
     var jsnResult = JSON(data: NSData())
 
-    request(.GET, "http://recapp-insquare.rhcloud.com/squares", parameters:["distance": "\(distanceInKm)km", "lat": latitude, "lon": longitude]).validate().responseJSON { response in
+    request(.GET, "\(serverMainUrl)/squares", parameters:["distance": "\(distanceInKm)km", "lat": latitude, "lon": longitude]).validate().responseJSON { response in
         switch response.result {
         case .Success:
             if let value = response.result.value {
@@ -47,7 +129,7 @@ func getMessagesFromSquare(recent: Bool, size: Int, square: String) -> JSON
 {
     var jsnResult = JSON(data: NSData())
     
-    request(.GET, "http://recapp-insquare.rhcloud.com/messages", parameters:["recent": "\(recent)", "size": "\(size)", "square": "\(square)"]).validate().responseJSON { response in
+    request(.GET, "\(serverMainUrl)/messages", parameters:["recent": "\(recent)", "size": "\(size)", "square": "\(square)"]).validate().responseJSON { response in
         switch response.result {
         case .Success:
             if let value = response.result.value {
