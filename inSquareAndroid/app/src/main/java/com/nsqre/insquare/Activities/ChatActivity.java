@@ -217,8 +217,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //insertPhotoWrapper();
-                chooseFileIntent();
+                insertPhotoWrapper();
+                //chooseFileIntent();
             }
         });
 
@@ -405,7 +405,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chooseFileIntent();
     }
 
-    public void chooseFileIntent(){
+    private void chooseFileIntent(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         this.startActivityForResult(intent, FILE_PICK);
