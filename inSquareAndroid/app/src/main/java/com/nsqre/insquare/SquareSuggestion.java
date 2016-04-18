@@ -32,6 +32,27 @@ public class SquareSuggestion implements SearchSuggestion {
         return mSquare;
     }
 
+    @Override
+    public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null) {
+                return false;
+            }
+            if (getClass() != o.getClass()) {
+                return false;
+            }
+           SquareSuggestion other = (SquareSuggestion) o;
+            if (other.getSquare().getLat()==this.getSquare().getLat()){
+                if (other.getSquare().getLon()==this.getSquare().getLon()){
+                    return true;
+                }
+            }
+        return false;
+    }
+
+
     public void setIsHistory(boolean isHistory){
         this.mIsHistory = isHistory;
     }
