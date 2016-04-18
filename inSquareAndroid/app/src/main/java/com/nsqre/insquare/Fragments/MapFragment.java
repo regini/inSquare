@@ -525,7 +525,7 @@ public class MapFragment extends Fragment
             if(InSquareProfile.isFav(squareId)) {
                 for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                     if(squareId.equals(s.getId())) {
-                        intent.getExtras().clear();
+                        getActivity().setIntent(null);
                         startChatActivity(s);
                         break;
                     }
@@ -533,7 +533,7 @@ public class MapFragment extends Fragment
             } else if(InSquareProfile.isRecent(squareId)) {
                 for(Square s : InSquareProfile.getRecentSquaresList()) {
                     if(squareId.equals(s.getId())) {
-                        intent.getExtras().clear();
+                        getActivity().setIntent(null);
                         startChatActivity(s);
                         break;
                     }
