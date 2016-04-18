@@ -2,7 +2,7 @@
 
     <!-- URL -->
     <string name="baseUrl">http://cloud.insquare.it/</string>
-    <string name="squaresUrl">http://cloud.insquare.it/squares</string>
+    <string name="socket">http://chat.cloud.insquare.it/squares</string>
     <!-- END URL -->
 
     <string name="app_name">inSquare</string>

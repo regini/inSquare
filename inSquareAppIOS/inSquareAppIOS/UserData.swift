@@ -8,12 +8,23 @@
 
 import Foundation
 
+//cloud.insquare.it al posto di recapp-insquare.rhcloud.com
+let serverMainUrl = "http://cloud.insquare.it"
+
 var loggedIn = false
+//var username:String = "Alessandro Steri Full"
+var userAvatarUrl = ""
+var userAvatar:UIImage = UIImage(named: "logo insq.png")!
+var opponentDefaultAvatar:UIImage = UIImage(named: "opponentAvatar-01.png")!
+
 var username:String = ""
 var accessToken:String = String()
 var email:String = String()
 var fbId:String = String()
+//var serverId:String = "56bf626fbf2f63918b56efeb"
+
 var serverId:String = String()
+
 //colors
 var inSquareUiColorQRed:UIColor = UIColor(hue: 0.0028, saturation: 0.62, brightness: 0.63, alpha: 1.0) /* #a3403d */
 //UIColor(hue: 1/360, saturation: 62/100, brightness: 63/100, alpha: 1.0) /* #a3403d */
@@ -26,6 +37,41 @@ var inSquareUiColorQRed:UIColor = UIColor(hue: 0.0028, saturation: 0.62, brightn
 //var name = NSUserDefaults.standardUserDefaults().objectForKey("name")! as! String
 //print(name)
 
+//CATCHING
+var userFavouriteSquare = JSON(data: NSData())
+var userRecentSquare = JSON(data: NSData())
+
 
 //Immages
-let insquareMapPin:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "mapPin-01.png"))!, scale: 4.5)!
+let insquareMapPin:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "mapPinTrace3.png"))!, scale: 4.5)!
+
+let insquareMapTab:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "mapTabSelected2.png"))!, scale: 4.5)!
+let insquareMapTabHighlightImage:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "mapTab.png"))!, scale: 4.5)!
+
+var like:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "Like-50.png"))!, scale: 2)!
+var likeFilled:UIImage = UIImage(data: UIImagePNGRepresentation(UIImage(imageLiteral: "Like Filled-50.png"))!, scale: 2)!
+
+
+//LAYOUT
+var tabBarHeight:CGFloat = CGFloat() //49
+var statusBarHeight:CGFloat = 20
+var navigationBarHeight:CGFloat = 44
+
+
+//all the info http://www.idev101.com/code/User_Interface/sizes.html
+
+
+
+
+//http://recapp-insquare.rhcloud.com/ log:
+//rhc tail recapp --namespace insquare 
+// new tail rhc tail insquarerecapp --namespace insquare
+
+//pw v*******
+
+
+//ALAMOFIRE DEBUGGER
+//                print(response.request)  // original URL request
+//                print(response.response) // URL response
+//                print(response.data)     // server data
+//                print(response.result)   // result of response serialization

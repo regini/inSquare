@@ -134,7 +134,6 @@
             android:layout_marginBottom="1dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            android:visibility="gone"
             />
 
         <ImageButton
