@@ -68,6 +68,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.android.support:cardview-v7:23.3.0'
     compile 'com.android.support:support-v4:23.3.0'
+    compile 'com.android.support:percent:23.1.1'
     compile 'com.google.android.gms:play-services-analytics:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
@@ -88,7 +89,7 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
     compile 'com.github.hotchemi:permissionsdispatcher:2.0.0'
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
-
+    compile 'com.cleveroad:slidingtutorial:0.9.4'
 }
 
 apply plugin: 'com.google.gms.google-services'

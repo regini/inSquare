@@ -42,6 +42,7 @@ public class SettingsFragment extends Fragment implements
     private TextView googleConnectButton;
 
     private TextView feedbackSendButton;
+    private TextView tutorialButton;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -86,6 +87,8 @@ public class SettingsFragment extends Fragment implements
         setupLoginButtons(v);
 
         setupFeedbackButton(v);
+
+        setupTutorialButton(v);
 
         return v;
     }
@@ -212,6 +215,25 @@ public class SettingsFragment extends Fragment implements
             googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
         }
         googleConnectButton.setOnClickListener(WIP);
+    }
+
+    private void setupTutorialButton(View layout)
+    {
+        tutorialButton = (TextView) layout.findViewById(R.id.settings_tutorial);
+        tutorialButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "onClick: tutorialbutton");
+                        //InSquareProfile profile = InSquareProfile.getInstance(getContext());
+                        InSquareProfile.setShowTutorial(true, getContext());
+                        Log.d(TAG, "onClick: showtutorial è " + InSquareProfile.getShowTutorial());
+                        //setta showmap tutorial a false
+                        BottomNavActivity madre = (BottomNavActivity) getContext();
+                        Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
     /**

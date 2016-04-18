@@ -47,7 +47,6 @@
     </plurals>
 
 
-
     <string name="action_share">Condividi</string>
     <string name="action_mute">Gestisci notifiche</string>
     <string name="action_edit">Modifica</string>
@@ -134,5 +133,15 @@
     <string name="mute_2d">2d</string>
     <string name="mute_on">on</string>
     <string name="mute_off">off</string>
+
+    <!--Tutorial-->
+    <string name="tutorial_title1">Cos\'è inSquare?</string>
+    <string name="tutorial_title2">Cosa sono i preferiti?</string>
+    <string name="tutorial_title3">Come creo la mia Square?</string>
+    <string name="tutorial_title4">Collegati con i tuoi account social!</string>
+    <string name="tutorial_caption1">Cambiare da string.xml</string>
+    <string name="tutorial_caption2">Cambiare da string.xml</string>
+    <string name="tutorial_caption3">Cambiare da string.xml</string>
+    <string name="tutorial_caption4">Cambiare da string.xml</string>
 
 </resources>
