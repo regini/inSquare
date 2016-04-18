@@ -13,11 +13,16 @@ import Alamofire
 import Crashlytics
 
 
-var jsonSq = JSON(data: NSData())
-var squareAroundYou = [["_index":"squares","_type":"square","_id":"56abd75edbae0310a14c045c","_score":1,"_source":["name":"Università degli Studi di Roma La Sapienza","geo_loc":"41.890893,12.504679"]],["_index":"squares","_type":"square","_id":"56abd75edbae0310a14c0475","_score":1,"_source":["name":"Ponte Tazio","geo_loc":"41.935064,12.533812"]]]
 
 class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDelegate , CLLocationManagerDelegate
 {
+    
+    var jsonSq = JSON(data: NSData())
+    
+    //credo serve solo per tableview
+    var squareAroundYou = [["_index":"squares","_type":"square","_id":"56abd75edbae0310a14c045c","_score":1,"_source":["name":"Università degli Studi di Roma La Sapienza","geo_loc":"41.890893,12.504679"]],["_index":"squares","_type":"square","_id":"56abd75edbae0310a14c0475","_score":1,"_source":["name":"Ponte Tazio","geo_loc":"41.935064,12.533812"]]]
+
+    
     @IBOutlet weak var myNavigationBar: UINavigationBar!
     //getSquare raggio di azione in km
     var distanceInKmForGetSquare = 20
@@ -25,8 +30,9 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
     var mapView:GMSMapView!
     var manager:CLLocationManager!
 
-    var latitude:CLLocationDegrees = CLLocationDegrees()
-    var longitude:CLLocationDegrees = CLLocationDegrees()
+    //alle pezze centra colosseo
+    var latitude:CLLocationDegrees = 41.890466
+    var longitude:CLLocationDegrees = 12.492231
     
     var mapCenterLatitude:CLLocationDegrees = CLLocationDegrees()
     var mapCenterLongitude:CLLocationDegrees = CLLocationDegrees()
@@ -54,8 +60,10 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
     {
         super.viewDidLoad()
 
-        
-        
+        let markerProva = GMSMarker()
+        markerProva.title = "PROVA"
+        markerProva.userData = ["CIAO": "tu"]
+        print(markerProva.userData)
         //navugationBar SetUP
         //hide navigationbar
         self.navigationController?.setNavigationBarHidden(false, animated: true)
@@ -78,7 +86,6 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
         titleView.image = UIImage(named: "logoApp-01.png")
         self.navigationItem.titleView = titleView
         self.navigationItem.backBarButtonItem?.title = "Log-Out"
-        print(self.navigationItem.rightBarButtonItems)
         
         
         //parameters for getSquare
@@ -115,23 +122,39 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
         
 //GETSQUARE REQUEST
 //####################################################################################################################################################################
+        if (latitudeGet == "\(41.890466)" && longitudeGet == "\(12.492231)") || (latitudeGet == "\(0.0)" && longitudeGet == "\(0.0)")
+        {
+            //Analitycs
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("1st GetSquare Gone Wrong", action: "Latitude: \(latitudeGet), Longitude: \(longitudeGet), Radius: \(distanceInKm)", label: "User \(serverId) did a new bad 1st get square", value: nil).build() as [NSObject : AnyObject])
+
+        }
+        else
+        {
+            //Analitycs
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("1st GetSquare", action: "Latitude: \(latitudeGet), Longitude: \(longitudeGet), Radius: \(distanceInKm)", label: "User \(serverId) did a new 1st get square", value: nil).build() as [NSObject : AnyObject])
+
+        }
+        
+        //controlla se parametri lat e long 0.0 0.0 in caso fai unciclo che finche 0.0 non va avanti o qualcosa di simile
         // use latitude and longitude //sure?seems is working with latget an longet
         request(.GET, "http://recapp-insquare.rhcloud.com/squares", parameters:["distance": distanceInKm, "lat": latitudeGet, "lon": longitudeGet]).validate().responseJSON { response in
             switch response.result {
             case .Success:
                 if let value = response.result.value {
-                    jsonSq = JSON(value)
+                    self.jsonSq = JSON(value)
 
-            for (index, value):(String, JSON) in jsonSq
+            for (index, value):(String, JSON) in self.jsonSq
             {
                 let i:Int=Int(index)!
 
                 
-                let coordinates = jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+                let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
                 let latitude = (coordinates[0] as NSString).doubleValue
                 let longitude = (coordinates[1] as NSString).doubleValue
-                let title = jsonSq[i]["_source"]["name"].string
-                let snippet = jsonSq[i]["_id"].string
+                let title = self.jsonSq[i]["_source"]["name"].string
+                let snippet = self.jsonSq[i]["_id"].string
                 
                 Answers.logContentViewWithName("getSquare",
                     contentType: "Square: \(title)",
@@ -188,8 +211,15 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
             manager.stopUpdatingLocation()
 
             print(locations)
+        
+            
         //}
         
+        //Analitycs
+        var tracker = GAI.sharedInstance().defaultTracker
+        tracker.send(GAIDictionaryBuilder.createEventWithCategory("OpenedMap", action: "Center: \(locations)", label: "User \(serverId) opened the map centered in current location", value: nil).build() as [NSObject : AnyObject])
+        
+
 
 //        self.course.text = "\(userLocation.course)"
 //        self.speed.text = "\(userLocation.speed)"
@@ -242,8 +272,28 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
             let oldMapCenter:CLLocation = CLLocation(latitude: mapCenterLatitude, longitude: mapCenterLongitude)
             let newMapCenter:CLLocation = CLLocation(latitude: position.target.latitude, longitude: position.target.longitude)
             let meters:CLLocationDistance = oldMapCenter.distanceFromLocation(newMapCenter)
-            if meters > Double(distanceInKmForGetSquare*1000)
+            if meters > Double(distanceInKmForGetSquare*990)
             {
+                print("newGET")
+                
+                
+                if (mapCenterLatitude == 41.890466 && mapCenterLongitude == 12.492231) || (mapCenterLatitude == 0.0 && mapCenterLongitude == 0.0)
+                {
+                    //Analitycs
+                    var tracker = GAI.sharedInstance().defaultTracker
+                    tracker.send(GAIDictionaryBuilder.createEventWithCategory("GetSquare gone wrong", action: "Latitude: \(mapCenterLatitude), Longitude: \(mapCenterLongitude), Radius: \(distanceInKmForGetSquare)", label: "User \(serverId) did a new get square", value: nil).build() as [NSObject : AnyObject])
+                    
+
+                }
+                else
+                {
+                    //Analitycs
+                    var tracker = GAI.sharedInstance().defaultTracker
+                    tracker.send(GAIDictionaryBuilder.createEventWithCategory("GetSquare", action: "Latitude: \(mapCenterLatitude), Longitude: \(mapCenterLongitude), Radius: \(distanceInKmForGetSquare)", label: "User \(serverId) did a new get square", value: nil).build() as [NSObject : AnyObject])
+                }
+
+                
+                
                 //centra mappa, controlla se non la centra da solo e allora non si raggiunge mai distanza maggiore
                 mapCenterLatitude = position.target.latitude
                 mapCenterLongitude = position.target.longitude
@@ -255,18 +305,18 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
                     switch response.result {
                     case .Success:
                         if let value = response.result.value {
-                            jsonSq = JSON(value)
+                            self.jsonSq = JSON(value)
                             
-                            for (index, value):(String, JSON) in jsonSq
+                            for (index, value):(String, JSON) in self.jsonSq
                             {
                                 let i:Int=Int(index)!
                                 
                                 
-                                let coordinates = jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+                                let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
                                 let latitude = (coordinates[0] as NSString).doubleValue
                                 let longitude = (coordinates[1] as NSString).doubleValue
-                                let title = jsonSq[i]["_source"]["name"].string
-                                let snippet = jsonSq[i]["_id"].string
+                                let title = self.jsonSq[i]["_source"]["name"].string
+                                let snippet = self.jsonSq[i]["_id"].string
                                 
                                 Answers.logContentViewWithName("getSquare",
                                     contentType: "Square: \(title)",
@@ -300,8 +350,8 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
 //            print("DISTANZA IN METRI: \(meters)")
         }
         
-        self.mapCenterLatitude = position.target.latitude
-        self.mapCenterLongitude = position.target.latitude
+        //self.mapCenterLatitude = position.target.latitude
+        //self.mapCenterLongitude = position.target.latitude
     }
     
     func mapView(mapView: GMSMapView!, idleAtCameraPosition cameraPosition: GMSCameraPosition!)
@@ -339,7 +389,6 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
         //3. Grab the value from the text field, and print it when the user clicks OK.
         alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action) -> Void in
             let textField = alert.textFields![0] as UITextField
-            print("Text field: \(textField.text)")
             if (textField.text == "")
             {
                 print("Not selected a name for the square")
@@ -351,17 +400,37 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
                 marker.position = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
                 marker.title = textField.text
                 //use reversed geolocalization to add addres for description or use another textfield if needed
-                marker.snippet = "Tap to open the Square"
+                marker.snippet = "Re-open the app to update squarelist"
+                marker.icon = insquareMapPin
+                marker.groundAnchor.x = marker.groundAnchor.x + 0.45
                 marker.map = mapView
-                squareAroundYou.append(["Latitude" : coordinate.latitude, "Longitude" : coordinate.longitude, "Name" : textField.text!, "Description" : "Tap to open the Square"])
+                self.squareAroundYou.append(["Latitude" : coordinate.latitude, "Longitude" : coordinate.longitude, "Name" : textField.text!, "Description" : "Tap to open the Square"]) //mi sa inutile ora
                 self.squareAroundYouTable.reloadData()
                 
                 let latR = Double(round(1000000*coordinate.latitude)/1000000)
                 let longR = Double(round(1000000*coordinate.longitude)/1000000)
                 
-                request(.POST, "http://recapp-insquare.rhcloud.com/squares", parameters:["name": textField.text!, "lat": latR, "lon": longR])
-                print(latR)
-                print(longR)
+                var jsnResult = JSON(data: NSData())
+                request(.POST, "http://recapp-insquare.rhcloud.com/squares", parameters:["name": textField.text!, "lat": latR, "lon": longR]).validate().responseJSON { response in
+                    switch response.result {
+                    case .Success:
+                        if let value = response.result.value
+                        {
+                            jsnResult = JSON(value)
+                            marker.snippet = jsnResult["_id"].string!
+                            
+                            //Analitycs
+                            var tracker = GAI.sharedInstance().defaultTracker
+                            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Created a Square", action: "Name: \(marker.title), Id: \(marker.snippet), Latitude: \(marker.position.latitude), Longitude: \(marker.position.longitude)", label: "User \(serverId) created a new square", value: nil).build() as [NSObject : AnyObject])
+                            
+                        }
+                    case .Failure(let error):
+                        print(error)
+                        
+                        Answers.logCustomEventWithName("Error",
+                            customAttributes: ["Error Debug Description": error.debugDescription])
+                    }
+                }
 
             }
         }))
@@ -383,7 +452,13 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
         //        let secondViewController = self.storyboard!.instantiateViewControllerWithIdentifier("ViewController")
 //        self.navigationController!.pushViewController(secondViewController, animated: true)
         
+        //Analitycs
+        var tracker = GAI.sharedInstance().defaultTracker
+        tracker.send(GAIDictionaryBuilder.createEventWithCategory("Entered a Square", action: "Name: \(marker.title), Id: \(marker.snippet), Latitude: \(marker.position.latitude), Longitude: \(marker.position.longitude)", label: "User \(serverId) entered a square", value: nil).build() as [NSObject : AnyObject])
+        
+        
         self.performSegueWithIdentifier("goInTheSquare", sender: self)
+        
         
     }
 //####################################################################################################################################################################
@@ -438,6 +513,27 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
 //####################################################################################################################################################################
 //END TABLEVIEW FUNC
     
+        override func viewWillAppear(animated: Bool)
+        {
+            super.viewWillAppear(true)
+            
+            var name = "HomeViewController"
+            
+            // The UA-XXXXX-Y tracker ID is loaded automatically from the
+            // GoogleService-Info.plist by the `GGLContext` in the AppDelegate.
+            // If you're copying this to an app just using Analytics, you'll
+            // need to configure your tracking ID here.
+            // [START screen_view_hit_swift]
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.set(kGAIScreenName, value: name)
+            
+            var builder = GAIDictionaryBuilder.createScreenView()
+            tracker.send(builder.build() as [NSObject : AnyObject])
+            // [END screen_view_hit_swift]
+            
+        }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -458,12 +554,17 @@ class HomeViewController: UIViewController, GMSMapViewDelegate, UITableViewDeleg
         if (segue.identifier == "goInTheSquare") {
             //Checking identifier is crucial as there might be multiple
             // segues attached to same view
-            var detailVC = segue!.destinationViewController as! inSquareViewController
+            var detailVC = segue!.destinationViewController as! SquareMessViewController
             //            let detailVC = detailNC.topViewController as! inSquareViewController
             detailVC.squareName = self.squareName
             detailVC.squareId = self.squareId
             detailVC.squareLatitude = self.squareLatitude
             detailVC.squareLongitude = self.squareLongitude
+            
+            print(squareId)
+            print(squareName)
+            print(squareLatitude)
+            print(squareLongitude)
         }
     }
    

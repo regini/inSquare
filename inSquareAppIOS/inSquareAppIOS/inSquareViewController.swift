@@ -23,12 +23,18 @@ import Crashlytics
 class inSquareViewController: UIViewController, LGChatControllerDelegate
 {
     
-    
     //values passed by marker press in homeViewController
     var squareId:String = String()
     var squareName:String = String()
     var squareLatitude:Double = Double()
     var squareLongitude:Double = Double()
+ 
+
+
+    
+    //data per pong
+    var dataPong:JSON = ["beat": 1]
+
     
     let chatController = LGChatController()
     //    /messages?recent=true&size=<quanti ne vuoi>&square=<id della square>
@@ -57,6 +63,13 @@ class inSquareViewController: UIViewController, LGChatControllerDelegate
         self.launchChatController()
         
     }//END VDL
+    
+    override func viewWillAppear(animated: Bool)
+    {
+        super.viewWillAppear(true)
+        print("CHATCONTROLLER\(self.chatController)")
+    }
+    
 
 //        func stylizeChatInput() {
 //            LGChatInput.Appearance.backgroundColor = UIColor.blackColor()
@@ -175,7 +188,12 @@ class inSquareViewController: UIViewController, LGChatControllerDelegate
             Answers.logCustomEventWithName("sendMessage",
                 customAttributes: ["username": username, "room": squareId, "userid" : serverId, "message" : message.content])
             
+            //Analitycs
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Message Sended", action: "Mess: \(message.content)", label: "User \(serverId) sended a message", value: nil).build() as [NSObject : AnyObject])
+            
             print("Message Sended: \(message.content)")
+            
         }
         else if "\(message.sentByString)" == LGChatMessage.SentByUserString()
         {
@@ -205,6 +223,10 @@ class inSquareViewController: UIViewController, LGChatControllerDelegate
         self.socket.onAny
             {
                 print("Got event: \($0.event), with items: \($0.items)")
+                
+                var tracker = GAI.sharedInstance().defaultTracker
+                tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onAny", action: "Event: \($0.event) \nItems: \($0.items)", label: "User \(serverId) got socket.onAny event", value: nil).build() as [NSObject : AnyObject])
+
         }
         
         self.socket.on("newMessage") {data, ack in
@@ -237,8 +259,19 @@ class inSquareViewController: UIViewController, LGChatControllerDelegate
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 //self.tableView.reloadData()
             })
-            //                }
+            //             }
+        
+            //Analitycs; in realta basta monitorare gli inviati, i ricevuti non ha senso
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onNewMessage", action: "Mess: \(messJSN.rawValue)", label: "User \(serverId) got socket.onNewMessage event", value: nil).build() as [NSObject : AnyObject])
+        
         }
+        
+        socket.on("ping")
+            {
+                data, ack in
+                self.socket.emit("pong", self.dataPong.rawValue)
+            }
         
         socket.on("tellRoom") { dati, ack in
         }
@@ -250,6 +283,8 @@ class inSquareViewController: UIViewController, LGChatControllerDelegate
             print("Socket Connect with data: \(data.rawValue)")
             self.socket.emit("addUser", data.rawValue)
             
+            var tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onConnect", action: "Data: \(data.rawValue)", label: "User \(serverId) got socket.onConnect event", value: nil).build() as [NSObject : AnyObject])
             
         }
         

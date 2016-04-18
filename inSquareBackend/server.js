@@ -24,11 +24,9 @@ var session = require('express-session');
 */
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-var connection_string = 'mongodb://localhost:27017/insquare';
-if (process.env.OPENSHIFT_MONGODB_DB_URL) {
-  connection_string = process.env.OPENSHIFT_MONGODB_DB_URL +
-                      process.env.OPENSHIFT_APP_NAME;
-}
+var connection_string = process.env.OPENSHIFT_MLAB_MONGO;
+
+
 
 //Log delle get e delle post ricevute
 app.use(morgan('dev'));

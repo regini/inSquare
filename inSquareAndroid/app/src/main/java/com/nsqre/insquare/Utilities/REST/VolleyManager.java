@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Utilities.REST;/* Created by umbertosonnino on 10/3/16  */
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -52,7 +53,7 @@ public class VolleyManager {
     private Context context;
 
     private String[] URL_Array;
-    private String baseURL = "http://recapp-insquare.rhcloud.com/";
+    private static String baseURL;
     boolean connection;
 
     public RequestQueue requestQueue;
@@ -72,6 +73,7 @@ public class VolleyManager {
             instance = new VolleyManager(c);
         }
         Log.d(TAG, "getInstance: returning VolleyManger");
+        baseURL = c.getString(R.string.baseUrl);
         return instance;
     }
 

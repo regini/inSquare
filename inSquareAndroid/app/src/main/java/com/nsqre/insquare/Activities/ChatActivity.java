@@ -571,7 +571,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         sharedPreferences.edit().putString("actualSquare", mSquareId).apply();
 
         try {
-            String url = getString(R.string.squaresUrl);
+            String url = getString(R.string.socket);
             Log.d(TAG, "onCreate: " + url);
             mSocket = IO.socket(url);
 
