@@ -737,7 +737,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * Attempts to send a foto throught a socket event, if the message is valid
      */
     private void attemptSendFoto(String fotoURL) {
-        // [START message_event]
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
                 .setAction("Send Message")
@@ -757,23 +756,17 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
         */
         String message = fotoURL;
-        if (TextUtils.isEmpty(message)) {
-            chatEditText.requestFocus();
-            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
 
-            return;
-        }
-
-        chatEditText.setText("");
-
+        Message m = new Message(message, mUsername, mUserId, format);
+        mProfile.addOutgoing(mSquareId, m, getApplicationContext());
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
-        intent.putExtra("username", mUsername);
-        intent.putExtra("userid", mUserId);
-        intent.putExtra("message", message);
+        intent.putExtra("message", m);
+        //intent.putExtra("username", mUsername);
+        //intent.putExtra("userid", mUserId);
+        //intent.putExtra("message", message);
         startService(intent);
-
-        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
+        addMessage(m);
     }
 
 
