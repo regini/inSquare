@@ -17,6 +17,12 @@ import Crashlytics
 
 //saved
 
+
+func convertSpacesInUrl(url: String) -> String
+{
+    return url.stringByReplacingOccurrencesOfString(" ", withString: "%20")
+}
+
 func updateFavouriteSquares()
 {
     request(.GET, "\(serverMainUrl)/favouritesquares/\(serverId)").validate().responseJSON { response in
@@ -147,6 +153,22 @@ func getMessagesFromSquare(recent: Bool, size: Int, square: String) -> JSON
     }
     return jsnResult
 }
+
+
+//extension UIViewController {
+//    func hideKeyboardWhenTappedAround() {
+//        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+//        view.addGestureRecognizer(tap)
+//    }
+//    
+//    func dismissKeyboard() {
+//        view.endEditing(true)
+//    }
+//}
+
+//in view did load del vc copia per extension
+//        self.hideKeyboardWhenTappedAround()
+
 
 
 //request(.GET, "http://recapp-insquare.rhcloud.com/messages", parameters:["recent": "true", "size": "10", "square": squareId]).validate().responseJSON { response in

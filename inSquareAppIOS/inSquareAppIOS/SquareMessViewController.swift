@@ -13,13 +13,16 @@ import Alamofire
 
 class SquareMessViewController: JSQMessagesViewController
 {
+    
     var viewControllerNavigatedFrom:AnyObject?
     
+    //values passed by marker press in homeViewController, se fai segue vengono comunque sovrascritti
     var squareId:String = String()
     var squareName:String = String()
     var squareLatitude:Double = Double()
     var squareLongitude:Double = Double()
     
+    //unwind segues
     @IBAction func backButton(sender: AnyObject)
     {
         if self.viewControllerNavigatedFrom!.isKindOfClass(FavoriteSquareViewController) {
@@ -39,11 +42,10 @@ class SquareMessViewController: JSQMessagesViewController
         else if self.viewControllerNavigatedFrom!.isKindOfClass(ProfileViewController) {
             print("unwindToProfileunwindToProfile")
             performSegueWithIdentifier("unwindToProfile", sender: sender)
-
         }
     }
     
-    
+    //report abuse
     @IBAction func reportAbuse(sender: AnyObject)
     {
         print("HERE WE ARE")
@@ -111,50 +113,85 @@ class SquareMessViewController: JSQMessagesViewController
     }
     
     @IBOutlet var likeButtonOutlet: UIBarButtonItem!
+    
+    //add to favourite
     @IBAction func likeButton(sender: AnyObject)
     {
-        
-        request(.POST, "\(serverMainUrl)/favouritesquares", parameters:["userId": "\(serverId)", "squareId": "\(squareId)"]).validate().responseData { response in
-            print("FAVOURITED \(response.request)")
+        if isFavourite(squareId)
+        {
+            //remove from favourite
+            
+            //update img
+            likeButtonOutlet.image = like
 
-            switch response.result {
-            case .Success:
-                if let value = response.result.value {
-                    print("FAVOURITED \(value)")
-
+            //add to favourite
+            var favUrl = "\(serverMainUrl)/favouritesquares?squareId=\(squareId)&userId=\(serverId)"
+            favUrl = convertSpacesInUrl(favUrl)
+            print("FAV URL: \(favUrl)")
+            
+            request(.DELETE, favUrl).validate().responseData { response in
+                print("DELETED FAVOURITE: \(response.request)")
+                
+                switch response.result
+                {
+                case .Success:
+                    if let value = response.result.value
+                    {
+                        print("DELETED FAVOURITE: \(value)")
+                        updateFavouriteSquares()
+                    }
+                case .Failure(let error):
+                    print(error)
                 }
-            case .Failure(let error):
-                print(error)
-                //cambia con analitics
-                //                Answers.logCustomEventWithName("Error",
-                //                    customAttributes: ["Error Debug Description": error.debugDescription])
-            }
-        }//ENDREQUEST
-        likeButtonOutlet.image = likeFilled
-        //updateFavouriteSquares()
+            }//ENDREQUEST
+        }        
+        else
+        {
+            //update img
+            likeButtonOutlet.image = likeFilled
+            
+            //add to favourite
+            var favUrl = "\(serverMainUrl)/favouritesquares?squareId=\(squareId)&userId=\(serverId)"
+            favUrl = convertSpacesInUrl(favUrl)
+            print("FAV URL: \(favUrl)")
+            
+            request(.POST, favUrl).validate().responseData { response in
+                print("FAVOURITED: \(response.request)")
+                
+                
+                
+                switch response.result
+                {
+                case .Success:
+                    if let value = response.result.value
+                    {
+                        print("FAVOURITED: \(value)")
+                        updateFavouriteSquares()
+                    }
+                case .Failure(let error):
+                    print(error)
+                }
+            }//ENDREQUEST
+        }
+        
+        updateFavouriteSquares()
     }
-    //values passed by marker press in homeViewController, se fai segue vengono comunque sovrascritti
-//    var squareId:String = "56bfa2cc8b4cc88bba9b32c2"
-//    var squareName:String = "Comoleanno giulia"
-//    var squareLatitude:Double = 41.888005
-//    var squareLongitude:Double = 12.504009
-    //ViewController that seugued to this VC
-
-
     
-
-//check if pong work
+    
+    //TODO: doublecheck if pong work
     //data per pong
     var dataPong:JSON = ["beat": 1]
 
     //Client Socket.io Swift    localhost: http://127.0.0.1:3000
-    let socket = SocketIOClient(socketURL: "\(serverMainUrl)", options: [.Log(true), .ForcePolling(true)])
+    let socket = SocketIOClient(socketURL: "\(serverSocketMainUrl)", options: [.Log(true), .ForcePolling(true)])
 
 
     //JSQ Setting bubble
-    let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(inSquareUiColorQRed)
-    //    let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor(red: 10/255, green: 180/255, blue: 230/255, alpha: 1.0))
+    let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(inSquareUiColorQRed) //ORIGINAL COLOR: UIColor(red: 10/255, green: 180/255, blue: 230/255, alpha: 1.0)
+    
     let outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
+    
+    //Messages of the square joined
     var messages = [JSQMessage]()
     
     override func viewDidLoad()
@@ -163,17 +200,18 @@ class SquareMessViewController: JSQMessagesViewController
         updateFavouriteSquares()
         
         
-        
+        //socket.io config handlers, connect and joining namespace
         self.addHandlers()
         self.socket.connect()
-        self.socket.joinNamespace("/squares")
+        self.socket.joinNamespace(serverSocketNamespace)
 
-        
+        //setting up JSQVC: title, and user data (name and id)
         self.setup()
-        //self.addDemoMessages()
+        
         downloadExistingMessagesFromServer()
-        //non funziona..capisci come aprire su ultimo mess
+
         //self.automaticallyScrollsToMostRecentMessage = true
+        
     }//END VDL
     
     
@@ -181,6 +219,8 @@ class SquareMessViewController: JSQMessagesViewController
     {
         super.viewWillAppear(true)
         
+        updateFavouriteSquares()
+
         if isFavourite(squareId)
         {
             likeButtonOutlet.image = likeFilled
@@ -189,13 +229,13 @@ class SquareMessViewController: JSQMessagesViewController
         {
             likeButtonOutlet.image = like
         }
-
-      
-        
-        
     }//END VWA
 
-    
+    override func viewWillDisappear(animated:Bool)
+    {
+        self.socket.disconnect()
+        super.viewWillDisappear(animated)
+    }
 
     override func didReceiveMemoryWarning()
     {
@@ -203,20 +243,17 @@ class SquareMessViewController: JSQMessagesViewController
 
     }//END DRMW
     
-    
+    //Back To Map Segues
     override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!)
     {
         if (segue.identifier == "backToHome") {
-            //Checking identifier is crucial as there might be multiple
-            // segues attached to same view
+            
             //var detailVC = segue!.destinationViewController as! SquareMessViewController
             //var detailVC = segue!.destinationViewController as! NavigationToJSQViewController
             //            let detailVC = detailNC.topViewController as! inSquareViewController
             
             let navVC = segue.destinationViewController as! UITabBarController
-            
             let detailVC = navVC.childViewControllers[2] as! MapViewController
-            
             
             detailVC.backFromSquareLatitude = self.squareLatitude
             detailVC.backFromSquareLongitude = self.squareLongitude
@@ -243,18 +280,16 @@ class SquareMessViewController: JSQMessagesViewController
     {
         
         self.socket.onAny
-            {
-                print("Got event: \($0.event), with items: \($0.items)")
-                
-//                var tracker = GAI.sharedInstance().defaultTracker
-//                tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onAny", action: "Event: \($0.event) \nItems: \($0.items)", label: "User \(serverId) got socket.onAny event", value: nil).build() as [NSObject : AnyObject])
-                
+        {
+            print("Got event: \($0.event), with items: \($0.items), in socket Status: \(self.socket.status)")
         }
         
         self.socket.on("newMessage") {data, ack in
             
             let messJSN = JSON(data)
             print("Message for you! \(messJSN[0])")
+            print("Message data from server: \(data)")
+
             if messJSN[0] == "Server"
             {
                 //do work with server mess (allert? notification?)
@@ -267,10 +302,22 @@ class SquareMessViewController: JSQMessagesViewController
             }
             else if messJSN[0]["contents"] != nil
             {
+                print(data)
+                
                 let dateFormatter = NSDateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-                let date = dateFormatter.dateFromString("\(messJSN[0]["createdAt"].string)")
-                print("DATA MESS INVIATO: \(date)")
+                
+                var date = dateFormatter.dateFromString("\(messJSN[0]["createdAt"].string)")
+                print("DATA MESS INVIATO formattata: \(date) - data su server= \(messJSN[0]["createdAt"].string)")
+                if date == nil
+                {
+                    date = NSDate()
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
+                    var convertedDate = dateFormatter.stringFromDate(date!)
+                    print("Date was nil so now is \(date)")
+                    
+                }
                 self.addMessage("\(messJSN[0]["userid"].string)", sender: "\(messJSN[0]["username"])", date: date!, messageContent: "\(messJSN[0]["contents"].string!)")
                 //old chatt controller
                 //let newMess = LGChatMessage(content: "\(messJSN[0]["username"]):\n\(messJSN[0]["contents"].string!)", sentBy: .Opponent)
@@ -281,14 +328,10 @@ class SquareMessViewController: JSQMessagesViewController
                 //                self.shouldChatController(self.chatController, addMessage: newMess)
             }
             
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                //self.tableView.reloadData()
-            })
+//            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//                //self.tableView.reloadData()
+//            })
             //             }
-            
-            //Analitycs; in realta basta monitorare gli inviati, i ricevuti non ha senso
-//            var tracker = GAI.sharedInstance().defaultTracker
-//            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onNewMessage", action: "Mess: \(messJSN.rawValue)", label: "User \(serverId) got socket.onNewMessage event", value: nil).build() as [NSObject : AnyObject])
             
         }
         
@@ -296,17 +339,29 @@ class SquareMessViewController: JSQMessagesViewController
             {
                 data, ack in
                 self.socket.emit("pong", self.dataPong.rawValue)
+                print("emitted pong: \(self.socket.status)")
         }
         
         socket.on("tellRoom") { dati, ack in
         }
         
+        socket.on("sendMessage") { dati, ack in
+        
+            print("Sended Mess with ACK:\(ack)")
+        }
+
+        socket.on("pong") { dati, ack in
+            print("PONG!! dati: \(dati), ack: \(ack)")
+        }
         
         socket.on("connect") {data, ack in
             
             var data:JSON = ["username": username, "room": self.squareId, "user" : serverId]
             print("Socket Connect with data: \(data.rawValue)")
             self.socket.emit("addUser", data.rawValue)
+           
+
+            
             
 //            var tracker = GAI.sharedInstance().defaultTracker
 //            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onConnect", action: "Data: \(data.rawValue)", label: "User \(serverId) got socket.onConnect event", value: nil).build() as [NSObject : AnyObject])
@@ -345,8 +400,9 @@ extension SquareMessViewController {
     {
         let message = JSQMessage(senderId: senderId, displayName: sender, text: messageContent)
         self.messages += [message]
+        //RIGA SOTO INUTILE
         let mee = JSQMessage(senderId: senderId, senderDisplayName: sender, date: date, text: messageContent)
-        print(message.date)
+        print("ADD MESSAGE in JSQVC, MESS DATE: \(message.date)")
         self.reloadMessagesView()
     }
     
@@ -520,6 +576,7 @@ extension SquareMessViewController {
         self.messages += [message]
         self.sendMessageToSquare(message)
         self.finishSendingMessage()
+        
     }
     
     override func didPressAccessoryButton(sender: UIButton!)
@@ -533,10 +590,50 @@ extension SquareMessViewController {
     
     func sendMessageToSquare(message: JSQMessage) {
         
+        print("SOCKET STATUS: \(self.socket.status)")
+        if self.socket.status != SocketIOClientStatus.Connected
+        {
+            print("SOCKET STATUS: \(self.socket.status) == non connesso!")
+            
+//            self.socket.reconnect()
+//            
+//            var data:JSON = ["username": username, "room": self.squareId, "user" : serverId]
+//            print("Socket Connect with data: \(data.rawValue)")
+//            self.socket.emit("addUser", data.rawValue)
+            
+            //self.socket.connect()
+           // self.socket.joinNamespace("/squares")
+
+        }
+
         if "\(message.senderId)" == serverId
         {
             var data:JSON = ["username": username, "room": squareId, "userid" : serverId, "message" : message.text]
-            socket.emit("sendMessage", data.rawValue)
+            print("SENDED MESS DATA: \(data)")
+            
+            //socket.emit("sendMessage", data.rawValue)
+            
+//            socket.emitWithAck("sendMessage", data.rawValue).onAck {data in
+//                print("got ack with data: (data)")
+//            }
+
+            socket.emitWithAck("sendMessage", data.rawValue)(timeoutAfter: 0) {data in
+                print("got ack")
+            }
+            
+//            socket.emitWithAck("sendMessage", data.rawValue)
+            
+            /**
+             Sends a message to the server, requesting an ack. Use the onAck method of SocketAckHandler to add
+             an ack.
+             */
+//            public func emitWithAck(event: String, _ items: AnyObject...) -> OnAckCallback {
+//                return emitWithAck(event, withItems: items)
+//            }
+
+                        
+            //self.socket.emit("addUser", data.rawValue, ack)
+            //self.socket.emitWithAck("", items: AnyObject...)
             
 //            //answer custom event
 //            Answers.logCustomEventWithName("sendMessage",
@@ -553,7 +650,7 @@ extension SquareMessViewController {
         {
             //visualizza e basta
             
-            print("Got Message: \(message.text)")
+            print("Got Message ??: \(message.text)")
             
         }
         

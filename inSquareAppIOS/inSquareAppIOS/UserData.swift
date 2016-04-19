@@ -8,8 +8,10 @@
 
 import Foundation
 
-//cloud.insquare.it al posto di recapp-insquare.rhcloud.com
+//http://cloud.insquare.it al posto di http://recapp-insquare.rhcloud.com
 let serverMainUrl = "http://cloud.insquare.it"
+let serverSocketMainUrl = "http://chat.cloud.insquare.it"
+let serverSocketNamespace = "/squares"
 
 var loggedIn = false
 //var username:String = "Alessandro Steri Full"
