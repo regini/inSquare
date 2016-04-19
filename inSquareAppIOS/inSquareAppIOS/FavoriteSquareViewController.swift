@@ -48,25 +48,12 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
                     self.favouriteSquare = JSON(value)
                     print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
 
-                    
-
-                    
-                    
-//                    for (index, value):(String, JSON) in self.jsonSq
-//                    {
-//                    }
                     self.tableView.reloadData()
                 }
             case .Failure(let error):
                 print(error)
-                //cambia con analitics
-                //                Answers.logCustomEventWithName("Error",
-                //                    customAttributes: ["Error Debug Description": error.debugDescription])
             }
         }//ENDREQUEST
-
-        
-        
     }//END VDL
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
@@ -120,8 +107,33 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
         super.viewWillAppear(animated)
         
         //inutile?
-        updateFavouriteSquares()
+        //updateFavouriteSquares()
+        //viewDidLoad()
+        
+        request(.GET, "\(serverMainUrl)/favouritesquares/\(serverId)").validate().responseJSON { response in
+            switch response.result {
+            case .Success:
+                if let value = response.result.value {
+                    print("FAVOURITESQUARES \(value)")
+                    self.favouriteSquare = JSON(value)
+                    print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
+                    
+                    self.tableView.reloadData()
+                }
+            case .Failure(let error):
+                print(error)
+            }
+        }//ENDREQUEST
+        
     }
+    
+//    override func viewDidAppear(animated: Bool) {
+//        super.viewDidAppear(animated)
+//        
+//        //inutile?
+//        tableView.reloadData()
+//    }
+
     
     override func didReceiveMemoryWarning()
     {

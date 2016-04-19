@@ -80,6 +80,18 @@ class ProfileViewController: UIViewController, UITableViewDelegate
         profileTopView.addSubview(blurEffectView)
         //put name/picture layer upper than blur
         profileTopView.addSubview(sw)
+        
+//                let rightConstraint = NSLayoutConstraint(
+//                    item: sw,
+//                    attribute: NSLayoutAttribute.RightMargin,
+//                    relatedBy: NSLayoutRelation.Equal,
+//                    toItem: profileTopView,
+//                    attribute: NSLayoutAttribute.RightMargin,
+//                    multiplier: 1,
+//                    constant: 0)
+//        
+//        NSLayoutConstraint.activateConstraints([rightConstraint])
+        
 
         request(.GET, "\(serverMainUrl)/squares/?byOwner=true&ownerId=\(serverId)").validate().responseJSON { response in
             switch response.result {
