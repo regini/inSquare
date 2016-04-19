@@ -115,10 +115,15 @@ public class LoginActivity extends AppCompatActivity
         profile = InSquareProfile.getInstance(getApplicationContext());
         Log.d(TAG, "onCreate: profile show tutorial is " + profile.getShowTutorial());
 
-        if (InSquareProfile.getShowTutorial()) {
-            replaceTutorialFragment();
-        } else {
-            launchLoginProcedure();
+        try {
+            if (InSquareProfile.getShowTutorial()) {
+                replaceTutorialFragment();
+            } else {
+                launchLoginProcedure();
+            }
+        }
+        catch (Exception e) {
+            Log.d(TAG, "onCreate: exception " + e.toString());
         }
 
         //ANALYTICS

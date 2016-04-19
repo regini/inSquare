@@ -352,9 +352,10 @@ public class InSquareProfile {
     /**
      * TODO
      */
-    public static void removeOutgoing(String mSquareId, Message message) {
+    public static void removeOutgoing(String mSquareId, Message message, Context c) {
         outgoingMessages.get(mSquareId).remove(message);
-        Log.d(TAG, "removeOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
+        Log.d(TAG, "REMOVEOUTGOING: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
+        save(c);
     }
 
     /**

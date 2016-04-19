@@ -112,7 +112,7 @@ public class ChatService extends Service {
         InSquareProfile profile = InSquareProfile.getInstance(getApplicationContext());
         Log.d(TAG, "publishResults: " + profile.getOutgoingMessages());
         Log.d(TAG, "publishResults: " + mSquareId);
-        profile.removeOutgoing(mSquareId, m);
+        profile.removeOutgoing(mSquareId, m, getApplicationContext());
         sendBroadcast(intent);
         stopSelf();
     }
