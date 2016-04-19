@@ -391,9 +391,7 @@ public class MapFragment extends Fragment
                                         List<SquareSuggestion> result = new ArrayList<>();
 
                                         for (Square s : searchResult) {
-                                            if(!result.contains(new SquareSuggestion(s))) {
-                                                result.add(new SquareSuggestion(s));
-                                            }
+                                            result.add(new SquareSuggestion(s));
                                         }
 
                                         mSearchView.swapSuggestions(result);
