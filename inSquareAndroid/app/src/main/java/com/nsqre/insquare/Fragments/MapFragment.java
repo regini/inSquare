@@ -725,52 +725,6 @@ public class MapFragment extends Fragment
         Snackbar.make(mapCoordinatorLayout, "Tieni premuto per creare una Square!", Snackbar.LENGTH_SHORT).show();
     }
 
-    private void createSquarePostRequest(final String squareName,
-                                         final String squareDescr,
-                                         final String latitude,
-                                         final String longitude,
-                                         final Marker marker,
-                                         final String ownerId) {
-
-        VolleyManager.getInstance().postSquare(
-                squareName,
-                squareDescr,
-                latitude,
-                longitude,
-                ownerId,
-                new VolleyManager.VolleyResponseListener() {
-                    @Override
-                    public void responseGET(Object object) {
-                        // Vuoto -- POST Request
-                    }
-
-                    @Override
-                    public void responsePOST(Object object) {
-                        if (object == null) {
-                            Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
-                        } else {
-                            Square postedSquare = (Square) object;
-                            InSquareProfile.addFav(postedSquare);
-                            InSquareProfile.addOwned(postedSquare);
-                            squareHashMap.put(marker, postedSquare);
-                            marker.setVisible(true);
-                            Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void responsePATCH(Object object) {
-                        // Vuoto -- POST Request
-                    }
-
-                    @Override
-                    public void responseDELETE(Object object) {
-                        // Vuoto -- POST Request
-                    }
-                }
-        );
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -784,6 +738,7 @@ public class MapFragment extends Fragment
             String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
             String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
             String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
+            String expireTime = data.getStringExtra(CreateIntroActivity.RESULT_EXPIRE_TIME);
 
             switch (resultCode)
             {
@@ -796,6 +751,7 @@ public class MapFragment extends Fragment
                             latitude,
                             longitude,
                             InSquareProfile.getUserId(),
+                            expireTime,
                             new VolleyManager.VolleyResponseListener() {
                                 @Override
                                 public void responseGET(Object object) {
@@ -848,6 +804,7 @@ public class MapFragment extends Fragment
                             InSquareProfile.getUserId(),
                             type,
                             facebookId,
+                            expireTime,
                             new VolleyManager.VolleyResponseListener() {
                                 @Override
                                 public void responseGET(Object object) {

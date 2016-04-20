@@ -33,6 +33,7 @@ public class CreateIntroActivity extends AppCompatActivity {
     public static final String RESULT_SQUARE_LONGITUDE = "longitude";
     public static final String RESULT_SQUARE_TYPE = "type";
     public static final String RESULT_SQUARE_FACEBOOK_ID = "facebookId";
+    public static final String RESULT_EXPIRE_TIME = "expireTime";
     public CreateSquarePagerAdapter pagerAdapter;
     public NoSwipesViewPager vpager;
 
@@ -178,11 +179,11 @@ public class CreateIntroActivity extends AppCompatActivity {
                                 {
                                     // type = 1 e' il valore della Square-Evento sul server
                                     resultIntent.putExtra(RESULT_SQUARE_TYPE, "1");
-                                    resultIntent.putExtra("expireTime", resultExpireTime);
+                                    resultIntent.putExtra(RESULT_EXPIRE_TIME, resultExpireTime);
                                     resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
                                 }else if(CreateIntroActivity.this.squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_SHOP)
                                 {
-                                    // type = 2 e' il valore della Square-Evento sul server
+                                    // type = 2 e' il valore della Square-Shop sul server
                                     resultIntent.putExtra("type", "2");
                                     resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
                                 }
