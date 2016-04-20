@@ -22,6 +22,8 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.R;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
+import java.util.ArrayList;
+
 public class CreateIntroActivity extends AppCompatActivity {
 
     public static final String RESULT_SQUARE_NAME = "name";
@@ -31,10 +33,10 @@ public class CreateIntroActivity extends AppCompatActivity {
     public static final String RESULT_SQUARE_TYPE = "type";
     public static final String RESULT_SQUARE_FACEBOOK_ID = "facebookId";
     public CreateSquarePagerAdapter pagerAdapter;
-    private ViewPager vpager;
+    public ViewPager vpager;
 
     public Button nextButton, previousButton;
-    public String longitude, latitude;
+    public String mapLongitude, mapLatitude;
 
     SquareCreateFragment eventCreationFragment;
     ReviewCreateFragment reviewFragment;
@@ -43,17 +45,22 @@ public class CreateIntroActivity extends AppCompatActivity {
     public ChooseCreateFragment.SQUARE_TYPE squareType;
     private static final String TAG = "CreateIntroActivity";
 
+    // DATI DA RITORNARE ALLA MAPPA PER LA CREAZIONE
+    private String resultName, resultDescription, resultLat, resultLon, resultFacebookId, resultExpireTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_crea_square);
 
-        Bundle data = getIntent().getExtras();
-        this.latitude = data.getString("latitude");
-        this.longitude = data.getString("longitude");
+        resultName = resultDescription = resultFacebookId = resultLat = resultLon = resultExpireTime = "";
 
-        Log.d(TAG, "onCreate: Just received " + latitude + ", " + longitude);
+        Bundle data = getIntent().getExtras();
+        this.mapLatitude = data.getString("latitude");
+        this.mapLongitude = data.getString("longitude");
+
+        Log.d(TAG, "onCreate: Just received " + mapLatitude + ", " + mapLongitude);
 
         vpager = (ViewPager) findViewById(R.id.create_square_viewpager);
         // Create an adapter
@@ -90,7 +97,11 @@ public class CreateIntroActivity extends AppCompatActivity {
                                 {
                                     circularReveal(previousButton);
                                 }
-                                nextButton.setVisibility(View.GONE);
+                                SquareCreateFragment create = (SquareCreateFragment) pagerAdapter.getItem(position);
+                                if(create.getInsertedName().isEmpty())
+                                    nextButton.setVisibility(View.GONE);
+                                else
+                                    nextButton.setVisibility(View.VISIBLE);
                                 nextButton.setText("Avanti");
                                 break;
                             case 2:
@@ -112,53 +123,76 @@ public class CreateIntroActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         int position = vpager.getCurrentItem();
-                        if(position < 2)
-                        {
-                            ++position;
-                            vpager.setCurrentItem(position, true);
-                        }else if(position == pagerAdapter.getCount()-1) // Sto all'ultima pagina e avanzo per creare la square
-                        {
-                            ReviewCreateFragment rcf = (ReviewCreateFragment) pagerAdapter.getItem(position);
-                            if(!rcf.longitude.isEmpty() && !rcf.latitude.isEmpty())
-                            {
-                                String name = rcf.squareName.getText().toString();
-                                String description = rcf.squareDescription.getText().toString();
-                                String lat = rcf.latitude;
-                                String lon = rcf.longitude;
-                                String facebookId = rcf.id;
 
-                                Intent resultIntent = new Intent();
+                        switch (position)
+                        {
+                            case 1:
+                                SquareCreateFragment create = (SquareCreateFragment) pagerAdapter.getItem(position);
+                                ReviewCreateFragment review = (ReviewCreateFragment) pagerAdapter.getItem(position+1);
 
-                                resultIntent.putExtra(RESULT_SQUARE_NAME, name);
-                                resultIntent.putExtra(RESULT_SQUARE_DESCRIPTION, description);
-                                resultIntent.putExtra(RESULT_SQUARE_LATITUDE, lat);
-                                resultIntent.putExtra(RESULT_SQUARE_LONGITUDE, lon);
-                                switch (CreateIntroActivity.this.squareType)
+                                String name = create.getInsertedName();
+                                String descr = create.getInsertedDescription();
+                                String expireTime = create.getExpireTime();
+                                String eventTime = create.getEventTime();
+
+                                if(squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_EVENT)
                                 {
-                                    case TYPE_EVENT:
+                                    review.setupEventInfo(name, descr, eventTime,
+                                            "", // Nessun nome della strada
+                                            "", // Nessun Sito
+                                            "", // Nessun Id Facebook
+                                            mapLatitude, mapLongitude, expireTime);
+                                }else if(squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_SHOP)
+                                {
+                                    review.setupShopInfo(
+                                            name,
+                                            "", // Nessuna fascia di prezzo via input
+                                            descr,
+                                            "", // Nessun LikeCount via input
+                                            "", // Nessun sito via input
+                                            "", // Nessun telefono via input
+                                            "", // Nessuna strada via input
+                                            new ArrayList<String>(), // Lista vuota degli orari
+                                            "", // Nessun ID Facebook
+                                            mapLatitude, mapLongitude
 
-                                        // type = 1 e' il valore della Square-Evento sul server
-                                        resultIntent.putExtra(RESULT_SQUARE_TYPE, "1");
-                                        resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, facebookId);
-                                        setResult(MapFragment.RESULT_SQUARE_FACEBOOK, resultIntent);
-
-                                        break;
-                                    case TYPE_SHOP:
-                                        // type = 2 e' il valore della Square-Evento sul server
-                                        resultIntent.putExtra("type", "2");
-                                        resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, facebookId);
-                                        setResult(MapFragment.RESULT_SQUARE_FACEBOOK, resultIntent);
-                                        break;
-                                    default:
-                                        setResult(MapFragment.RESULT_SQUARE, resultIntent);
-
-                                        break;
-
+                                    );
                                 }
 
-                                Log.d(TAG, "onClick: finishing this guy!");
+                                ++position;
+                                vpager.setCurrentItem(position, true);
+
+                                break;
+                            case 2:
+                                // Dati necessari per tornare alla mappa
+                                Intent resultIntent = new Intent();
+
+                                resultIntent.putExtra(RESULT_SQUARE_NAME, resultName);
+                                resultIntent.putExtra(RESULT_SQUARE_DESCRIPTION, resultDescription);
+                                resultIntent.putExtra(RESULT_SQUARE_LATITUDE, resultLat);
+                                resultIntent.putExtra(RESULT_SQUARE_LONGITUDE, resultLon);
+
+                                if(CreateIntroActivity.this.squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_EVENT)
+                                {
+                                    // type = 1 e' il valore della Square-Evento sul server
+                                    resultIntent.putExtra(RESULT_SQUARE_TYPE, "1");
+                                    resultIntent.putExtra("expireTime", resultExpireTime);
+                                    resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
+                                }else if(CreateIntroActivity.this.squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_SHOP)
+                                {
+                                    // type = 2 e' il valore della Square-Evento sul server
+                                    resultIntent.putExtra("type", "2");
+                                    resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
+                                }
+
+                                setResult(MapFragment.RESULT_SQUARE, resultIntent);
                                 finish();
-                            }
+                                break;
+                            case 0:
+                            default:
+                                ++position;
+                                vpager.setCurrentItem(position, true);
+                                break;
                         }
                     }
                 }
@@ -224,6 +258,16 @@ public class CreateIntroActivity extends AppCompatActivity {
         v.setVisibility(View.VISIBLE);
         return anim;
 
+    }
+
+    public void setupResults(String name, String description, String lat, String lon, String id, String time)
+    {
+        this.resultName = name;
+        this.resultDescription = description;
+        this.resultLat = lat;
+        this.resultLon = lon;
+        this.resultFacebookId = id;
+        this.resultExpireTime = time;
     }
 
     public void squareTypeSelected(ChooseCreateFragment.SQUARE_TYPE placeType)
