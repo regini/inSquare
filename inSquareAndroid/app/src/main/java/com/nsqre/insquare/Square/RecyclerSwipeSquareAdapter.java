@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.daimajia.swipe.SwipeLayout;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Fragments.MapFragment;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 /**
  * Created by Umberto Sonnino on 29/03/2016.
  */
-public class RecyclerSquareAdapter extends RecyclerView.Adapter {
+public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = "SquareAdapter";
     public static final String NOTIFICATION_MAP = "NOTIFICATION_MAP";
@@ -45,14 +45,14 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     public ArrayList<Square> squaresArrayList;
     int i = 0;
 
-    public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
+    public RecyclerSwipeSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
     }
 
     @Override
     public SquareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.square_card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.swipe_row_layout, parent, false);
         SquareViewHolder squareViewHolder = new SquareViewHolder(v);
         return squareViewHolder;
     }
@@ -74,7 +74,9 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         setupLeftSection(castHolder, squareName);
 
-        castHolder.itemView.setOnClickListener(
+        setupSwipeLayout(castHolder, listItem);
+
+        castHolder.swipeLayout.getSurfaceView().setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -109,15 +111,65 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 }
         );
 
-        castHolder.itemView.setOnLongClickListener(
+        /*castHolder.itemView.setOnLongClickListener(
                 new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         if (context instanceof BottomNavActivity) {
                             BottomNavActivity madre = (BottomNavActivity) context;
-                            madre.showBottomSheetDialog(listItem, RecyclerSquareAdapter.this, castHolder.getAdapterPosition());
+                            madre.showBottomSheetDialog(listItem, RecyclerSwipeSquareAdapter.this, castHolder.getAdapterPosition());
                         }
                         return true;
+                    }
+                }
+        );*/
+    }
+
+    private void setupSwipeLayout(SquareViewHolder castHolder, Square square)
+    {
+        castHolder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+        
+        castHolder.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, castHolder.swipeLayout.findViewById(R.id.swipe_row_bottom_wrapper));
+
+        castHolder.swipeLayout.addSwipeListener(
+                new SwipeLayout.SwipeListener() {
+                    @Override
+                    public void onStartOpen(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onOpen(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onStartClose(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onClose(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+                    }
+
+                    @Override
+                    public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
+                    }
+                }
+        );
+
+        castHolder.bottomWrapper.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "onClick: I've just tried to delete something! =D");
                     }
                 }
         );
@@ -284,8 +336,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     public static class SquareViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout squareCardBackground;
-        CardView squareCardView;
+        SwipeLayout swipeLayout;
         TextView squareInitials;
         public TextView squareName;
         TextView squareActivity;
@@ -293,19 +344,22 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         ImageView squareFav;
         ImageView squareCircle;
 
+        LinearLayout bottomWrapper;
+
         public SquareViewHolder(View itemView) {
             super(itemView);
 
-            squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_row);
+            swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipe_row_layout);
 
-            squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
-            squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
-            squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
-            squareNotifications = (ImageView) itemView.findViewById(R.id.cardview_square_notification_counter);
-            squareCircle = (ImageView) itemView.findViewById(R.id.cardview_left_section_circle);
-            squareInitials = (TextView) itemView.findViewById(R.id.cardview_square_initials);
+            squareName = (TextView) itemView.findViewById(R.id.swipe_row_upper_square_name);
+            squareActivity = (TextView) itemView.findViewById(R.id.swipe_row_upper_square_last_activity);
+            squareNotifications = (ImageView) itemView.findViewById(R.id.swipe_row_upper_square_notification_counter);
+            squareCircle = (ImageView) itemView.findViewById(R.id.swipe_row_upper_left_section_circle);
+            squareInitials = (TextView) itemView.findViewById(R.id.swipe_row_upper_square_initials);
 
-            squareFav = (ImageView) itemView.findViewById(R.id.cardview_square_heart);
+            squareFav = (ImageView) itemView.findViewById(R.id.swipe_row_upper_square_heart);
+
+            bottomWrapper = (LinearLayout) itemView.findViewById(R.id.swipe_row_bottom_wrapper);
 
         }
 

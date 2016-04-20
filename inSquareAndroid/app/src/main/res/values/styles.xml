@@ -73,6 +73,21 @@
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
+    
+    <style name="RaisedFacebookButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/md_blue_A100</item>
+        <item name="colorButtonNormal">@color/md_blue_A700</item>
+    </style>
+
+    <style name="FacebookTextInputLayout" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/md_blue_A100</item>
+        <item name="android:textSize">18sp</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/md_blue_A400</item>
+        <item name="colorControlNormal">@color/md_blue_A200</item>
+        <item name="colorControlActivated">@color/md_blue_A400</item>
+    </style>
 
 
 </resources>

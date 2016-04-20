@@ -37,4 +37,9 @@
     <color name="divider">#B6B6B6</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <!-- Create Square Overlays -->
+    <color name="red_transparent_overlay">#64e53935</color>
+    <color name="purple_transparent_overlay">#645e35b1</color>
+    <color name="green_transparent_overlay">#6443a047</color>
 </resources>

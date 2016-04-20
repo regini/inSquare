@@ -14,6 +14,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     jcenter()
+    maven { url "https://jitpack.io" }
     maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://github.com/leonardocardoso/mvn-repo/raw/master/maven-deploy' }
 }
@@ -62,6 +63,7 @@ dependencies {
     }
 
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.0.0'
+
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
     compile 'com.android.support:support-v13:23.3.0'
@@ -87,8 +89,10 @@ dependencies {
     compile 'com.leocardz:link-preview:1.2.1@aar'
     compile 'com.aurelhubert:ahbottomnavigation:1.0.5'
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
-    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
     compile 'com.cleveroad:slidingtutorial:0.9.4'
+    compile 'com.github.hotchemi:permissionsdispatcher:2.0.0'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

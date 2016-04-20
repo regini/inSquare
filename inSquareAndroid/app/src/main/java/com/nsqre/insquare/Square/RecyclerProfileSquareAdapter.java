@@ -77,7 +77,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         castHolder.squareActivity.setText(listItem.formatTime());
         // Per sottolineare l'inizio
         String description = listItem.getDescription().trim();
-        if(description.length() > 0)
+        if(description.isEmpty())
         {
             castHolder.squareDescription.setText(listItem.getDescription());
         }else

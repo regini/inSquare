@@ -3,6 +3,8 @@
     <!-- URL -->
     <string name="baseUrl">http://cloud.insquare.it/</string>
     <string name="socket">http://chat.cloud.insquare.it/squares</string>
+    <!--<string name="baseUrl">http://recapp-insquare.rhcloud.com/</string>-->
+    <string name="squaresUrl">http://cloud.insquare.it/squares</string>
     <!-- END URL -->
 
     <string name="app_name">inSquare</string>
@@ -144,4 +146,9 @@
     <string name="tutorial_caption3">Cambiare da string.xml</string>
     <string name="tutorial_caption4">Cambiare da string.xml</string>
 
+    <array name="create_square_type_elements">
+        <item>Luogo</item>
+        <item>Evento</item>
+        <item>Attività Commerciale</item>
+    </array>
 </resources>

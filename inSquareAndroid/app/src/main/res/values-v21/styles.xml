@@ -19,4 +19,9 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/colorAccentDark</item>
     </style>
+
+    <style name="RaisedFacebookButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/md_blue_A100</item>
+        <item name="android:colorButtonNormal">@color/md_blue_A700</item>
+    </style>
 </resources>

@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
@@ -12,15 +14,56 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.nsqre.insquare.Activities.CreateIntroActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.RecyclerProfileSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 public class DialogHandler {
+
+    public static final String SQUARE_TYPE = "SQUARE_TYPE";
+    public static final String MAP_SCREENSHOT = "MAP_SCREENSHOT";
+
+    public static void handleCreateOptions(
+            final Context where,
+            final String TAG,
+            LatLng latLng,
+            Bitmap mapScreenshot)
+    {
+        final CharSequence options[] = new CharSequence[]{
+                "Luogo", //0
+                "Evento", //1
+                "Attività Commerciale", //2
+        };
+
+        final String lat = Double.toString(latLng.latitude);
+        final String lon = Double.toString(latLng.longitude);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        mapScreenshot.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        final byte[] screenshotData = stream.toByteArray();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(where);
+        builder.setTitle("Crea una Square");
+        builder.setItems(options,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(where, CreateIntroActivity.class);
+                        intent.putExtra(SQUARE_TYPE, which);
+                        intent.putExtra(MAP_SCREENSHOT, screenshotData);
+                        where.startActivity(intent);
+                    }
+        });
+
+        builder.show();
+
+    }
 
     public static void handleMuteRequest(
             final Context where,
@@ -46,7 +89,6 @@ public class DialogHandler {
 
                     @Override
                     public void onClick(DialogInterface dialog, final int which) {
-                        // TODO implementare MUTE in VolleyManager
                         Snackbar showResult = Snackbar.make(snackbarContainer, "", Snackbar.LENGTH_LONG);
                         Log.d(TAG, "onCheckedChanged: " + which + " " + options[which]);
                         if (which == 0) {

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryLight"
+    android:fitsSystemWindows="true"
+    >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/create_square_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
+        >
+
+    </android.support.v4.view.ViewPager>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        >
+
+        <com.pixelcan.inkpageindicator.InkPageIndicator
+            android:id="@+id/create_square_inkindicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_centerVertical="true"
+            app:dotDiameter="8dp"
+            app:dotGap="8dp"
+            app:animationDuration="320"
+            app:pageIndicatorColor="@color/colorPrimaryDark"
+            app:currentPageIndicatorColor="@color/colorAccent"
+            />
+
+        <Button
+            android:id="@+id/create_square_button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:text="Avanti"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/create_square_button_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:text="Indietro"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+    </RelativeLayout>
+
+
+</FrameLayout>

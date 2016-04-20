@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Utilities.REST;/* Created by umbertosonnino on 10/3/16  */
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -283,6 +282,58 @@ public class VolleyManager {
         requestQueue.add(postTokenRequest);
     }
 
+    public void patchLoginToken(
+            final String service,
+            final String accessToken,
+            final String userId,
+            final String username,
+            final String email,
+            final String photoURL,
+            final VolleyResponseListener listener
+    )
+    {
+
+        String volleyURL = baseURL + "user/" + service;
+
+        Log.d(TAG, "patchLoginToken: " + volleyURL);
+
+        StringRequest patchTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "ServerResponse " + response);
+                        if(response.toLowerCase().contains("non"))
+                        {
+                            listener.responsePATCH(false);
+                        }else {
+                            listener.responsePATCH(true);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "ErrorResponse: " + error.toString());
+                        listener.responsePOST(false);
+                    }
+        })
+        {
+            //TOKEN messo nei parametri della query
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", emptySpacesForParams(username));
+                params.put("userId", emptySpacesForParams(userId));
+                params.put("email", emptySpacesForParams(email));
+                params.put("token", emptySpacesForParams(accessToken));
+                params.put("profilePhoto", emptySpacesForParams(photoURL));
+
+                return params;
+            }
+        };
+        requestQueue.add(patchTokenRequest);
+    }
+
     public void postGCMToken(
             final String token,
             final VolleyResponseListener listener
@@ -376,6 +427,7 @@ public class VolleyManager {
         volleyURL += "&lat=" + latitude;
         volleyURL += "&lon=" + longitude;
         volleyURL += "&ownerId=" + ownerId;
+        volleyURL += "&type=0";
 
         Log.d(TAG, "postSquare url: " + volleyURL);
 
@@ -404,6 +456,66 @@ public class VolleyManager {
         requestQueue.add(postSquareRequest);
 
     }
+
+
+    public void postFacebookSquare(
+           final String squareName,
+           final String squareDescr,
+           final String latitude,
+           final String longitude,
+           final String ownerId,
+           final String squareType,
+           final String facebookId,
+           final VolleyResponseListener listener
+    )
+    {
+
+        String name = emptySpacesForParams(squareName);
+        String description = emptySpacesForParams(squareDescr);
+
+        String volleyURL = baseURL + "squares?";
+        volleyURL += "name=" + name;
+        volleyURL += "&description=" + description;
+        volleyURL += "&lat=" + latitude;
+        volleyURL += "&lon=" + longitude;
+        volleyURL += "&ownerId=" + ownerId;
+        volleyURL += "&type=" + squareType;
+        if(squareType.equals('1'))
+        {
+            volleyURL += "&facebookIdEvent=" + facebookId;
+        }else
+        {
+            volleyURL += "&facebookIdPage=" + facebookId;
+        }
+
+        Log.d(TAG, "postSquare url: " + volleyURL);
+
+        StringRequest postSquareRequest = new StringRequest(Request.Method.POST, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "postSquare response: " + response);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.registerTypeAdapter(Square.class, new SquareDeserializer(locale));
+
+                        Square postedSquare = builder.create().fromJson(response, Square.class);
+                        listener.responsePOST(postedSquare);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse: " + error.toString());
+                        // Risposta in caso di errore e' null
+                        listener.responsePOST(null);
+                    }
+                }
+        );
+
+        requestQueue.add(postSquareRequest);
+
+    }
+
 
     public void getOwnedSquares(String byOwner,
                                 String ownerId,
@@ -737,6 +849,7 @@ public class VolleyManager {
         // Gli url con spazi vuoti causano problemi
         // Negli url gli spazi vuoti compaiono come %20
         String res = urlParameter.replace(" ", "%20");
+        res = res.replace("\n", "%0A");
         return res;
     }
 }

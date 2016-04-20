@@ -1,36 +1,34 @@
 package com.nsqre.insquare.Fragments;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.Volley;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -45,6 +43,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -53,6 +52,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
+import com.nsqre.insquare.Activities.CreateIntroActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.SquareSuggestion;
@@ -82,6 +82,9 @@ public class MapFragment extends Fragment
     public static MapFragment instance;
     private SupportMapFragment mapFragment;
 
+    public static final int REQUEST_SQUARE = 0;
+    public static final int RESULT_SQUARE = 1;
+    public static final int RESULT_SQUARE_FACEBOOK = 2;
     private static final String TAG = "MapFragment";
     private GoogleApiClient mGoogleApiClient;
 
@@ -424,7 +427,7 @@ public class MapFragment extends Fragment
                     if (s.getName().equals(searchSuggestion.getBody())) {
 
                         LatLng coords = new LatLng(s.getLat(), s.getLon());
-                        Marker m = createSquarePin(coords, s.getName());
+                        Marker m = createSquarePin(coords, s.getName(), Integer.parseInt(s.getType()));
                         squareHashMap.put(m, s);
                         m.showInfoWindow();
 
@@ -471,7 +474,7 @@ public class MapFragment extends Fragment
                         for (Square s : searchResult) {
                             if (s.getName().equals(item.getBody())) {
                                 LatLng coords = new LatLng(s.getLat(), s.getLon());
-                                Marker m = createSquarePin(coords, s.getName());
+                                Marker m = createSquarePin(coords, s.getName(), Integer.parseInt(s.getType()));
                                 squareHashMap.put(m, s);
                                 mLastSelectedSquare = s;
                                 mLastSelectedSquareId = s.getId();
@@ -684,21 +687,42 @@ public class MapFragment extends Fragment
     }
 
     // LatLng | Name |
-    private Marker createSquarePin(LatLng pos, String name) {
+    private Marker createSquarePin(LatLng pos, String name, int type) {
 
         MarkerOptions options = new MarkerOptions().position(pos);
         options.title(name);
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nsqre_map_pin));
+        BitmapDescriptor bd;
+        switch (type) {
+            default:
+            case 0:
+                bd = correctMapPin("pin_rosso", 3);
+                break;
+            case 1:
+                bd = correctMapPin("pin_viola", 3);
+                break;
+            case 2:
+                bd = correctMapPin("pin_verde", 3);
+                break;
+        }
+
+        options.icon(bd);
+
         return mGoogleMap.addMarker(options);
+    }
+
+    // Codice per gestire la creazione di pin di colore e grandezza corretta
+    private BitmapDescriptor correctMapPin(final String name, final int scaleSize)
+    {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(name, "drawable", getContext().getPackageName()));
+        Bitmap correctSizeBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/scaleSize, bitmap.getHeight()/scaleSize, false);
+
+        return BitmapDescriptorFactory.fromBitmap(correctSizeBitmap);
     }
 
     @Override
     public void onMapClick(final LatLng latLng) {
-        hideBottomSheet();
-    }
-
-    private void hideBottomSheet() {
         mLastSelectedSquareId = "";
+        Snackbar.make(mapCoordinatorLayout, "Tieni premuto per creare una Square!", Snackbar.LENGTH_SHORT).show();
     }
 
     private void createSquarePostRequest(final String squareName,
@@ -748,10 +772,147 @@ public class MapFragment extends Fragment
     }
 
     @Override
-    public void onMapLongClick(final LatLng latLng) {
-        final String lat = Double.toString(latLng.latitude);
-        final String lon = Double.toString(latLng.longitude);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_SQUARE)
+        {
+            String name = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_NAME);
+            String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
+            String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
+            String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
+
+            switch (resultCode)
+            {
+                case RESULT_SQUARE:
+                    Log.d(TAG, "onActivityResult: trying to create a normal square!");
+
+                    VolleyManager.getInstance().postSquare(
+                            name,
+                            description,
+                            latitude,
+                            longitude,
+                            InSquareProfile.getUserId(),
+                            new VolleyManager.VolleyResponseListener() {
+                                @Override
+                                public void responseGET(Object object) {
+                                    // POST REQUEST
+                                }
+
+                                @Override
+                                public void responsePOST(Object object) {
+                                    if (object == null) {
+                                        Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
+                                        Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                    } else {
+                                        Square postedSquare = (Square) object;
+                                        InSquareProfile.addFav(postedSquare);
+                                        InSquareProfile.addOwned(postedSquare);
+
+                                        LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
+
+                                        Marker marker = createSquarePin( finalPosition , postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
+                                        squareHashMap.put(marker, postedSquare);
+                                        marker.setVisible(true);
+                                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
+                                        Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void responsePATCH(Object object) {
+                                    // POST REQUEST
+                                }
+
+                                @Override
+                                public void responseDELETE(Object object) {
+                                    // POST REQUEST
+                                }
+                            }
+                    );
+
+                    break;
+                case RESULT_SQUARE_FACEBOOK:
+                    Log.d(TAG, "onActivityResult: trying to create from facebook!");
+                    String facebookId = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_FACEBOOK_ID);
+                    String type = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_TYPE);
+
+                    VolleyManager.getInstance().postFacebookSquare(
+                            name,
+                            description,
+                            latitude,
+                            longitude,
+                            InSquareProfile.getUserId(),
+                            type,
+                            facebookId,
+                            new VolleyManager.VolleyResponseListener() {
+                                @Override
+                                public void responseGET(Object object) {
+                                    // POST REQUEST
+                                }
+
+                                @Override
+                                public void responsePOST(Object object) {
+                                    if (object == null) {
+                                        Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
+                                        Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                    } else {
+                                        Square postedSquare = (Square) object;
+                                        InSquareProfile.addFav(postedSquare);
+                                        InSquareProfile.addOwned(postedSquare);
+
+                                        LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
+
+                                        Marker marker = createSquarePin(finalPosition,
+                                                postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
+                                        squareHashMap.put(marker, postedSquare);
+                                        marker.setVisible(true);
+                                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
+                                        Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void responsePATCH(Object object) {
+                                    // POST REQUEST
+                                }
+
+                                @Override
+                                public void responseDELETE(Object object) {
+                                    // POST REQUEST
+                                }
+                            }
+                    );
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onMapLongClick(final LatLng latLng) {
+        String latitude = String.valueOf(latLng.latitude);
+        String longitude = String.valueOf(latLng.longitude);
+        Intent intent = new Intent(getContext(), CreateIntroActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("latitude", latitude);
+        extras.putString("longitude", longitude);
+        intent.putExtras(extras);
+        startActivityForResult(intent, REQUEST_SQUARE);
+        /*mGoogleMap.snapshot(
+                new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap bitmap) {
+
+                        (new DialogHandler()).handleCreateOptions(getContext(), TAG, latLng, bitmap);
+                    }
+                }
+        );*/
+/*
+        final String lat = String.valueOf(latLng.latitude);
+        final String lon = String.valueOf(latLng.longitude);
         final Dialog mDialog = new Dialog(getContext());
         mDialog.setContentView(R.layout.dialog_crea_square);
         mDialog.setTitle("Crea una Square");
@@ -780,7 +941,7 @@ public class MapFragment extends Fragment
                     mDialog.dismiss();
                 }
             }
-        });
+        });*/
     }
 
     @Override
@@ -804,7 +965,7 @@ public class MapFragment extends Fragment
                     for(Square closeSquare : squarePins.values())
                     {
                         LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                        Marker m = createSquarePin(coords, closeSquare.getName());
+                        Marker m = createSquarePin(coords, closeSquare.getName(), Integer.parseInt(closeSquare.getType()));
                         squareHashMap.put(m, closeSquare);
                     }
                     Log.d(TAG, "onResume: map has been refilled!");
@@ -946,7 +1107,7 @@ public class MapFragment extends Fragment
             for(Square closeSquare: squarePins.values()) {
                 if(!squareHashMap.containsValue(closeSquare)) {
                     LatLng coords = new LatLng(closeSquare.getLat(), closeSquare.getLon());
-                    Marker m = createSquarePin(coords, closeSquare.getName());
+                    Marker m = createSquarePin(coords, closeSquare.getName(), Integer.parseInt(closeSquare.getType()));
                     squareHashMap.put(m, closeSquare);
                 }
             }
