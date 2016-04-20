@@ -20,6 +20,7 @@ import com.nsqre.insquare.Fragments.CreateSquare.ReviewCreateFragment;
 import com.nsqre.insquare.Fragments.CreateSquare.SquareCreateFragment;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.NoSwipesViewPager;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class CreateIntroActivity extends AppCompatActivity {
     public static final String RESULT_SQUARE_TYPE = "type";
     public static final String RESULT_SQUARE_FACEBOOK_ID = "facebookId";
     public CreateSquarePagerAdapter pagerAdapter;
-    public ViewPager vpager;
+    public NoSwipesViewPager vpager;
 
     public Button nextButton, previousButton;
     public String mapLongitude, mapLatitude;
@@ -62,10 +63,11 @@ public class CreateIntroActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: Just received " + mapLatitude + ", " + mapLongitude);
 
-        vpager = (ViewPager) findViewById(R.id.create_square_viewpager);
+        vpager = (NoSwipesViewPager) findViewById(R.id.create_square_viewpager);
         // Create an adapter
         pagerAdapter = new CreateSquarePagerAdapter(getSupportFragmentManager());
         vpager.setAdapter(pagerAdapter);
+        vpager.setPagingEnabled(false);
 
         vpager.addOnPageChangeListener(
                 new ViewPager.OnPageChangeListener() {
