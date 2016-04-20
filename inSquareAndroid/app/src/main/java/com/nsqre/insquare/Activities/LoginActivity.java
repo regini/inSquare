@@ -118,6 +118,10 @@ public class LoginActivity extends AppCompatActivity
         // Singleton -> non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
 
+        if(getIntent() != null) {
+            LoginManager.getInstance().logOut();
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bitmap icon = BitmapFactory.decodeResource(getResources(),
                     R.drawable.logo_icon_144);

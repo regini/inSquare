@@ -516,11 +516,13 @@ public class MapFragment extends Fragment
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        checkActivityIntent(getActivity().getIntent());
+        if(getActivity().getIntent() != null) {
+            checkActivityIntent(getActivity().getIntent());
+        }
     }
 
     public void checkActivityIntent(Intent intent) {
-        if(intent.getStringExtra("squareId") != null) {
+        if(intent != null && intent.getStringExtra("squareId") != null) {
             String squareId = intent.getStringExtra("squareId");
             if(InSquareProfile.isFav(squareId)) {
                 for(Square s : InSquareProfile.getFavouriteSquaresList()) {

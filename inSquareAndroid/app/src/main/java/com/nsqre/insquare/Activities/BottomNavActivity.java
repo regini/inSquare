@@ -168,8 +168,19 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         super.onStop();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SettingsFragment.RC_SIGN_IN) {
+            SettingsFragment fragment = SettingsFragment.newInstance();
+            fragment.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void calculateNotifications() {
         if(bottomNavigation != null) {
+            InSquareProfile.getInstance(getApplicationContext());
             SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
             int recents = 0;
             int favourites = 0;

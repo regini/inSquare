@@ -330,6 +330,26 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         }
         setupToolbar();
+
+        final View rootView = this.getWindow().getDecorView(); // this = activity
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (isScrolled) {
+                    isScrolled = false;
+                    return;
+                }
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = rootView.getHeight();
+                int heightDifference = screenHeight - (r.bottom - r.top);
+
+                if (heightDifference > screenHeight / 3) {
+                    recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+                    isScrolled = true;
+                }
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -606,25 +626,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         mSocket.emit("addUser", data);
 
-        final View rootView = this.getWindow().getDecorView(); // this = activity
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (isScrolled) {
-                    isScrolled = false;
-                    return;
-                }
-                Rect r = new Rect();
-                rootView.getWindowVisibleDisplayFrame(r);
-                int screenHeight = rootView.getHeight();
-                int heightDifference = screenHeight - (r.bottom - r.top);
-
-                if (heightDifference > screenHeight / 3) {
-                    recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-                    isScrolled = true;
-                }
-            }
-        });
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());

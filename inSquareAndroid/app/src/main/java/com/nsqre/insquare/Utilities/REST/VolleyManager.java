@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Utilities.REST;/* Created by umbertosonnino on 10/3/16  */
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -283,7 +282,41 @@ public class VolleyManager {
         requestQueue.add(postTokenRequest);
     }
 
-    public void postGCMToken(
+    public void patchLoginToken (
+            final String service,
+            final String accessToken,
+            final VolleyResponseListener listener
+    ) {
+        String volleyURL = baseURL + "user/" + service;
+        Log.d(TAG, "patchLoginToken: " + volleyURL);
+        StringRequest patchTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "ServerResponse " + response);
+                        listener.responsePATCH(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "ErrorResponse: " + error.toString());
+                        listener.responsePATCH(null);
+                    }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                InSquareProfile.getInstance(context);
+                Map<String,String> params = new HashMap<>();
+                params.put("userId", InSquareProfile.getUserId());
+                params.put("access_token", accessToken);
+                return params;
+            }
+        };
+        requestQueue.add(patchTokenRequest);
+    }
+
+    public void patchGCMToken(
             final String token,
             final VolleyResponseListener listener
     )
@@ -291,19 +324,19 @@ public class VolleyManager {
          
         String volleyURL = baseURL + "gcmToken";
 
-        StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
+        StringRequest patchGCMTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "Response is: " + response);
-                        listener.responsePOST(response);
+                        listener.responsePATCH(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, error.toString());
-                        listener.responsePOST(null);
+                        listener.responsePATCH(null);
                     }
         }) {
             @Override
@@ -315,7 +348,7 @@ public class VolleyManager {
             }
         };
 
-        requestQueue.add(postGCMTokenRequest);
+        requestQueue.add(patchGCMTokenRequest);
     }
 
 

@@ -2,9 +2,12 @@ package com.nsqre.insquare.Fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +18,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nsqre.insquare.Activities.BottomNavActivity;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -28,7 +48,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * his name, his photo and the lists of squares created and favoured
  */
 public class SettingsFragment extends Fragment implements
-        InSquareProfile.InSquareProfileListener
+        InSquareProfile.InSquareProfileListener,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks
 {
 
     private static SettingsFragment instance;
@@ -40,8 +62,18 @@ public class SettingsFragment extends Fragment implements
 
     private TextView facebookConnectButton;
     private TextView googleConnectButton;
+    private TextView inSquareDisconnectButton;
 
     private TextView feedbackSendButton;
+    private InSquareProfile profile;
+
+    private String gAccessToken;
+    private GoogleApiClient gApiClient;
+    private GoogleSignInOptions gSo;
+    public static final int RC_SIGN_IN = 9001;
+
+    private CallbackManager fbCallbackManager;
+    private String fbAccessToken;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -62,7 +94,27 @@ public class SettingsFragment extends Fragment implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        gSo = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .requestIdToken(getString(R.string.server_client_id))
+                .requestEmail()
+                .build();
+
+        if(gApiClient == null) {
+            gApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
+                    .enableAutoManage(getActivity(), this)
+                    .addConnectionCallbacks(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gSo)
+                    .build();
+        }
+
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        fbCallbackManager = CallbackManager.Factory.create();
+
+        profile = InSquareProfile.getInstance(getActivity().getApplicationContext());
     }
 
 
@@ -169,49 +221,226 @@ public class SettingsFragment extends Fragment implements
 
     private void setupLoginButtons(View layout)
     {
-        View.OnClickListener WIP = new View.OnClickListener() {
+        inSquareDisconnectButton = (TextView) layout.findViewById(R.id.settings_insquare_disconnect);
+        inSquareDisconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BottomNavActivity madre = (BottomNavActivity) getContext();
-                Snackbar.make(madre.coordinatorLayout, "Ci stiamo lavorando!", Snackbar.LENGTH_SHORT).show();
+                Context c = getContext();
+                if(InSquareProfile.isFacebookConnected()) {
+                    LoginManager.getInstance().logOut();
+                }
+                InSquareProfile.clearProfileCredentials(c);
             }
-        };
+        });
 
         facebookConnectButton = (TextView) layout.findViewById(R.id.settings_facebook_connect);
-        facebookConnectButton.setOnClickListener(WIP);
 
         if(InSquareProfile.isFacebookConnected())
         {
             facebookConnectButton.setText("Disconnetti da " + InSquareProfile.facebookName);
 
-            /*facebookConnectButton.setOnClickListener(
+            facebookConnectButton.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Context c = getContext();
-                            Toast.makeText(getContext(), "Ci stiamo lavorando!", Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
                             InSquareProfile.clearFacebookCredentials(c);
                             facebookConnectButton.setText(R.string.settings_connect_facebook);
 
                             if(!InSquareProfile.isGoogleConnected())
                             {
-                                Intent intent = new Intent(c, LoginActivity.class);
-                                startActivity(intent);
                                 InSquareProfile.clearProfileCredentials(c);
                             }
                         }
                     }
-            );*/
+            );
 
+        } else {
+            facebookConnectButton.setText(R.string.settings_connect_facebook);
+
+            LoginManager.getInstance().registerCallback(fbCallbackManager,
+                    new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            Log.d(TAG, "Success Login");
+                            requestFacebookData();  //fa la post
+                            //fbLoginButton.setText(R.string.fb_logout_string);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            Log.d(TAG, "Facebook Login canceled");
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception) {
+                            Log.d(TAG, "onError:\n" + exception.toString());
+                            CharSequence text = getString(R.string.connFail);
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(getActivity().getApplicationContext(), text, duration);
+                            toast.show();
+                        }
+                    });
+
+            facebookConnectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LoginManager.getInstance().logInWithReadPermissions(SettingsFragment.this, Arrays.asList("public_profile", "email", "user_friends"));
+                }
+            });
         }
 
         googleConnectButton = (TextView) layout.findViewById(R.id.settings_google_connect);
         if(InSquareProfile.isGoogleConnected())
         {
             googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
+
+            googleConnectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context c = getContext();
+                    InSquareProfile.clearGoogleCredentials(c);
+                    if(!InSquareProfile.isFacebookConnected()) {
+                        InSquareProfile.clearProfileCredentials(c);
+                    }
+                }
+            });
+        } else {
+            googleConnectButton.setText("Connetti con Google+");
+
+            googleConnectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gApiClient);
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                }
+            });
         }
-        googleConnectButton.setOnClickListener(WIP);
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            googleSignInResult(result); //dalla post parte l'app
+        } else {
+            fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void googleSignInResult(GoogleSignInResult result) {
+
+        Log.d("Google" + TAG, "Success? " + result.isSuccess() + "\nStatus Code: " + result.getStatus().getStatusCode());
+
+        if (result.isSuccess())
+        {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            gAccessToken = acct.getIdToken();
+
+            Log.d(TAG, "Login was a success: " + acct.getDisplayName() + ": " + acct.getEmail());
+            Log.d(TAG, "Token is: " + acct.getIdToken());
+
+            googlePatchRequest();
+        } else { //connessione fallita
+            CharSequence text = getString(R.string.connFail);
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(getActivity().getApplicationContext(), text, duration);
+            toast.show();
+        }
+    }
+
+    private void requestFacebookData()
+    {
+        fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
+        facebookPatchRequest();
+    }
+
+    private void googlePatchRequest() {
+        final String serviceName = "google";
+
+        VolleyManager.getInstance().patchLoginToken(serviceName, gAccessToken,
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // Vuoto - POST Request
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        if (object == null) {
+                            Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            String serverResponse = (String) object;
+                            try {
+                                JSONObject jsonObject = new JSONObject(serverResponse);
+                                profile.googleEmail = jsonObject.getString("googleEmail");
+                                profile.googleToken = jsonObject.getString("googleToken");
+                                profile.googleName = jsonObject.getString("googleName");
+                                profile.googleId = jsonObject.getString("googleId");
+                                profile.save(getActivity().getApplicationContext());
+                                googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto - POST Request
+                    }
+                });
+    }
+
+    private void facebookPatchRequest() {
+        final String serviceName = "facebook";
+
+        VolleyManager.getInstance().patchLoginToken(serviceName, fbAccessToken,
+                new VolleyManager.VolleyResponseListener() {
+                    @Override
+                    public void responseGET(Object object) {
+                        // Vuoto - POST Request
+                    }
+
+                    @Override
+                    public void responsePOST(Object object) {
+
+                    }
+
+                    @Override
+                    public void responsePATCH(Object object) {
+                        if (object == null) {
+                            Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            String serverResponse = (String) object;
+                            try {
+                                JSONObject jsonObject = new JSONObject(serverResponse);
+                                profile.facebookEmail = jsonObject.getString("facebookEmail");
+                                profile.facebookToken = jsonObject.getString("facebookToken");
+                                profile.facebookName = jsonObject.getString("facebookName");
+                                profile.facebookId = jsonObject.getString("facebookId");
+                                profile.save(getActivity().getApplicationContext());
+                                facebookConnectButton.setText("Disconnetti da " + InSquareProfile.facebookName);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void responseDELETE(Object object) {
+                        // Vuoto - POST Request
+                    }
+                });
     }
 
     /**
@@ -220,6 +449,17 @@ public class SettingsFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
+        if (gApiClient != null)
+            gApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (gApiClient != null && gApiClient.isConnected()) {
+            gApiClient.stopAutoManage(getActivity());
+            gApiClient.disconnect();
+        }
     }
 
     @Override
@@ -245,5 +485,32 @@ public class SettingsFragment extends Fragment implements
     @Override
     public void onRecentChanged() {
         Log.d(TAG, "onRecentChanged!");
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        if(connectionResult.hasResolution())
+        {
+            try
+            {
+                connectionResult.startResolutionForResult(getActivity(), 9000);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        }else
+        {
+            Log.d(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+        Log.d(TAG, "Error on connection!\n" + connectionResult.getErrorMessage());
     }
 }
