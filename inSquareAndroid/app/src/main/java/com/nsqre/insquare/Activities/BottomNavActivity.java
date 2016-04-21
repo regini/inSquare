@@ -170,7 +170,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SettingsFragment.RC_SIGN_IN) {
+        if (requestCode == SettingsFragment.RC_SIGN_IN || requestCode == SettingsFragment.REQUEST_INVITE) {
             SettingsFragment fragment = SettingsFragment.newInstance();
             fragment.onActivityResult(requestCode, resultCode, data);
         } else if(requestCode == MapFragment.REQUEST_SQUARE && data != null)

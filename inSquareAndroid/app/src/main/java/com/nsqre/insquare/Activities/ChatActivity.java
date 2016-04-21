@@ -51,12 +51,8 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitation;
-import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
@@ -136,9 +132,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private File chosenFile; //chosen file from intent
 
     private ChatActivity ca;
-    //SHARE
-    private GoogleApiClient mGoogleApiClient;
-    private static final int REQUEST_INVITE = 0;
     public final static int FILE_PICK = 1001;
 
     private LinkedList<Integer> positions;
@@ -227,29 +220,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         });
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(AppInvite.API)
-                .enableAutoManage(this, this)
-                .build();
-
-        // Check for App Invite invitations and launch deep-link activity if possible.
-        // Requires that an Activity is registered in AndroidManifest.xml to handle
-        // deep-link URLs.
-        boolean autoLaunchDeepLink = true;
-        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
-                            @Override
-                            public void onResult(AppInviteInvitationResult result) {
-                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
-                                // Because autoLaunchDeepLink = true we don't have to do anything
-                                // here, but we could set that to false and manually choose
-                                // an Activity to launch to handle the deep link here.
-                            }
-                        });
-
-
-        //FINE SHARE
 
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
@@ -453,19 +423,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
-            case REQUEST_INVITE:
-                if (resultCode == RESULT_OK) {
-                    // Check how many invitations were sent and log a message
-                    // The ids array contains the unique invitation ids for each invitation sent
-                    // (one for each contact select by the user). You can use these for analytics
-                    // as the ID will be consistent on the sending and receiving devices.
-                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-                } else {
-                    // Sending failed or it was canceled, show failure message to the user
-                    //showMessage(getString(R.string.send_failed));
-                }
-                break;
             case FILE_PICK:
                 Uri returnUri;
 
@@ -991,15 +948,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 } else {
                     favouriteSquare(Request.Method.POST, mSquare);
                 }
-                break;
-            case R.id.share_action:
-                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                        .setMessage(getString(R.string.invitation_message))
-                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-                        .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                        .setCallToActionText(getString(R.string.invitation_cta))
-                        .build();
-                startActivityForResult(intent, REQUEST_INVITE);
                 break;
             default:
         }

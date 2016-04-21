@@ -83,6 +83,43 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/settings_app_invites"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:paddingStart="@dimen/activity_vertical_margin"
+                    android:gravity="start|center_vertical"
+                    android:text="Invita amici"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:backgroundTint="@color/white"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
+
             <!-- Sezione delle connessioni Social -->
             <LinearLayout
                 android:layout_width="match_parent"
