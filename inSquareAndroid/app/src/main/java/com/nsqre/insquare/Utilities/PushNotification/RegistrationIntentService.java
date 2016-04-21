@@ -88,14 +88,19 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(final String token) {
 
-        VolleyManager.getInstance().postGCMToken(token, new VolleyManager.VolleyResponseListener() {
+        VolleyManager.getInstance().patchGCMToken(token, new VolleyManager.VolleyResponseListener() {
             @Override
             public void responseGET(Object object) {
-                // Vuoto - POST Request
+                // Vuoto - PATCH Request
             }
 
             @Override
             public void responsePOST(Object object) {
+                // Vuoto - PATCH Request
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
                 if(object == null)
                 {
                     Log.d(TAG, "responsePOST: my token wasn't posted correctly!");
@@ -106,13 +111,8 @@ public class RegistrationIntentService extends IntentService {
             }
 
             @Override
-            public void responsePATCH(Object object) {
-                // Vuoto - POST Request
-            }
-
-            @Override
             public void responseDELETE(Object object) {
-                // Vuoto - POST Request
+                // Vuoto - PATCH Request
             }
         });
     }

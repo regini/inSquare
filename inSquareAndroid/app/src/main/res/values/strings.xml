@@ -145,6 +145,8 @@
     <string name="tutorial_caption2">Cambiare da string.xml</string>
     <string name="tutorial_caption3">Cambiare da string.xml</string>
     <string name="tutorial_caption4">Cambiare da string.xml</string>
+    <string name="create_square_button_date">Data</string>
+    <string name="create_square_button_time">Ora</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>

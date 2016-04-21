@@ -45,7 +45,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
-import com.nsqre.insquare.Fragments.TutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.User;
@@ -132,6 +132,10 @@ public class LoginActivity extends AppCompatActivity
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
+
+        if(getIntent() != null) {
+            LoginManager.getInstance().logOut();
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bitmap icon = BitmapFactory.decodeResource(getResources(),
@@ -339,7 +343,7 @@ public class LoginActivity extends AppCompatActivity
 
         final String serviceName = "facebook";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, fbAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, fbAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -376,7 +380,7 @@ public class LoginActivity extends AppCompatActivity
     private void googlePostRequest() {
         final String serviceName = "google";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, gAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, gAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -568,7 +572,7 @@ public class LoginActivity extends AppCompatActivity
                         final String feedback = feedbackText.getText().toString().trim();
                         final String activity = this.getClass().getSimpleName();
 
-                        VolleyManager.getInstance().postFeedback(feedback, InSquareProfile.getUserId(), activity,
+                        VolleyManager.getInstance(getApplicationContext()).postFeedback(feedback, InSquareProfile.getUserId(), activity,
                                 new VolleyManager.VolleyResponseListener() {
                                     @Override
                                     public void responseGET(Object object) {

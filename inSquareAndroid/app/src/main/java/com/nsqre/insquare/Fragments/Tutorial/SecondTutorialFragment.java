@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.Tutorial;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,12 +14,12 @@ import com.nsqre.insquare.R;
 
 /**
  */
-public class FourthTutorialFragment extends PageFragment {
+public class SecondTutorialFragment extends PageFragment {
 
     @Override
     protected int getLayoutResId() {
         // layout id of fragment
-        return R.layout.fragment_fourth_tutorial;
+        return R.layout.fragment_second_tutorial;
     }
 
     @Override

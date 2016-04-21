@@ -13,6 +13,8 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -37,7 +41,7 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
@@ -91,15 +95,20 @@ public class SquareCreateFragment extends Fragment {
     private LinearLayout sectionFacebook;
     private Button facebookConnectButton;
     private EditText facebookUrl;
-    private int currentYear;
-    private int currentMonth;
-    private int currentDay;
+
+    private int currentYear, currentMonth, currentDay;
+    private int currentHour, currentMinute;
+
+    private String expireString;
+
     private DatePickerDialog dpd;
     private TimePickerDialog tpd;
 
     // For Facebook Handling
     private CallbackManager fbCallbackManager;
     private String fbAccessToken;
+    private CreateSquareActivity father;
+    private TextView warningText;
 
     public SquareCreateFragment() {
         // Required empty public constructor
@@ -119,6 +128,10 @@ public class SquareCreateFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        this.father = (CreateSquareActivity) getActivity();
+        this.expireString = "";
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_square_create, container, false);
 
@@ -130,26 +143,29 @@ public class SquareCreateFragment extends Fragment {
 
     public void setLayoutType()
     {
-        CreateIntroActivity upperActity = (CreateIntroActivity)getActivity();
 
-        Log.d(TAG, "setLayoutType: " + upperActity.squareType.toString());
+        Log.d(TAG, "setLayoutType: " + father.squareType.toString());
 
-        switch (upperActity.squareType) {
+        switch (father.squareType) {
             default:
             case TYPE_PLACE:
                 sectionDateTime.setVisibility(View.GONE);
                 sectionFacebook.setVisibility(View.GONE);
+                warningText.setVisibility(View.GONE);
+
                 changeStatusBarColor(R.color.colorAccent);
                 break;
             case TYPE_EVENT:
                 sectionDateTime.setVisibility(View.VISIBLE);
                 sectionFacebook.setVisibility(View.VISIBLE);
+                warningText.setVisibility(View.GONE);
                 ((TextInputLayout)facebookUrl.getParent()).setHint("URL Facebook Event");
                 changeStatusBarColor(R.color.md_deep_purple_600);
                 break;
             case TYPE_SHOP:
                 sectionFacebook.setVisibility(View.VISIBLE);
                 sectionDateTime.setVisibility(View.GONE);
+                warningText.setVisibility(View.GONE);
                 changeStatusBarColor(R.color.md_green_600);
                 ((TextInputLayout)facebookUrl.getParent()).setHint("URL Facebook Page");
                 break;
@@ -210,14 +226,44 @@ public class SquareCreateFragment extends Fragment {
         newSquareName = (TextInputEditText) v.findViewById(R.id.create_square_name);
         newSquareDescription = (TextInputEditText) v.findViewById(R.id.create_square_description);
 
+        newSquareName.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count)
+                    {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                        if(s.length() > 0){
+                            father.circularReveal(father.nextButton);
+                        }else
+                        {
+                            father.nextButton.setVisibility(View.GONE);
+                        }
+                    }
+                }
+        );
+
         sectionDateTime = (LinearLayout) v.findViewById(R.id.create_square_date_time_section);
         dateButtonPicker = (Button) v.findViewById(R.id.create_square_date_button);
         timeButtonPicker = (Button) v.findViewById(R.id.create_square_time_button);
+
+        warningText = (TextView) v.findViewById(R.id.create_square_warning);
+        warningText.setVisibility(View.GONE);
 
         final Calendar c = Calendar.getInstance();
         currentYear = c.get(Calendar.YEAR);
         currentMonth = c.get(Calendar.MONTH);
         currentDay = c.get(Calendar.DAY_OF_MONTH);
+        currentHour = c.get(Calendar.HOUR_OF_DAY);
+        currentMinute = c.get(Calendar.MINUTE);
 
         Log.d(TAG, "setupMainContent: current day: " + currentDay + " currentMonth: " + currentMonth);
 
@@ -228,14 +274,18 @@ public class SquareCreateFragment extends Fragment {
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         String text = "";
                         monthOfYear += 1;
-                        if(year == currentYear) {
-                            text = dayOfMonth + "/" + monthOfYear;
-                        }else {
-                            text = dayOfMonth + "/" + monthOfYear + "/" + year;
-                        }
+
+                        text = dayOfMonth + "/" + monthOfYear + "/" + year;
+
                         dateButtonPicker.setText(text);
+                        warningText.setVisibility(View.VISIBLE);
+
+                        expireString = year + "-" + monthOfYear + "-" + dayOfMonth;
+                        Log.d(TAG, "onDateSet: expireString " + expireString);
                     }
                 }, currentYear, currentMonth, currentDay);
+
+        dpd.getDatePicker().setMinDate(System.currentTimeMillis());
 
 
         dateButtonPicker.setOnClickListener(
@@ -247,8 +297,39 @@ public class SquareCreateFragment extends Fragment {
                 }
         );
 
-        // TODO TimePickerDialog
-//        tpd
+        tpd = new TimePickerDialog(getContext(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        String text = "";
+                        text = hourOfDay + ":" + minute;
+
+                        timeButtonPicker.setText(text);
+                        warningText.setVisibility(View.VISIBLE);
+
+                        String resData = getContext().getString(R.string.create_square_button_date);
+
+                        String data = dateButtonPicker.getText().equals(resData) ? ""
+                                : dateButtonPicker.getText().toString().trim();
+                        if(data.isEmpty())
+                        {
+                            expireString = currentYear + "-" + (currentMonth+1) + "-" + currentDay;
+                            data = (currentDay+1) + "/" + (currentMonth+1) + "/" + currentYear;
+                        }
+                        dateButtonPicker.setText(data);
+                    }
+                }, currentHour, currentMinute,
+                android.text.format.DateFormat.is24HourFormat(getContext())
+        );
+
+        timeButtonPicker.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tpd.show();
+                    }
+                }
+        );
 
     }
 
@@ -263,7 +344,7 @@ public class SquareCreateFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ChooseCreateFragment.SQUARE_TYPE requestType = ((CreateIntroActivity)getActivity()).squareType;
+                        ChooseCreateFragment.SQUARE_TYPE requestType = father.squareType;
 
                         String url = getAndCheckURL();
                         if (url == null) return;
@@ -285,15 +366,27 @@ public class SquareCreateFragment extends Fragment {
         );
     }
 
+    public boolean validLink()
+    {
+        boolean validLink = !facebookUrl.getText().toString().trim().isEmpty();
+
+        if(!validLink)
+        {
+            ((TextInputLayout) facebookUrl.getParent()).setErrorEnabled(true);
+            ((TextInputLayout) facebookUrl.getParent()).setError("Il nome non può essere vuoto");
+        }
+
+        return validLink;
+    }
 
     public boolean validName()
     {
-        boolean valid = !newSquareName.getText().toString().trim().isEmpty();
-        if(!valid) {
+        boolean validName = !newSquareName.getText().toString().trim().isEmpty();
+        if(validName) {
             ((TextInputLayout) newSquareName.getParent()).setErrorEnabled(true);
             ((TextInputLayout) newSquareName.getParent()).setError("Il nome non può essere vuoto");
         }
-        return valid;
+        return validName;
     }
 
     private void setupFacebook(final View v)
@@ -323,7 +416,7 @@ public class SquareCreateFragment extends Fragment {
 
     private void requestFacebookUserData()
     {
-        final ChooseCreateFragment.SQUARE_TYPE requestType = ((CreateIntroActivity)getActivity()).squareType;
+        final ChooseCreateFragment.SQUARE_TYPE requestType = father.squareType;
         Log.d(TAG, "requestFacebookUserData: Sto richiedendo le informazioni da Facebook");
         // Creazione di una nuova richiesta al grafo di Facebook per le informazioni necessarie
         GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -332,57 +425,48 @@ public class SquareCreateFragment extends Fragment {
             {
                 Log.d(TAG, "Hello Facebook!\n" + response.toString());
 
-                try {
-                    String nome = object.getString("name");
-                    String email = object.getString("email");
-                    String gender = object.getString("gender");
-                    String id = object.getString("id");
+                fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
 
-                    fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
+                final String serviceName = "Facebook";
 
-                    InSquareProfile.facebookName = nome;
-                    InSquareProfile.facebookEmail = email;
-                    InSquareProfile.facebookId = id;
-                    InSquareProfile.facebookToken = fbAccessToken;
-                    InSquareProfile.save(getContext());
+                VolleyManager.getInstance().patchLoginToken(
+                        serviceName,
+                        fbAccessToken,
+                        new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // Vuoto - PATCH Request
+                            }
 
-                    final String serviceName = "Facebook";
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Vuoto - PATCH Request
+                            }
 
-                    VolleyManager.getInstance().patchLoginToken(
-                            serviceName,
-                            fbAccessToken,
-                            InSquareProfile.getUserId(),
-                            nome,
-                            email,
-                            "",
-                            new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-
-                                @Override
-                                public void responsePOST(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-
-                                @Override
-                                public void responsePATCH(Object object) {
-                                    boolean success = (boolean)object;
-                                    if (!success) {
-                                        Toast.makeText(getContext(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void responsePATCH(Object object) {
+                                if (object == null) {
+                                    Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String serverResponse = (String) object;
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(serverResponse);
+                                        InSquareProfile.facebookEmail = jsonObject.getString("facebookEmail");
+                                        InSquareProfile.facebookToken = jsonObject.getString("facebookToken");
+                                        InSquareProfile.facebookName = jsonObject.getString("facebookName");
+                                        InSquareProfile.facebookId = jsonObject.getString("facebookId");
+                                        InSquareProfile.save(getActivity().getApplicationContext());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
                                 }
+                            }
 
-                                @Override
-                                public void responseDELETE(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-                            });
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // Vuoto - PATCH Request
+                            }
+                        });
 
                 String url = getAndCheckURL();
                 if(url == null) return;
@@ -422,13 +506,12 @@ public class SquareCreateFragment extends Fragment {
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-                        CreateIntroActivity upperActivity = (CreateIntroActivity) getActivity();
                         JSONObject object = response.getJSONObject();
                         Log.d(TAG, "onCompleted: page details ====\n" + response.toString());
 
-                        if(upperActivity.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null)
+                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null)
                         {
-                            ReviewCreateFragment reviewFragment = (ReviewCreateFragment) upperActivity.pagerAdapter.getItem(2);
+                            ReviewCreateFragment reviewFragment = (ReviewCreateFragment) father.pagerAdapter.getItem(2);
 
                             try {
 
@@ -493,16 +576,13 @@ public class SquareCreateFragment extends Fragment {
                                     }
                                 }
 
-                                // Riferimento all'id di facebook per riuscire a riprenderlo a posteriori
-                                reviewFragment.id = id;
-                                // Posizione della square
-                                reviewFragment.latitude = latitude;
-                                reviewFragment.longitude = longitude;
-                                // Riempimento informazioni necessarie
-                                reviewFragment.setupShopLowerSection(description, likes, website, phone, street, hoursList);
-                                reviewFragment.setupShopTopSection(name, price);
+                                reviewFragment.setupShopInfo(
+                                        name, price,
+                                        description, likes, website, phone, street, hoursList,
+                                        id, latitude, longitude
+                                );
 
-                                displayNextButton(upperActivity);
+                                displayNextButton();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -519,10 +599,10 @@ public class SquareCreateFragment extends Fragment {
         ).executeAsync();
     }
 
-    public void displayNextButton(CreateIntroActivity father)
+    public void displayNextButton()
     {
         father.circularReveal(father.nextButton);
-        father.nextButton.performClick();
+        father.vpager.setCurrentItem(2, true);
     }
 
     private void requestFacebookEventDetail(String url)
@@ -543,7 +623,6 @@ public class SquareCreateFragment extends Fragment {
                     public void onCompleted(GraphResponse response) {
                         Log.d(TAG, "onCompleted: event details ====\n" + response.toString());
 
-                        CreateIntroActivity upperActivity = (CreateIntroActivity) getActivity();
                         JSONObject object = response.getJSONObject();
 
                         if(object == null)
@@ -552,14 +631,13 @@ public class SquareCreateFragment extends Fragment {
                             return;
                         }
 
-                        if(upperActivity.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null) {
-                            ReviewCreateFragment reviewFragment = (ReviewCreateFragment) upperActivity.pagerAdapter.getItem(2);
+                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null) {
+                            ReviewCreateFragment reviewFragment = (ReviewCreateFragment) father.pagerAdapter.getItem(2);
 
                             try {
                                 String id;
                                 String name, description;
                                 name = description = "";
-                                // TODO handle case in which there's no location in the event
                                 String street, latitude, longitude;
                                 street = latitude = longitude = "";
                                 String startTime, endTime, finalTime;
@@ -578,9 +656,14 @@ public class SquareCreateFragment extends Fragment {
                                 SimpleDateFormat outgoingStartFormat = new SimpleDateFormat("EEE, d MMM 'at' HH:mm");
                                 SimpleDateFormat outgoingEndFormat = new SimpleDateFormat("EEE, d MMM 'at' HH:mm");
 
+                                Date endDate;
+                                SimpleDateFormat serverEndFormat = new SimpleDateFormat("yyyy-MM-dd");
+
                                 {
                                     String jsonTime= object.getString("start_time");
+                                    // Il parsing mi restituisce un oggetto Data
                                     date = incomingFormat.parse(jsonTime);
+                                    // Il format ritorna una stringa con il formato specificato nel costruttore
                                     startTime = outgoingStartFormat.format(date);
                                     Log.d(TAG, "onCompleted: " + startTime);
                                 }
@@ -590,7 +673,11 @@ public class SquareCreateFragment extends Fragment {
                                     String jsonTime = object.getString("end_time");
                                     date = incomingFormat.parse(jsonTime);
                                     endTime = outgoingEndFormat.format(date);
-                                    Log.d(TAG, "onCompleted: " + endTime);
+
+                                    endDate = serverEndFormat.parse(jsonTime);
+                                    expireString = serverEndFormat.format(endDate);
+
+                                    Log.d(TAG, "Parsed end_time for expireString: " + expireString);
 
                                     String startIncipit = startTime.substring(0, startTime.indexOf(" at "));
                                     String endIncipit = endTime.substring(0,endTime.indexOf(" at "));
@@ -619,14 +706,10 @@ public class SquareCreateFragment extends Fragment {
                                     }
                                 }
 
-                                reviewFragment.id = id;
-                                reviewFragment.latitude = latitude;
-                                reviewFragment.longitude = longitude;
-                                reviewFragment.setupEventTopSection(name);
-                                reviewFragment.setupEventLowerSection(description, finalTime, street);
+                                String website = "www.facebook.com/events/" + id;
+                                reviewFragment.setupEventInfo(name, description, finalTime, street, website, id, latitude, longitude, expireString);
 
-
-                                displayNextButton(upperActivity);
+                                displayNextButton();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -692,5 +775,59 @@ public class SquareCreateFragment extends Fragment {
         Log.d(TAG, "extractPageName: " + StringUtil.isNumeric(pageId));
 
         return StringUtil.isNumeric(pageId) ? pageId : "";
+    }
+
+    public String getInsertedName()
+    {
+        return this.newSquareName.getText().toString();
+    }
+
+    public String getInsertedDescription()
+    {
+        return this.newSquareDescription.getText().toString();
+    }
+
+    public String getExpireTime()
+    {
+        return this.expireString;
+    }
+
+    public String getEventTime() {
+        String eventTime = "";
+
+        String resOra = getContext().getString(R.string.create_square_button_time);
+        String resData = getContext().getString(R.string.create_square_button_date);
+
+        String data = this.dateButtonPicker.getText().equals(resData) ? ""
+                : this.dateButtonPicker.getText().toString().trim();
+        String ora = this.timeButtonPicker.getText().equals(resOra) ? ""
+                : this.timeButtonPicker.getText().toString().trim();
+
+        if(data.isEmpty())
+        {
+            return "";
+        }else
+        {
+            try {
+                SimpleDateFormat niceFormatting = new SimpleDateFormat("EEE, d MMM");
+                SimpleDateFormat eventDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                // eventDateFormat estrapola le informazioni dalla data
+                Date date = eventDateFormat.parse(data);
+                // niceFormatting crea una visualizzazione piu' adatta per le informazioni
+                eventTime += niceFormatting.format(date);
+                if(!ora.isEmpty())
+                {
+
+                    SimpleDateFormat eventTimeFormat = new SimpleDateFormat("HH:mm");
+                    date = eventTimeFormat.parse(ora);
+                    eventTime += " at " + eventTimeFormat.format(date);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return eventTime;
     }
 }

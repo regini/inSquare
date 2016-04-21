@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.Tutorial;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -10,6 +10,10 @@ import com.cleveroad.slidingtutorial.PageFragment;
 import com.cleveroad.slidingtutorial.SimplePagerFragment;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.LoginActivity;
+import com.nsqre.insquare.Fragments.Tutorial.FirstTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.FourthTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.SecondTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.ThirdTutorialFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 

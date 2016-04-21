@@ -282,19 +282,12 @@ public class VolleyManager {
         requestQueue.add(postTokenRequest);
     }
 
-    public void patchLoginToken(
+    public void patchLoginToken (
             final String service,
             final String accessToken,
-            final String userId,
-            final String username,
-            final String email,
-            final String photoURL,
             final VolleyResponseListener listener
-    )
-    {
-
+    ) {
         String volleyURL = baseURL + "user/" + service;
-
         Log.d(TAG, "patchLoginToken: " + volleyURL);
 
         StringRequest patchTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
@@ -302,39 +295,30 @@ public class VolleyManager {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "ServerResponse " + response);
-                        if(response.toLowerCase().contains("non"))
-                        {
-                            listener.responsePATCH(false);
-                        }else {
-                            listener.responsePATCH(true);
-                        }
+                        listener.responsePATCH(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "ErrorResponse: " + error.toString());
-                        listener.responsePOST(false);
+                        listener.responsePATCH(null);
                     }
-        })
-        {
-            //TOKEN messo nei parametri della query
+        }) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", emptySpacesForParams(username));
-                params.put("userId", emptySpacesForParams(userId));
-                params.put("email", emptySpacesForParams(email));
-                params.put("token", emptySpacesForParams(accessToken));
-                params.put("profilePhoto", emptySpacesForParams(photoURL));
-
+                InSquareProfile.getInstance(context);
+                Map<String,String> params = new HashMap<>();
+                params.put("userId", InSquareProfile.getUserId());
+                params.put("access_token", accessToken);
                 return params;
             }
         };
         requestQueue.add(patchTokenRequest);
     }
 
-    public void postGCMToken(
+
+    public void patchGCMToken(
             final String token,
             final VolleyResponseListener listener
     )
@@ -342,19 +326,19 @@ public class VolleyManager {
          
         String volleyURL = baseURL + "gcmToken";
 
-        StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
+        StringRequest patchGCMTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "Response is: " + response);
-                        listener.responsePOST(response);
+                        listener.responsePATCH(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, error.toString());
-                        listener.responsePOST(null);
+                        listener.responsePATCH(null);
                     }
         }) {
             @Override
@@ -366,7 +350,7 @@ public class VolleyManager {
             }
         };
 
-        requestQueue.add(postGCMTokenRequest);
+        requestQueue.add(patchGCMTokenRequest);
     }
 
 
@@ -415,6 +399,7 @@ public class VolleyManager {
                            final String latitude,
                            final String longitude,
                            final String ownerId,
+                           final String expireTime,
                            final VolleyResponseListener listener)
     {
          
@@ -428,6 +413,7 @@ public class VolleyManager {
         volleyURL += "&lon=" + longitude;
         volleyURL += "&ownerId=" + ownerId;
         volleyURL += "&type=0";
+        volleyURL += "&expireTime=" + expireTime;
 
         Log.d(TAG, "postSquare url: " + volleyURL);
 
@@ -466,6 +452,7 @@ public class VolleyManager {
            final String ownerId,
            final String squareType,
            final String facebookId,
+           final String expireTime,
            final VolleyResponseListener listener
     )
     {
@@ -480,6 +467,7 @@ public class VolleyManager {
         volleyURL += "&lon=" + longitude;
         volleyURL += "&ownerId=" + ownerId;
         volleyURL += "&type=" + squareType;
+        volleyURL += "&expireTime=" + expireTime;
         if(squareType.equals('1'))
         {
             volleyURL += "&facebookIdEvent=" + facebookId;

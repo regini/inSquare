@@ -15,7 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.RecyclerProfileSquareAdapter;
 import com.nsqre.insquare.Square.Square;
@@ -54,7 +54,7 @@ public class DialogHandler {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(where, CreateIntroActivity.class);
+                        Intent intent = new Intent(where, CreateSquareActivity.class);
                         intent.putExtra(SQUARE_TYPE, which);
                         intent.putExtra(MAP_SCREENSHOT, screenshotData);
                         where.startActivity(intent);

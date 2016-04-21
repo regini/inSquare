@@ -13,7 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 
 /**
@@ -28,7 +28,7 @@ public class ChooseCreateFragment extends Fragment {
     }
     private static ChooseCreateFragment instance;
 
-    CreateIntroActivity upperActivity;
+    CreateSquareActivity upperActivity;
     FrameLayout choicePlace, choiceEvent, choiceShop;
     ImageView overlayPlace, overlayEvent, overlayShop;
 
@@ -54,7 +54,7 @@ public class ChooseCreateFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_create_choose, container, false);
 
-        upperActivity = (CreateIntroActivity)getActivity();
+        upperActivity = (CreateSquareActivity)getActivity();
 
         choicePlace = (FrameLayout) v.findViewById(R.id.create_square_choice_place);
         choiceEvent = (FrameLayout) v.findViewById(R.id.create_square_choice_event);

@@ -43,7 +43,7 @@
                         android:id="@+id/create_square_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Inserisci un nome"
+                        android:hint="Nome"
                         android:maxLines="3"
                         android:fontFamily="sans-serif-condensed" />
                 </android.support.design.widget.TextInputLayout>
@@ -58,7 +58,7 @@
                         android:id="@+id/create_square_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Inserisci una descrizione"
+                        android:hint="Descrizione"
                         android:fontFamily="sans-serif-condensed"
                         android:maxLines="7"
                         />
@@ -71,11 +71,16 @@
                     android:orientation="horizontal"
                     android:gravity="end|right"
                     >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Conclusione evento:"
+                        />
                     <Button
                         android:id="@+id/create_square_date_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Data"
+                        android:text="@string/create_square_button_date"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-condensed"
                         style="?android:attr/borderlessButtonStyle"
@@ -85,13 +90,22 @@
                         android:id="@+id/create_square_time_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ora"
+                        android:text="@string/create_square_button_time"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-condensed"
                         style="?android:attr/borderlessButtonStyle"
                         />
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/create_square_warning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="La Square si cancella automaticamente 24h dopo l'orario specificato"
+                    android:textColor="@color/md_orange_500"
+                    android:gravity="center"
+                    />
 
             </LinearLayout>
 
