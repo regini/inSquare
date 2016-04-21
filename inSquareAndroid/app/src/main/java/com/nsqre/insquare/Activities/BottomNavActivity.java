@@ -36,7 +36,7 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
-import com.nsqre.insquare.Fragments.TutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
