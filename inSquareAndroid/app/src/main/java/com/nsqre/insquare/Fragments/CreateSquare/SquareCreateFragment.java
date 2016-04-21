@@ -518,7 +518,13 @@ public class SquareCreateFragment extends Fragment {
                         JSONObject object = response.getJSONObject();
                         Log.d(TAG, "onCompleted: page details ====\n" + response.toString());
 
-                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null)
+                        if(object == null)
+                        {
+                            Toast.makeText(getContext(), "Facebook ha fallito...riprova?", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error"))
                         {
                             ReviewCreateFragment reviewFragment = (ReviewCreateFragment) father.pagerAdapter.getItem(2);
 
@@ -781,9 +787,7 @@ public class SquareCreateFragment extends Fragment {
         tokens = pageId.split("-");
         pageId = tokens[tokens.length-1];
 
-        Log.d(TAG, "extractPageName: " + StringUtil.isNumeric(pageId));
-
-        return StringUtil.isNumeric(pageId) ? pageId : "";
+        return pageId;
     }
 
     public String getInsertedName()
