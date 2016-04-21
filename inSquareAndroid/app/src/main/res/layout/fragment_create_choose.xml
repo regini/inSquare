@@ -1,0 +1,133 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.CreateSquare.ChooseCreateFragment"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="3"
+        >
+
+        <FrameLayout
+            android:id="@+id/create_square_choice_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:src="@drawable/place_background"
+                />
+            <ImageView
+                android:id="@+id/create_square_choice_place_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/red_transparent_overlay"
+                />
+
+            <TextView
+                android:id="@+id/create_square_choice_place_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_gravity="right|end"
+                android:text="Luogo"
+                android:textSize="32sp"
+                android:textColor="@color/light_gray"
+                android:fontFamily="sans-serif-condensed"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:shadowColor="@color/colorPrimaryDark"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/create_square_choice_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event_background"
+                />
+
+            <ImageView
+                android:id="@+id/create_square_choice_event_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/purple_transparent_overlay"
+                />
+
+            <TextView
+                android:id="@+id/create_square_choice_event_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_gravity="right|end"
+                android:text="Evento"
+                android:textSize="32sp"
+                android:textColor="@color/light_gray"
+                android:fontFamily="sans-serif-condensed"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:shadowColor="@color/colorPrimaryDark"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/create_square_choice_shop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:src="@drawable/shop_background_2"
+                />
+            <ImageView
+                android:id="@+id/create_square_choice_shop_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/green_transparent_overlay"
+                />
+
+            <TextView
+                android:id="@+id/create_square_choice_shop_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:layout_gravity="right|end"
+                android:text="Attività Commerciale"
+                android:textSize="32sp"
+                android:textColor="@color/light_gray"
+                android:fontFamily="sans-serif-condensed"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:shadowColor="@color/colorPrimaryDark"
+                />
+
+        </FrameLayout>
+
+        </LinearLayout>
+
+</FrameLayout>

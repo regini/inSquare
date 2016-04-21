@@ -41,153 +41,226 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_header_row_height"
-            android:text="inSquare"
-            android:gravity="center_vertical"
-            android:fontFamily="sans-serif-condensed"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:background="@color/colorPrimaryLight"
-            />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/settings_insquare_disconnect"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_row_height"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:paddingStart="@dimen/activity_vertical_margin"
-            android:gravity="start|center_vertical"
-            android:text="Logout"
-            android:textColor="@color/colorTextPrimary"
-            android:fontFamily="sans-serif-condensed"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:backgroundTint="@color/white"
-            />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:gravity="center_vertical">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_header_row_height"
+                    android:text="inSquare"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
 
-    <!-- Sezione delle connessioni Social -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        >
+                <TextView
+                    android:id="@+id/settings_insquare_disconnect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:paddingStart="@dimen/activity_vertical_margin"
+                    android:gravity="start|center_vertical"
+                    android:text="Logout"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:backgroundTint="@color/white"
+                    />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_header_row_height"
-            android:text="Facebook"
-            android:gravity="center_vertical"
-            android:fontFamily="sans-serif-condensed"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:background="@color/colorPrimaryLight"
-            />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/settings_facebook_connect"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_row_height"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:gravity="left|center_vertical"
-            android:text="@string/settings_connect_facebook"
-            android:textColor="@color/colorTextPrimary"
-            android:fontFamily="sans-serif-condensed"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:backgroundTint="@color/white"
-            />
+            <!-- Sezione delle connessioni Social -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_header_row_height"
+                    android:text="Facebook"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
+
+                <TextView
+                    android:id="@+id/settings_facebook_connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/settings_connect_facebook"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:backgroundTint="@color/white"
+                    />
 
 
-    </LinearLayout>
+            </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/drop_shadow"
-        android:rotation="180"
-        />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/white"
-        >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@color/white"
+                >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_header_row_height"
-            android:text="Google"
-            android:gravity="center_vertical"
-            android:fontFamily="sans-serif-condensed"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:background="@color/colorPrimaryLight"
-            />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_header_row_height"
+                    android:text="Google"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
 
-        <TextView
-            android:id="@+id/settings_google_connect"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_row_height"
-            android:gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:text="Connetti con Google+"
-            android:textColor="@color/colorTextPrimary"
-            android:fontFamily="sans-serif-condensed"
-            />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/settings_google_connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:text="Connetti con Google+"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+            </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/drop_shadow"
-        android:rotation="180"
-        />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:background="@color/white"
-        >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:background="@color/white"
+                >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_header_row_height"
-            android:text="Feedback"
-            android:gravity="center_vertical"
-            android:fontFamily="sans-serif-condensed"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:background="@color/colorPrimaryLight"
-            />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_header_row_height"
+                    android:text="Feedback"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
 
-        <TextView
-            android:id="@+id/settings_send_feedback"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_row_height"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:text="Invia un Feedback"
-            android:textColor="@color/colorTextPrimary"
-            android:fontFamily="sans-serif-condensed"
-        />
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/drop_shadow"
-        android:rotation="180"
-        />
+                <TextView
+                    android:id="@+id/settings_send_feedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="Invia un Feedback"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:background="@color/white"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_header_row_height"
+                    android:text="Tutorial"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
+
+                <TextView
+                    android:id="@+id/settings_tutorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="Mostrami di nuovo il tutorial"
+                    android:textColor="@color/colorTextPrimary"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text=""
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-condensed"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
+                    />
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/drop_shadow"
+                android:rotation="180"
+                />
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

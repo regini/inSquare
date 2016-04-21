@@ -53,15 +53,15 @@ public class MyGcmListenerService extends GcmListenerService {
         Log.d(TAG, "From: " + from);
 
         if (from.startsWith("/topics/global")) {
-            String event = data.getString("event");
-            String userId = data.getString("userId");
-            String squareId = data.getString("squareId");
+            String event = data.getString("event", "");
+            String userId = data.getString("userId", "");
+            String squareId = data.getString("squareId", "");
             Log.d(TAG, event);
             updateSquares(userId, squareId, event);
         } else {
-            String message = data.getString("message");
-            String squareName = data.getString("squareName");
-            String squareId = data.getString("squareId");
+            String message = data.getString("message", "");
+            String squareName = data.getString("squareName", "");
+            String squareId = data.getString("squareId", "");
             sendNotification(message, squareName, squareId);
         }
     }

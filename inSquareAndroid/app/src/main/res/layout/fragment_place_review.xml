@@ -1,0 +1,298 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryLight"
+    >
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="5dp"
+        android:layout_margin="8dp"
+        >
+
+        <!-- Il contenuto della cardview -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical"
+            >
+
+            <!-- Sezione in alto -->
+            <LinearLayout
+                android:id="@+id/review_top_section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/review_square_initials"
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="SN"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:background="@drawable/linear_layout_rounded_background"
+                    android:backgroundTint="@color/colorAccent"
+                    />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical"
+                    >
+
+                    <TextView
+                        android:id="@+id/review_square_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A very long square name that should resemble ones that we might have in our db"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="18sp"
+                        android:maxLines="5"
+                        android:fontFamily="sans-serif-condensed"
+                        />
+
+                    <TextView
+                        android:id="@+id/review_square_price_range"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$$$$"
+                        android:textColor="@color/colorTextSecondary"
+                        android:maxLines="5"
+                        android:fontFamily="sans-serif-condensed-light"
+                        />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/review_description_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    >
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/review_description_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/search_bar_margin"
+                    android:layout_marginTop="@dimen/search_bar_margin"
+                    android:text="This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
+                    android:textColor="@color/colorTextSecondary"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:background="@color/colorPrimaryLight"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                        android:layout_width="@dimen/card_profile_small_icons"
+                        android:layout_height="@dimen/card_profile_small_icons"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/map_marker_radius"
+                        android:tint="@color/colorDivider"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/review_street_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Via Vito Volterra, 34"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+
+            </LinearLayout>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                        android:layout_width="@dimen/card_profile_small_icons"
+                        android:layout_height="@dimen/card_profile_small_icons"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/thumb_up"
+                        android:tint="@color/colorDivider"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/review_like_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="1234"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                        android:layout_width="@dimen/card_profile_small_icons"
+                        android:layout_height="@dimen/card_profile_small_icons"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/link"
+                        android:tint="@color/colorDivider"
+
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/review_website"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="www.facebook.com"
+                    android:fontFamily="sans-serif-condensed"
+                    android:autoLink="web"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                    android:layout_width="@dimen/card_profile_small_icons"
+                    android:layout_height="@dimen/card_profile_small_icons"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/phone"
+                    android:tint="@color/colorDivider"
+                        />
+                </RelativeLayout>
+
+
+
+                <TextView
+                    android:id="@+id/review_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="+39 123 4567890"
+                    android:fontFamily="sans-serif-condensed"
+                    android:autoLink="phone"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/square_card_pic_size"
+                    android:layout_height="@dimen/square_card_pic_size"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    >
+                    <ImageView
+                        android:layout_width="@dimen/card_profile_small_icons"
+                        android:layout_height="@dimen/card_profile_small_icons"
+                        android:src="@drawable/clock"
+                        android:tint="@color/colorDivider"
+                        />
+                </RelativeLayout>
+
+
+
+                <LinearLayout
+                    android:id="@+id/review_list_hours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:orientation="vertical"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+</ScrollView>

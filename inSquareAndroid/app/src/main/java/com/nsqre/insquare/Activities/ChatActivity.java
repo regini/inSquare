@@ -1,5 +1,6 @@
 package com.nsqre.insquare.Activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -80,6 +81,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -88,7 +90,6 @@ import retrofit.client.Response;
 /**
  * This activity lets the user chat in a Square, using a socket.io chat
  */
-//@RuntimePermissions
 public class ChatActivity extends AppCompatActivity implements MessageAdapter.ChatMessageClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -216,8 +217,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //insertPhotoWrapper();
-                //ca.chooseFileIntent(ca);
+                insertPhotoWrapper();
+                //chooseFileIntent();
             }
         });
 
@@ -390,7 +391,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }
         );
     }
-    /*
+
     private void insertPhotoWrapper() {
         List<String> permissionsNeeded = new ArrayList<String>();
 
@@ -421,16 +422,13 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             return;
         }
 
-        onChooseImage();
-    }*/
+        chooseFileIntent();
+    }
 
-
-
-    //@NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public static void chooseFileIntent(Activity activity){
+    private void chooseFileIntent(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        activity.startActivityForResult(intent, FILE_PICK);
+        this.startActivityForResult(intent, FILE_PICK);
     }
 
 
@@ -460,25 +458,22 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 }
                 break;
             case FILE_PICK:
-                test(resultCode,data);
+                Uri returnUri;
+
+                if (resultCode != RESULT_OK) {
+                    return;
+                }
+
+                returnUri = data.getData();
+                String filePath = DocumentHelper.getPath(this, returnUri);
+                //Safety check to prevent null pointer exception
+                if (filePath == null || filePath.isEmpty()) return;
+                chosenFile = new File(filePath);
+                uploadImage();
                 break;
         }
     }
-   // @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public void test(int resultCode, Intent data){
-        Uri returnUri;
 
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
-        returnUri = data.getData();
-        String filePath = DocumentHelper.getPath(this, returnUri);
-        //Safety check to prevent null pointer exception
-        if (filePath == null || filePath.isEmpty()) return;
-        chosenFile = new File(filePath);
-        uploadImage();
-    }
 
     private boolean addPermission(List<String> permissionsList, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -491,7 +486,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
         return true;
     }
-    /*
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -508,7 +503,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 if (perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                         && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     // All Permissions Granted
-                    onChooseImage();
+                    chooseFileIntent();
                 } else {
                     // Permission Denied
                     Toast.makeText(this, "Some Permission is Denied", Toast.LENGTH_SHORT)
@@ -520,13 +515,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-*/
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
-        //MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
+
 
     /**
      * Creates a Volley request to download the messages present in a particular square, then it adds the results to the
@@ -749,7 +738,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      * Attempts to send a foto throught a socket event, if the message is valid
      */
     private void attemptSendFoto(String fotoURL) {
-        // [START message_event]
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
                 .setAction("Send Message")
@@ -769,23 +757,17 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
         */
         String message = fotoURL;
-        if (TextUtils.isEmpty(message)) {
-            chatEditText.requestFocus();
-            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
 
-            return;
-        }
-
-        chatEditText.setText("");
-
+        Message m = new Message(message, mUsername, mUserId, format);
+        mProfile.addOutgoing(mSquareId, m, getApplicationContext());
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
-        intent.putExtra("username", mUsername);
-        intent.putExtra("userid", mUserId);
-        intent.putExtra("message", message);
+        intent.putExtra("message", m);
+        //intent.putExtra("username", mUsername);
+        //intent.putExtra("userid", mUserId);
+        //intent.putExtra("message", message);
         startService(intent);
-
-        addMessage(new Message(message, mUsername, mUserId, format));  //TODO ora deve esserci un'icona di invio in corso
+        addMessage(m);
     }
 
 

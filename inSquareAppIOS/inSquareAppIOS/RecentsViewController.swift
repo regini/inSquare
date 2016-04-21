@@ -56,6 +56,22 @@ class RecentsViewController: UIViewController, UITableViewDelegate
         // Do any additional setup after loading the view.
     }//END VDL
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //inutile?
+        updateRecentSquares()
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        //inutile?
+        recentTableView.reloadData()
+    }
+
+    
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         return recentSquares.count

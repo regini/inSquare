@@ -26,7 +26,7 @@ import Alamofire
 
 //mettere get square dentro locationManager func?
 //usa         mapView.myLocation instead of locationManager mapView.myLocation.coordinate.latitude
-class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationManagerDelegate
+class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate //, CLLocationManagerDelegate
 {
     @IBAction func unwindToMap(segue: UIStoryboardSegue)
     {
@@ -36,10 +36,23 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
     
     @IBOutlet var searchBar: UISearchBar!
     
+    @IBOutlet weak var searchResultTableView: UITableView!
+    
+    //var numberOfCharSearched = 0
+    
+    var searchActive : Bool = false
+    var squaresFromSearch = JSON(data: NSData())
+//    lazy var urlToSearch = "\(serverMainUrl)/squares?name=\(textSearched)"
+//    lazy var urltoSearch2 = "&lat=\(mapCenterLatitude)&lon=\(mapCenterLongitude)&userId=\(serverId)"
+//    
+//    "\(serverMainUrl)/squares?name=\(textSearched)&lat=\(mapCenterLatitude)&lon=\(mapCenterLongitude)&userId=\(serverId)"
+//    
+
+    //var squaresFromSearchFiltered:[String] = []
     
     //SEARCH
     var squareToSearch = [String : GMSMarker]()
-
+//serve^???
     
     
     //back from square
@@ -59,7 +72,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
     let locationManager = CLLocationManager()
 
     
-    //alle pezze centra colosseo, vengono aggiornate da locationManager per centrare in current location
+    //in caso di errore centra colosseo, vengono aggiornate da locationManager per centrare in current location
     var latitude:CLLocationDegrees = 41.890466
     var longitude:CLLocationDegrees = 12.492231
     
@@ -82,14 +95,26 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         //UIApplication.sharedApplication().statusBarStyle = .LightContent
 
-        //search bar change color
-        searchBar.barTintColor = UIColor.blackColor()
         
+        print("SERVER ID: \(serverId)")
+        
+        //search bar change color
+        //searchBar.barTintColor = UIColor.blackColor()
+        
+        searchResultTableView.dataSource = self
+        searchResultTableView.delegate = self
+        
+        self.searchResultTableView.backgroundColor = UIColor.clearColor()
+        self.searchResultTableView.opaque = false
+        self.searchResultTableView.separatorStyle = .None
+
         
         //parameters for getSquare
         var distanceInKm:String = "\(distanceInKmForGetSquare)" + "km"
         let latitudeGet:String = "41.890893"
         let longitudeGet:String = "12.504679"
+        
+//        self.hideKeyboardWhenTappedAround()
         
 //        //setUp for location manager -> map centred on current location
 //        manager = CLLocationManager()
@@ -178,7 +203,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
                         self.squareToSearch[marker.userData["markerId"] as! String] = marker
 //                        print(self.squareToSearch.count)
                     }
-                    //self.squareAroundYouTable.reloadData()
+                    //self.squareArHideoundYouTable.reloadData()
                     
                 }
             case .Failure(let error):
@@ -191,7 +216,244 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
         //####################################################################################################################################################################
         //END GETSQUARE REQUEST
     }//END VDL
+    
 
+//    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+////        self.view.endEditing(true)
+//        self.searchBar.resignFirstResponder()
+//        super.touchesBegan(touches, withEvent: event)
+//
+//    }
+    
+    //SEARCH E TABLEVIEW PER RESULTS
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        print("searchBarTextDidBeginEditing")
+        searchActive = true
+        //mapView.addSubview(self.searchResultTableView)
+        self.searchResultTableView.hidden = false
+
+//        let topConstraint = NSLayoutConstraint(
+//            item: searchResultTableView,
+//            attribute: NSLayoutAttribute.TopMargin,
+//            relatedBy: NSLayoutRelation.Equal,
+//            toItem: self.searchBar,
+//            attribute: NSLayoutAttribute.BottomMargin,
+//            multiplier: 1,
+//            constant: 31)
+//        
+//        NSLayoutConstraint.activateConstraints([topConstraint])
+        
+        //mapView.addConstraint(topConstraint)
+//
+
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        print("searchBarTextDidEndEditing")
+        searchActive = false
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        print("searchBarCancelButtonClicked")
+        searchActive = false
+        self.searchResultTableView.hidden = true
+        self.searchBar.resignFirstResponder()
+
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        print("searchBarSearchButtonClicked")
+
+        self.searchBar.resignFirstResponder()
+        
+        searchActive = false
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        print("textDidChange")
+
+        self.searchResultTableView.hidden = false
+        
+        
+
+        
+        if searchText.characters.count > 2
+        {
+            var urlToSearchWhenTextChange = "\(serverMainUrl)/squares?name=\(searchText)&lat=\(mapCenterLatitude)&lon=\(mapCenterLongitude)&userId=\(serverId)"
+            urlToSearchWhenTextChange = urlToSearchWhenTextChange.stringByReplacingOccurrencesOfString(" ", withString: "%20")
+            
+            request(.GET, urlToSearchWhenTextChange).validate().responseJSON { response in
+                switch response.result {
+                case .Success:
+                    print("REQUEST \(response.request)")
+                    print("RESULT \(response.result.value)")
+                    if let value = response.result.value {
+                        self.squaresFromSearch = JSON(value)
+                        
+//                        for (index, value):(String, JSON) in self.squaresFromSearch
+//                        {
+//                            let i:Int=Int(index)!
+//                            
+//                            
+////                            let coordinates = self.squaresFromSearch[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+////                            let latitude = (coordinates[0] as NSString).doubleValue
+////                            let longitude = (coordinates[1] as NSString).doubleValue
+////                            let title = self.squaresFromSearch[i]["_source"]["name"].string
+////                            let identifier = self.squaresFromSearch[i]["_id"].string
+//                            
+//                        }
+                        
+                    
+                        
+                        if(self.squaresFromSearch.count == 0){
+                            self.searchActive = false
+                            self.searchResultTableView.separatorStyle = .None
+
+                        } else {
+                            self.searchActive = true
+                            self.searchResultTableView.separatorStyle = .SingleLine
+
+                        }
+                        
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            self.searchResultTableView.reloadData()
+                        })
+                        
+                    }
+                case .Failure(let error):
+                    print("FALLITO SEARCH: \(error)")
+                    //cambia con analitics
+                    //                Answers.logCustomEventWithName("Error",
+                    //                    customAttributes: ["Error Debug Description": error.debugDescription])
+                }
+            }//ENDREQUEST
+
+
+        } //end if > 2
+        
+                //####################################################################################################################################################################
+        //END GETSQUARE REQUEST
+
+        
+//        filtered = data.filter({ (text) -> Bool in
+//            let tmp: NSString = text
+//            let range = tmp.rangeOfString(searchText, options: NSStringCompareOptions.CaseInsensitiveSearch)
+//            return range.location != NSNotFound
+//        })
+//        if(self.squaresFromSearch.count == 0){
+//            searchActive = false
+//        } else {
+//            searchActive = true
+//        }
+        
+    } //endtextdidchange
+    
+    
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if(searchActive) {
+            print("NUMBEROFROW: \(squaresFromSearch.count)")
+            return self.squaresFromSearch.count
+        }
+        print("NUMBEROFROW: \(squaresFromSearch.count)")
+        return self.squaresFromSearch.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        
+        let cell = searchResultTableView.dequeueReusableCellWithIdentifier("Cell")! as UITableViewCell
+        //let cell = self.searchResultTableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+
+        
+        //let label:UILabel = cell.viewWithTag(1) as! UILabel
+        
+        let i:Int=Int(indexPath.row)
+        
+        if(searchActive){
+
+            cell.textLabel?.text = self.squaresFromSearch[i]["_source"]["name"].string
+            print(cell.textLabel?.text)
+        } else {
+            cell.textLabel?.text = self.squaresFromSearch[i]["_source"]["name"].string
+            print(cell.textLabel?.text)
+        }
+        //cellbackground blurried
+        let blur = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        let blurView = UIVisualEffectView(effect: blur)
+        cell.backgroundColor = UIColor.clearColor()
+        cell.backgroundView = blurView
+//        
+//        cell.textLabel!.backgroundColor = UIColor.clearColor()
+//        cell.detailTextLabel!.backgroundColor = UIColor.clearColor()
+//        cell.backgroundColor = UIColor(white: 1, alpha: 0.55)
+//
+        
+        dispatch_async(dispatch_get_main_queue(), {() -> Void in
+            //This code will run in the main thread:
+            var frame: CGRect = self.searchResultTableView.frame
+            frame.size.height = self.searchResultTableView.contentSize.height
+            self.searchResultTableView.frame = frame
+        })
+        
+ 
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let indexPath = tableView.indexPathForSelectedRow
+        
+        let currentCell = tableView.cellForRowAtIndexPath(indexPath!)! as UITableViewCell
+        
+        let keyForCentermap = currentCell.textLabel!.text
+        
+        var latToCenter:CLLocationDegrees = CLLocationDegrees()
+        var lonToCenter:CLLocationDegrees = CLLocationDegrees()
+        
+        checkForKeyLoop: for (index, value):(String, JSON) in self.squaresFromSearch
+        {
+            let i:Int=Int(index)!
+            
+            if self.squaresFromSearch[i]["_source"]["name"].string == keyForCentermap
+            {
+                let coordinates = self.squaresFromSearch[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+                latToCenter = (coordinates[0] as NSString).doubleValue
+                lonToCenter = (coordinates[1] as NSString).doubleValue
+
+                break checkForKeyLoop
+            }
+            
+            
+            //                            let coordinates = self.squaresFromSearch[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+            //                            let latitude = (coordinates[0] as NSString).doubleValue
+            //                            let longitude = (coordinates[1] as NSString).doubleValue
+            //                            let title = self.squaresFromSearch[i]["_source"]["name"].string
+            //                            let identifier = self.squaresFromSearch[i]["_id"].string
+            
+        }
+        if (latToCenter != 0.0 && lonToCenter != 0.0)
+        {
+            let newCenter:CLLocationCoordinate2D = CLLocationCoordinate2DMake(latToCenter, lonToCenter)
+            mapView.camera = GMSCameraPosition(target: newCenter, zoom: 15, bearing: 0, viewingAngle: 0)
+            
+            
+
+        }
+        
+        
+        //searchResultTableView.cellForRowAtIndexPath(indexPath: NSIndexPath)
+    }
+
+    
+    //end search
+    
+    
     //location manager
     //####################################################################################################################################################################
 //    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
@@ -427,6 +689,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
     //Gesture: Add event to marker tap - Market Tap Function
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!)
     {
+        
         print("tappped")
         self.squareName = marker.title
         self.squareId = marker.userData["markerId"]! as! String
@@ -453,6 +716,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
         //analitics get that this view will appear
         //UIApplication.sharedApplication().statusBarStyle = .LightContent
 
+        dispatch_async(dispatch_get_main_queue(), {() -> Void in
+            //This code will run in the main thread:
+            var frame: CGRect = self.searchResultTableView.frame
+            frame.size.height = self.searchResultTableView.contentSize.height
+            self.searchResultTableView.frame = frame
+        })
+
+        
         var name = "HomeViewController"
       
         var tracker = GAI.sharedInstance().defaultTracker
@@ -460,6 +731,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate //, CLLocationMana
         
         var builder = GAIDictionaryBuilder.createScreenView()
         tracker.send(builder.build() as [NSObject : AnyObject])
+        
+        searchResultTableView.hidden = true
+
         
     }//END VWA
 

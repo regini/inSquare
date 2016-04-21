@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.nsqre.insquare"> <!-- API Key for Google Maps: AIzaSyAxtPjGcRbeJFKEHugwNW8xJMxWnNNcfYc -->
 
     <uses-feature
@@ -29,7 +30,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:label"
+        tools:node="replace">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -39,6 +42,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="35c848454ff5eb807fec41acfff55e85f922c532" />
 
         <activity
             android:name=".Activities.LoginActivity"
@@ -92,13 +98,6 @@
             android:exported="false" />
         <service android:name=".Services.LocationService" />
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="35c848454ff5eb807fec41acfff55e85f922c532" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
         <activity
             android:name=".Activities.BottomNavActivity"
             android:label="@string/title_activity_main"
@@ -119,6 +118,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nsqre.insquare.Activities.ChatActivity" />
         </activity>
+        <activity
+            android:name=".Activities.CreateSquareActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

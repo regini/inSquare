@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
@@ -65,6 +67,7 @@ public class SettingsFragment extends Fragment implements
     private TextView inSquareDisconnectButton;
 
     private TextView feedbackSendButton;
+
     private InSquareProfile profile;
 
     private String gAccessToken;
@@ -74,6 +77,8 @@ public class SettingsFragment extends Fragment implements
 
     private CallbackManager fbCallbackManager;
     private String fbAccessToken;
+
+    private TextView tutorialButton;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -138,6 +143,8 @@ public class SettingsFragment extends Fragment implements
         setupLoginButtons(v);
 
         setupFeedbackButton(v);
+
+        setupTutorialButton(v);
 
         return v;
     }
@@ -441,6 +448,25 @@ public class SettingsFragment extends Fragment implements
                         // Vuoto - POST Request
                     }
                 });
+    }
+
+    private void setupTutorialButton(View layout)
+    {
+        tutorialButton = (TextView) layout.findViewById(R.id.settings_tutorial);
+        tutorialButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "onClick: tutorialbutton");
+                        //InSquareProfile profile = InSquareProfile.getInstance(getContext());
+                        InSquareProfile.setShowTutorial(true, getContext());
+                        Log.d(TAG, "onClick: showtutorial è " + InSquareProfile.getShowTutorial());
+                        //setta showmap tutorial a false
+                        BottomNavActivity madre = (BottomNavActivity) getContext();
+                        Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
     /**

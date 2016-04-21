@@ -60,6 +60,8 @@ public class InSquareProfile {
     private static final String GOOGLE_EMAIL_KEY = "GOOGLE_EMAIL_KEY";
     private static final String GOOGLE_NAME_KEY = "GOOGLE_NAME_KEY";
 
+    private static final String SHOW_TUTORIAL = "SHOW_TUTORIAL";
+
     // Lista di ascoltatori che vengono notificati quando si modifica qualcosa nella lista
     private static ArrayList<InSquareProfileListener> listeners;
 
@@ -94,6 +96,8 @@ public class InSquareProfile {
     public static String googleToken;
     public static String googleEmail;
     public static String googleName;
+
+    public static boolean showTutorial;
 
     private static InSquareProfile profile;
 
@@ -163,6 +167,9 @@ public class InSquareProfile {
         profile.googleEmail = prefs.getString(GOOGLE_EMAIL_KEY, null);
         profile.googleName  = prefs.getString(GOOGLE_NAME_KEY, null);
 
+        profile.showTutorial = prefs.getBoolean(SHOW_TUTORIAL, true);
+        Log.d(TAG, "getInstance: ho caricato showtutorial: " + profile.showTutorial);
+
         // VolleyManager viene istanziato e si procede con la richiesta al server
         VolleyManager.getInstance(c);
         downloadFavoriteSquares();
@@ -200,6 +207,8 @@ public class InSquareProfile {
         editor.putString(GOOGLE_TOKEN_KEY, googleToken);
         editor.putString(GOOGLE_EMAIL_KEY, googleEmail);
         editor.putString(GOOGLE_NAME_KEY, googleName);
+
+        editor.putBoolean(SHOW_TUTORIAL, showTutorial);
 
         editor.commit();
     }
@@ -379,9 +388,10 @@ public class InSquareProfile {
     /**
      * TODO
      */
-    public static void removeOutgoing(String mSquareId, Message message) {
+    public static void removeOutgoing(String mSquareId, Message message, Context c) {
         outgoingMessages.get(mSquareId).remove(message);
-        Log.d(TAG, "removeOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
+        Log.d(TAG, "REMOVEOUTGOING: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
+        save(c);
     }
 
     /**
@@ -747,5 +757,12 @@ public class InSquareProfile {
 
                     }
                 });
+    }
+
+    public static boolean getShowTutorial() { return profile.showTutorial;  }
+
+    public static void setShowTutorial(boolean showTutorial, Context context) {
+        profile.showTutorial = showTutorial;
+        save(context);
     }
 }

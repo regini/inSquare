@@ -98,7 +98,6 @@ public class ProfileFragment extends Fragment implements
         adapterOwned = new RecyclerProfileSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
         squaresRecyclerView.setAdapter(adapterOwned);
 
-        // TODO implementare comportamento sul swipe
         setupSwipeGesture();
 
         profileImage = (ImageView) v.findViewById(R.id.profile_profile_image);
@@ -160,7 +159,7 @@ public class ProfileFragment extends Fragment implements
             {
                 int viewPosition = viewHolder.getAdapterPosition();
                 adapterOwned.pendingRemoval(viewPosition);
-                Log.d(TAG, "onSwiped: swiped from " + direction);
+//                Log.d(TAG, "onSwiped: swiped from " + direction);
             }
 
             @Override
@@ -183,7 +182,7 @@ public class ProfileFragment extends Fragment implements
                     itemView.setAlpha(delta * delta);
                     itemView.setTranslationX(dX);
 
-                    Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
+//                    Log.d(TAG, "onChildDraw: delta " + delta + " and width " + dX);
 
                     if (delta < 1) {
                         // Sfondo rosso

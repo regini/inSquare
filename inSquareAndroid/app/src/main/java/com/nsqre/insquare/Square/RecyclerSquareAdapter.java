@@ -100,7 +100,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                         Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_left_section_circle),
                                 context.getString(R.string.transition_name_square_circle));
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                madre, namePair, initialsPair, rowPair
+                                madre /*, namePair, initialsPair, rowPair*/
 
                         );
 

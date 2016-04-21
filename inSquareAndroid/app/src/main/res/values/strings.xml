@@ -3,6 +3,8 @@
     <!-- URL -->
     <string name="baseUrl">http://cloud.insquare.it/</string>
     <string name="socket">http://chat.cloud.insquare.it/squares</string>
+    <!--<string name="baseUrl">http://recapp-insquare.rhcloud.com/</string>-->
+    <string name="squaresUrl">http://cloud.insquare.it/squares</string>
     <!-- END URL -->
 
     <string name="app_name">inSquare</string>
@@ -45,7 +47,6 @@
         <item quantity="one">There\'s %d participant</item>
         <item quantity="other">There are %d participants</item>
     </plurals>
-
 
 
     <string name="action_share">Condividi</string>
@@ -135,4 +136,21 @@
     <string name="mute_on">on</string>
     <string name="mute_off">off</string>
 
+    <!--Tutorial-->
+    <string name="tutorial_title1">Cos\'è inSquare?</string>
+    <string name="tutorial_title2">Cosa sono i preferiti?</string>
+    <string name="tutorial_title3">Come creo la mia Square?</string>
+    <string name="tutorial_title4">Collegati con i tuoi account social!</string>
+    <string name="tutorial_caption1">Cambiare da string.xml</string>
+    <string name="tutorial_caption2">Cambiare da string.xml</string>
+    <string name="tutorial_caption3">Cambiare da string.xml</string>
+    <string name="tutorial_caption4">Cambiare da string.xml</string>
+    <string name="create_square_button_date">Data</string>
+    <string name="create_square_button_time">Ora</string>
+
+    <array name="create_square_type_elements">
+        <item>Luogo</item>
+        <item>Evento</item>
+        <item>Attività Commerciale</item>
+    </array>
 </resources>

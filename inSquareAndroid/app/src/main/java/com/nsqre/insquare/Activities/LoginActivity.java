@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -44,6 +45,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
+import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.User;
@@ -108,15 +110,28 @@ public class LoginActivity extends AppCompatActivity
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
+        // Profilo statico perché non deve cambiare.
+        // Singleton -> non puo' essere duplicato
+        profile = InSquareProfile.getInstance(getApplicationContext());
+        Log.d(TAG, "onCreate: profile show tutorial is " + profile.getShowTutorial());
+
+        try {
+            if (InSquareProfile.getShowTutorial()) {
+                replaceTutorialFragment();
+            } else {
+                launchLoginProcedure();
+            }
+        }
+        catch (Exception e) {
+            Log.d(TAG, "onCreate: exception " + e.toString());
+        }
+
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        // Profilo statico perché non deve cambiare.
-        // Singleton -> non puo' essere duplicato
-        profile = InSquareProfile.getInstance(getApplicationContext());
 
         if(getIntent() != null) {
             LoginManager.getInstance().logOut();
@@ -130,7 +145,9 @@ public class LoginActivity extends AppCompatActivity
                             icon, Color.parseColor("#D32F2F"));
             setTaskDescription(taskDesc);
         }
+    }
 
+    public void launchLoginProcedure() {
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
@@ -212,7 +229,6 @@ public class LoginActivity extends AppCompatActivity
             //fbLoginButton.setText(R.string.fb_logout_string);
             facebookPostRequest();
         }
-
     }
 
     @Override
@@ -617,4 +633,11 @@ public class LoginActivity extends AppCompatActivity
         }
         return true;
     }
+
+    public void replaceTutorialFragment() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.login_conteiner, new TutorialFragment());
+        fragmentTransaction.commit();
+    }
+
 }
