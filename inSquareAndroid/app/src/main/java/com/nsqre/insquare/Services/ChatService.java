@@ -75,11 +75,20 @@ public class ChatService extends Service {
             }
             mSocket.emit("sendMessage", data, new Ack() {
                 @Override
-                //TODO gestire la notifica del server
                 public void call(Object... args) {
                     if (args.length > 0) {
-                        //args[0] è un JSONObject ed ha gli stessi dati inviati
                         Log.d(TAG, "call: ho avuto acknowledgement per: " + args[0].toString());
+                        JSONObject data = (JSONObject) args[0];
+                        String messageId = "";
+                        try {
+                            messageId = data.getString("msg_id");
+
+                            if(!"".equals(messageId)) {
+                                m.setId(messageId);
+                            }
+                        } catch (JSONException ex) {
+                            ex.printStackTrace();
+                        }
                         publishResults(m);
                     }
                 }
@@ -112,7 +121,7 @@ public class ChatService extends Service {
         InSquareProfile profile = InSquareProfile.getInstance(getApplicationContext());
         Log.d(TAG, "publishResults: " + profile.getOutgoingMessages());
         Log.d(TAG, "publishResults: " + mSquareId);
-        profile.removeOutgoing(mSquareId, m, getApplicationContext());
+        profile.removeOutgoing(mSquareId, getApplicationContext());
         sendBroadcast(intent);
         stopSelf();
     }

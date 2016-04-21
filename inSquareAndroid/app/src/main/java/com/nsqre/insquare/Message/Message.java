@@ -91,20 +91,40 @@ public class Message implements Serializable {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public String getCreatedAt() {
         return this.createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getId() {
         return msg_id;
     }
 
+    public void setId(String msg_id) {
+        this.msg_id = msg_id;
+    }
+
     public String getFrom() {
         return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 
     public Calendar getCalendar() {
@@ -173,7 +193,7 @@ public class Message implements Serializable {
 
         Message message = (Message) o;
 
-        return createdAt.equals(message.getCreatedAt()) && from.equals(message.getFrom());
+        return msg_id.equals(message.msg_id);
 
     }
 

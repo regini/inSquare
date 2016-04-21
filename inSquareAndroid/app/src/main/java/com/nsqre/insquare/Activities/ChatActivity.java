@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -79,6 +78,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
-    private HashMap<String, ArrayList<Message>> outgoingMessages;
+    private HashMap<String, LinkedList<Message>> outgoingMessages;
 
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
@@ -141,6 +141,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private static final int REQUEST_INVITE = 0;
     public final static int FILE_PICK = 1001;
 
+    private LinkedList<Integer> positions;
 
     private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
 
@@ -150,8 +151,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             try {
                 Log.d(TAG, "onReceive: messaggio inviato con chatservice");
                 Message m = (Message) intent.getSerializableExtra("messageSent");
-                Message messageFromAdapter = messageAdapter.getMessage(m);
+                int position = positions.getFirst();
+                positions.remove(positions.getFirst());
+                Message messageFromAdapter = messageAdapter.getMessage(position);
                 messageFromAdapter.setTime();
+                messageFromAdapter.setId(m.getId());
                 messageAdapter.notifyDataSetChanged();
                 //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
             }
@@ -170,6 +174,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        positions = new LinkedList<>();
         //FOTO
         //ButterKnife.bind(this);
         ca = this;
@@ -411,14 +416,18 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                            REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                                }
                             }
                         });
                 return;
             }
-            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            }
             return;
         }
 
@@ -524,6 +533,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      */
     private void getRecentMessages(int quantity) {
 
+        sendButton.setClickable(false);
         final String q = new Integer(quantity).toString();
 
         VolleyManager.getInstance().getRecentMessages("true", q, mSquareId,
@@ -538,6 +548,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                             for (Message m : messages) {
                                 addMessage(m);
                             }
+                            sendButton.setClickable(true);
                         }
                     }
 
@@ -732,6 +743,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //intent.putExtra("message", message);
         startService(intent);
         addMessage(m);
+        positions.add(messageAdapter.getItemCount()-1);
     }
 
     /**
@@ -804,17 +816,23 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     String username = "";
                     String message = "";
                     String userId = "";
+                    String messageId = "";
+                    String date = "";
+                    boolean userSpot = false;
 
                     try {
                         username = data.getString("username");
                         message = data.getString("contents");
                         userId = data.getString("userid");
+                        messageId = data.getString("msg_id");
+                        date = data.getString("date");
+                        userSpot = data.getBoolean("userSpot");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(message, username, userId, format));
+                    addMessage(new Message(messageId, message, username, userId, date, userSpot, format));
 
                 }
             });
@@ -834,22 +852,28 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
                     JSONObject data = (JSONObject) args[0];
                     String room = "";
-                    String userid = "";
                     String username = "";
                     String message = "";
+                    String userId = "";
+                    String messageId = "";
+                    String date = "";
+                    boolean userSpot = false;
 
                     try {
                         room = data.getString("room");
-                        userid = data.getString("userid");
                         username = data.getString("username");
                         message = data.getString("contents");
+                        userId = data.getString("userid");
+                        messageId = data.getString("msg_id");
+                        date = data.getString("date");
+                        userSpot = data.getBoolean("userSpot");
 
-                        Log.d(TAG, userid + " - " + username + " IN: " + room + " saying: " + message);
+                        Log.d(TAG, userId + " - " + username + " IN: " + room + " saying: " + message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(message, username, userid, format));
+                    addMessage(new Message(messageId, message, username, userId, date, userSpot, format));
                 }
             });
         }

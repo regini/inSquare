@@ -343,7 +343,7 @@ public class LoginActivity extends AppCompatActivity
 
         final String serviceName = "facebook";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, fbAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, fbAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -380,7 +380,7 @@ public class LoginActivity extends AppCompatActivity
     private void googlePostRequest() {
         final String serviceName = "google";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, gAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, gAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -572,7 +572,7 @@ public class LoginActivity extends AppCompatActivity
                         final String feedback = feedbackText.getText().toString().trim();
                         final String activity = this.getClass().getSimpleName();
 
-                        VolleyManager.getInstance().postFeedback(feedback, InSquareProfile.getUserId(), activity,
+                        VolleyManager.getInstance(getApplicationContext()).postFeedback(feedback, InSquareProfile.getUserId(), activity,
                                 new VolleyManager.VolleyResponseListener() {
                                     @Override
                                     public void responseGET(Object object) {

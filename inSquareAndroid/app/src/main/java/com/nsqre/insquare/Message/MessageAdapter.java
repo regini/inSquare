@@ -340,7 +340,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     private boolean isOutgoing(Message m) {
         InSquareProfile mProfile = InSquareProfile.getInstance(context);
-        for (ArrayList<Message> arr : mProfile.getOutgoingMessages().values()) {
+        for (LinkedList<Message> arr : mProfile.getOutgoingMessages().values()) {
             for (Message message : arr) {
                 if (message == m)
                     return true;

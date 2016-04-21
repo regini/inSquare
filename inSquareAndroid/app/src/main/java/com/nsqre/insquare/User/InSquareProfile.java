@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * InSquareProfile is the class that handles most of the user data.
@@ -80,7 +81,7 @@ public class InSquareProfile {
     /**
      * The map of the messages I'm currently trying to send
      */
-    private static HashMap<String, ArrayList<Message>> outgoingMessages;
+    private static HashMap<String, LinkedList<Message>> outgoingMessages;
 
     public static String userId;
     public static String username;
@@ -170,11 +171,13 @@ public class InSquareProfile {
         profile.showTutorial = prefs.getBoolean(SHOW_TUTORIAL, true);
         Log.d(TAG, "getInstance: ho caricato showtutorial: " + profile.showTutorial);
 
-        // VolleyManager viene istanziato e si procede con la richiesta al server
-        VolleyManager.getInstance(c);
-        downloadFavoriteSquares();
-        downloadOwnedSquares();
-        downloadRecentSquares();
+        if(hasLoginData()) {
+            // VolleyManager viene istanziato e si procede con la richiesta al server
+            VolleyManager.getInstance(c);
+            downloadFavoriteSquares();
+            downloadOwnedSquares();
+            downloadRecentSquares();
+        }
 
         return profile;
     }
@@ -378,7 +381,7 @@ public class InSquareProfile {
      */
     public static void addOutgoing(String mSquareId, Message message, Context c) {
         if (outgoingMessages.get(mSquareId) == null) {
-            outgoingMessages.put(mSquareId, new ArrayList<Message>());
+            outgoingMessages.put(mSquareId, new LinkedList<Message>());
         }
         outgoingMessages.get(mSquareId).add(message);
         Log.d(TAG, "addOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size() );
@@ -388,8 +391,8 @@ public class InSquareProfile {
     /**
      * TODO
      */
-    public static void removeOutgoing(String mSquareId, Message message, Context c) {
-        outgoingMessages.get(mSquareId).remove(message);
+    public static void removeOutgoing(String mSquareId, Context c) {
+        outgoingMessages.get(mSquareId).removeFirst();
         Log.d(TAG, "REMOVEOUTGOING: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
         save(c);
     }
@@ -574,7 +577,7 @@ public class InSquareProfile {
         return recentSquaresList;
     }
 
-    public static HashMap<String, ArrayList<Message>> getOutgoingMessages()
+    public static HashMap<String, LinkedList<Message>> getOutgoingMessages()
     {
         if(outgoingMessages == null)
         {
