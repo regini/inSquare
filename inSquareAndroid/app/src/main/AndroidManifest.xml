@@ -118,9 +118,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nsqre.insquare.Activities.ChatActivity" />
         </activity>
+
         <activity
             android:name=".Activities.CreateSquareActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+
     </application>
 
 </manifest>

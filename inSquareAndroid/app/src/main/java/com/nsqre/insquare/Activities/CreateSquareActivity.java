@@ -181,14 +181,17 @@ public class CreateSquareActivity extends AppCompatActivity {
                                     resultIntent.putExtra(RESULT_SQUARE_TYPE, "1");
                                     resultIntent.putExtra(RESULT_EXPIRE_TIME, resultExpireTime);
                                     resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
+                                    setResult(MapFragment.RESULT_SQUARE_FACEBOOK, resultIntent);
                                 }else if(CreateSquareActivity.this.squareType == ChooseCreateFragment.SQUARE_TYPE.TYPE_SHOP)
                                 {
                                     // type = 2 e' il valore della Square-Shop sul server
-                                    resultIntent.putExtra("type", "2");
+                                    resultIntent.putExtra(RESULT_SQUARE_TYPE, "2");
                                     resultIntent.putExtra(RESULT_SQUARE_FACEBOOK_ID, resultFacebookId);
+                                    setResult(MapFragment.RESULT_SQUARE_FACEBOOK, resultIntent);
+                                }else
+                                {
+                                    setResult(MapFragment.RESULT_SQUARE, resultIntent);
                                 }
-
-                                setResult(MapFragment.RESULT_SQUARE, resultIntent);
                                 finish();
                                 break;
                             case 0:

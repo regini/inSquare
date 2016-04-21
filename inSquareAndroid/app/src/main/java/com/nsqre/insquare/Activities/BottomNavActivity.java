@@ -173,7 +173,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         if (requestCode == SettingsFragment.RC_SIGN_IN) {
             SettingsFragment fragment = SettingsFragment.newInstance();
             fragment.onActivityResult(requestCode, resultCode, data);
-        } else {
+        } else if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
+        {
+            MapFragment.newInstance().handleSquareCreation(resultCode, data);
+        }else
+        {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -272,17 +276,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                     }
                 });
         calculateNotifications();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
-        {
-            MapFragment.newInstance().handleSquareCreation(resultCode, data);
-        }else
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     public static String setupInitials(String words) {

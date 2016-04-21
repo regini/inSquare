@@ -51,7 +51,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.CreateIntroActivity;
 import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
@@ -734,11 +733,11 @@ public class MapFragment extends Fragment
 
     public void handleSquareCreation(int resultCode, Intent data)
     {
-        String name = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_NAME);
-        String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
-        String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
-        String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
-        String expireTime = data.getStringExtra(CreateIntroActivity.RESULT_EXPIRE_TIME);
+        String name = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_NAME);
+        String description = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_DESCRIPTION);
+        String latitude = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_LATITUDE);
+        String longitude = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_LONGITUDE);
+        String expireTime = data.getStringExtra(CreateSquareActivity.RESULT_EXPIRE_TIME);
 
         switch (resultCode)
         {
@@ -792,8 +791,8 @@ public class MapFragment extends Fragment
                 break;
             case RESULT_SQUARE_FACEBOOK:
                 Log.d(TAG, "onActivityResult: trying to create from facebook!");
-                String facebookId = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_FACEBOOK_ID);
-                String type = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_TYPE);
+                String facebookId = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_FACEBOOK_ID);
+                String type = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_TYPE);
 
                 VolleyManager.getInstance().postFacebookSquare(
                         name,
