@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
-    private HashMap<String, LinkedList<Message>> outgoingMessages;
+    private HashMap<String, ArrayList<Message>> outgoingMessages;
 
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent

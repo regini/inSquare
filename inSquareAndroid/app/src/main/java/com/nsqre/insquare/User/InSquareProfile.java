@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * InSquareProfile is the class that handles most of the user data.
@@ -81,7 +80,7 @@ public class InSquareProfile {
     /**
      * The map of the messages I'm currently trying to send
      */
-    private static HashMap<String, LinkedList<Message>> outgoingMessages;
+    private static HashMap<String, ArrayList<Message>> outgoingMessages;
 
     public static String userId;
     public static String username;
@@ -381,7 +380,7 @@ public class InSquareProfile {
      */
     public static void addOutgoing(String mSquareId, Message message, Context c) {
         if (outgoingMessages.get(mSquareId) == null) {
-            outgoingMessages.put(mSquareId, new LinkedList<Message>());
+            outgoingMessages.put(mSquareId, new ArrayList<Message>());
         }
         outgoingMessages.get(mSquareId).add(message);
         Log.d(TAG, "addOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size() );
@@ -392,7 +391,7 @@ public class InSquareProfile {
      * TODO
      */
     public static void removeOutgoing(String mSquareId, Context c) {
-        outgoingMessages.get(mSquareId).removeFirst();
+        outgoingMessages.get(mSquareId).remove(0);
         Log.d(TAG, "REMOVEOUTGOING: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
         save(c);
     }
@@ -577,7 +576,7 @@ public class InSquareProfile {
         return recentSquaresList;
     }
 
-    public static HashMap<String, LinkedList<Message>> getOutgoingMessages()
+    public static HashMap<String, ArrayList<Message>> getOutgoingMessages()
     {
         if(outgoingMessages == null)
         {
