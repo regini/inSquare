@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.nsqre.insquare.Fragments.MapFragment;
 import com.nsqre.insquare.Fragments.ProfileFragment;
 import com.nsqre.insquare.Fragments.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
+import com.nsqre.insquare.Fragments.TutorialFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
@@ -357,5 +359,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     @Override
     public void onBackPressed() {
         this.finishAffinity();
+    }
+
+    public void showTutorial() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.bottom_nav_coordinator_layout, new TutorialFragment());
+        fragmentTransaction.commit();
     }
 }

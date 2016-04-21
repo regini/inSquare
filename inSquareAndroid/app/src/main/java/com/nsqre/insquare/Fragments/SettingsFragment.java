@@ -217,7 +217,7 @@ public class SettingsFragment extends Fragment implements
         googleConnectButton.setOnClickListener(WIP);
     }
 
-    private void setupTutorialButton(View layout)
+    private void setupTutorialButton(final View layout)
     {
         tutorialButton = (TextView) layout.findViewById(R.id.settings_tutorial);
         tutorialButton.setOnClickListener(
@@ -230,7 +230,10 @@ public class SettingsFragment extends Fragment implements
                         Log.d(TAG, "onClick: showtutorial è " + InSquareProfile.getShowTutorial());
                         //setta showmap tutorial a false
                         BottomNavActivity madre = (BottomNavActivity) getContext();
-                        Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
+                        madre.showTutorial();
+                        Log.d(TAG, "onClick: " + getView().toString());
+                        madre.coordinatorLayout.findViewById(R.id.bottom_nav_bar).setVisibility(View.GONE);
+                        //Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
                     }
                 }
         );
