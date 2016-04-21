@@ -36,6 +36,7 @@ public class Square implements Serializable {
      */
     private double lon;
     private String type;
+    private String facebookEventId, facebookPageId;
     /**
      * The id of the user that has created the square
      */
@@ -82,6 +83,8 @@ public class Square implements Serializable {
                   String state,
                   String lastMessageDate,
                   String type,
+                  String eventId,
+                  String pageId,
                   Locale l) {
         this.id = id;
         this.name = name;
@@ -121,6 +124,9 @@ public class Square implements Serializable {
         }
 
         this.type = type;
+
+        this.facebookEventId = eventId;
+        this.facebookPageId = pageId;
 
         this.myLocale = l;
 //        Log.d(TAG, "NEWSQUARE:\n" + this.toString());

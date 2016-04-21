@@ -484,7 +484,7 @@ public class VolleyManager {
         volleyURL += "&ownerId=" + ownerId;
         volleyURL += "&type=" + squareType;
         volleyURL += "&expireTime=" + expireTime;
-        if(squareType.equals('1'))
+        if(squareType.equals("1"))
         {
             volleyURL += "&facebookIdEvent=" + facebookId;
         }else

@@ -37,35 +37,6 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
     @Override
     public Square deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 
-        /*
-       Input Example:
-       ==============
-        {
-        "_index": "squares",
-        "_type": "square",
-        "_id": "56fd531ee9ac22b3a1224a12",
-        "_score": null,
-        "_source": {
-            "name": "Circo Massimo",
-            "searchName": "Circo Massimo",
-            "createdAt": "2016-03-31T16:41:02.168Z",
-            "geo_loc": "41.88593924930288,12.484685853123665",
-            "messages": [],
-            "ownerId": "56c095658b4cc88bba9b32c8",
-            "views": 22,
-            "favouredBy": 1,
-            "userLocated": 0,
-            "description": "Circus Maximus, luogo dove gli antichi romani effettuavano corse, combattimenti. Oggi utilizzato per concerti e avvenimenti di qualunque genere",
-            "state": "asleep",
-            "lastMessageDate": "2016-03-31T16:41:02.168Z",
-            "type": 0,
-            "expireTime": "9999-01-01T00:00:00.000Z"
-        }
-       ==============
-         */
-
-//        Log.d(TAG, "deserialize: " + json.toString());
-
         final String id;
         final String name;
         final String geoloc;
@@ -78,6 +49,8 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         final String state;
         final String lastMessageDate;
         final String type;
+        final String facebookPageId;
+        final String facebookEventId;
 
         final JsonObject jsonObject = json.getAsJsonObject();
         final JsonObject source = jsonObject.get("_source").getAsJsonObject();
@@ -143,7 +116,26 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
             type = typeElement.getAsString();
         }
 
-        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, this.locale);
+        JsonElement facebookIdPageElement = source.get("facebook_id_page");
+        if(facebookIdPageElement == null)
+        {
+            facebookPageId = "";
+        }else
+        {
+            facebookPageId = facebookIdPageElement.getAsString();
+        }
+
+        JsonElement facebookIdEventElement = source.get("facebook_id_event");
+        if(facebookIdEventElement == null)
+        {
+            facebookEventId = "";
+        }
+        else
+        {
+            facebookEventId = facebookIdEventElement.getAsString();
+        }
+
+        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, facebookEventId, facebookPageId, this.locale);
 
         return square;
     }
