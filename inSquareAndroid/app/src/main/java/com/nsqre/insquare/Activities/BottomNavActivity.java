@@ -274,6 +274,17 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         calculateNotifications();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
+        {
+            MapFragment.newInstance().handleSquareCreation(resultCode, data);
+        }else
+        {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     public static String setupInitials(String words) {
         String[] division = words.split("\\s+");
 
