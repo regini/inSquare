@@ -138,7 +138,7 @@ public class ReviewCreateFragment extends Fragment {
 
         squareName.setText(name);
 
-        potentialEmptySection(squarePrice, priceRange);
+        squarePrice.setVisibility(View.GONE);
 
         String initials = "";
         String[] words = name.split("\\s+");

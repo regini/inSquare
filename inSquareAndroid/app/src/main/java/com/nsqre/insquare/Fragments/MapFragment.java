@@ -730,123 +730,121 @@ public class MapFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_SQUARE)
+    public void handleSquareCreation(int resultCode, Intent data)
+    {
+        String name = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_NAME);
+        String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
+        String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
+        String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
+        String expireTime = data.getStringExtra(CreateIntroActivity.RESULT_EXPIRE_TIME);
+
+        switch (resultCode)
         {
-            String name = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_NAME);
-            String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
-            String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
-            String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
-            String expireTime = data.getStringExtra(CreateIntroActivity.RESULT_EXPIRE_TIME);
+            case RESULT_SQUARE:
+                Log.d(TAG, "onActivityResult: trying to create a normal square!");
 
-            switch (resultCode)
-            {
-                case RESULT_SQUARE:
-                    Log.d(TAG, "onActivityResult: trying to create a normal square!");
+                VolleyManager.getInstance().postSquare(
+                        name,
+                        description,
+                        latitude,
+                        longitude,
+                        InSquareProfile.getUserId(),
+                        expireTime,
+                        new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // POST REQUEST
+                            }
 
-                    VolleyManager.getInstance().postSquare(
-                            name,
-                            description,
-                            latitude,
-                            longitude,
-                            InSquareProfile.getUserId(),
-                            expireTime,
-                            new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    // POST REQUEST
-                                }
+                            @Override
+                            public void responsePOST(Object object) {
+                                if (object == null) {
+                                    Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
+                                    Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                } else {
+                                    Square postedSquare = (Square) object;
+                                    InSquareProfile.addFav(postedSquare);
+                                    InSquareProfile.addOwned(postedSquare);
 
-                                @Override
-                                public void responsePOST(Object object) {
-                                    if (object == null) {
-                                        Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
-                                        Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
-                                    } else {
-                                        Square postedSquare = (Square) object;
-                                        InSquareProfile.addFav(postedSquare);
-                                        InSquareProfile.addOwned(postedSquare);
+                                    LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
 
-                                        LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
-
-                                        Marker marker = createSquarePin( finalPosition , postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
-                                        squareHashMap.put(marker, postedSquare);
-                                        marker.setVisible(true);
-                                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
-                                        Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void responsePATCH(Object object) {
-                                    // POST REQUEST
-                                }
-
-                                @Override
-                                public void responseDELETE(Object object) {
-                                    // POST REQUEST
+                                    Marker marker = createSquarePin( finalPosition , postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
+                                    squareHashMap.put(marker, postedSquare);
+                                    marker.setVisible(true);
+                                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
+                                    Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
-                    );
 
-                    break;
-                case RESULT_SQUARE_FACEBOOK:
-                    Log.d(TAG, "onActivityResult: trying to create from facebook!");
-                    String facebookId = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_FACEBOOK_ID);
-                    String type = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_TYPE);
+                            @Override
+                            public void responsePATCH(Object object) {
+                                // POST REQUEST
+                            }
 
-                    VolleyManager.getInstance().postFacebookSquare(
-                            name,
-                            description,
-                            latitude,
-                            longitude,
-                            InSquareProfile.getUserId(),
-                            type,
-                            facebookId,
-                            expireTime,
-                            new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    // POST REQUEST
-                                }
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // POST REQUEST
+                            }
+                        }
+                );
 
-                                @Override
-                                public void responsePOST(Object object) {
-                                    if (object == null) {
-                                        Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
-                                        Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
-                                    } else {
-                                        Square postedSquare = (Square) object;
-                                        InSquareProfile.addFav(postedSquare);
-                                        InSquareProfile.addOwned(postedSquare);
+                break;
+            case RESULT_SQUARE_FACEBOOK:
+                Log.d(TAG, "onActivityResult: trying to create from facebook!");
+                String facebookId = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_FACEBOOK_ID);
+                String type = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_TYPE);
 
-                                        LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
+                VolleyManager.getInstance().postFacebookSquare(
+                        name,
+                        description,
+                        latitude,
+                        longitude,
+                        InSquareProfile.getUserId(),
+                        type,
+                        facebookId,
+                        expireTime,
+                        new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // POST REQUEST
+                            }
 
-                                        Marker marker = createSquarePin(finalPosition,
-                                                postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
-                                        squareHashMap.put(marker, postedSquare);
-                                        marker.setVisible(true);
-                                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
-                                        Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
-                                    }
-                                }
+                            @Override
+                            public void responsePOST(Object object) {
+                                if (object == null) {
+                                    Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
+                                    Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                } else {
+                                    Square postedSquare = (Square) object;
+                                    InSquareProfile.addFav(postedSquare);
+                                    InSquareProfile.addOwned(postedSquare);
 
-                                @Override
-                                public void responsePATCH(Object object) {
-                                    // POST REQUEST
-                                }
+                                    LatLng finalPosition = new LatLng(postedSquare.getLat(), postedSquare.getLon());
 
-                                @Override
-                                public void responseDELETE(Object object) {
-                                    // POST REQUEST
+                                    Marker marker = createSquarePin(finalPosition,
+                                            postedSquare.getName(), Integer.parseInt(postedSquare.getType()));
+                                    squareHashMap.put(marker, postedSquare);
+                                    marker.setVisible(true);
+                                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
+                                    Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
-                    );
-                    break;
-            }
+
+                            @Override
+                            public void responsePATCH(Object object) {
+                                // POST REQUEST
+                            }
+
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // POST REQUEST
+                            }
+                        }
+                );
+                break;
         }
     }
+
 
     @Override
     public void onMapLongClick(final LatLng latLng) {
@@ -857,7 +855,7 @@ public class MapFragment extends Fragment
         extras.putString("latitude", latitude);
         extras.putString("longitude", longitude);
         intent.putExtras(extras);
-        startActivityForResult(intent, REQUEST_SQUARE);
+        getActivity().startActivityForResult(intent, REQUEST_SQUARE);
         /*mGoogleMap.snapshot(
                 new GoogleMap.SnapshotReadyCallback() {
                     @Override
