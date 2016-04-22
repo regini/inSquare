@@ -16,6 +16,8 @@ class TabBarViewController: UITabBarController
         super.viewDidLoad()
         
         tabBarHeight = self.tabBar.frame.height
+        
+        
 
         //start showing map/home
         self.selectedIndex = 2
@@ -35,6 +37,9 @@ class TabBarViewController: UITabBarController
         //profileTab
         let profileTab = tabItems[0] as UITabBarItem
         profileTab.title = "Profile"
+        
+        //recents
+        let recTab = tabItems[1] as UITabBarItem
 
         //appearance
         UITabBar.appearance().tintColor = inSquareUiColorQRed

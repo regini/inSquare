@@ -383,12 +383,25 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
             cell.textLabel?.text = self.squaresFromSearch[i]["_source"]["name"].string
             print(cell.textLabel?.text)
         }
+        cell.textLabel?.textColor = UIColor.lightGrayColor()
+        cell.textLabel?.highlightedTextColor = inSquareUiColorQRed
+        
         //cellbackground blurried
-        let blur = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        let blur = UIBlurEffect(style: UIBlurEffectStyle.Dark)
         let blurView = UIVisualEffectView(effect: blur)
         cell.backgroundColor = UIColor.clearColor()
         cell.backgroundView = blurView
-//        
+        //cell.selectedBackgroundView = blurView
+
+        let blurLight = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        let blurSelView = UIVisualEffectView(effect: blurLight)
+
+        var myBackView: UIView = UIView(frame: cell.frame)
+        myBackView.backgroundColor = UIColor.clearColor()
+        cell.selectedBackgroundView = blurSelView
+
+        
+//
 //        cell.textLabel!.backgroundColor = UIColor.clearColor()
 //        cell.detailTextLabel!.backgroundColor = UIColor.clearColor()
 //        cell.backgroundColor = UIColor(white: 1, alpha: 0.55)

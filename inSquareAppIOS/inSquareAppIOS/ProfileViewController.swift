@@ -75,7 +75,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate
         
         var blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Dark)
         var blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = view.bounds
+        blurEffectView.frame = sw.bounds
         blurEffectView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight] // for supporting device rotation
         profileTopView.addSubview(blurEffectView)
         //put name/picture layer upper than blur

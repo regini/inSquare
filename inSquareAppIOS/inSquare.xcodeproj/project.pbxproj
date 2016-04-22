@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F9DB2051C74D60F00D39502 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB2041C74D60F00D39502 /* GoogleService-Info.plist */; };
-		1F9DB2061C74D71C00D39502 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB2041C74D60F00D39502 /* GoogleService-Info.plist */; };
-		1F9DB2071C74D72300D39502 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB2041C74D60F00D39502 /* GoogleService-Info.plist */; };
+		1F13D6061CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
+		1F13D6071CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
+		1F13D6081CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
+		1F1825A11CCA76F9006BA3F7 /* AlamofireExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */; };
+		1F1825A31CCA7E30006BA3F7 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */; };
 		1FAA0E921C7497630038785C /* mapPin-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FAA0E911C7497630038785C /* mapPin-01.png */; };
 		1FD8C7591C6A2F6C008A0094 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD8C7581C6A2F6C008A0094 /* UserData.swift */; };
 		7306F8F31C859C4E000A5D3A /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7306F8F21C859C4E000A5D3A /* TabBarViewController.swift */; };
@@ -171,7 +173,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1F9DB2041C74D60F00D39502 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1F13D6051CC9167700C86727 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtension.swift; sourceTree = "<group>"; };
+		1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		1FAA0E911C7497630038785C /* mapPin-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPin-01.png"; sourceTree = "<group>"; };
 		1FD8C7581C6A2F6C008A0094 /* UserData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		2C060BC83CF6CCCFE72D4F27 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -371,7 +375,7 @@
 		738A12A91C504EDF003BD441 /* inSquareAppIOS */ = {
 			isa = PBXGroup;
 			children = (
-				1F9DB2041C74D60F00D39502 /* GoogleService-Info.plist */,
+				1F13D6051CC9167700C86727 /* GoogleService-Info.plist */,
 				7358F7C31C6F3FDA0074E20F /* LGSimpleChat */,
 				73CD25701C5174A10054EF18 /* FB Framework */,
 				73D2EA061C505FF50021AEF3 /* JSON */,
@@ -380,6 +384,8 @@
 				738A12AE1C504EDF003BD441 /* Main.storyboard */,
 				737EE7F81C56F4F400AE8CCF /* LoginViewController.swift */,
 				7306F8F21C859C4E000A5D3A /* TabBarViewController.swift */,
+				1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */,
+				1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */,
 				734063F61C8B9C35009CCDFF /* ProfileViewController.swift */,
 				738A72031C8F8AF40032C9D2 /* ProfileTableViewCell.swift */,
 				739040271C90A70C00F71973 /* MoreViewController.swift */,
@@ -545,6 +551,14 @@
 					738A12A61C504EDF003BD441 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 6MX2WMCA24;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					738A12BD1C504EDF003BD441 = {
 						CreatedOnToolsVersion = 7.2;
@@ -597,11 +611,11 @@
 				7306F8FB1C85C67C000A5D3A /* mapTabSel.png in Resources */,
 				73F0CAE11C8F775100185E35 /* mapTab2.png in Resources */,
 				73E5CD171C887C2500597E2A /* Chat Filled-50.png in Resources */,
-				1F9DB2051C74D60F00D39502 /* GoogleService-Info.plist in Resources */,
 				73E5CD1D1C887CF800597E2A /* Like Filled-50.png in Resources */,
 				7306F8FA1C85C67C000A5D3A /* mapTab.png in Resources */,
 				73F0CADD1C8F75F500185E35 /* mapPinTrace2.png in Resources */,
 				73F0CADF1C8F768200185E35 /* mapPinTrace3.png in Resources */,
+				1F13D6061CC9167700C86727 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,7 +623,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F9DB2061C74D71C00D39502 /* GoogleService-Info.plist in Resources */,
+				1F13D6071CC9167700C86727 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,7 +631,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F9DB2071C74D72300D39502 /* GoogleService-Info.plist in Resources */,
+				1F13D6081CC9167700C86727 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,11 +719,13 @@
 				738A13091C504F01003BD441 /* SocketEngineSpec.swift in Sources */,
 				738A13121C504F01003BD441 /* SocketFixUTF8.swift in Sources */,
 				738A72041C8F8AF40032C9D2 /* ProfileTableViewCell.swift in Sources */,
+				1F1825A11CCA76F9006BA3F7 /* AlamofireExtension.swift in Sources */,
 				7306F8F71C85AFCE000A5D3A /* MapViewController.swift in Sources */,
 				73D2EA021C505FCE0021AEF3 /* SwiftyJSON.swift in Sources */,
 				738A12AD1C504EDF003BD441 /* ViewController.swift in Sources */,
 				738A132D1C504F01003BD441 /* SwiftRegex.swift in Sources */,
 				738A13211C504F01003BD441 /* SocketPacket.swift in Sources */,
+				1F1825A31CCA7E30006BA3F7 /* NotificationManager.swift in Sources */,
 				738A13001C504F01003BD441 /* SocketEngineClient.swift in Sources */,
 				737865B71C82106A00EB58F1 /* SquareMessViewController.swift in Sources */,
 				1FD8C7591C6A2F6C008A0094 /* UserData.swift in Sources */,
@@ -932,7 +948,7 @@
 				INFOPLIST_FILE = inSquareAppIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = inSquare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.recAppTeam.inSquare;
 				PRODUCT_NAME = inSquare;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "inSquareAppIOS/Bridging-Header.h";
@@ -957,7 +973,7 @@
 				INFOPLIST_FILE = inSquareAppIOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = inSquare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.recAppTeam.inSquare;
 				PRODUCT_NAME = inSquare;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "inSquareAppIOS/Bridging-Header.h";

@@ -4,10 +4,16 @@
 <dict>
 	<key>TRACKING_ID</key>
 	<string>UA-73767507-2</string>
+	<key>CLIENT_ID</key>
+	<string>231545488769-djone3h4j6nmf3jjbahkjcdn4j002r6n.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.231545488769-djone3h4j6nmf3jjbahkjcdn4j002r6n</string>
+	<key>GCM_SENDER_ID</key>
+	<string>231545488769</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>inSquare</string>
+	<string>com.recAppTeam.inSquare</string>
 	<key>IS_ADS_ENABLED</key>
 	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -19,6 +25,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<false/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:231545488769:ios:423eda23e2313d1f</string>
+	<string>1:231545488769:ios:ca145c1edc7acd28</string>
+	<key>PROJECT_ID</key>
+	<string>insquare-1189</string>
 </dict>
 </plist>

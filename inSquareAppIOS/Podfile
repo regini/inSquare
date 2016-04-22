@@ -19,3 +19,5 @@ pod 'Google/Analytics'
 pod 'Alamofire', '~> 3.0'
 
 pod 'JSQMessagesViewController'
+
+pod 'AeroGear-Push-Swift'
