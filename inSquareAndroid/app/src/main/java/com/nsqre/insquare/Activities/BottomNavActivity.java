@@ -35,7 +35,7 @@ import com.nsqre.insquare.Fragments.MainContent.FavSquaresFragment;
 import com.nsqre.insquare.Fragments.MainContent.MapFragment;
 import com.nsqre.insquare.Fragments.MainContent.ProfileFragment;
 import com.nsqre.insquare.Fragments.MainContent.RecentSquaresFragment;
-import com.nsqre.insquare.Fragments.SettingsFragment;
+import com.nsqre.insquare.Fragments.MainContent.SettingsFragment;
 import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
