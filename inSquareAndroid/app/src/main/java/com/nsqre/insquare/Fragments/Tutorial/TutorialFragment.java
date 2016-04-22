@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.Tutorial;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -8,7 +8,12 @@ import android.view.View;
 
 import com.cleveroad.slidingtutorial.PageFragment;
 import com.cleveroad.slidingtutorial.SimplePagerFragment;
+import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.LoginActivity;
+import com.nsqre.insquare.Fragments.Tutorial.FirstTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.FourthTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.SecondTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.ThirdTutorialFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 
@@ -64,8 +69,13 @@ public class TutorialFragment extends SimplePagerFragment {
         InSquareProfile.setShowTutorial(false, getContext());
         Log.d(TAG, "onSkipButtonClicked: " + InSquareProfile.getShowTutorial());
         removeFragmentFromScreen();
-        LoginActivity loginActivity = (LoginActivity) getContext();
-        loginActivity.launchLoginProcedure();
+        if (getActivity().getClass() == LoginActivity.class) {
+            LoginActivity loginActivity = (LoginActivity) getContext();
+            loginActivity.launchLoginProcedure();
+        } else {  //sono nel fragment settings
+            BottomNavActivity bottomNavActivity = (BottomNavActivity) getActivity();
+            bottomNavActivity.findViewById(R.id.bottom_nav_bar).setVisibility(View.VISIBLE);
+        }
         return true;
     }
 
@@ -75,8 +85,14 @@ public class TutorialFragment extends SimplePagerFragment {
             InSquareProfile.setShowTutorial(false, getContext());
             Log.d(TAG, "onPageSelected: " + InSquareProfile.getShowTutorial());
             removeFragmentFromScreen();
-            LoginActivity loginActivity = (LoginActivity) getContext();
-            loginActivity.launchLoginProcedure();
+
+            if (getActivity().getClass() == LoginActivity.class) {
+                LoginActivity loginActivity = (LoginActivity) getContext();
+                loginActivity.launchLoginProcedure();
+            } else {  //sono nel fragment settings
+                BottomNavActivity bottomNavActivity = (BottomNavActivity) getActivity();
+                bottomNavActivity.findViewById(R.id.bottom_nav_bar).setVisibility(View.VISIBLE);
+            }
         }
     }
 

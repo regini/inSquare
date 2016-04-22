@@ -98,7 +98,7 @@ public class VolleyManager {
         reqURL += "&lon=" + lon;
         reqURL += "&userId=" + userId;
 
-        Log.d(TAG, "searchSquares: " + reqURL);
+        // Log.d(TAG, "searchSquares: " + reqURL);
 
         StringRequest searchSquaresRequest = new StringRequest(Request.Method.GET, reqURL,
                 new Response.Listener<String>() {
@@ -135,7 +135,7 @@ public class VolleyManager {
         reqURL += "&lat=" + lat;
         reqURL += "&lon=" + lon;
 
-        Log.d(TAG, "getClosestSquares: " + reqURL);
+         Log.d(TAG, "getClosestSquares: " + reqURL);
 
         StringRequest closeSquareRequest = new StringRequest(Request.Method.GET, reqURL,
                 new Response.Listener<String>() {
@@ -170,7 +170,7 @@ public class VolleyManager {
         volleyURL += "&size=" + howMany;
         volleyURL += "&square=" + squareId;
 
-        Log.d(TAG, "getRecentMessages from : " + volleyURL);
+        // Log.d(TAG, "getRecentMessages from : " + volleyURL);
 
         StringRequest getRecentMessages = new StringRequest(Request.Method.GET, volleyURL,
                 new Response.Listener<String>() {
@@ -207,7 +207,7 @@ public class VolleyManager {
         volleyURL += "squareId=" + squareId;
         volleyURL += "&userId=" + userId;
 
-        Log.d(TAG, "handleFavoriteSquare " + volleyURL);
+        // Log.d(TAG, "handleFavoriteSquare " + volleyURL);
 
         StringRequest favoriteSquare = new StringRequest(requestType, volleyURL,
                 new Response.Listener<String>() {
@@ -253,7 +253,7 @@ public class VolleyManager {
          
         String volleyURL = baseURL + "auth/" + service + "/token";
 
-        Log.d(TAG, "postLoginToken: " + volleyURL);
+        // Log.d(TAG, "postLoginToken: " + volleyURL);
 
         StringRequest postTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -282,59 +282,43 @@ public class VolleyManager {
         requestQueue.add(postTokenRequest);
     }
 
-    public void patchLoginToken(
+    public void patchLoginToken (
             final String service,
             final String accessToken,
-            final String userId,
-            final String username,
-            final String email,
-            final String photoURL,
             final VolleyResponseListener listener
-    )
-    {
-
+    ) {
         String volleyURL = baseURL + "user/" + service;
-
-        Log.d(TAG, "patchLoginToken: " + volleyURL);
+        // Log.d(TAG, "patchLoginToken: " + volleyURL);
 
         StringRequest patchTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "ServerResponse " + response);
-                        if(response.toLowerCase().contains("non"))
-                        {
-                            listener.responsePATCH(false);
-                        }else {
-                            listener.responsePATCH(true);
-                        }
+                        listener.responsePATCH(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "ErrorResponse: " + error.toString());
-                        listener.responsePOST(false);
+                        listener.responsePATCH(null);
                     }
-        })
-        {
-            //TOKEN messo nei parametri della query
+        }) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", emptySpacesForParams(username));
-                params.put("userId", emptySpacesForParams(userId));
-                params.put("email", emptySpacesForParams(email));
-                params.put("token", emptySpacesForParams(accessToken));
-                params.put("profilePhoto", emptySpacesForParams(photoURL));
-
+                InSquareProfile.getInstance(context);
+                Map<String,String> params = new HashMap<>();
+                params.put("userId", InSquareProfile.getUserId());
+                params.put("access_token", accessToken);
                 return params;
             }
         };
         requestQueue.add(patchTokenRequest);
     }
 
-    public void postGCMToken(
+
+    public void patchGCMToken(
             final String token,
             final VolleyResponseListener listener
     )
@@ -342,19 +326,19 @@ public class VolleyManager {
          
         String volleyURL = baseURL + "gcmToken";
 
-        StringRequest postGCMTokenRequest = new StringRequest(Request.Method.POST, volleyURL,
+        StringRequest patchGCMTokenRequest = new StringRequest(Request.Method.PATCH, volleyURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "Response is: " + response);
-                        listener.responsePOST(response);
+                        listener.responsePATCH(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, error.toString());
-                        listener.responsePOST(null);
+                        listener.responsePATCH(null);
                     }
         }) {
             @Override
@@ -366,7 +350,7 @@ public class VolleyManager {
             }
         };
 
-        requestQueue.add(postGCMTokenRequest);
+        requestQueue.add(patchGCMTokenRequest);
     }
 
 
@@ -383,7 +367,7 @@ public class VolleyManager {
         volleyURL += "&username=" + userId;
         volleyURL += "&activity=" + fromActivity;
 
-        Log.d(TAG, "postFeedback - I'm about to POST to: " + volleyURL);
+        // Log.d(TAG, "postFeedback - I'm about to POST to: " + volleyURL);
 
         StringRequest postFeedbackRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -431,7 +415,7 @@ public class VolleyManager {
         volleyURL += "&type=0";
         volleyURL += "&expireTime=" + expireTime;
 
-        Log.d(TAG, "postSquare url: " + volleyURL);
+         Log.d(TAG, "postSquare url: " + volleyURL);
 
         StringRequest postSquareRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -494,7 +478,7 @@ public class VolleyManager {
             volleyURL += "&facebookIdPage=" + facebookId;
         }
 
-        Log.d(TAG, "postSquare url: " + volleyURL);
+         Log.d(TAG, "postSquare url: " + volleyURL);
 
         StringRequest postSquareRequest = new StringRequest(Request.Method.POST, volleyURL,
                 new Response.Listener<String>() {
@@ -532,7 +516,7 @@ public class VolleyManager {
         volleyURL += "byOwner=" + byOwner;
         volleyURL += "&ownerId=" + ownerId;
 
-        Log.d(TAG, "getOwnedSquares url: " + volleyURL);
+        // Log.d(TAG, "getOwnedSquares url: " + volleyURL);
 
         StringRequest getOwnedRequest = new StringRequest(Request.Method.GET, volleyURL,
                 new Response.Listener<String>() {
@@ -566,7 +550,7 @@ public class VolleyManager {
         String volleyURL = baseURL + "favouritesquares/";
         volleyURL += userId;
 
-        Log.d(TAG, "getFavoriteSquares url: " + volleyURL);
+        // Log.d(TAG, "getFavoriteSquares url: " + volleyURL);
 
         StringRequest getFavsRequest = new StringRequest(
                 Request.Method.GET,
@@ -605,7 +589,7 @@ public class VolleyManager {
         String volleyURL = baseURL + "recentSquares/";
         volleyURL += userId;
 
-        Log.d(TAG, "getRecentSquares url: " + volleyURL);
+        // Log.d(TAG, "getRecentSquares url: " + volleyURL);
 
         StringRequest getRecentsRequest= new StringRequest(
                 Request.Method.GET,
@@ -675,7 +659,7 @@ public class VolleyManager {
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&ownerId=" + ownerId;
 
-        Log.d(TAG, "patchDescr url: " + volleyURL);
+        // Log.d(TAG, "patchDescr url: " + volleyURL);
 
         StringRequest patchDescriptionRequest = new StringRequest(
                 Request.Method.PATCH,
@@ -755,7 +739,7 @@ public class VolleyManager {
         String volleyURL = baseURL + "squares?";
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&ownerId=" + ownerId;
-        Log.d(TAG, "deleteSquare url: " + volleyURL);
+        // Log.d(TAG, "deleteSquare url: " + volleyURL);
         StringRequest deleteSquareRequest = new StringRequest(
                 Request.Method.DELETE,
                 volleyURL,
@@ -820,7 +804,7 @@ public class VolleyManager {
         volleyURL += "&squareId=" + squareId;
         volleyURL += "&expireTime=" + expireTime;
 
-        Log.d(TAG, "muteSquare: " + volleyURL);
+        // Log.d(TAG, "muteSquare: " + volleyURL);
 
         StringRequest muteSquareRequest = new StringRequest(
                 Request.Method.PATCH,

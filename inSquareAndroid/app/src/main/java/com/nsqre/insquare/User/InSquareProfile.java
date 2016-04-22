@@ -2,6 +2,7 @@ package com.nsqre.insquare.User;/* Created by umbertosonnino on 5/1/16  */
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.nsqre.insquare.Activities.LoginActivity;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
@@ -21,9 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * InSquareProfile is the class that handles most of the user data.
@@ -79,7 +81,7 @@ public class InSquareProfile {
     /**
      * The map of the messages I'm currently trying to send
      */
-    private static HashMap<String, ArrayList<Message>> outgoingMessages;
+    private static HashMap<String, LinkedList<Message>> outgoingMessages;
 
     public static String userId;
     public static String username;
@@ -169,11 +171,13 @@ public class InSquareProfile {
         profile.showTutorial = prefs.getBoolean(SHOW_TUTORIAL, true);
         Log.d(TAG, "getInstance: ho caricato showtutorial: " + profile.showTutorial);
 
-        // VolleyManager viene istanziato e si procede con la richiesta al server
-        VolleyManager.getInstance(c);
-        downloadFavoriteSquares();
-        downloadOwnedSquares();
-        downloadRecentSquares();
+        if(hasLoginData()) {
+            // VolleyManager viene istanziato e si procede con la richiesta al server
+            VolleyManager.getInstance(c);
+            downloadFavoriteSquares();
+            downloadOwnedSquares();
+            downloadRecentSquares();
+        }
 
         return profile;
     }
@@ -282,14 +286,49 @@ public class InSquareProfile {
         save(c);
     }
 
-    public static void clearProfileCredentials(Context c)
+    public static void clearProfileCredentials(final Context c)
     {
-        userId = null;
-        username = null;
-        email = null;
-        pictureUrl = null;
+        VolleyManager.getInstance(c).patchGCMToken("dummy", new VolleyManager.VolleyResponseListener() {
+            @Override
+            public void responseGET(Object object) {
+                // Vuoto - PATCH Request
+            }
 
-        save(c);
+            @Override
+            public void responsePOST(Object object) {
+                // Vuoto - PATCH Request
+            }
+
+            @Override
+            public void responsePATCH(Object object) {
+                if(object == null)
+                {
+                    Log.d(TAG, "responsePOST: my token wasn't posted correctly!");
+                }else
+                {
+                    Log.d(TAG, "responsePOST: everything is fine!");
+                    userId = null;
+                    username = null;
+                    email = null;
+                    pictureUrl = null;
+
+                    clearFacebookCredentials(c);
+                    clearGoogleCredentials(c);
+                    save(c);
+
+
+
+                    Intent intent = new Intent(c, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    c.startActivity(intent);
+                }
+            }
+
+            @Override
+            public void responseDELETE(Object object) {
+                // Vuoto - PATCH Request
+            }
+        });
     }
 
     @Override
@@ -342,7 +381,7 @@ public class InSquareProfile {
      */
     public static void addOutgoing(String mSquareId, Message message, Context c) {
         if (outgoingMessages.get(mSquareId) == null) {
-            outgoingMessages.put(mSquareId, new ArrayList<Message>());
+            outgoingMessages.put(mSquareId, new LinkedList<Message>());
         }
         outgoingMessages.get(mSquareId).add(message);
         Log.d(TAG, "addOutgoing: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size() );
@@ -352,8 +391,8 @@ public class InSquareProfile {
     /**
      * TODO
      */
-    public static void removeOutgoing(String mSquareId, Message message, Context c) {
-        outgoingMessages.get(mSquareId).remove(message);
+    public static void removeOutgoing(String mSquareId, Context c) {
+        outgoingMessages.get(mSquareId).remove(0);
         Log.d(TAG, "REMOVEOUTGOING: nella stanza " + mSquareId + " ci sono messaggi da inviare: " + outgoingMessages.get(mSquareId).size());
         save(c);
     }
@@ -538,7 +577,7 @@ public class InSquareProfile {
         return recentSquaresList;
     }
 
-    public static HashMap<String, ArrayList<Message>> getOutgoingMessages()
+    public static HashMap<String, LinkedList<Message>> getOutgoingMessages()
     {
         if(outgoingMessages == null)
         {

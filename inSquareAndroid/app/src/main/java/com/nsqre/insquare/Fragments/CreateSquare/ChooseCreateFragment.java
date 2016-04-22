@@ -13,22 +13,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.SquareType;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ChooseCreateFragment extends Fragment {
 
-    public enum SQUARE_TYPE {
-        TYPE_PLACE,
-        TYPE_EVENT,
-        TYPE_SHOP
-    }
     private static ChooseCreateFragment instance;
 
-    CreateIntroActivity upperActivity;
+    CreateSquareActivity upperActivity;
     FrameLayout choicePlace, choiceEvent, choiceShop;
     ImageView overlayPlace, overlayEvent, overlayShop;
 
@@ -54,7 +50,7 @@ public class ChooseCreateFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_create_choose, container, false);
 
-        upperActivity = (CreateIntroActivity)getActivity();
+        upperActivity = (CreateSquareActivity)getActivity();
 
         choicePlace = (FrameLayout) v.findViewById(R.id.create_square_choice_place);
         choiceEvent = (FrameLayout) v.findViewById(R.id.create_square_choice_event);
@@ -76,7 +72,7 @@ public class ChooseCreateFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        upperActivity.squareTypeSelected(SQUARE_TYPE.TYPE_PLACE);
+                        upperActivity.squareTypeSelected(SquareType.TYPE_PLACE);
                         enhanceText(textPlace);
                         resetText(textEvent);
                         resetText(textShop);
@@ -90,7 +86,7 @@ public class ChooseCreateFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        upperActivity.squareTypeSelected(SQUARE_TYPE.TYPE_EVENT);
+                        upperActivity.squareTypeSelected(SquareType.TYPE_EVENT);
                         enhanceText(textEvent);
                         resetText(textPlace);
                         resetText(textShop);
@@ -103,7 +99,7 @@ public class ChooseCreateFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        upperActivity.squareTypeSelected(SQUARE_TYPE.TYPE_SHOP);
+                        upperActivity.squareTypeSelected(SquareType.TYPE_SHOP);
                         enhanceText(textShop);
                         resetText(textPlace);
                         resetText(textEvent);

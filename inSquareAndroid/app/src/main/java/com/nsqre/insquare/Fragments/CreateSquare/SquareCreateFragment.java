@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -41,10 +40,11 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
+import com.nsqre.insquare.Utilities.SquareType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,7 +107,7 @@ public class SquareCreateFragment extends Fragment {
     // For Facebook Handling
     private CallbackManager fbCallbackManager;
     private String fbAccessToken;
-    private CreateIntroActivity father;
+    private CreateSquareActivity father;
     private TextView warningText;
 
     public SquareCreateFragment() {
@@ -129,7 +129,7 @@ public class SquareCreateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        this.father = (CreateIntroActivity) getActivity();
+        this.father = (CreateSquareActivity) getActivity();
         this.expireString = "";
 
         // Inflate the layout for this fragment
@@ -344,7 +344,7 @@ public class SquareCreateFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ChooseCreateFragment.SQUARE_TYPE requestType = father.squareType;
+                        SquareType requestType = father.squareType;
 
                         String url = getAndCheckURL();
                         if (url == null) return;
@@ -354,10 +354,10 @@ public class SquareCreateFragment extends Fragment {
                             setupFacebook(v);
                             LoginManager.getInstance().logInWithReadPermissions(getActivity(),
                                     Arrays.asList("public_profile", "email", "user_friends"));
-                        }else if(requestType == ChooseCreateFragment.SQUARE_TYPE.TYPE_EVENT)
+                        }else if(requestType == SquareType.TYPE_EVENT)
                         {
                             requestFacebookEventDetail(url);
-                        }else if (requestType == ChooseCreateFragment.SQUARE_TYPE.TYPE_SHOP)
+                        }else if (requestType == SquareType.TYPE_SHOP)
                         {
                             requestFacebookPageDetail(url);
                         }
@@ -395,7 +395,7 @@ public class SquareCreateFragment extends Fragment {
         LoginManager.getInstance().registerCallback(fbCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     View main = v.findViewById(android.R.id.content);
-                    Snackbar errorMessage = Snackbar.make(main, "Non posso collegare Facebook senza login!", Snackbar.LENGTH_LONG);
+                    Toast errorMessage = Toast.makeText(getContext(), "Non posso collegare Facebook senza login!", Toast.LENGTH_LONG);
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         requestFacebookUserData();
@@ -416,7 +416,7 @@ public class SquareCreateFragment extends Fragment {
 
     private void requestFacebookUserData()
     {
-        final ChooseCreateFragment.SQUARE_TYPE requestType = father.squareType;
+        final SquareType requestType = father.squareType;
         Log.d(TAG, "requestFacebookUserData: Sto richiedendo le informazioni da Facebook");
         // Creazione di una nuova richiesta al grafo di Facebook per le informazioni necessarie
         GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -425,57 +425,47 @@ public class SquareCreateFragment extends Fragment {
             {
                 Log.d(TAG, "Hello Facebook!\n" + response.toString());
 
-                try {
-                    String nome = object.getString("name");
-                    String email = object.getString("email");
-                    String gender = object.getString("gender");
-                    String id = object.getString("id");
+                fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
 
-                    fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
+                final String serviceName = "Facebook";
 
-                    InSquareProfile.facebookName = nome;
-                    InSquareProfile.facebookEmail = email;
-                    InSquareProfile.facebookId = id;
-                    InSquareProfile.facebookToken = fbAccessToken;
-                    InSquareProfile.save(getContext());
+                VolleyManager.getInstance().patchLoginToken(
+                        serviceName,
+                        fbAccessToken,
+                        new VolleyManager.VolleyResponseListener() {
+                            @Override
+                            public void responseGET(Object object) {
+                                // Vuoto - PATCH Request
+                            }
+                            @Override
+                            public void responsePOST(Object object) {
+                                // Vuoto - PATCH Request
+                            }
 
-                    final String serviceName = "Facebook";
-
-                    VolleyManager.getInstance().patchLoginToken(
-                            serviceName,
-                            fbAccessToken,
-                            InSquareProfile.getUserId(),
-                            nome,
-                            email,
-                            "",
-                            new VolleyManager.VolleyResponseListener() {
-                                @Override
-                                public void responseGET(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-
-                                @Override
-                                public void responsePOST(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-
-                                @Override
-                                public void responsePATCH(Object object) {
-                                    boolean success = (boolean)object;
-                                    if (!success) {
-                                        Toast.makeText(getContext(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void responsePATCH(Object object) {
+                                if (object == null) {
+                                    Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String serverResponse = (String) object;
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(serverResponse);
+                                        InSquareProfile.facebookEmail = jsonObject.getString("facebookEmail");
+                                        InSquareProfile.facebookToken = jsonObject.getString("facebookToken");
+                                        InSquareProfile.facebookName = jsonObject.getString("facebookName");
+                                        InSquareProfile.facebookId = jsonObject.getString("facebookId");
+                                        InSquareProfile.save(getActivity().getApplicationContext());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
                                 }
+                            }
 
-                                @Override
-                                public void responseDELETE(Object object) {
-                                    // Vuoto - PATCH Request
-                                }
-                            });
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                            @Override
+                            public void responseDELETE(Object object) {
+                                // Vuoto - PATCH Request
+                            }
+                        });
 
                 String url = getAndCheckURL();
                 if(url == null) return;
@@ -524,7 +514,7 @@ public class SquareCreateFragment extends Fragment {
                             return;
                         }
 
-                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error"))
+                        if(father.pagerAdapter.getCount() > 1)
                         {
                             ReviewCreateFragment reviewFragment = (ReviewCreateFragment) father.pagerAdapter.getItem(2);
 
@@ -606,7 +596,7 @@ public class SquareCreateFragment extends Fragment {
                         }
                         else
                         {
-                            Log.d(TAG, "onCompleted: Qualcosa non era in grado di funzionare..!");
+                            Log.d(TAG, "onCompleted: non avevo ancora istanziato la view finale!");
                         }
                     }
                 }
@@ -646,7 +636,8 @@ public class SquareCreateFragment extends Fragment {
                             return;
                         }
 
-                        if(father.pagerAdapter.getCount() > 1 && object.isNull("error") && object != null) {
+                        if(father.pagerAdapter.getCount() > 1) 
+                        {
                             ReviewCreateFragment reviewFragment = (ReviewCreateFragment) father.pagerAdapter.getItem(2);
 
                             try {
@@ -733,6 +724,9 @@ public class SquareCreateFragment extends Fragment {
                             }
 
 
+                        }else
+                        {
+                            Log.d(TAG, "onCompleted: la view finale non esisteva!");
                         }
                     }
                 });

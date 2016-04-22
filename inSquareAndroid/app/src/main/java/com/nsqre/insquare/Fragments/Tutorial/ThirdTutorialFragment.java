@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.Tutorial;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,20 +13,20 @@ import com.cleveroad.slidingtutorial.TransformItem;
 import com.nsqre.insquare.R;
 
 /**
-
  */
-public class FirstTutorialFragment extends PageFragment {
+public class ThirdTutorialFragment extends PageFragment {
+
     @Override
     protected int getLayoutResId() {
         // layout id of fragment
-        return R.layout.fragment_first_tutorial;
+        return R.layout.fragment_third_tutorial;
     }
 
     @Override
     protected TransformItem[] provideTransformItems() {
         // list of transformation items
         return new TransformItem[]{
-                new TransformItem(R.id.ivFirstImage, true, 20),
+                //new TransformItem(R.id.ivFirstImage, true, 20),
                 new TransformItem(R.id.ivSecondImage, false, 6)
         };
     }

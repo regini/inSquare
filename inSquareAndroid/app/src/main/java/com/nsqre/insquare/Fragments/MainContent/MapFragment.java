@@ -1,4 +1,4 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.MainContent;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.Volley;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -52,7 +51,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.SquareSuggestion;
@@ -519,16 +518,18 @@ public class MapFragment extends Fragment
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        checkActivityIntent(getActivity().getIntent());
+        if(getActivity().getIntent() != null) {
+            checkActivityIntent(getActivity().getIntent());
+        }
     }
 
     public void checkActivityIntent(Intent intent) {
-        if(intent.getStringExtra("squareId") != null) {
+        if(intent != null && intent.getStringExtra("squareId") != null) {
             String squareId = intent.getStringExtra("squareId");
             if(InSquareProfile.isFav(squareId)) {
                 for(Square s : InSquareProfile.getFavouriteSquaresList()) {
                     if(squareId.equals(s.getId())) {
-                        intent.getExtras().clear();
+                        getActivity().setIntent(null);
                         startChatActivity(s);
                         break;
                     }
@@ -536,7 +537,7 @@ public class MapFragment extends Fragment
             } else if(InSquareProfile.isRecent(squareId)) {
                 for(Square s : InSquareProfile.getRecentSquaresList()) {
                     if(squareId.equals(s.getId())) {
-                        intent.getExtras().clear();
+                        getActivity().setIntent(null);
                         startChatActivity(s);
                         break;
                     }
@@ -732,11 +733,11 @@ public class MapFragment extends Fragment
 
     public void handleSquareCreation(int resultCode, Intent data)
     {
-        String name = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_NAME);
-        String description = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_DESCRIPTION);
-        String latitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LATITUDE);
-        String longitude = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_LONGITUDE);
-        String expireTime = data.getStringExtra(CreateIntroActivity.RESULT_EXPIRE_TIME);
+        String name = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_NAME);
+        String description = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_DESCRIPTION);
+        String latitude = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_LATITUDE);
+        String longitude = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_LONGITUDE);
+        String expireTime = data.getStringExtra(CreateSquareActivity.RESULT_EXPIRE_TIME);
 
         switch (resultCode)
         {
@@ -787,12 +788,11 @@ public class MapFragment extends Fragment
                             }
                         }
                 );
-
                 break;
             case RESULT_SQUARE_FACEBOOK:
                 Log.d(TAG, "onActivityResult: trying to create from facebook!");
-                String facebookId = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_FACEBOOK_ID);
-                String type = data.getStringExtra(CreateIntroActivity.RESULT_SQUARE_TYPE);
+                String facebookId = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_FACEBOOK_ID);
+                String type = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_TYPE);
 
                 VolleyManager.getInstance().postFacebookSquare(
                         name,
@@ -850,7 +850,7 @@ public class MapFragment extends Fragment
     public void onMapLongClick(final LatLng latLng) {
         String latitude = String.valueOf(latLng.latitude);
         String longitude = String.valueOf(latLng.longitude);
-        Intent intent = new Intent(getContext(), CreateIntroActivity.class);
+        Intent intent = new Intent(getContext(), CreateSquareActivity.class);
         Bundle extras = new Bundle();
         extras.putString("latitude", latitude);
         extras.putString("longitude", longitude);

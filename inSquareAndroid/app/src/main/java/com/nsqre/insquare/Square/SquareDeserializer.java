@@ -6,6 +6,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.nsqre.insquare.Fragments.MainContent.MapFragment;
 
 import java.lang.reflect.Type;
 import java.util.Locale;
@@ -13,7 +14,7 @@ import java.util.Locale;
 /**
  * SquareDeserializer is the class that Gson uses to deserialize the JSON strings that represent squares
  * @see com.nsqre.insquare.Activities.BottomNavActivity
- * @see com.nsqre.insquare.Fragments.MapFragment
+ * @see MapFragment
  */
 public class SquareDeserializer implements JsonDeserializer<Square> {
 
@@ -106,7 +107,10 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
             e.printStackTrace();
         }
 
-        // Tipo
+        // Tipo:
+        // 0 - Luogo
+        // 1 - Evento
+        // 2 - Attivita Commerciale
         JsonElement typeElement = source.get("type");
         if(typeElement == null)
         {

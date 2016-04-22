@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -52,13 +51,9 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitation;
-import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.nsqre.insquare.Fragments.MapFragment;
+import com.nsqre.insquare.Fragments.MainContent.MapFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.Message.MessageAdapter;
 import com.nsqre.insquare.R;
@@ -79,6 +74,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -130,17 +126,15 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     private Tracker mTracker;
     private Locale format;
 
-    private HashMap<String, ArrayList<Message>> outgoingMessages;
+    private HashMap<String, LinkedList<Message>> outgoingMessages;
 
     private Upload upload; // Upload object containging image and meta data
     private File chosenFile; //chosen file from intent
 
     private ChatActivity ca;
-    //SHARE
-    private GoogleApiClient mGoogleApiClient;
-    private static final int REQUEST_INVITE = 0;
     public final static int FILE_PICK = 1001;
 
+    private LinkedList<Integer> positions;
 
     private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
 
@@ -150,8 +144,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             try {
                 Log.d(TAG, "onReceive: messaggio inviato con chatservice");
                 Message m = (Message) intent.getSerializableExtra("messageSent");
-                Message messageFromAdapter = messageAdapter.getMessage(m);
+                int position = positions.getFirst();
+                positions.remove(positions.getFirst());
+                Message messageFromAdapter = messageAdapter.getMessage(position);
                 messageFromAdapter.setTime();
+                messageFromAdapter.setId(m.getId());
                 messageAdapter.notifyDataSetChanged();
                 //Toast.makeText(getApplicationContext(), "notificato", Toast.LENGTH_SHORT).show();
             }
@@ -170,6 +167,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        positions = new LinkedList<>();
         //FOTO
         //ButterKnife.bind(this);
         ca = this;
@@ -222,29 +220,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         });
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(AppInvite.API)
-                .enableAutoManage(this, this)
-                .build();
-
-        // Check for App Invite invitations and launch deep-link activity if possible.
-        // Requires that an Activity is registered in AndroidManifest.xml to handle
-        // deep-link URLs.
-        boolean autoLaunchDeepLink = true;
-        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
-                            @Override
-                            public void onResult(AppInviteInvitationResult result) {
-                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
-                                // Because autoLaunchDeepLink = true we don't have to do anything
-                                // here, but we could set that to false and manually choose
-                                // an Activity to launch to handle the deep link here.
-                            }
-                        });
-
-
-        //FINE SHARE
 
         recyclerView = (RecyclerView) findViewById(R.id.message_list);
         recyclerView.setHasFixedSize(true);
@@ -331,6 +306,26 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             }
         }
         setupToolbar();
+
+        final View rootView = this.getWindow().getDecorView(); // this = activity
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (isScrolled) {
+                    isScrolled = false;
+                    return;
+                }
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = rootView.getHeight();
+                int heightDifference = screenHeight - (r.bottom - r.top);
+
+                if (heightDifference > screenHeight / 3) {
+                    recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+                    isScrolled = true;
+                }
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -391,14 +386,18 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                            REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                                }
                             }
                         });
                 return;
             }
-            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            }
             return;
         }
 
@@ -424,19 +423,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
-            case REQUEST_INVITE:
-                if (resultCode == RESULT_OK) {
-                    // Check how many invitations were sent and log a message
-                    // The ids array contains the unique invitation ids for each invitation sent
-                    // (one for each contact select by the user). You can use these for analytics
-                    // as the ID will be consistent on the sending and receiving devices.
-                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                    Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-                } else {
-                    // Sending failed or it was canceled, show failure message to the user
-                    //showMessage(getString(R.string.send_failed));
-                }
-                break;
             case FILE_PICK:
                 Uri returnUri;
 
@@ -504,6 +490,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
      */
     private void getRecentMessages(int quantity) {
 
+        sendButton.setClickable(false);
         final String q = new Integer(quantity).toString();
 
         VolleyManager.getInstance().getRecentMessages("true", q, mSquareId,
@@ -518,6 +505,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                             for (Message m : messages) {
                                 addMessage(m);
                             }
+                            sendButton.setClickable(true);
                         }
                     }
 
@@ -595,25 +583,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         mSocket.emit("addUser", data);
 
-        final View rootView = this.getWindow().getDecorView(); // this = activity
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (isScrolled) {
-                    isScrolled = false;
-                    return;
-                }
-                Rect r = new Rect();
-                rootView.getWindowVisibleDisplayFrame(r);
-                int screenHeight = rootView.getHeight();
-                int heightDifference = screenHeight - (r.bottom - r.top);
-
-                if (heightDifference > screenHeight / 3) {
-                    recyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-                    isScrolled = true;
-                }
-            }
-        });
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("update_squares"));
         mTracker.setScreenName(this.getClass().getSimpleName());
@@ -731,6 +700,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //intent.putExtra("message", message);
         startService(intent);
         addMessage(m);
+        positions.add(messageAdapter.getItemCount()-1);
     }
 
     /**
@@ -803,17 +773,23 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     String username = "";
                     String message = "";
                     String userId = "";
+                    String messageId = "";
+                    String date = "";
+                    boolean userSpot = false;
 
                     try {
                         username = data.getString("username");
                         message = data.getString("contents");
                         userId = data.getString("userid");
+                        messageId = data.getString("msg_id");
+                        date = data.getString("date");
+                        userSpot = data.getBoolean("userSpot");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(message, username, userId, format));
+                    addMessage(new Message(messageId, message, username, userId, date, userSpot, format));
 
                 }
             });
@@ -833,22 +809,28 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
                     JSONObject data = (JSONObject) args[0];
                     String room = "";
-                    String userid = "";
                     String username = "";
                     String message = "";
+                    String userId = "";
+                    String messageId = "";
+                    String date = "";
+                    boolean userSpot = false;
 
                     try {
                         room = data.getString("room");
-                        userid = data.getString("userid");
                         username = data.getString("username");
                         message = data.getString("contents");
+                        userId = data.getString("userid");
+                        messageId = data.getString("msg_id");
+                        date = data.getString("date");
+                        userSpot = data.getBoolean("userSpot");
 
-                        Log.d(TAG, userid + " - " + username + " IN: " + room + " saying: " + message);
+                        Log.d(TAG, userId + " - " + username + " IN: " + room + " saying: " + message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    addMessage(new Message(message, username, userid, format));
+                    addMessage(new Message(messageId, message, username, userId, date, userSpot, format));
                 }
             });
         }
@@ -966,15 +948,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 } else {
                     favouriteSquare(Request.Method.POST, mSquare);
                 }
-                break;
-            case R.id.share_action:
-                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                        .setMessage(getString(R.string.invitation_message))
-                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-                        .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                        .setCallToActionText(getString(R.string.invitation_cta))
-                        .build();
-                startActivityForResult(intent, REQUEST_INVITE);
                 break;
             default:
         }

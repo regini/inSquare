@@ -231,6 +231,14 @@ public class Square implements Serializable {
         return lastMessageDate;
     }
 
+    public String getFacebookEventId() {
+        return facebookEventId;
+    }
+
+    public String getFacebookPageId() {
+        return facebookPageId;
+    }
+
     /**
      * Creates a string out of the lastMessageDate Calendar object
      * @return A string representing the date of the last message sent to the square

@@ -111,6 +111,229 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/cardview_profile_facebook_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_below="@+id/cardview_profile_right_section"
+                    android:visibility="gone"
+                    >
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_margin="@dimen/activity_vertical_margin"
+                        android:background="@color/colorPrimaryLight"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/map_marker_radius"
+                                android:tint="@color/com_facebook_blue"
+                                />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/cardview_profile_facebook_street_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="Via Vito Volterra, 34"
+                            android:fontFamily="sans-serif-condensed"
+                            />
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/dollar_sign"
+                                android:tint="@color/com_facebook_blue"
+                                />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/cardview_profile_facebook_price_range"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="$$$$ (50+)"
+                            android:fontFamily="sans-serif-condensed"
+                            />
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/thumb_up"
+                                android:tint="@color/com_facebook_blue"
+                                />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/cardview_profile_facebook_like_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="1234"
+                            android:fontFamily="sans-serif-condensed"
+                            />
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/link"
+                                android:tint="@color/com_facebook_blue"
+
+                                />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/cardview_profile_facebook_website"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="www.facebook.com"
+                            android:fontFamily="sans-serif-condensed"
+                            android:autoLink="web"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/phone"
+                                android:tint="@color/com_facebook_blue"
+                                />
+                        </RelativeLayout>
+
+
+
+                        <TextView
+                            android:id="@+id/cardview_profile_facebook_phone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="+39 123 4567890"
+                            android:fontFamily="sans-serif-condensed"
+                            android:autoLink="phone"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <RelativeLayout
+                            android:layout_width="@dimen/square_card_pic_size"
+                            android:layout_height="@dimen/square_card_pic_size"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginRight="8dp"
+                            android:gravity="center"
+                            >
+                            <ImageView
+                                android:layout_width="@dimen/card_profile_small_icons"
+                                android:layout_height="@dimen/card_profile_small_icons"
+                                android:src="@drawable/clock"
+                                android:tint="@color/com_facebook_blue"
+                                />
+                        </RelativeLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/cardview_profile_facebook_list_hours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:orientation="vertical"
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
             </RelativeLayout>
 
             <RelativeLayout

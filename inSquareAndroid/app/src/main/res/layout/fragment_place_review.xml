@@ -12,7 +12,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         app:cardElevation="2dp"
         app:cardCornerRadius="5dp"
-        android:layout_margin="8dp"
+        app:cardUseCompatPadding="true"
         >
 
         <!-- Il contenuto della cardview -->
@@ -65,15 +65,20 @@
                         android:fontFamily="sans-serif-condensed"
                         />
 
-                    <TextView
-                        android:id="@+id/review_square_price_range"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$$$$"
-                        android:textColor="@color/colorTextSecondary"
-                        android:maxLines="5"
-                        android:fontFamily="sans-serif-condensed-light"
-                        />
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/review_square_price_range"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$$$$ (50+)"
+                            android:textColor="@color/colorTextSecondary"
+                            android:maxLines="5"
+                            android:fontFamily="sans-serif-condensed-light"
+                            />
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
@@ -110,189 +115,195 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="@dimen/activity_vertical_margin"
-                android:background="@color/colorPrimaryLight"
-                />
-
+            <!-- Sezione con i dettagli -->
             <LinearLayout
+                android:id="@+id/review_details"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
                 >
-
-                <RelativeLayout
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="@dimen/card_profile_small_icons"
-                        android:layout_height="@dimen/card_profile_small_icons"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/map_marker_radius"
-                        android:tint="@color/colorDivider"
-                        />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/review_street_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Via Vito Volterra, 34"
-                    android:fontFamily="sans-serif-condensed"
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="@dimen/activity_vertical_margin"
+                    android:background="@color/colorPrimaryLight"
                     />
 
-
-            </LinearLayout>
-            <LinearLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
 
-                <RelativeLayout
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="@dimen/card_profile_small_icons"
-                        android:layout_height="@dimen/card_profile_small_icons"
+                    <RelativeLayout
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        >
+                        <ImageView
+                            android:layout_width="@dimen/card_profile_small_icons"
+                            android:layout_height="@dimen/card_profile_small_icons"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/map_marker_radius"
+                            android:tint="@color/colorPrimary"
+                            />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/review_street_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/thumb_up"
-                        android:tint="@color/colorDivider"
+                        android:text="Via Vito Volterra, 34"
+                        android:fontFamily="sans-serif-condensed"
                         />
-                </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/review_like_number"
-                    android:layout_width="wrap_content"
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="1234"
-                    android:fontFamily="sans-serif-condensed"
-                    />
-
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <RelativeLayout
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center"
+                    android:orientation="horizontal"
                     >
-                    <ImageView
-                        android:layout_width="@dimen/card_profile_small_icons"
-                        android:layout_height="@dimen/card_profile_small_icons"
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        >
+                        <ImageView
+                            android:layout_width="@dimen/card_profile_small_icons"
+                            android:layout_height="@dimen/card_profile_small_icons"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/thumb_up"
+                            android:tint="@color/colorPrimary"
+                            />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/review_like_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/link"
-                        android:tint="@color/colorDivider"
-
+                        android:text="1234"
+                        android:fontFamily="sans-serif-condensed"
                         />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/review_website"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="www.facebook.com"
-                    android:fontFamily="sans-serif-condensed"
-                    android:autoLink="web"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <RelativeLayout
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                    android:layout_width="@dimen/card_profile_small_icons"
-                    android:layout_height="@dimen/card_profile_small_icons"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/phone"
-                    android:tint="@color/colorDivider"
-                        />
-                </RelativeLayout>
 
 
-
-                <TextView
-                    android:id="@+id/review_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="+39 123 4567890"
-                    android:fontFamily="sans-serif-condensed"
-                    android:autoLink="phone"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <RelativeLayout
-                    android:layout_width="@dimen/square_card_pic_size"
-                    android:layout_height="@dimen/square_card_pic_size"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="@dimen/card_profile_small_icons"
-                        android:layout_height="@dimen/card_profile_small_icons"
-                        android:src="@drawable/clock"
-                        android:tint="@color/colorDivider"
-                        />
-                </RelativeLayout>
-
+                </LinearLayout>
 
 
                 <LinearLayout
-                    android:id="@+id/review_list_hours"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:orientation="vertical"
-                    />
+                    android:orientation="horizontal"
+                    >
 
+                    <RelativeLayout
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        >
+                        <ImageView
+                            android:layout_width="@dimen/card_profile_small_icons"
+                            android:layout_height="@dimen/card_profile_small_icons"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/link"
+                            android:tint="@color/colorPrimary"
+
+                            />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/review_website"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="www.facebook.com"
+                        android:fontFamily="sans-serif-condensed"
+                        android:autoLink="web"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        >
+                        <ImageView
+                            android:layout_width="@dimen/card_profile_small_icons"
+                            android:layout_height="@dimen/card_profile_small_icons"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/phone"
+                            android:tint="@color/colorPrimary"
+                            />
+                    </RelativeLayout>
+
+
+
+                    <TextView
+                        android:id="@+id/review_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="+39 123 4567890"
+                        android:fontFamily="sans-serif-condensed"
+                        android:autoLink="phone"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/square_card_pic_size"
+                        android:layout_height="@dimen/square_card_pic_size"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        >
+                        <ImageView
+                            android:layout_width="@dimen/card_profile_small_icons"
+                            android:layout_height="@dimen/card_profile_small_icons"
+                            android:src="@drawable/clock"
+                            android:tint="@color/colorPrimary"
+                            />
+                    </RelativeLayout>
+
+
+
+                    <LinearLayout
+                        android:id="@+id/review_list_hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:orientation="vertical"
+                        />
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
 
 
     </android.support.v7.widget.CardView>
-
-
 </ScrollView>

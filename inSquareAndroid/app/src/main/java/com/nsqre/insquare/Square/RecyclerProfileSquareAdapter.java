@@ -3,7 +3,9 @@ package com.nsqre.insquare.Square;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -12,24 +14,38 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DialogHandler;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
+import com.nsqre.insquare.Utilities.SquareType;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
@@ -82,7 +98,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             castHolder.squareDescription.setText(listItem.getDescription());
         }else
         {
-            castHolder.middleSection.setVisibility(View.GONE);
+            castHolder.squareDescription.setVisibility(View.GONE);
         }
         setupLeftSection(castHolder, squareName);
 
@@ -112,6 +128,14 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                     }
                 }
         );
+
+        if(!listItem.getFacebookEventId().isEmpty())
+        {
+            setupFacebookSection(castHolder, SquareType.TYPE_EVENT, listItem);
+        }else if(!listItem.getFacebookPageId().isEmpty())
+        {
+            setupFacebookSection(castHolder, SquareType.TYPE_SHOP, listItem);
+        }
 
     }
 
@@ -231,6 +255,263 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         );
     }
 
+    private void setupFacebookSection(final SquareViewHolder castHolder, SquareType typeShop, final Square listItem)
+    {
+
+        switch (typeShop)
+        {
+            case TYPE_EVENT:
+                Log.d(TAG, "setupFacebookSection: EVENTO");
+                downloadAndFillEventDetails(castHolder, listItem);
+                break;
+            case TYPE_SHOP:
+                Log.d(TAG, "setupFacebookSection: PAGINA!");
+                downloadAndFillePageDetails(castHolder, listItem);
+                break;
+        }
+    }
+
+    private void downloadAndFillePageDetails(final SquareViewHolder castHolder, Square listItem) {
+        Bundle requestParams = new Bundle();
+        requestParams.putString("fields", "fan_count,price_range,hours,phone,location,website");
+
+        Log.d(TAG, "downloadAndFillePageDetails: " + listItem.getFacebookPageId());
+
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/v2.6/" + listItem.getFacebookPageId(),
+                requestParams,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        JSONObject object = response.getJSONObject();
+                        Log.d(TAG, "onCompleted: page details ====\n" + response.toString());
+
+                        if(object == null)
+                        {
+                            Toast.makeText(context, "Facebook ha fallito il download dei dati", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+
+                            String likes,price, phone, website;
+                            String street;
+                            likes = price = phone = website = street = "";
+                            JSONObject location, hours;
+
+                            if(object.has("fan_count")) {
+                                likes = object.getString("fan_count").trim();
+                            }
+                            if(object.has("price_range")) {
+                                price = object.getString("price_range").trim();
+                            }
+                            if(object.has("phone")) {
+                                phone = object.getString("phone").trim();
+                            }
+                            if(object.has("website")) {
+                                website = object.getString("website").trim();
+                            }
+
+                            // Location
+                            if(object.has("location")) {
+                                location = object.getJSONObject("location");
+                                street = location.getString("street").trim();
+                            }
+
+                            List<String> hoursList = new ArrayList<>();
+
+                            // Hours
+                            if(object.has("hours")) {
+                                hours = object.getJSONObject("hours");
+                                Iterator<String> keys = hours.keys();
+
+                                while (keys.hasNext()) {
+                                    String listValue = "";
+
+                                    String keyDay = keys.next();
+                                    String valueOpen = hours.getString(keyDay);
+
+                                    String keyDayOpen = keyDay.split("_")[0];
+                                    String capitalized = keyDayOpen.substring(0, 1).toUpperCase() + keyDayOpen.substring(1);
+
+                                    listValue += capitalized + ": " + valueOpen;
+
+                                    if (keys.hasNext()) {
+                                        // Ha anche una controparte per la chiusura
+                                        String valueClose = hours.getString(keys.next());
+                                        listValue += (" - " + valueClose);
+                                    }
+                                    hoursList.add(listValue.trim());
+                                }
+                            }
+
+                            castHolder.facebookSection.setVisibility(View.VISIBLE);
+                            potentialEmptySection(castHolder.facebookLikeCount, likes);
+                            potentialEmptySection(castHolder.facebookPhone, phone);
+                            potentialEmptySection(castHolder.facebookStreetName, street);
+                            potentialEmptySection(castHolder.facebookWebsite, website);
+                            potentialEmptySection(castHolder.facebookPrice, price);
+
+                            if(hoursList.isEmpty())
+                            {
+                                ((LinearLayout)castHolder.facebookHoursList.getParent()).setVisibility(View.GONE);
+                            }else {
+                                ((LinearLayout)castHolder.facebookHoursList.getParent()).setVisibility(View.VISIBLE);
+                                // Puliamo il layout e prepariamolo ad essere riempito
+                                castHolder.facebookHoursList.removeAllViews();
+                                for(String s: hoursList)
+                                {
+                                    TextView tv = (TextView) LayoutInflater.from(context).inflate(R.layout.simple_list_item, null);
+                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    Resources r = context.getResources();
+                                    int px = (int) TypedValue.applyDimension(
+                                            TypedValue.COMPLEX_UNIT_DIP,
+                                            8,
+                                            r.getDisplayMetrics()
+                                    );
+                                    params.setMargins(0, 0, px, px);
+                                    tv.setLayoutParams(params);
+                                    tv.setText(s);
+                                    castHolder.facebookHoursList.addView(tv);
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).executeAsync();
+    }
+
+    private void downloadAndFillEventDetails(final SquareViewHolder castHolder, final Square listItem) {
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + listItem.getFacebookEventId(),
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        Log.d(TAG, "onCompleted: event details ====\n" + response.toString());
+
+                        JSONObject object = response.getJSONObject();
+
+                        if(object == null)
+                        {
+                            Toast.makeText(context, "Facebook ha fallito il download dei dati", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        try {
+
+                            String street;
+                            street = "";
+                            String startTime, endTime, finalTime;
+                            // TODO String picture;
+                            JSONObject location;
+
+                            Date date;
+                            SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                            SimpleDateFormat outgoingStartFormat = new SimpleDateFormat("EEE, d MMM 'at' HH:mm");
+                            SimpleDateFormat outgoingEndFormat = new SimpleDateFormat("EEE, d MMM 'at' HH:mm");
+
+                            Date endDate;
+                            SimpleDateFormat serverEndFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                            {
+                                String jsonTime= object.getString("start_time");
+                                // Il parsing mi restituisce un oggetto Data
+                                date = incomingFormat.parse(jsonTime);
+                                // Il format ritorna una stringa con il formato specificato nel costruttore
+                                startTime = outgoingStartFormat.format(date);
+                                Log.d(TAG, "onCompleted: " + startTime);
+                            }
+
+                            if(object.has("end_time"))
+                            {
+                                String jsonTime = object.getString("end_time");
+                                date = incomingFormat.parse(jsonTime);
+                                endTime = outgoingEndFormat.format(date);
+
+                                endDate = serverEndFormat.parse(jsonTime);
+
+                                String startIncipit = startTime.substring(0, startTime.indexOf(" at "));
+                                String endIncipit = endTime.substring(0,endTime.indexOf(" at "));
+
+                                if(startIncipit.equals(endIncipit))
+                                {
+                                    int stringLength = endTime.length();
+                                    endTime = endTime.substring(stringLength-4, stringLength);
+                                }
+
+                                finalTime = startTime + " to " + endTime;
+                            }else
+                            {
+                                endTime = "";
+                                finalTime = startTime;
+                            }
+
+                            if(object.has("place"))
+                            {
+                                JSONObject place = object.getJSONObject("place");
+                                if(place.has("location")){
+                                    location = place.getJSONObject("location");
+                                    street = location.getString("street").trim();
+                                }
+                            }
+
+                            String website = "www.facebook.com/events/" + listItem.getFacebookEventId();
+
+                            castHolder.facebookSection.setVisibility(View.VISIBLE);
+                            potentialEmptySection(castHolder.facebookLikeCount, "");
+                            potentialEmptySection(castHolder.facebookPhone, "");
+                            potentialEmptySection(castHolder.facebookStreetName, street);
+                            potentialEmptySection(castHolder.facebookWebsite, website);
+                            potentialEmptySection(castHolder.facebookPrice, "");
+
+                            if(finalTime.isEmpty())
+                            {
+                                ((LinearLayout)castHolder.facebookHoursList.getParent()).setVisibility(View.GONE);
+                            }else {
+                                ((LinearLayout)castHolder.facebookHoursList.getParent()).setVisibility(View.VISIBLE);
+                                castHolder.facebookHoursList.removeAllViews();
+                                TextView tv = (TextView) LayoutInflater.from(context).inflate(R.layout.simple_list_item, null);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                Resources r = context.getResources();
+                                int px = (int) TypedValue.applyDimension(
+                                        TypedValue.COMPLEX_UNIT_DIP,
+                                        8,
+                                        r.getDisplayMetrics()
+                                );
+                                params.setMargins(0, 0, px, px);
+                                tv.setLayoutParams(params);
+                                tv.setText(finalTime);
+                                castHolder.facebookHoursList.addView(tv);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).executeAsync();
+    }
+
+    private void potentialEmptySection(TextView v, String value)
+    {
+        if(value.isEmpty()){
+            ((LinearLayout)v.getParent()).setVisibility(View.GONE);
+        }else {
+            ((LinearLayout)v.getParent()).setVisibility(View.VISIBLE);
+        }
+
+        v.setText(value);
+    }
+
     public long getItemId(int position) {
         return position;
     }
@@ -327,12 +608,14 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         ImageView squareFav;
         TextView heartFavs;
 
-        RelativeLayout middleSection;
-
         LinearLayout lowerSectionExpanded;
         TextView lowerSectionViews;
 
         Button editButton;
+
+        LinearLayout facebookSection;
+        TextView facebookStreetName, facebookLikeCount, facebookWebsite, facebookPhone, facebookPrice;
+        LinearLayout facebookHoursList;
 
         public SquareViewHolder(View itemView) {
             super(itemView);
@@ -347,13 +630,21 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
             squareFav = (ImageView) itemView.findViewById(R.id.cardview_profile_square_heart);
 
-            middleSection = (RelativeLayout) itemView.findViewById(R.id.cardview_profile_middle_section);
-
             lowerSectionExpanded = (LinearLayout) itemView.findViewById(R.id.cardview_profile_lower_section_expanded);
 
             heartFavs = (TextView) itemView.findViewById(R.id.carview_profile_heart_favorites);
             lowerSectionViews = (TextView) itemView.findViewById(R.id.lower_section_square_views);
             editButton  = (Button) itemView.findViewById(R.id.lower_section_edit_button);
+
+            // Download da Facebook
+            facebookSection = (LinearLayout) itemView.findViewById(R.id.cardview_profile_facebook_section);
+            facebookStreetName = (TextView) itemView.findViewById(R.id.cardview_profile_facebook_street_name);
+            facebookLikeCount = (TextView) itemView.findViewById(R.id.cardview_profile_facebook_like_number);
+            facebookWebsite = (TextView) itemView.findViewById(R.id.cardview_profile_facebook_website);
+            facebookPhone = (TextView) itemView.findViewById(R.id.cardview_profile_facebook_phone);
+            facebookPrice = (TextView) itemView.findViewById(R.id.cardview_profile_facebook_price_range);
+
+            facebookHoursList = (LinearLayout) itemView.findViewById(R.id.cardview_profile_facebook_list_hours);
 
         }
 

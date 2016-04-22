@@ -1,12 +1,10 @@
-package com.nsqre.insquare.Fragments;
+package com.nsqre.insquare.Fragments.MainContent;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,16 +26,12 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitation;
-import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
@@ -71,7 +65,6 @@ public class SettingsFragment extends Fragment implements
     private TextView facebookConnectButton;
     private TextView googleConnectButton;
     private TextView inSquareDisconnectButton;
-    private TextView appInvitesButton;
 
     private TextView feedbackSendButton;
 
@@ -81,7 +74,6 @@ public class SettingsFragment extends Fragment implements
     private GoogleApiClient gApiClient;
     private GoogleSignInOptions gSo;
     public static final int RC_SIGN_IN = 9001;
-    public static final int REQUEST_INVITE = 9002;
 
     private CallbackManager fbCallbackManager;
     private String fbAccessToken;
@@ -121,27 +113,10 @@ public class SettingsFragment extends Fragment implements
                     .enableAutoManage(getActivity(), this)
                     .addConnectionCallbacks(this)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gSo)
-                    .addApi(AppInvite.API)
                     .build();
         }
 
-        boolean autoLaunchDeepLink = true;
-        AppInvite.AppInviteApi.getInvitation(gApiClient, getActivity(), autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
-                            @Override
-                            public void onResult(AppInviteInvitationResult result) {
-                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
-                                // Because autoLaunchDeepLink = true we don't have to do anything
-                                // here, but we could set that to false and manually choose
-                                // an Activity to launch to handle the deep link here.
-                            }
-                        });
-
-        if(!FacebookSdk.isInitialized()) {
-            FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-        }
-
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         fbCallbackManager = CallbackManager.Factory.create();
 
         profile = InSquareProfile.getInstance(getActivity().getApplicationContext());
@@ -168,8 +143,6 @@ public class SettingsFragment extends Fragment implements
         setupLoginButtons(v);
 
         setupFeedbackButton(v);
-
-        setupAppInvitesButton(v);
 
         setupTutorialButton(v);
 
@@ -251,24 +224,6 @@ public class SettingsFragment extends Fragment implements
 
         username = (TextView) layout.findViewById(R.id.settings_top_username);
         username.setText(InSquareProfile.getUsername());
-    }
-
-    private void setupAppInvitesButton(View layout) {
-        appInvitesButton = (TextView) layout.findViewById(R.id.settings_app_invites);
-
-        appInvitesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                        .setMessage(getString(R.string.invitation_message))
-                        .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-                        .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                        .setCallToActionText(getString(R.string.invitation_cta))
-                        .build();
-                startActivityForResult(intent, REQUEST_INVITE);
-            }
-        });
-
     }
 
     private void setupLoginButtons(View layout)
@@ -374,22 +329,9 @@ public class SettingsFragment extends Fragment implements
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_INVITE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // Check how many invitations were sent and log a message
-                // The ids array contains the unique invitation ids for each invitation sent
-                // (one for each contact select by the user). You can use these for analytics
-                // as the ID will be consistent on the sending and receiving devices.
-                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                Log.d(TAG, getString(R.string.sent_invitations_fmt, ids.length));
-            } else {
-                // Sending failed or it was canceled, show failure message to the user
-                Log.d(TAG, getString(R.string.send_failed));
-            }
 
-        }
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        else if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             googleSignInResult(result); //dalla post parte l'app
         } else {
@@ -508,7 +450,7 @@ public class SettingsFragment extends Fragment implements
                 });
     }
 
-    private void setupTutorialButton(final View layout)
+    private void setupTutorialButton(View layout)
     {
         tutorialButton = (TextView) layout.findViewById(R.id.settings_tutorial);
         tutorialButton.setOnClickListener(
@@ -521,10 +463,7 @@ public class SettingsFragment extends Fragment implements
                         Log.d(TAG, "onClick: showtutorial è " + InSquareProfile.getShowTutorial());
                         //setta showmap tutorial a false
                         BottomNavActivity madre = (BottomNavActivity) getContext();
-                        madre.showTutorial();
-                        Log.d(TAG, "onClick: " + getView().toString());
-                        madre.coordinatorLayout.findViewById(R.id.bottom_nav_bar).setVisibility(View.GONE);
-                        //Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
                     }
                 }
         );

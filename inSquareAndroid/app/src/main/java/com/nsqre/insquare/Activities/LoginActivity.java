@@ -45,7 +45,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
-import com.nsqre.insquare.Fragments.TutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.User;
@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
+        AccessToken.refreshCurrentAccessTokenAsync();
         setContentView(R.layout.activity_login);
 
         // Profilo statico perché non deve cambiare.
@@ -132,7 +133,6 @@ public class LoginActivity extends AppCompatActivity
         mTracker.setScreenName(this.getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bitmap icon = BitmapFactory.decodeResource(getResources(),
                     R.drawable.logo_icon_144);
@@ -144,16 +144,18 @@ public class LoginActivity extends AppCompatActivity
     }
 
     public void launchLoginProcedure() {
+
+        fbCallbackManager = CallbackManager.Factory.create();
+
         if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
             return;
         }else if(!isNetworkAvailable()) {
-            Toast.makeText(LoginActivity.this, "Senza internet nel 2016?... non posso fare niente.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Senza internet nel 2016..? Sono tagliato fuori!", Toast.LENGTH_SHORT).show();
         }
 
         Log.d(TAG, "onCreate: going past launching..?");
-        fbCallbackManager = CallbackManager.Factory.create();
 
         //chiamato quando c'è un successo(o fallimento) della connessione a fb
         LoginManager.getInstance().registerCallback(fbCallbackManager,
@@ -339,7 +341,7 @@ public class LoginActivity extends AppCompatActivity
 
         final String serviceName = "facebook";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, fbAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, fbAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -376,7 +378,7 @@ public class LoginActivity extends AppCompatActivity
     private void googlePostRequest() {
         final String serviceName = "google";
 
-        VolleyManager.getInstance().postLoginToken(serviceName, gAccessToken,
+        VolleyManager.getInstance(getApplicationContext()).postLoginToken(serviceName, gAccessToken,
                 new VolleyManager.VolleyResponseListener() {
                     @Override
                     public void responseGET(Object object) {
@@ -455,6 +457,8 @@ public class LoginActivity extends AppCompatActivity
                     String email = object.getString("email");
                     String gender = object.getString("gender");
                     String id = object.getString("id");
+
+                    AccessToken myToken = AccessToken.getCurrentAccessToken();
 
                     fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
 
@@ -568,7 +572,7 @@ public class LoginActivity extends AppCompatActivity
                         final String feedback = feedbackText.getText().toString().trim();
                         final String activity = this.getClass().getSimpleName();
 
-                        VolleyManager.getInstance().postFeedback(feedback, InSquareProfile.getUserId(), activity,
+                        VolleyManager.getInstance(getApplicationContext()).postFeedback(feedback, InSquareProfile.getUserId(), activity,
                                 new VolleyManager.VolleyResponseListener() {
                                     @Override
                                     public void responseGET(Object object) {

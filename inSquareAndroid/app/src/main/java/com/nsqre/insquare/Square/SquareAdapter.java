@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.nsqre.insquare.Activities.ChatActivity;
-import com.nsqre.insquare.Fragments.MapFragment;
+import com.nsqre.insquare.Fragments.MainContent.MapFragment;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;

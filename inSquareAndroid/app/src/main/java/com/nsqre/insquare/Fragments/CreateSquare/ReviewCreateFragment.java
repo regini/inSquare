@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nsqre.insquare.Activities.CreateIntroActivity;
+import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Utilities.SquareType;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ReviewCreateFragment extends Fragment {
     private static final String TAG = "ReviewCreateFragment";
     private static ReviewCreateFragment instance;
 
-    private CreateIntroActivity father;
+    private CreateSquareActivity father;
 
     View containerView;
     private String id, latitude, longitude;
@@ -50,10 +51,10 @@ public class ReviewCreateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        this.father = (CreateIntroActivity) getActivity();
+        this.father = (CreateSquareActivity) getActivity();
 
         // Inflate the layout for this fragment
-        final ChooseCreateFragment.SQUARE_TYPE requestType = father.squareType;
+        final SquareType requestType = father.squareType;
 
         if(requestType != null)
         {
@@ -77,7 +78,7 @@ public class ReviewCreateFragment extends Fragment {
             String facebookId, String latitude, String longitude
     )
     {
-        father.setupResults(name, description, latitude, longitude, id, "");
+        father.setupResults(name, description, latitude, longitude, facebookId, "");
 
         this.id = facebookId;
         this.latitude = latitude;
@@ -85,6 +86,11 @@ public class ReviewCreateFragment extends Fragment {
 
         this.setupShopTopSection(name, price);
         this.setupShopLowerSection(description, likeCount, website, phone, street, hours);
+        if(likeCount.isEmpty() && website.isEmpty() && phone.isEmpty() && street.isEmpty() && hours.isEmpty()){
+            showDetailsSection(false);
+        }else {
+            showDetailsSection(true);
+        }
     }
 
     private void setupShopLowerSection(String description, String likeCount, String website, String phone, String streetName, List<String> hours)
@@ -101,7 +107,7 @@ public class ReviewCreateFragment extends Fragment {
         {
             ((LinearLayout)hoursList.getParent()).setVisibility(View.GONE);
         }else {
-            ((LinearLayout)hoursList.getParent()).setVisibility(View.GONE);
+            ((LinearLayout)hoursList.getParent()).setVisibility(View.VISIBLE);
             // Puliamo il layout e prepariamolo ad essere riempito
             hoursList.removeAllViews();
             for(String s: hours)
@@ -138,7 +144,7 @@ public class ReviewCreateFragment extends Fragment {
 
         squareName.setText(name);
 
-        squarePrice.setVisibility(View.GONE);
+        potentialEmptySection(squarePrice, priceRange);
 
         String initials = "";
         String[] words = name.split("\\s+");
@@ -173,21 +179,23 @@ public class ReviewCreateFragment extends Fragment {
         this.id = facebookId;
         this.latitude = latitude;
         this.longitude = longitude;
-        setupEventTopSection(name);
-        setupEventLowerSection(description, time, street, website);
+        setupEventTopSection(name,description);
+        setupEventLowerSection(time, street, website);
+        if(time.isEmpty() && street.isEmpty() && website.isEmpty())
+        {
+            showDetailsSection(false);
+        }else {
+            showDetailsSection(true);
+        }
     }
 
-    private void setupEventLowerSection(String description, String time, String street, String website)
+    private void setupEventLowerSection(String time, String street, String website)
     {
-        squareDescription = (TextView) containerView.findViewById(R.id.review_description_text);
-
         TextView squareWebsite = (TextView) containerView.findViewById(R.id.review_website);
         TextView squareStreet = (TextView) containerView.findViewById(R.id.review_street_name);
 
         potentialEmptySection(squareStreet, street);
-
         potentialEmptySection(squareWebsite, website);
-        potentialEmptySection(squareDescription, description);
 
         LinearLayout timeSection = (LinearLayout) containerView.findViewById(R.id.review_list_hours);
         if(time.isEmpty())
@@ -212,16 +220,54 @@ public class ReviewCreateFragment extends Fragment {
 
     }
 
-    private void setupEventTopSection(String name)
+    private void setupEventTopSection(String name, String description)
     {
+        setupPlaceMainInfo(name, description);
+    }
+
+
+    private void potentialEmptySection(TextView v, String value)
+    {
+        if(value.isEmpty()){
+            ((LinearLayout)v.getParent()).setVisibility(View.GONE);
+        }else {
+            ((LinearLayout)v.getParent()).setVisibility(View.VISIBLE);
+        }
+
+        v.setText(value);
+    }
+
+    private void showDetailsSection(boolean show)
+    {
+        LinearLayout details = (LinearLayout) containerView.findViewById(R.id.review_details);
+
+        if(show)
+        {
+            details.setVisibility(View.VISIBLE);
+        }else {
+            details.setVisibility(View.GONE);
+        }
+    }
+
+    public void setupPlaceInfo(String name, String description, String squareLatitude, String squareLongitude) {
+        father.setupResults(name, description, squareLatitude, squareLongitude, "", "");
+        this.latitude = squareLatitude;
+        this.longitude = squareLongitude;
+
+        setupPlaceMainInfo(name, description);
+        // Nascondiamo tutto il resto
+        showDetailsSection(false);
+    }
+
+    private void setupPlaceMainInfo(String name, String description) {
         TextView squareInitials =  (TextView) containerView.findViewById(R.id.review_square_initials);
         squareName = (TextView) containerView.findViewById(R.id.review_square_name);
         TextView squarePrice = (TextView) containerView.findViewById(R.id.review_square_price_range);
+        // No Price Range per gli eventi e luoghi
+        potentialEmptySection(squarePrice, "");
 
         squareName.setText(name);
 
-        // No Price Range per gli eventi
-        squarePrice.setVisibility(View.GONE);
 
         String initials = "";
         String[] words = name.split("\\s+");
@@ -237,17 +283,8 @@ public class ReviewCreateFragment extends Fragment {
         }
 
         squareInitials.setText(initials);
-    }
 
-
-    private void potentialEmptySection(TextView v, String value)
-    {
-        if(value.isEmpty()){
-            ((LinearLayout)v.getParent()).setVisibility(View.GONE);
-        }else {
-            ((LinearLayout)v.getParent()).setVisibility(View.VISIBLE);
-        }
-
-        v.setText(value);
+        squareDescription = (TextView) containerView.findViewById(R.id.review_description_text);
+        potentialEmptySection(squareDescription, description);
     }
 }

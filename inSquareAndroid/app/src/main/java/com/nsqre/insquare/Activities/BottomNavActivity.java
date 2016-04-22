@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -30,11 +31,12 @@ import android.widget.TextView;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.nsqre.insquare.Fragments.BlankFragment;
-import com.nsqre.insquare.Fragments.FavSquaresFragment;
-import com.nsqre.insquare.Fragments.MapFragment;
-import com.nsqre.insquare.Fragments.ProfileFragment;
-import com.nsqre.insquare.Fragments.RecentSquaresFragment;
+import com.nsqre.insquare.Fragments.MainContent.FavSquaresFragment;
+import com.nsqre.insquare.Fragments.MainContent.MapFragment;
+import com.nsqre.insquare.Fragments.MainContent.ProfileFragment;
+import com.nsqre.insquare.Fragments.MainContent.RecentSquaresFragment;
 import com.nsqre.insquare.Fragments.SettingsFragment;
+import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
 import com.nsqre.insquare.Message.Message;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Services.ChatService;
@@ -85,6 +87,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_nav);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Fade fade = new Fade();
             fade.setDuration(1000);
@@ -168,8 +171,23 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         super.onStop();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SettingsFragment.RC_SIGN_IN || requestCode == SettingsFragment.REQUEST_INVITE) {
+            SettingsFragment fragment = SettingsFragment.newInstance();
+            fragment.onActivityResult(requestCode, resultCode, data);
+        } else if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
+        {
+            MapFragment.newInstance().handleSquareCreation(resultCode, data);
+        }else
+        {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void calculateNotifications() {
         if(bottomNavigation != null) {
+            InSquareProfile.getInstance(getApplicationContext());
             SharedPreferences notificationPreferences = getSharedPreferences("NOTIFICATION_MAP", MODE_PRIVATE);
             int recents = 0;
             int favourites = 0;
@@ -261,17 +279,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                     }
                 });
         calculateNotifications();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
-        {
-            MapFragment.newInstance().handleSquareCreation(resultCode, data);
-        }else
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     public static String setupInitials(String words) {
@@ -368,5 +375,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     @Override
     public void onBackPressed() {
         this.finishAffinity();
+    }
+
+    public void showTutorial() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.bottom_nav_coordinator_layout, new TutorialFragment());
+        fragmentTransaction.commit();
     }
 }
