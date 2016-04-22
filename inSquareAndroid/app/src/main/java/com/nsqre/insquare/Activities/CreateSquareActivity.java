@@ -2,17 +2,24 @@ package com.nsqre.insquare.Activities;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.nsqre.insquare.Fragments.CreateSquare.ChooseCreateFragment;
@@ -54,6 +61,15 @@ public class CreateSquareActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.logo_icon_144);
+            ActivityManager.TaskDescription taskDesc =
+                    new ActivityManager.TaskDescription(getString(R.string.app_name),
+                            icon, Color.parseColor("#D32F2F"));
+            setTaskDescription(taskDesc);
+        }
 
         setContentView(R.layout.activity_crea_square);
 
@@ -217,6 +233,14 @@ public class CreateSquareActivity extends AppCompatActivity {
                         {
                             --position;
                             vpager.setCurrentItem(position, true);
+                            if(position == 0) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    Window window = getWindow();
+                                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+                                    window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccentDark));
+                                }
+                            }
                         }
                     }
                 }
