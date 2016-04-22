@@ -3,6 +3,7 @@ package com.nsqre.insquare.Fragments.MainContent;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -280,24 +282,7 @@ public class SettingsFragment extends Fragment implements
         inSquareDisconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(AccessToken.getCurrentAccessToken() != null) {
-                    LoginManager.getInstance().logOut();
-                }
-                // Gestiamo Google
-                OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
-                boolean result = opr.isDone();
-                if(result)
-                {
-                    Auth.GoogleSignInApi.signOut(gApiClient).setResultCallback(
-                            new ResultCallback<Status>() {
-                                @Override
-                                public void onResult(@NonNull Status status) {
-                                    Log.d(TAG, "onResult: Successfully logged out!");
-                                }
-                            }
-                    );
-                }
-                InSquareProfile.clearProfileCredentials(c);
+                handleLogout(c);
             }
         });
 
@@ -398,6 +383,44 @@ public class SettingsFragment extends Fragment implements
             });
         }
 
+    }
+
+    private void handleLogout(final Context c) {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(c);
+
+        builder.setTitle("Attenzione!")
+                .setMessage("Sei sicuro di volerti disconnettere?");
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut();
+                        }
+                        // Gestiamo Google
+                        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
+                        boolean result = opr.isDone();
+                        if(result)
+                        {
+                            Auth.GoogleSignInApi.signOut(gApiClient).setResultCallback(
+                                    new ResultCallback<Status>() {
+                                        @Override
+                                        public void onResult(@NonNull Status status) {
+                                            Log.d(TAG, "onResult: Successfully logged out!");
+                                        }
+                                    }
+                            );
+                        }
+                        InSquareProfile.clearProfileCredentials(c);
+                    }
+                });
+        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+    });
+
+        builder.create().show();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
