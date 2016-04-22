@@ -33,7 +33,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
 
-        android:src="@drawable/tutorial_pins"
+        android:src="@drawable/tutorial_logos"
 
         app:layout_heightPercent="50%"
         app:layout_widthPercent="75%"
