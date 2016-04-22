@@ -1,33 +1,23 @@
 package com.nsqre.insquare.Fragments.Tutorial;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cleveroad.slidingtutorial.PageFragment;
-import com.cleveroad.slidingtutorial.TransformItem;
 import com.nsqre.insquare.R;
 
 /**
  */
-public class FourthTutorialFragment extends PageFragment {
+public class FourthTutorialFragment extends Fragment {
 
+    @Nullable
     @Override
-    protected int getLayoutResId() {
-        // layout id of fragment
-        return R.layout.fragment_fourth_tutorial;
-    }
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_fourth_tutorial, container, false);
 
-    @Override
-    protected TransformItem[] provideTransformItems() {
-        // list of transformation items
-        return new TransformItem[]{
-                //new TransformItem(R.id.ivFirstImage, true, 20),
-                new TransformItem(R.id.ivSecondImage, false, 6)
-        };
+        return v;
     }
 }

@@ -768,7 +768,7 @@ public class InSquareProfile {
                 });
     }
 
-    public static boolean getShowTutorial() { return profile.showTutorial;  }
+    public static boolean showTutorial() { return profile.showTutorial;  }
 
     public static void setShowTutorial(boolean showTutorial, Context context) {
         profile.showTutorial = showTutorial;

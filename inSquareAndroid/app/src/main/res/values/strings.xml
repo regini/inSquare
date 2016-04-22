@@ -138,15 +138,17 @@
 
     <!--Tutorial-->
     <string name="tutorial_title1">Cos\'è inSquare?</string>
-    <string name="tutorial_title2">Cosa sono i preferiti?</string>
-    <string name="tutorial_title3">Come creo la mia Square?</string>
-    <string name="tutorial_title4">Collegati con i tuoi account social!</string>
-    <string name="tutorial_caption1">Cambiare da string.xml</string>
-    <string name="tutorial_caption2">Cambiare da string.xml</string>
-    <string name="tutorial_caption3">Cambiare da string.xml</string>
-    <string name="tutorial_caption4">Cambiare da string.xml</string>
+    <string name="tutorial_title2">Square Preferite</string>
+    <string name="tutorial_title3">Crea la tua Square!</string>
+    <string name="tutorial_title4">Scopri i posti intorno a te</string>
+    <string name="tutorial_caption1">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate. E’ la soluzione più semplice per metterti in contatto direttamente con chi si trova sul posto, e sapere in tempo reale che cosa sta succedendo.</string>
+    <string name="tutorial_caption2">Aggiungendo una Square come <b>preferita</b>, le notifiche push ti terrano aggiornato in tempo reale, e sarai connesso in tempo reale con i posti che ti interessano</string>
+    <string name="tutorial_caption3">È semplicissimo: se tieni premuto sulla mappa, si aprirà il menu di creazione!\n\nNel menu potrai inserire i dati e creare una Square manualmente, o collegarla a Facebook tramite il link ad un evento o una pagina</string>
+    <string name="tutorial_caption4">Grazie ai pin di colore diverso puoi individuare facilmente le Square: rosso indica un luogo, viola un evento, e verde un\'attività commerciale.\n\nN.B. le chat degli eventi si cancellano automaticamente dopo 24h</string>
     <string name="create_square_button_date">Data</string>
     <string name="create_square_button_time">Ora</string>
+    <string name="tutorial_salta">Salta</string>
+    <string name="tutorial_fine">Fine</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>

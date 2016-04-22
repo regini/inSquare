@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -45,9 +44,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
-import com.nsqre.insquare.Fragments.Tutorial.TutorialFragment;
-import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.User.User;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
 import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
@@ -114,11 +112,11 @@ public class LoginActivity extends AppCompatActivity
         // Profilo statico perché non deve cambiare.
         // Singleton -> non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
-        Log.d(TAG, "onCreate: profile show tutorial is " + profile.getShowTutorial());
+        Log.d(TAG, "onCreate: profile show tutorial is " + profile.showTutorial());
 
         try {
-            if (InSquareProfile.getShowTutorial()) {
-                replaceTutorialFragment();
+            if (InSquareProfile.showTutorial()) {
+                showTutorial();
             } else {
                 launchLoginProcedure();
             }
@@ -182,8 +180,8 @@ public class LoginActivity extends AppCompatActivity
                     }
                 });
 
-        gLoginButton = (Button) findViewById(R.id.google_login_button);
-        fbLoginButton = (Button) findViewById(R.id.fb_login_button);
+        gLoginButton = (Button) findViewById(R.id.login_google_button);
+        fbLoginButton = (Button) findViewById(R.id.login_fb_button);
         // Permessi da richiedere durante il login
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -634,10 +632,9 @@ public class LoginActivity extends AppCompatActivity
         return true;
     }
 
-    public void replaceTutorialFragment() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.login_conteiner, new TutorialFragment());
-        fragmentTransaction.commit();
+    public void showTutorial() {
+        Intent tutorialIntent = new Intent(LoginActivity.this, TutorialActivity.class);
+        startActivity(tutorialIntent);
     }
 
 }

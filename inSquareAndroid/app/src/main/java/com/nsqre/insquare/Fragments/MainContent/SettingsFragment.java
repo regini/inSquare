@@ -39,7 +39,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.nsqre.insquare.Activities.BottomNavActivity;
+import com.nsqre.insquare.Activities.TutorialActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DownloadImageTask;
@@ -543,15 +543,15 @@ public class SettingsFragment extends Fragment implements
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d(TAG, "onClick: tutorialbutton");
                         //InSquareProfile profile = InSquareProfile.getInstance(getContext());
                         InSquareProfile.setShowTutorial(true, getContext());
-                        Log.d(TAG, "onClick: showtutorial è " + InSquareProfile.getShowTutorial());
                         //setta showmap tutorial a false
-                        BottomNavActivity madre = (BottomNavActivity) getContext();
+                        /*BottomNavActivity madre = (BottomNavActivity) getContext();
                         madre.showTutorial();
                         Log.d(TAG, "onClick: " + getView().toString());
-                        madre.coordinatorLayout.findViewById(R.id.bottom_nav_bar).setVisibility(View.GONE);
+                        madre.coordinatorLayout.findViewById(R.id.bottom_nav_bar).setVisibility(View.GONE);*/
+                        Intent tutorialIntent = new Intent(getContext(), TutorialActivity.class);
+                        startActivity(tutorialIntent);
                         //Snackbar.make(madre.coordinatorLayout, "Rivedrai il tutorial riavviando l'app", Snackbar.LENGTH_SHORT).show();
                     }
                 }

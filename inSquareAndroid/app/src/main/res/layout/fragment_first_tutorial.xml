@@ -6,69 +6,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="ContentDescription"
-    tools:background="@android:color/holo_orange_dark">
+    tools:background="@color/md_blue_grey_700"
+    >
 
     <ImageView
-        android:id="@+id/ivFirstImage"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-
+        android:layout_centerHorizontal="true"
         android:src="@drawable/tutorial_logo"
 
-        app:layout_heightPercent="50%"
+        app:layout_heightPercent="35%"
         app:layout_widthPercent="75%"
-        app:layout_marginTopPercent="0%"
-        app:layout_marginRightPercent="13%"/>
+        app:layout_marginTopPercent="15%"
+        />
 
-    <ImageView
-        android:id="@+id/ivSecondImage"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-
-        android:src="@drawable/tutorial_messaging"
-
-        app:layout_heightPercent="50%"
-        app:layout_widthPercent="75%"
-        app:layout_marginTopPercent="30%"
-        app:layout_marginRightPercent="12%"/>
-
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-
-
-        android:text="@string/tutorial_title1"
-        android:textColor="@android:color/white"
-        android:textSize="18dp"
-
-        app:layout_heightPercent="15%"
-        app:layout_marginBottomPercent="17%"
-        app:layout_marginLeftPercent = "5%"
-        app:layout_widthPercent="100%"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:text="@string/tutorial_title1"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/title_text_size"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed"
+        app:layout_marginBottomPercent="45%"
+        />
 
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:text="@string/tutorial_caption1"
         android:textColor="@android:color/white"
-        android:textSize="16dp"
+        android:textSize="@dimen/caption_text_size"
+        android:fontFamily="sans-serif-condensed-light"
 
-        app:layout_heightPercent="15%"
-        app:layout_marginBottomPercent="12%"
-        app:layout_marginLeftPercent = "15%"
-        app:layout_widthPercent="100%"/>
+        app:layout_marginBottomPercent="15%"
+        app:layout_marginLeftPercent="10%"
+        app:layout_marginStartPercent="10%"
+        app:layout_marginRightPercent="10%"
+        app:layout_marginEndPercent="10%"
+        />
+
 </android.support.percent.PercentRelativeLayout>
