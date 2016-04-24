@@ -2,14 +2,19 @@ package com.nsqre.insquare.Square;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +35,8 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.nsqre.insquare.Activities.BottomNavActivity;
+import com.nsqre.insquare.Activities.ChatActivity;
+import com.nsqre.insquare.Fragments.MainContent.MapFragment;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.DialogHandler;
@@ -89,17 +96,8 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         setupHeart(castHolder, listItem);
 
         final String squareName = listItem.getName();
-        castHolder.squareName.setText(squareName);
-        castHolder.squareActivity.setText(listItem.formatTime());
-        // Per sottolineare l'inizio
-        String description = listItem.getDescription().trim();
-        if(!description.isEmpty())
-        {
-            castHolder.squareDescription.setText(listItem.getDescription());
-        }else
-        {
-            castHolder.squareDescription.setVisibility(View.GONE);
-        }
+        setupTopSection(castHolder, listItem);
+
         setupLeftSection(castHolder, squareName);
 
         castHolder.lowerSectionViews.setText("" + listItem.getViews());
@@ -137,6 +135,51 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             setupFacebookSection(castHolder, SquareType.TYPE_SHOP, listItem);
         }
 
+    }
+
+    private void setupTopSection(final SquareViewHolder castHolder, final Square square) {
+        String squareName = square.getName();
+        castHolder.squareName.setText(squareName);
+        castHolder.squareActivity.setText(square.formatTime());
+        String description = square.getDescription().trim();
+        if(!description.isEmpty())
+        {
+            castHolder.squareDescription.setText(square.getDescription());
+        }else
+        {
+            castHolder.squareDescription.setVisibility(View.GONE);
+        }
+
+        ((LinearLayout)castHolder.squareName.getParent().getParent()).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra(MapFragment.SQUARE_TAG, square);
+                        intent.putExtra(BottomNavActivity.INITIALS_TAG, castHolder.squareInitials.getText().toString());
+                        int position = castHolder.getAdapterPosition() % (BottomNavActivity.backgroundColors.length);
+                        intent.putExtra(BottomNavActivity.INITIALS_COLOR_TAG, BottomNavActivity.backgroundColors[position]);
+
+                        SharedPreferences sharedPreferences = context.getSharedPreferences(NOTIFICATION_MAP, Context.MODE_PRIVATE);
+                        if (sharedPreferences.contains(square.getId())) {
+                            sharedPreferences.edit().remove(square.getId()).apply();
+                            sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
+                        }
+
+                        BottomNavActivity madre = (BottomNavActivity) context;
+                        Pair namePair = new Pair<>(v.findViewById(R.id.cardview_profile_square_name),
+                                context.getString(R.string.transition_name_square_name));
+                        Pair initialsPair = new Pair<>(v.findViewById(R.id.cardview_profile_left_section),
+                                context.getString(R.string.transition_name_square_circle));
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                madre , namePair, initialsPair
+
+                        );
+
+                        ActivityCompat.startActivity(madre, intent, options.toBundle());
+                    }
+                }
+        );
     }
 
     private void handleDelete(final Square listItem, final int position) {

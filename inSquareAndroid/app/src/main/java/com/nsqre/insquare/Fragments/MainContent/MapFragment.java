@@ -252,18 +252,20 @@ public class MapFragment extends Fragment
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if(getContext() != null) {
+            if (ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            this.requestPermissions(PERMISSIONS,
-                    REQUEST_COARSE_LOCATION);
-            this.requestPermissions(PERMISSIONS,
-                    REQUEST_FINE_LOCATION);
-            return;
+                this.requestPermissions(PERMISSIONS,
+                        REQUEST_COARSE_LOCATION);
+                this.requestPermissions(PERMISSIONS,
+                        REQUEST_FINE_LOCATION);
+                return;
+            }
+            setupLocation();
         }
-        setupLocation();
     }
 
     private void setupLocation()
