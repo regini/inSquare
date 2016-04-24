@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import com.nsqre.insquare.Fragments.BlankFragment;
 import com.nsqre.insquare.Fragments.Tutorial.FirstTutorialFragment;
@@ -32,7 +33,8 @@ import com.pixelcan.inkpageindicator.InkPageIndicator;
 public class TutorialActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private ViewPager vpager;
-    private Button skipButton;
+    private Button skipButton, endButton;
+    ImageButton nextButton;
     private TutorialPagerAdapter pagerAdapter;
     private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
@@ -42,16 +44,18 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         setContentView(R.layout.activity_tutorial);
 
         skipButton = (Button) findViewById(R.id.review_button_skip);
-        skipButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        InSquareProfile.setShowTutorial(false, getApplicationContext());
-                        finish();
-                    }
-                }
-        );
+        View.OnClickListener endClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InSquareProfile.setShowTutorial(false, getApplicationContext());
+                finish();
+            }
+        };
+        skipButton.setOnClickListener( endClickListener );
+        endButton = (Button) findViewById(R.id.review_button_fine);
+        endButton.setOnClickListener(endClickListener);
 
+        nextButton = (ImageButton) findViewById(R.id.review_button_next);
 
         vpager = (ViewPager) findViewById(R.id.review_viewpager);
         pagerAdapter = new TutorialPagerAdapter(getSupportFragmentManager());
@@ -64,20 +68,32 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, float positionOffset, int positionOffsetPixels) {
         int nextColorPosition = position + 1;
         if (nextColorPosition >= pagerAdapter.getCount()) {
             nextColorPosition %= pagerAdapter.getCount();
         }
         if (position < (vpager.getAdapter().getCount() - 1)) {
-            skipButton.setText(R.string.tutorial_salta);
+            skipButton.setVisibility(View.VISIBLE);
+            endButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.VISIBLE);
+            nextButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            vpager.setCurrentItem(position+1, true);
+                        }
+                    }
+            );
 
             int pageColor = getPageColor(position);
             vpager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, pageColor, getPageColor(nextColorPosition)));
             ((FrameLayout)vpager.getParent()).setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, pageColor, getPageColor(nextColorPosition)));
             changeStatusBarColor(position, positionOffset, nextColorPosition);
         } else if (position == pagerAdapter.getCount() - 1) {
-            skipButton.setText(R.string.tutorial_fine);
+            skipButton.setVisibility(View.GONE);
+            endButton.setVisibility(View.VISIBLE);
+            nextButton.setVisibility(View.GONE);
 
             int pageColor = getPageColor(position);
             vpager.setBackgroundColor(getPageColor(pageColor));

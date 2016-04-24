@@ -141,14 +141,15 @@
     <string name="tutorial_title2">Square Preferite</string>
     <string name="tutorial_title3">Crea la tua Square!</string>
     <string name="tutorial_title4">Scopri i posti intorno a te</string>
-    <string name="tutorial_caption1">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate. E’ la soluzione più semplice per metterti in contatto direttamente con chi si trova sul posto, e sapere in tempo reale che cosa sta succedendo.</string>
+    <string name="tutorial_caption1">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate. \nE’ la soluzione <i>più semplice</i> per metterti in contatto direttamente con chi si trova sul posto, e sapere <b>in tempo reale</b> che cosa sta succedendo.</string>
     <string name="tutorial_caption2">Aggiungendo una Square come <b>preferita</b>, le notifiche push ti terrano aggiornato in tempo reale, e sarai connesso in tempo reale con i posti che ti interessano</string>
-    <string name="tutorial_caption3">È semplicissimo: se tieni premuto sulla mappa, si aprirà il menu di creazione!\n\nNel menu potrai inserire i dati e creare una Square manualmente, o collegarla a Facebook tramite il link ad un evento o una pagina</string>
-    <string name="tutorial_caption4">Grazie ai pin di colore diverso puoi individuare facilmente le Square: rosso indica un luogo, viola un evento, e verde un\'attività commerciale.\n\nN.B. le chat degli eventi si cancellano automaticamente dopo 24h</string>
+    <string name="tutorial_caption3">È semplicissimo: se <b>tieni premuto</b> sulla mappa, si aprirà il menu di creazione\nNel menu potrai inserire i dati e creare una Square manualmente, o <b>collegarla a Facebook</b> tramite il link ad un evento o una pagina</string>
+    <string name="tutorial_caption4">Grazie ai pin di colore diverso puoi individuare facilmente le Square: <b>rosso</b> indica un luogo, <b>viola</b> un evento, e <b>verde</b> un\'attività commerciale.\n<i>N.B. le chat degli eventi si cancellano automaticamente dopo 24h</i></string>
     <string name="create_square_button_date">Data</string>
     <string name="create_square_button_time">Ora</string>
     <string name="tutorial_salta">Salta</string>
     <string name="tutorial_fine">Fine</string>
+    <string name="review_fine">Fine</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>

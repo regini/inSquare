@@ -8,14 +8,13 @@
     android:background="@color/lightGrey"
     >
 
-    <android.support.v7.widget.CardView
+    <FrameLayout
         android:id="@+id/cardview_square"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardElevation="0dp"
-        app:cardCornerRadius="0dp"
         android:transitionName="@string/transition_name_square_row"
+        android:fillBefore="true"
         >
 
         <RelativeLayout
@@ -141,5 +140,5 @@
             android:layout_gravity="bottom"
             />
 
-    </android.support.v7.widget.CardView>
+    </FrameLayout>
 </LinearLayout>

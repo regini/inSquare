@@ -13,12 +13,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -74,7 +74,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         setupLeftSection(castHolder, squareName);
 
-        castHolder.itemView.setOnClickListener(
+        castHolder.squareRowLayout.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -89,7 +89,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                             sharedPreferences.edit().remove(listItem.getId()).apply();
                             sharedPreferences.edit().putInt("squareCount", sharedPreferences.getInt("squareCount", 0) - 1).apply();
                         }
-//                        context.startActivity(intent);
 
                         // ====
                         BottomNavActivity madre = (BottomNavActivity) context;
@@ -285,7 +284,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     public static class SquareViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout squareCardBackground;
-        CardView squareCardView;
+        FrameLayout squareRowLayout;
         TextView squareInitials;
         public TextView squareName;
         TextView squareActivity;
@@ -298,7 +297,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
             squareCardBackground = (LinearLayout) itemView.findViewById(R.id.cardview_row);
 
-            squareCardView = (CardView) itemView.findViewById(R.id.cardview_square);
+            squareRowLayout = (FrameLayout) itemView.findViewById(R.id.cardview_square);
             squareName = (TextView) itemView.findViewById(R.id.cardview_square_name);
             squareActivity = (TextView) itemView.findViewById(R.id.cardview_square_last_activity);
             squareNotifications = (ImageView) itemView.findViewById(R.id.cardview_square_notification_counter);

@@ -274,7 +274,6 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {
         if(InSquareProfile.isFav(listItem.getId())){
-//            castHolder.squareFav.setImageResource(R.drawable.heart_black);
             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
         }
 
@@ -285,12 +284,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         if(InSquareProfile.isFav(listItem.getId()))
                         {
                             favouriteSquare(Request.Method.DELETE, listItem);
-//                            castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                             castHolder.squareFav.setImageResource(R.drawable.heart_border_black);
                         }else
                         {
                             favouriteSquare(Request.Method.POST, listItem);
-//                            castHolder.squareFav.setImageResource(R.drawable.heart_black);
                             castHolder.squareFav.setImageResource(R.drawable.like_filled_96);
                         }
                     }

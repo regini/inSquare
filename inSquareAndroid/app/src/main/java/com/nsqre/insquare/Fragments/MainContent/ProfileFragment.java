@@ -93,8 +93,6 @@ public class ProfileFragment extends Fragment implements
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         squaresRecyclerView.setLayoutManager(linearLayoutManager);
 
-
-
         adapterOwned = new RecyclerProfileSquareAdapter(getContext(), InSquareProfile.getOwnedSquaresList());
         squaresRecyclerView.setAdapter(adapterOwned);
 
