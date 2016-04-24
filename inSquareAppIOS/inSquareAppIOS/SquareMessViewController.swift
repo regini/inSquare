@@ -399,6 +399,7 @@ extension SquareMessViewController {
     func addMessage(senderId: String, sender: String, date: NSDate, messageContent: String)
     {
         let message = JSQMessage(senderId: senderId, displayName: sender, text: messageContent)
+        
         self.messages += [message]
         //RIGA SOTO INUTILE
         let mee = JSQMessage(senderId: senderId, senderDisplayName: sender, date: date, text: messageContent)
@@ -572,7 +573,7 @@ extension SquareMessViewController {
     override func didPressSendButton(button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: NSDate!) {
         let message = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, text: text)
         print("SQMVC, DATE DEVE ESSERE DIVERSA DA NIL: \(date)")
-        
+        //let mes = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, media: JSQPhotoMediaItem(image: insquareMapPin))
         self.messages += [message]
         self.sendMessageToSquare(message)
         self.finishSendingMessage()

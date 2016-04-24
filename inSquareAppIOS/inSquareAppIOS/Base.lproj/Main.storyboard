@@ -106,9 +106,9 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="88i-NC-Js0">
-                                                    <rect key="frame" x="333" y="7" width="32" height="30"/>
-                                                    <state key="normal" title="Button" image="Chat Filled-50.png"/>
+                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="88i-NC-Js0">
+                                                    <rect key="frame" x="338" y="11" width="22" height="22"/>
+                                                    <state key="normal" title="&gt;"/>
                                                     <connections>
                                                         <action selector="goInSquare:" destination="9am-Kd-0jo" eventType="touchUpInside" id="y4M-gr-ocq"/>
                                                     </connections>
@@ -119,10 +119,13 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPin-01.png" translatesAutoresizingMaskIntoConstraints="NO" id="izO-sO-wjL">
-                                                    <rect key="frame" x="16" y="0.0" width="42" height="43"/>
+                                                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPinTrace3.png" translatesAutoresizingMaskIntoConstraints="NO" id="izO-sO-wjL">
+                                                    <rect key="frame" x="23" y="4" width="35" height="36"/>
                                                 </imageView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailingMargin" secondItem="88i-NC-Js0" secondAttribute="trailing" constant="5" id="3yn-Ar-MiZ"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="squareActive" destination="epP-ak-gaB" id="mh7-iO-TVH"/>
@@ -295,18 +298,15 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPin-01.png" translatesAutoresizingMaskIntoConstraints="NO" id="r6A-WT-BbD">
-                                                    <rect key="frame" x="13" y="0.0" width="42" height="43"/>
-                                                </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Colosseo" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="laT-7S-VQY">
                                                     <rect key="frame" x="63" y="7" width="259" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uO1-vn-2nQ">
+                                                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uO1-vn-2nQ">
                                                     <rect key="frame" x="330" y="7" width="32" height="30"/>
-                                                    <state key="normal" title="Button" image="Chat Filled-50.png"/>
+                                                    <state key="normal" title="&gt;"/>
                                                     <connections>
                                                         <action selector="goInSquare:" destination="26a-5j-5td" eventType="touchUpInside" id="qki-6G-JiY"/>
                                                     </connections>
@@ -317,7 +317,13 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPinTrace3.png" translatesAutoresizingMaskIntoConstraints="NO" id="r6A-WT-BbD">
+                                                    <rect key="frame" x="19" y="4" width="36" height="36"/>
+                                                </imageView>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailingMargin" secondItem="uO1-vn-2nQ" secondAttribute="trailing" constant="5" id="HGV-MI-kbC"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="squareActive" destination="nWQ-It-ZYT" id="rKt-Jv-idG"/>
@@ -511,18 +517,15 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPin-01.png" translatesAutoresizingMaskIntoConstraints="NO" id="rzO-iW-hhg">
-                                                            <rect key="frame" x="13" y="0.0" width="42" height="43"/>
-                                                        </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Colosseo" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xi2-Nz-dnQ">
                                                             <rect key="frame" x="63" y="7" width="259" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zI4-F8-clu">
+                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zI4-F8-clu">
                                                             <rect key="frame" x="330" y="7" width="32" height="30"/>
-                                                            <state key="normal" title="Button" image="Chat Filled-50.png"/>
+                                                            <state key="normal" title="&gt;"/>
                                                             <connections>
                                                                 <action selector="goInSquare:" destination="Wv9-UQ-ln7" eventType="touchUpInside" id="Lc0-SU-Bec"/>
                                                             </connections>
@@ -533,7 +536,13 @@
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="mapPinTrace3.png" translatesAutoresizingMaskIntoConstraints="NO" id="rzO-iW-hhg">
+                                                            <rect key="frame" x="21" y="4" width="34" height="35"/>
+                                                        </imageView>
                                                     </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="trailingMargin" secondItem="zI4-F8-clu" secondAttribute="trailing" constant="5" id="9qt-0i-vlK"/>
+                                                    </constraints>
                                                 </tableViewCellContentView>
                                                 <connections>
                                                     <outlet property="squareActive" destination="qYd-gm-Qdf" id="CoK-9T-3Dk"/>
@@ -968,7 +977,7 @@
         <image name="Info-50.png" width="50" height="50"/>
         <image name="Like-50.png" width="50" height="50"/>
         <image name="logoApp-01.png" width="1320" height="339"/>
-        <image name="mapPin-01.png" width="107" height="118"/>
+        <image name="mapPinTrace3.png" width="109" height="120"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="s5O-dI-Wu1"/>

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F1076DE1CCC5B7A0069664C /* TableViewIconPin.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */; };
 		1F13D6061CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
 		1F13D6071CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
 		1F13D6081CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
@@ -174,6 +175,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TableViewIconPin.png; sourceTree = "<group>"; };
 		1F13D6051CC9167700C86727 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtension.swift; sourceTree = "<group>"; };
 		1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 		737EE8031C56F6FA00AE8CCF /* IMG */ = {
 			isa = PBXGroup;
 			children = (
+				1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */,
 				73F0CADA1C8F754B00185E35 /* mapPinTrace.png */,
 				735A88EB1C8B925E003FED1F /* opponentAvatar-01.png */,
 				73E5CD1E1C887D1D00597E2A /* Like Filled-50(1).png */,
@@ -602,6 +605,7 @@
 				73F0CAE31C8F782E00185E35 /* mapTabSelected2.png in Resources */,
 				73403E5A1C6FC76F00513B80 /* logoApp-01.png in Resources */,
 				737EE8021C56F6E600AE8CCF /* logo insq.png in Resources */,
+				1F1076DE1CCC5B7A0069664C /* TableViewIconPin.png in Resources */,
 				738A12B81C504EDF003BD441 /* LaunchScreen.storyboard in Resources */,
 				738A12B51C504EDF003BD441 /* Assets.xcassets in Resources */,
 				73E5CD1C1C887CF800597E2A /* Like-50.png in Resources */,
