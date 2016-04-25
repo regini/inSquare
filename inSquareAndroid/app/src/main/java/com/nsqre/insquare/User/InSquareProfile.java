@@ -196,7 +196,7 @@ public class InSquareProfile {
         editor.putString(USERNAME_KEY, username);
         editor.putString(EMAIL_KEY, email);
         editor.putString(PICTURE_URL_KEY, pictureUrl );
-        editor.putString(OWNED_SQUARES_KEY, gs.toJson(ownedSquaresList));
+        //editor.putString(OWNED_SQUARES_KEY, gs.toJson(ownedSquaresList));
         editor.putString(FAVOURITE_SQUARES_KEY, gs.toJson(favouriteSquaresList));
         editor.putString(RECENT_SQUARES_KEY, gs.toJson(recentSquaresList));
         editor.putString(OUTGOING_MESSAGES, gs.toJson(outgoingMessages));
