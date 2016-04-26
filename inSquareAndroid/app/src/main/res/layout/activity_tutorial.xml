@@ -39,11 +39,37 @@
             android:id="@+id/review_button_skip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:paddingRight="8dp"
-            android:paddingEnd="8dp"
             android:text="@string/tutorial_salta"
+            android:textColor="@color/colorText"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+        <ImageButton
+            android:id="@+id/review_button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/arrow_up_black_48dp"
+            android:scaleType="centerInside"
+            android:tint="@color/white"
+            android:rotation="90"
+            android:textColor="@color/colorText"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/review_button_fine"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="@string/review_fine"
+            android:tint="@color/white"
             android:textColor="@color/colorText"
             style="?android:attr/borderlessButtonStyle"
             />

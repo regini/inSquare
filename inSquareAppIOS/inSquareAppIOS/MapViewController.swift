@@ -12,17 +12,7 @@ import CoreLocation
 import Alamofire
 //import Crashlytics
 
-//let markerProva = GMSMarker()
-//markerProva.title = "PROVA"
-//markerProva.userData = ["CIAO": "tu"]
-//print(markerProva.userData)
 
-//last thing in viedilload
-////resizing Table view to fill screen against map
-//tableViewVsMapSize.constant = mapHeight
-//UIView.animateWithDuration(0.25, animations: { () -> Void in
-//    self.view.layoutIfNeeded()
-//})
 
 //mettere get square dentro locationManager func?
 //usa         mapView.myLocation instead of locationManager mapView.myLocation.coordinate.latitude
@@ -429,9 +419,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
         var latToCenter:CLLocationDegrees = CLLocationDegrees()
         var lonToCenter:CLLocationDegrees = CLLocationDegrees()
         
+        var i = 0
         checkForKeyLoop: for (index, value):(String, JSON) in self.squaresFromSearch
         {
-            let i:Int=Int(index)!
+            i=Int(index)!
             
             if self.squaresFromSearch[i]["_source"]["name"].string == keyForCentermap
             {
@@ -455,6 +446,38 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
             let newCenter:CLLocationCoordinate2D = CLLocationCoordinate2DMake(latToCenter, lonToCenter)
             mapView.camera = GMSCameraPosition(target: newCenter, zoom: 15, bearing: 0, viewingAngle: 0)
             
+            let coordinates = self.squaresFromSearch[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+            let latitude = (coordinates[0] as NSString).doubleValue
+            let longitude = (coordinates[1] as NSString).doubleValue
+            let title = self.squaresFromSearch[i]["_source"]["name"].string
+            let identifier = self.squaresFromSearch[i]["_id"].string
+                            
+            let marker = GMSMarker()
+            marker.position = CLLocationCoordinate2DMake(latitude, longitude)
+            marker.title = title
+            marker.snippet = self.snippetString
+            //marker.snippet = snippet
+            marker.icon = insquareMapPin
+            marker.groundAnchor.x = marker.groundAnchor.x + 0.45
+            marker.map = self.mapView
+            marker.userData = ["markerId": "\(identifier!)", "markerLat": "\(latitude)", "markerLon": "\(longitude)", "favouredBy": "\(self.jsonSq[i]["_source"]["favouredBy"])", "lastMessageDate": "\(self.jsonSq[i]["_source"]["lastMessageDate"].string!)", "views": "\(self.jsonSq[i]["_source"]["views"])", "state": "\(self.jsonSq[i]["_source"]["state"].string!)"]
+            
+            self.squareToSearch[marker.userData["markerId"] as! String] = marker
+            
+            self.mapView.selectedMarker = marker
+            
+            searchBarCancelButtonClicked(self.searchBar)
+            
+            
+
+            
+//            dispatch_async(dispatch_get_main_queue(), {() -> Void in
+//                //This code will run in the main thread:
+//                
+//                self.searchBar.resignFirstResponder()
+//                
+//            })
+        
             
 
         }
@@ -505,11 +528,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
     
     func mapView(mapView: GMSMapView!, willMove gesture: Bool) {
         //mapView.clear()
+        
     }
     
     
     func mapView(mapView: GMSMapView!, didChangeCameraPosition position: GMSCameraPosition!) {
         //        print("POSITION \(position)")
+        
         
         if true
         {

@@ -13,19 +13,11 @@ import Alamofire
 import CoreData
 import Crashlytics
 
-var alreadyLoggedIn = false //serve in modo che se torno a loginVC da gia loggato non fa in automatico segue a home
-var settedUpCrashlytics = false
+//serve in modo che se torno a loginVC da gia loggato non fa in automatico segue a home
+var alreadyLoggedIn = false
 class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
 {
     @IBOutlet weak var enter: UIButton!
-    
-//    @IBAction func unwindToLogin(segue: UIStoryboardSegue)
-//    {
-//    }
-    
-//    @IBAction func crashButtonTapped(sender: AnyObject) {
-//        Crashlytics.sharedInstance().crash()
-//    }
 
     @IBAction func buttPress(sender: AnyObject)
     {
@@ -44,143 +36,98 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         //print(clearUsersSavedInCoreData())
         print(howManyUserInCoreData())
         
-        
-        //fatalError("QWERTYUIOP")
-      
         if isLoggedInCoreData()
         {
-            print("\(isLoggedInCoreData()) vs \(howManyUserInCoreData())")
+            //print("\(isLoggedInCoreData()) vs \(howManyUserInCoreData())")
+            
             loggedIn = true
 
             //recupera dati da CoreData cosi quando viewne lanciato viewWill appear fa segue to home
             let appDel: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let context: NSManagedObjectContext = appDel.managedObjectContext
             
-            //var alreadyLoggedUser = NSEntityDescription.insertNewObjectForEntityForName("Users", inManagedObjectContext: context)
-            
             let request = NSFetchRequest(entityName: "Users")
-            
-            // request.predicate = NSPredicate(format: "username = %@", "Ralphie")
             
             request.returnsObjectsAsFaults = false
             
-            do {
-                
+            do
+            {
                 let results = try context.executeFetchRequest(request)
-                
                 print("USERS (has to be 0 or 1): \(results.count)")
                 print("USERS (details): \(results)")
 
-                
                 if results.count == 1
                 {
                     for result in results as! [NSManagedObject]
                     {
-                    
-                                        /*
-                    
-                                        context.deleteObject(result)
-                    
-                                        //result.setValue("Ralphie", forKey: "username")
-                    
-                                        do {
-                    
-                                        try context.save()
-                    
-                                        } catch {
-                    
-                                        }
-                    
-                                        */
-                    
-                                    //setting up datas
-                                        if let usernameCD = result.valueForKey("username") as? String
-                                        {
-                                            print(usernameCD)
-                                            username = usernameCD
-                                        }
-                                        if let serverIdCD = result.valueForKey("serverId") as? String
-                                        {
-                                            print(serverIdCD)
-                                            serverId = serverIdCD
-                                        }
-                                        if let fbIdCD = result.valueForKey("fbId") as? String
-                                        {
-                                            print(fbIdCD)
-                                            fbId = fbIdCD
-                                        }
-                                        if let emailCD = result.valueForKey("email") as? String
-                                        {
-                                            print(emailCD)
-                                            email = emailCD
-                                        }
-                                        if let accessTokenCD = result.valueForKey("accessToken") as? String
-                                        {
-                                            print(accessTokenCD)
-                                            accessToken = accessTokenCD
-                                        }
-                                        if let userAvatarUrlCD = result.valueForKey("userAvatarUrl") as? String
-                                        {
-                                            //alternativa
-//                                            print("AVATAR URL \(userAvatarUrlCD)")
-//                                            userAvatarUrl = userAvatarUrlCD
-//                                            
-//                                            var url : NSString = "\(userAvatarUrl)"
-//                                            var urlStr : NSString = url.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-//                                            var searchURL : NSURL = NSURL(string: urlStr as String)!
-//                                            
-//                                            //let url = NSURL(string: "\(userAvatarUrl)")
-//                                            print("AVATAR URL 2 \(searchURL)")
-//                                            
-//                                            let data = NSData(contentsOfURL: searchURL) //make sure your image in this url does exist, otherwise unwrap in a if let check
-
-                                            print("AVATAR URL \(userAvatarUrlCD)")
-                                            userAvatarUrl = userAvatarUrlCD
-                                            
-                                            let url = NSURL(string: "\(userAvatarUrl)")
-                                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                                            if UIImage(data: data!) != nil
-                                            {
-                                                userAvatar = UIImage(data: data!)!
-                                            }
-                                            else
-                                            {
-                                                print("ERROR: personal FB img URL not working")
-                                            }
-
-                                            if userAvatarUrl != ""
-                                            {
-                                                if let url = NSURL(string: userAvatarUrl)
-                                                {
-                                                    let data = NSData(contentsOfURL: url) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                                                    if UIImage(data: data!) != nil
-                                                    {
-                                                        userAvatar = UIImage(data: data!)!
-                                                    }
-                                                    else
-                                                    {
-                                                        print("ERROR: personal FB img URL not working")
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    print("NO IMG URL SOMETHING WENT WRONG")
-                                                }
-                                            }
-                                            
-                                        }
+                        //setting up datas
+                        if let usernameCD = result.valueForKey("username") as? String
+                        {
+                            print(usernameCD)
+                            username = usernameCD
+                        }
+                        if let serverIdCD = result.valueForKey("serverId") as? String
+                        {
+                            print(serverIdCD)
+                            serverId = serverIdCD
+                        }
+                        if let fbIdCD = result.valueForKey("fbId") as? String
+                        {
+                            print(fbIdCD)
+                            fbId = fbIdCD
+                        }
+                        if let emailCD = result.valueForKey("email") as? String
+                        {
+                            print(emailCD)
+                            email = emailCD
+                        }
+                        if let accessTokenCD = result.valueForKey("accessToken") as? String
+                        {
+                            print(accessTokenCD)
+                            accessToken = accessTokenCD
+                        }
+                        if let userAvatarUrlCD = result.valueForKey("userAvatarUrl") as? String
+                        {
+                            print("AVATAR URL \(userAvatarUrlCD)")
+                            userAvatarUrl = userAvatarUrlCD
+                            let url = NSURL(string: "\(userAvatarUrl)")
+                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                            if UIImage(data: data!) != nil
+                            {
+                                userAvatar = UIImage(data: data!)!
+                            }
+                            else
+                            {
+                                print("ERROR: personal FB img URL not working")
+                            }
+                            if userAvatarUrl != ""
+                            {
+                                if let url = NSURL(string: userAvatarUrl)
+                                {
+                                    let data = NSData(contentsOfURL: url) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                                    if UIImage(data: data!) != nil
+                                    {
+                                        userAvatar = UIImage(data: data!)!
+                                    }
+                                    else
+                                    {
+                                        print("ERROR: personal FB img URL not working")
+                                    }
+                                }
+                                else
+                                {
+                                    print("NO IMG URL SOMETHING WENT WRONG")
+                                }
+                            }
+                        }
                         print("aaaaaaaaaa4")
-
-                    }
-                }
-            }
+                    } //for result in result
+                }// if res.count = 1
+            }//do
             catch
             {
                 print("Fetch Failed")
             }
-            //
-
-
         }
 
         self.navigationController?.setNavigationBarHidden(true, animated: true)
@@ -189,7 +136,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         {
             enter.hidden = true
             enter.enabled = false
-
         }
         else if loggedIn
         {
@@ -366,7 +312,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
                                 
                                 // TODO: Move this to where you establish a user session
                                 self.logUser() //setupcrashlytics
-//                                settedUpCrashlytics = true
                             }
                             else
                             {
@@ -424,10 +369,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
       
         if (segue.identifier == "tableView")
         {
-//            if !settedUpCrashlytics
-//            {
-//                logUser() //setupCrashlytics
-//            }
             let tabBarController = segue.destinationViewController as! TabBarViewController
         }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F1076DE1CCC5B7A0069664C /* TableViewIconPin.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */; };
 		1F13D6061CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
 		1F13D6071CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
 		1F13D6081CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
@@ -14,6 +15,7 @@
 		1F1825A31CCA7E30006BA3F7 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */; };
 		1FAA0E921C7497630038785C /* mapPin-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FAA0E911C7497630038785C /* mapPin-01.png */; };
 		1FD8C7591C6A2F6C008A0094 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD8C7581C6A2F6C008A0094 /* UserData.swift */; };
+		1FED8E6C1CCC030B00D9CEAF /* Singletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED8E6B1CCC030B00D9CEAF /* Singletons.swift */; };
 		7306F8F31C859C4E000A5D3A /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7306F8F21C859C4E000A5D3A /* TabBarViewController.swift */; };
 		7306F8F71C85AFCE000A5D3A /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7306F8F61C85AFCE000A5D3A /* MapViewController.swift */; };
 		7306F8FA1C85C67C000A5D3A /* mapTab.png in Resources */ = {isa = PBXBuildFile; fileRef = 7306F8F81C85C67C000A5D3A /* mapTab.png */; };
@@ -173,11 +175,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TableViewIconPin.png; sourceTree = "<group>"; };
 		1F13D6051CC9167700C86727 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtension.swift; sourceTree = "<group>"; };
 		1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		1FAA0E911C7497630038785C /* mapPin-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPin-01.png"; sourceTree = "<group>"; };
 		1FD8C7581C6A2F6C008A0094 /* UserData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
+		1FED8E6B1CCC030B00D9CEAF /* Singletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Singletons.swift; sourceTree = "<group>"; };
 		2C060BC83CF6CCCFE72D4F27 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		4C07114E9BA2734909BEB45A /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E366CBAC1A8F22511113690 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -329,6 +333,7 @@
 		737EE8031C56F6FA00AE8CCF /* IMG */ = {
 			isa = PBXGroup;
 			children = (
+				1F1076DD1CCC5B7A0069664C /* TableViewIconPin.png */,
 				73F0CADA1C8F754B00185E35 /* mapPinTrace.png */,
 				735A88EB1C8B925E003FED1F /* opponentAvatar-01.png */,
 				73E5CD1E1C887D1D00597E2A /* Like Filled-50(1).png */,
@@ -382,6 +387,7 @@
 				738A13331C504F26003BD441 /* SocketIOClient */,
 				73CD25711C517CFB0054EF18 /* Bridging-Header.h */,
 				738A12AE1C504EDF003BD441 /* Main.storyboard */,
+				1FED8E6B1CCC030B00D9CEAF /* Singletons.swift */,
 				737EE7F81C56F4F400AE8CCF /* LoginViewController.swift */,
 				7306F8F21C859C4E000A5D3A /* TabBarViewController.swift */,
 				1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */,
@@ -599,6 +605,7 @@
 				73F0CAE31C8F782E00185E35 /* mapTabSelected2.png in Resources */,
 				73403E5A1C6FC76F00513B80 /* logoApp-01.png in Resources */,
 				737EE8021C56F6E600AE8CCF /* logo insq.png in Resources */,
+				1F1076DE1CCC5B7A0069664C /* TableViewIconPin.png in Resources */,
 				738A12B81C504EDF003BD441 /* LaunchScreen.storyboard in Resources */,
 				738A12B51C504EDF003BD441 /* Assets.xcassets in Resources */,
 				73E5CD1C1C887CF800597E2A /* Like-50.png in Resources */,
@@ -733,6 +740,7 @@
 				738A12FD1C504F01003BD441 /* SocketEngine.swift in Sources */,
 				738A12AB1C504EDF003BD441 /* AppDelegate.swift in Sources */,
 				73F6579D1C87B226008E4617 /* NavigationToJSQViewController.swift in Sources */,
+				1FED8E6C1CCC030B00D9CEAF /* Singletons.swift in Sources */,
 				738A12F11C504F01003BD441 /* SocketAckEmitter.swift in Sources */,
 				73E149301C87883500A4119E /* FavoriteSquareViewController.swift in Sources */,
 				738A13031C504F01003BD441 /* SocketEnginePacketType.swift in Sources */,

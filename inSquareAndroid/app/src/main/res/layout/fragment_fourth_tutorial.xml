@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/tutorial_caption4"
+        android:text="@string/tutorial_4_swipe"
         android:textColor="@android:color/white"
         android:textSize="@dimen/caption_text_size"
         android:fontFamily="sans-serif-condensed-light"
