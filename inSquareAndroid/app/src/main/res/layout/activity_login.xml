@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/login_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -44,7 +45,6 @@
             android:id="@+id/login_fb_button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/login_button_height"
-            android:layout_gravity="center_horizontal"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_button_height"
             android:layout_below="@id/login_horizontal_line"
@@ -52,6 +52,10 @@
             android:textAllCaps="false"
             android:fontFamily="sans-serif-condensed"
             style="@style/FacebookLoginButton"
+            android:scaleX="0"
+            android:scaleY="0"
+
+            app:layout_widthPercent="55%"
             />
 
 
@@ -63,16 +67,17 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/login_button_height"
             android:layout_below="@id/login_fb_button"
-            android:layout_alignLeft="@id/login_fb_button"
-            android:layout_alignRight="@id/login_fb_button"
-            android:layout_alignStart="@id/login_fb_button"
-            android:layout_alignEnd="@id/login_fb_button"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/margin_button_height"
             android:text="@string/google_login_string"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-condensed"
             style="@style/GoogleLoginButton"
+            android:scaleX="0"
+            android:scaleY="0"
+            
+            app:layout_widthPercent="55%"
             />
 
-    </RelativeLayout>
+    </android.support.percent.PercentRelativeLayout>
 </RelativeLayout>

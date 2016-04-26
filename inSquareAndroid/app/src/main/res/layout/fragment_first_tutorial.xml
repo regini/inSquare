@@ -10,7 +10,6 @@
     >
 
     <ImageView
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -18,7 +17,7 @@
 
         app:layout_heightPercent="35%"
         app:layout_widthPercent="75%"
-        app:layout_marginTopPercent="15%"
+        app:layout_marginTopPercent="10%"
         />
 
     <TextView

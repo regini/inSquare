@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/heart_material_design_logo"
+        android:src="@drawable/favorites_green"
 
         app:layout_heightPercent="45%"
         app:layout_widthPercent="65%"
@@ -33,7 +33,7 @@
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed"
 
-        app:layout_marginBottomPercent="37%"
+        app:layout_marginBottomPercent="40%"
         />
 
     <TextView
@@ -45,7 +45,7 @@
         android:textColor="@android:color/white"
         android:textSize="@dimen/caption_text_size"
         android:fontFamily="sans-serif-condensed-light"
-        app:layout_marginBottomPercent="15%"
+        app:layout_marginBottomPercent="17%"
         app:layout_marginLeftPercent="10%"
         app:layout_marginStartPercent="10%"
         app:layout_marginRightPercent="10%"
