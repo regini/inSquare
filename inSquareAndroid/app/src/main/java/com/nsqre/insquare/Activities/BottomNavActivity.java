@@ -77,7 +77,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     public CoordinatorLayout coordinatorLayout;
 
     private BottomSheetDialog bottomSheetDialog;
-    private AHBottomNavigation.OnTabSelectedListener mTambleSelectedListener;
+    private AHBottomNavigation.OnTabSelectedListener mTabSelectedListener;
 
     private InSquareProfile mProfile;
 
@@ -128,6 +128,15 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                         + squareid + ", " + mess.toString());
             }
         }
+
+        Bundle data = getIntent().getExtras();
+        if(data != null)
+        {
+            if(data.getBoolean(SplashActivity.SHOW_TUTORIAL_KEY, true)) {
+                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
+                startActivity(tutorialIntent);
+            }
+        }
     }
 
     @Override
@@ -137,7 +146,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         if(intent.getStringExtra("squareId") != null && !"".equals(intent.getStringExtra("squareId"))) {
             MapFragment mapFragment = MapFragment.newInstance();
             if(!mapFragment.isAdded()) {
-                mTambleSelectedListener.onTabSelected(0, true);
+                mTabSelectedListener.onTabSelected(0, true);
                 bottomNavigation.setCurrentItem(0);
             } else {
                 mapFragment.checkActivityIntent(intent);
@@ -251,7 +260,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                     @Override
                     public void onTabSelected(int position, boolean wasSelected) {
                         Fragment f;
-                        mTambleSelectedListener = this;
+                        mTabSelectedListener = this;
 
                         // position dipende dall'ordine di inserimento tramite bottomNavigation#addItem()
                         switch (position) {

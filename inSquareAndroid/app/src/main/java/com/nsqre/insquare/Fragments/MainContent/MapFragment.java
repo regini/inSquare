@@ -586,10 +586,8 @@ public class MapFragment extends Fragment
     {
         String d = distance + "km";
 
-        //TODO check sul centro del mondo
         if(position != null)
         {
-
             getClosestSquares(d, position.latitude, position.longitude);
         }
         else
@@ -867,38 +865,6 @@ public class MapFragment extends Fragment
                     }
                 }
         );*/
-/*
-        final String lat = String.valueOf(latLng.latitude);
-        final String lon = String.valueOf(latLng.longitude);
-        final Dialog mDialog = new Dialog(getContext());
-        mDialog.setContentView(R.layout.dialog_crea_square);
-        mDialog.setTitle("Crea una Square");
-        mDialog.setCancelable(true);
-        mDialog.show();
-
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-
-        final EditText usernameEditText = (EditText) mDialog.findViewById(R.id.et_square);
-        final EditText descriptionEditText = (EditText) mDialog.findViewById((R.id.descr_square));
-        TextInputLayout textInputLayout = (TextInputLayout) mDialog.findViewById(R.id.input_layout_crea_square);
-        Button crea = (Button) mDialog.findViewById(R.id.button_crea);
-        crea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String squareName = usernameEditText.getText().toString().trim();
-                String squareDescr = descriptionEditText.getText().toString().trim();
-                if (!TextUtils.isEmpty(squareName)) {
-                    Marker m = createSquarePin(latLng, squareName);
-                    m.setVisible(false);
-                    // Richiesta Volley POST per la creazione di piazze
-                    // Si occupa anche di creare e aggiungere la nuova Square al HashMap
-                    String ownerId = InSquareProfile.getUserId();
-                    Snackbar.make(mapCoordinatorLayout, "Stiamo creando la square", Snackbar.LENGTH_SHORT).show();
-                    createSquarePostRequest(squareName, squareDescr, lat, lon, m, ownerId);
-                    mDialog.dismiss();
-                }
-            }
-        });*/
     }
 
     @Override

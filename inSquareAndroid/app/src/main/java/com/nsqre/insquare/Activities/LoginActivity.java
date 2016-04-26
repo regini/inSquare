@@ -1,7 +1,6 @@
 package com.nsqre.insquare.Activities;
 
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -12,14 +11,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -28,7 +24,6 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
@@ -42,7 +37,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.gson.Gson;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
@@ -105,25 +99,23 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AccessToken.refreshCurrentAccessTokenAsync();
         setContentView(R.layout.activity_login);
 
         // Profilo statico perché non deve cambiare.
         // Singleton -> non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
-        Log.d(TAG, "onCreate: profile show tutorial is " + profile.showTutorial());
 
-        try {
+        // TODO spostare nel BottomNavActivity
+        /*try {
             if (InSquareProfile.showTutorial()) {
                 showTutorial();
             } else {
-                launchLoginProcedure();
+                initLoginButtons();
             }
         }
         catch (Exception e) {
             Log.d(TAG, "onCreate: exception " + e.toString());
-        }
+        }*/
 
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -139,30 +131,35 @@ public class LoginActivity extends AppCompatActivity
                             icon, Color.parseColor("#D32F2F"));
             setTaskDescription(taskDesc);
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.black));
+        }
+
+        initLoginButtons();
     }
 
-    public void launchLoginProcedure() {
+    public void initLoginButtons() {
 
         fbCallbackManager = CallbackManager.Factory.create();
 
-        if (profile.hasLoginData() && isNetworkAvailable()) {
+       /* if (profile.hasLoginData() && isNetworkAvailable()) {
             Log.d(TAG, "onCreate: haslogindata & networkavailable");
             launchInSquare();
             return;
-        }else if(!isNetworkAvailable()) {
-            Toast.makeText(LoginActivity.this, "Senza internet nel 2016..? Sono tagliato fuori!", Toast.LENGTH_SHORT).show();
+        }else */
+
+        if(!isNetworkAvailable()) {
+            Toast.makeText(LoginActivity.this, "Senza internet nel 2016..?", Toast.LENGTH_SHORT).show();
         }
 
-        Log.d(TAG, "onCreate: going past launching..?");
-
-        //chiamato quando c'è un successo(o fallimento) della connessione a fb
+        // Callback al ritorno da una richiesta a facebook
         LoginManager.getInstance().registerCallback(fbCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d(TAG, "Success Login");
                         requestFacebookData();  //fa la post
-                        //fbLoginButton.setText(R.string.fb_logout_string);
                     }
 
                     @Override
@@ -213,18 +210,6 @@ public class LoginActivity extends AppCompatActivity
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
-
-        // Se il login e' gia' stato effettuato, fai le post
-        if(isGoogleSignedIn()) {
-            Log.d(TAG, "Google is already logged in!");
-            //gLoginButton.setText(R.string.google_logout_string);
-            googlePostRequest();
-        } else if(isFacebookSignedIn())
-        {
-            Log.d(TAG, "onCreate: Facebook is already logged in!");
-            //fbLoginButton.setText(R.string.fb_logout_string);
-            facebookPostRequest();
-        }
     }
 
     @Override
@@ -316,17 +301,21 @@ public class LoginActivity extends AppCompatActivity
      * @see BottomNavActivity
      */
     private void launchInSquare() {
-        Log.d(TAG, "launchInSquare: launching!");
-        Intent intent = new Intent(getApplicationContext(), BottomNavActivity.class);
+        Intent intent = new Intent(this, BottomNavActivity.class);
+        /*
         if(getIntent().getExtras() != null) {
             if(getIntent().getExtras().getInt("map") == 0) {
                 intent.putExtra("map", getIntent().getIntExtra("map",0));
             }
             else if(getIntent().getStringExtra("squareId") != null) {
-                intent.putExtra("squareId", getIntent().getStringExtra("squareId"));
+                intent.putExtra("s  quareId", getIntent().getStringExtra("squareId"));
             }
             getIntent().getExtras().clear();
         }
+        */
+        
+        intent.putExtra(SplashActivity.SHOW_TUTORIAL_KEY, true);
+        
         startActivity(intent);
     }
 
@@ -418,10 +407,8 @@ public class LoginActivity extends AppCompatActivity
             GoogleSignInAccount acct = result.getSignInAccount();
             gAccessToken = acct.getIdToken();
 
-            Log.d(TAG, "Login was a success: " + acct.getDisplayName() + ": " + acct.getEmail());
-            Log.d(TAG, "Token is: " + acct.getIdToken());
-
-            //gLoginButton.setText(R.string.google_logout_string);
+//            Log.d(TAG, "Login was a success: " + acct.getDisplayName() + ": " + acct.getEmail());
+//            Log.d(TAG, "Token is: " + acct.getIdToken());
 
             profile.googleEmail = acct.getEmail();
             profile.googleToken = acct.getIdToken();
@@ -430,7 +417,8 @@ public class LoginActivity extends AppCompatActivity
             profile.save(getApplicationContext());
 
             googlePostRequest();
-        } else { //connessione fallita
+        } else {
+            //connessione fallita
             CharSequence text = getString(R.string.connFail);
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -488,7 +476,7 @@ public class LoginActivity extends AppCompatActivity
      * This method checks if the user is logged in via Google
      * @return true if the user is logged in via Google
      */
-    private boolean isGoogleSignedIn()
+    /*private boolean isGoogleSignedIn()
     {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
         boolean result = opr.isDone();
@@ -496,13 +484,13 @@ public class LoginActivity extends AppCompatActivity
             gAccessToken = opr.get().getSignInAccount().getIdToken();
 
         return result;
-    }
+    }*/
 
     /**
      * This method checks if the user is logged in via Facebook
      * @return true if the user is logged in via Facebook
      */
-    private boolean isFacebookSignedIn()
+    /*private boolean isFacebookSignedIn()
     {
         try {
             AccessToken token = AccessToken.getCurrentAccessToken();
@@ -519,7 +507,7 @@ public class LoginActivity extends AppCompatActivity
             Log.d(TAG, "FB token error: " + e.toString());
         }
         return false;
-    }
+    }*/
 
     /**
      * This method checks if the network is currently available
@@ -530,85 +518,6 @@ public class LoginActivity extends AppCompatActivity
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    /**
-     * This method creates the action menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
-        return true;
-    }
-
-    /**
-     * This method manages the options from the Action menu
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.menu_entry_feedback:
-                // [START feedback_event]
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Action")
-                        .setAction("Feedback")
-                        .build());
-                // [END feedback_event]
-                final Dialog feedbackDialog = new Dialog(this);
-                feedbackDialog.setContentView(R.layout.dialog_feedback);
-                feedbackDialog.setTitle("Feedback");
-                feedbackDialog.setCancelable(true);
-                feedbackDialog.show();
-
-                final EditText feedbackText = (EditText) feedbackDialog.findViewById(R.id.dialog_feedbacktext);
-                Button confirm = (Button) feedbackDialog.findViewById(R.id.dialog_feedback_confirm_button);
-                confirm.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String feedback = feedbackText.getText().toString().trim();
-                        final String activity = this.getClass().getSimpleName();
-
-                        VolleyManager.getInstance(getApplicationContext()).postFeedback(feedback, InSquareProfile.getUserId(), activity,
-                                new VolleyManager.VolleyResponseListener() {
-                                    @Override
-                                    public void responseGET(Object object) {
-                                        // Vuoto - POST Request
-                                    }
-
-                                    @Override
-                                    public void responsePOST(Object object) {
-                                        if (object == null) {
-                                            Toast.makeText(LoginActivity.this, getString(R.string.error_feedback), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, getString(R.string.thanks_feedback), Toast.LENGTH_SHORT).show();
-                                            feedbackDialog.dismiss();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void responsePATCH(Object object) {
-                                        // Vuoto - POST Request
-                                    }
-
-                                    @Override
-                                    public void responseDELETE(Object object) {
-                                        // Vuoto - POST Request
-                                    }
-                                });
-                        feedbackDialog.dismiss();
-                    }
-                });
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause: ..!");
-        super.onPause();
     }
 
     /**
@@ -631,10 +540,4 @@ public class LoginActivity extends AppCompatActivity
         }
         return true;
     }
-
-    public void showTutorial() {
-        Intent tutorialIntent = new Intent(LoginActivity.this, TutorialActivity.class);
-        startActivity(tutorialIntent);
-    }
-
 }
