@@ -21,6 +21,9 @@ import android.widget.ImageView;
 import com.nsqre.insquare.R;
 import com.squareup.picasso.Picasso;
 
+/**
+ * Shows an image from the chat in fullscreen
+ */
 public class FullScreenImageActivity extends AppCompatActivity {
 
     /**

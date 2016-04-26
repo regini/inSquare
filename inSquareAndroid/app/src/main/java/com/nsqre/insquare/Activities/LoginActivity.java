@@ -141,6 +141,10 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method manages the authentication of the user
+     * @see #launchInSquare()
+     */
     public void launchLoginProcedure() {
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -632,6 +636,11 @@ public class LoginActivity extends AppCompatActivity
         return true;
     }
 
+
+    /**
+     * Launches an intent to show the TutorialActivity
+     * @see TutorialActivity
+     */
     public void showTutorial() {
         Intent tutorialIntent = new Intent(LoginActivity.this, TutorialActivity.class);
         startActivity(tutorialIntent);

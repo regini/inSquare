@@ -138,6 +138,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     private static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
 
+    /**
+     * Receives the notification from the ChatService that some message has been sent, so it updates the view
+     * @see ChatService
+     */
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -159,7 +163,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     //TODO aggiungere slider "nuovi messaggi" se sto guardando messaggi vecchi, risolvere problema download messaggi
     /**
-     * Initializes the socket.io components, downloads the messages present in the chat and eventually puts to zero the
+     * Initializes the socket.io components, downloads the messages present in the chat, tries to send messages in the outgoing list and eventually puts to zero the
      * notification counter for this chat
      * @param savedInstanceState
      */
@@ -328,6 +332,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         });
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         setSupportActionBar(toolbar);
@@ -367,6 +374,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         );
     }
 
+    /**
+     * TODO Documentare
+     */
     private void insertPhotoWrapper() {
         List<String> permissionsNeeded = new ArrayList<String>();
 
@@ -404,13 +414,20 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         chooseFileIntent();
     }
 
+    /**
+     * Opens a dialog to let the user choose the image to send
+     */
     private void chooseFileIntent(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         this.startActivityForResult(intent, FILE_PICK);
     }
 
-
+    /**
+     * TODO documentare
+     * @param message
+     * @param okListener
+     */
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
@@ -419,6 +436,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                 .create()
                 .show();
     }
+
+    /**
+     * If the user has correctly chosen an image, calls uploadImage() to upload it
+     * @see #uploadImage()
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -440,7 +462,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     }
 
-
+    /**
+     * TODO da documentare?
+     */
     private boolean addPermission(List<String> permissionsList, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -453,6 +477,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         return true;
     }
 
+    /**
+     * TODO da documentare?
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -592,7 +619,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO
+     * TODO documentare
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -610,7 +637,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     };
 
     /**
-     * TODO
+     * Turns off the connection to socket
      */
     @Override
     protected void onPause() {
@@ -635,12 +662,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
-        /*
-            mSocket.off("typing", onTyping);
-            mSocket.off("stop typing", onStopTyping);
-            mSocket.off("login", onLogin);
-        */
     }
 
     /**
@@ -658,7 +679,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * Attempts to send a message throught a socket event, if the message is valid
+     * Attempts to send a message through ChatService, if the message is valid
+     * @see ChatService
      */
     private void attemptSend() {
         // [START message_event]
@@ -673,13 +695,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
-        /*
-        if(!mSocket.connected())
-        {
-            Log.d(TAG, "attemptSend: Socket is not connected");
-            return;
-        }
-        */
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
@@ -695,16 +710,14 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
         intent.putExtra("message", m);
-        //intent.putExtra("username", mUsername);
-        //intent.putExtra("userid", mUserId);
-        //intent.putExtra("message", message);
         startService(intent);
         addMessage(m);
         positions.add(messageAdapter.getItemCount()-1);
     }
 
     /**
-     * Attempts to send a foto throught a socket event, if the message is valid
+     * Attempts to send a message through ChatService, if the message is valid
+     * @see ChatService
      */
     private void attemptSendFoto(String fotoURL) {
         mTracker.send(new HitBuilders.EventBuilder()
@@ -718,13 +731,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
-        /*
-        if(!mSocket.connected())
-        {
-            Log.d(TAG, "attemptSend: Socket is not connected");
-            return;
-        }
-        */
         String message = fotoURL;
 
         Message m = new Message(message, mUsername, mUserId, format);
@@ -732,9 +738,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Intent intent = new Intent(this, ChatService.class);
         intent.putExtra("squareid", mSquareId);
         intent.putExtra("message", m);
-        //intent.putExtra("username", mUsername);
-        //intent.putExtra("userid", mUserId);
-        //intent.putExtra("message", message);
         startService(intent);
         addMessage(m);
     }
@@ -874,8 +877,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     /**
      * Manages the option menu items
      * @param item The item selected
-     * TODO @see la richiesta a feedback
      * @see #favouriteSquare(int, Square)
+     * @see VolleyManager
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -1000,6 +1003,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
 
+    /**
+     * Uploads the image on Imgur
+     * @see #createUpload(File)
+     * @see UploadService
+     */
     public void uploadImage() {
     /*
       Create the @Upload object
@@ -1014,6 +1022,10 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
     }
 
+    /**
+     * Creates an Upload object out of a File one
+     * @param image The image the user wants to upload
+     */
     private void createUpload(File image) {
         Log.d("createUpload", "createUpload");
         upload = new Upload();
@@ -1026,6 +1038,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         //uploadImage.setImageResource(R.drawable.ic_add_a_photo_black_48dp);
     }
 
+    /**
+     * TODO Documentare
+     */
     private class UiCallback implements Callback<ImageResponse> {
 
         @Override
@@ -1051,12 +1066,4 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         //showMessage(getString(R.string.google_play_services_error));
     }
-
-    /*
-    private void showMessage(String msg) {
-        ViewGroup container = (ViewGroup) findViewById(R.id.snackbar_layout);
-        Snackbar.make(container, msg, Snackbar.LENGTH_SHORT).show();
-    }
-
-    */
 }

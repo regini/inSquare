@@ -33,6 +33,9 @@ import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import java.util.ArrayList;
 
+/**
+ * The Activity which gives the user the possibility to create his own Square
+ */
 public class CreateSquareActivity extends AppCompatActivity {
 
     public static final String RESULT_SQUARE_NAME = "name";
@@ -58,6 +61,9 @@ public class CreateSquareActivity extends AppCompatActivity {
     // DATI DA RITORNARE ALLA MAPPA PER LA CREAZIONE
     private String resultName, resultDescription, resultLat, resultLon, resultFacebookId, resultExpireTime;
 
+    /**
+     * TODO documentare
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,6 +253,9 @@ public class CreateSquareActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * TODO documentare
+     */
     public static class CreateSquarePagerAdapter extends FragmentPagerAdapter
     {
 
@@ -304,6 +313,9 @@ public class CreateSquareActivity extends AppCompatActivity {
         this.resultExpireTime = time;
     }
 
+    /**
+     * TODO documentare
+     */
     public void squareTypeSelected(SquareType placeType)
     {
         if(!isTypeChosen)
@@ -322,6 +334,9 @@ public class CreateSquareActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * TODO documentare
+     */
     @Override
     public void onBackPressed() {
         if(vpager.getCurrentItem() != 0)

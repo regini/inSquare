@@ -49,7 +49,9 @@ import com.nsqre.insquare.Utilities.DialogHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * This is the main Activity for the app. It lets the user navigate through the several fragments of inSquare.
+ */
 public class BottomNavActivity extends AppCompatActivity implements BottomSheetItemAdapter.BottomSheetItemListener {
 
     private enum TABS
@@ -81,6 +83,12 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     private InSquareProfile mProfile;
 
+    /**
+     * Sets up the buttons and loads the MapFragment: the first fragment which will be shown to the user.
+     * Eventually it will start ChatService to send outgoing messages
+     * @see MapFragment
+     * @see ChatService
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +138,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
+    /**
+     * TODO documentare
+     */
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -151,6 +162,10 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         calculateNotifications();
     }
 
+    /**
+     * The broadcast receiver which receives the notification and calls calculateNotification() to elaborate the view
+     * @see #calculateNotifications()
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -183,6 +198,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
+    /**
+     * Shows in the bottom bar how many notification are unread by the user
+     */
     private void calculateNotifications() {
         if(bottomNavigation != null) {
             InSquareProfile.getInstance(getApplicationContext());
@@ -202,12 +220,17 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
+    /**
+     * Creates the menu items for a given square
+     * @param square
+     * @return The menu list for that square
+     */
     private List<BottomSheetItem> instantiateListMenu(Square square)
     {
         String shareString = getResources().getString(R.string.action_share);
         String muteString = getResources().getString(R.string.action_mute);
         String deleteString = getResources().getString(R.string.action_delete);
-        ArrayList<BottomSheetItem> menuList = new ArrayList<BottomSheetItem>();
+        ArrayList<BottomSheetItem> menuList = new ArrayList<>();
         if(InSquareProfile.isOwned(square.getId()))
         {
             menuList.add(new BottomSheetItem(R.drawable.ic_delete_black_48dp, deleteString));
@@ -218,7 +241,9 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         return menuList;
     }
 
-
+    /**
+     * Sets up the icons for the bottom navigation bar and manages the tap on those buttons
+     */
     private void setupBottomNavigation() {
 
         final String mapTabName = getString(R.string.bottom_nav_tab_map);
@@ -279,6 +304,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         calculateNotifications();
     }
 
+    /**
+     * Extracts the inital letters from the name of the Square
+     * @param words the name of the Square
+     * @return The initials
+     */
     public static String setupInitials(String words) {
         String[] division = words.split("\\s+");
 
@@ -296,6 +326,12 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
+    /**
+     * TODO documentare
+     * @param square
+     * @param adapter
+     * @param viewHolderPosition
+     */
     public void showBottomSheetDialog(Square square, RecyclerSquareAdapter adapter, int viewHolderPosition)
     {
         bottomSheetDialog = new BottomSheetDialog(this);
@@ -327,9 +363,13 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mMessageReceiver);
     }
 
-    /*
-        Questo e' il click dell'oggetto nel menu che viene istanziato sul long click di una Square nella lista
-    */
+    /**
+     * Manages the long press on a Square from the ProfileFragment, FavSquaresFragment or RecentSquaresFragment giving the user the possibility to share the Square
+     * or to mute the notification for that particular square
+     * @see ProfileFragment
+     * @see FavSquaresFragment
+     * @see RecentSquaresFragment
+     */
     @Override
     public void onBottomMenuItemClick(BottomSheetItem item,
                                       final RecyclerSquareAdapter fragmentListElementAdapter,

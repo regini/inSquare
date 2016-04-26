@@ -28,7 +28,9 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 
-
+/**
+ * Shows the tutorial of the app to the user
+ */
 public class TutorialActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private ViewPager vpager;
@@ -63,6 +65,11 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         indicators.setViewPager(vpager);
     }
 
+    /**
+     * manages the scrolling through the pages of the tutorial, setting the right colors and the button's text
+     *
+     * @see #changeStatusBarColor(int, float, int)
+     */
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         int nextColorPosition = position + 1;
@@ -74,14 +81,14 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
             int pageColor = getPageColor(position);
             vpager.setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, pageColor, getPageColor(nextColorPosition)));
-            ((FrameLayout)vpager.getParent()).setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, pageColor, getPageColor(nextColorPosition)));
+            ((FrameLayout) vpager.getParent()).setBackgroundColor((Integer) argbEvaluator.evaluate(positionOffset, pageColor, getPageColor(nextColorPosition)));
             changeStatusBarColor(position, positionOffset, nextColorPosition);
         } else if (position == pagerAdapter.getCount() - 1) {
             skipButton.setText(R.string.tutorial_fine);
 
             int pageColor = getPageColor(position);
             vpager.setBackgroundColor(getPageColor(pageColor));
-            ((FrameLayout)vpager.getParent()).setBackgroundColor(pageColor);
+            ((FrameLayout) vpager.getParent()).setBackgroundColor(pageColor);
             changeStatusBarColor(position, positionOffset, nextColorPosition);
             if (pagerAdapter.getItem(position).getView() != null) {
                 pagerAdapter.getItem(position).getView().setAlpha(1 - positionOffset);
@@ -89,8 +96,12 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         }
     }
 
-    private void changeStatusBarColor(int position, float positionOffset, int nextColorPosition)
-    {
+    /**
+     * sets the status bar color
+     *
+     * @see #getStatusBarColor(int)
+     */
+    private void changeStatusBarColor(int position, float positionOffset, int nextColorPosition) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -105,8 +116,7 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Animator circularReveal(View v)
-    {
+    public Animator circularReveal(View v) {
         int cx = v.getMeasuredWidth() / 2;
         int cy = v.getMeasuredHeight() / 2;
 
@@ -118,10 +128,14 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
     }
 
-    private int getStatusBarColor(int position)
-    {
-        switch (position)
-        {
+    /**
+     * This method chooses the color to set to the status bar, using the actual position on the tutorial
+     *
+     * @param position The page of the tutorial selected
+     * @return The color to set
+     */
+    private int getStatusBarColor(int position) {
+        switch (position) {
             default:
             case 0:
                 return ContextCompat.getColor(getApplicationContext(), R.color.md_blue_grey_900);
@@ -134,10 +148,14 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         }
     }
 
-    private int getPageColor(int position)
-    {
-        switch (position)
-        {
+    /**
+     * This method chooses the color to set to the page, using the actual position on the tutorial
+     *
+     * @param position The page of the tutorial selected
+     * @return The color to set
+     */
+    private int getPageColor(int position) {
+        switch (position) {
             case 0:
                 return ContextCompat.getColor(getApplicationContext(), R.color.md_blue_grey_700);
             case 1:
@@ -161,21 +179,24 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
     }
 
+    /**
+     * Manages the back press event. If the user is not in the first page of the tutorial, it will scroll one page back
+     */
     @Override
     public void onBackPressed() {
         int position = vpager.getCurrentItem();
-        if(position == 0)
-        {
+        if (position == 0) {
             super.onBackPressed();
-        }else
-        {
+        } else {
             --position;
             vpager.setCurrentItem(position, true);
         }
     }
 
-    public static class TutorialPagerAdapter extends FragmentPagerAdapter
-    {
+    /**
+     * The adapter for the pages of the tutorial
+     */
+    public static class TutorialPagerAdapter extends FragmentPagerAdapter {
 
         private static final int NUM_ITEMS = 4;
 
@@ -183,12 +204,17 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
             super(fm);
         }
 
-
+        /**
+         * Returns the fragment to show
+         *
+         * @param position The page the user is on
+         * @return A Tutorial fragment
+         * @see com.nsqre.insquare.Fragments.Tutorial
+         */
         @Override
         public Fragment getItem(int position) {
 
-            switch (position)
-            {
+            switch (position) {
                 case 0:
                     return new FirstTutorialFragment();
                 case 1:
