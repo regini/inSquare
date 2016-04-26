@@ -10,46 +10,45 @@
     >
 
     <ImageView
-        android:id="@+id/ivSecondImage"
-
+        android:id="@+id/second_tutorial_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
         android:src="@drawable/favorites_green"
-
         app:layout_heightPercent="45%"
         app:layout_widthPercent="65%"
         app:layout_marginTopPercent="5%"
+        android:scaleX="0"
+        android:scaleY="0"
         />
 
     <TextView
+        android:id="@+id/second_tutorial_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/second_tutorial_logo"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
         android:layout_centerHorizontal="true"
         android:text="@string/tutorial_title2"
         android:textColor="@android:color/white"
         android:textSize="@dimen/title_text_size"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed"
-
-        app:layout_marginBottomPercent="40%"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/second_tutorial_title"
         android:layout_centerHorizontal="true"
         android:text="@string/tutorial_2_notifications"
         android:textColor="@android:color/white"
         android:textSize="@dimen/caption_text_size"
         android:fontFamily="sans-serif-condensed-light"
-        app:layout_marginBottomPercent="17%"
         app:layout_marginLeftPercent="10%"
         app:layout_marginStartPercent="10%"
         app:layout_marginRightPercent="10%"
         app:layout_marginEndPercent="10%"
-
         />
 </android.support.percent.PercentRelativeLayout>

@@ -10,39 +10,40 @@
     >
 
     <ImageView
+        android:id="@+id/first_tutorial_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:src="@drawable/tutorial_logo"
-
         app:layout_heightPercent="35%"
         app:layout_widthPercent="75%"
         app:layout_marginTopPercent="10%"
+        android:scaleX="0"
+        android:scaleY="0"
         />
 
     <TextView
+        android:id="@+id/first_tutorial_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/first_tutorial_logo"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
         android:layout_centerHorizontal="true"
         android:text="@string/tutorial_title1"
         android:textColor="@android:color/white"
         android:textSize="@dimen/title_text_size"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed"
-        app:layout_marginBottomPercent="45%"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/first_tutorial_title"
         android:text="@string/tutorial_1_intro"
         android:textColor="@android:color/white"
         android:textSize="@dimen/caption_text_size"
         android:fontFamily="sans-serif-condensed-light"
-
-        app:layout_marginBottomPercent="11%"
         app:layout_marginLeftPercent="10%"
         app:layout_marginStartPercent="10%"
         app:layout_marginRightPercent="10%"

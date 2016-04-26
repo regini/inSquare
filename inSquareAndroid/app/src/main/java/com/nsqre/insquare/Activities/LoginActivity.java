@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -67,8 +67,6 @@ public class LoginActivity extends AppCompatActivity
 {
 
     private static final String TAG = "LoginActivity";
-    public static final int STARTUP_DELAY = 300;
-    public static final int ANIM_ITEM_DURATION = 1000;
     public static final int ITEM_DELAY = 300;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -156,12 +154,13 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         ViewGroup container = (ViewGroup) findViewById(R.id.login_container);
+
         for(int i = 0; i < container.getChildCount(); i++)
         {
             View v = container.getChildAt(i);
             ViewPropertyAnimatorCompat viewAnimator;
 
-            if (!(v instanceof Button)) {
+            if (!(v instanceof Button) && !(v instanceof ImageView)) {
                 viewAnimator = ViewCompat.animate(v)
                         .translationY(50).alpha(1)
                         .setStartDelay((ITEM_DELAY * i) + 500)
@@ -266,6 +265,10 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
+        if(gApiClient != null)
+        {
+            gApiClient.connect();
+        }
         super.onStart();
     }
 
@@ -279,6 +282,9 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onStop() {
+        if (gApiClient != null && gApiClient.isConnected()) {
+            gApiClient.disconnect();
+        }
         super.onStop();
     }
 

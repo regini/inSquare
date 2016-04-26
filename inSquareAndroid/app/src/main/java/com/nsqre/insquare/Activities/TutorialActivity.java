@@ -1,8 +1,6 @@
 package com.nsqre.insquare.Activities;
 
-import android.animation.Animator;
 import android.animation.ArgbEvaluator;
-import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +10,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -23,6 +21,7 @@ import android.widget.ImageButton;
 import com.nsqre.insquare.Fragments.BlankFragment;
 import com.nsqre.insquare.Fragments.Tutorial.FirstTutorialFragment;
 import com.nsqre.insquare.Fragments.Tutorial.FourthTutorialFragment;
+import com.nsqre.insquare.Fragments.Tutorial.LogoFragment;
 import com.nsqre.insquare.Fragments.Tutorial.SecondTutorialFragment;
 import com.nsqre.insquare.Fragments.Tutorial.ThirdTutorialFragment;
 import com.nsqre.insquare.R;
@@ -34,11 +33,21 @@ import com.pixelcan.inkpageindicator.InkPageIndicator;
  */
 public class TutorialActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
+    private static final String TAG = "TutorialActivity";
+
     private ViewPager vpager;
     private Button skipButton, endButton;
     ImageButton nextButton;
     private TutorialPagerAdapter pagerAdapter;
     private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(vpager.getCurrentItem() == 0) {
+            this.onPageSelected(0);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,20 +139,6 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         }
     }
 
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Animator circularReveal(View v) {
-        int cx = v.getMeasuredWidth() / 2;
-        int cy = v.getMeasuredHeight() / 2;
-
-        int finalRadius = Math.max(v.getWidth(), v.getHeight()) / 2;
-
-        Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
-        v.setVisibility(View.VISIBLE);
-        return anim;
-
-    }
-
     /**
      * This method chooses the color to set to the status bar, using the actual position on the tutorial
      *
@@ -187,7 +182,9 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
     @Override
     public void onPageSelected(int position) {
-
+        Log.d(TAG, "onPageSelected: " + position);
+        LogoFragment visible = (LogoFragment) pagerAdapter.getItem(position);
+        visible.animateLogo();
     }
 
     @Override
@@ -232,13 +229,13 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
 
             switch (position) {
                 case 0:
-                    return new FirstTutorialFragment();
+                    return FirstTutorialFragment.newInstance();
                 case 1:
-                    return new SecondTutorialFragment();
+                    return SecondTutorialFragment.newInstance();
                 case 2:
-                    return new ThirdTutorialFragment();
+                    return ThirdTutorialFragment.newInstance();
                 case 3:
-                    return new FourthTutorialFragment();
+                    return FourthTutorialFragment.newInstance();
                 default:
                     return new BlankFragment();
             }

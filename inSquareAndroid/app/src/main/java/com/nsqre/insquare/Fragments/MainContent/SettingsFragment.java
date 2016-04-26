@@ -121,7 +121,6 @@ public class SettingsFragment extends Fragment implements
 
         if(gApiClient == null) {
             gApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
-                    .enableAutoManage(getActivity(), this)
                     .addConnectionCallbacks(this)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gSo)
                     .addApi(AppInvite.API)
@@ -596,7 +595,6 @@ public class SettingsFragment extends Fragment implements
     public void onStop() {
         super.onStop();
         if (gApiClient != null && gApiClient.isConnected()) {
-            gApiClient.stopAutoManage(getActivity());
             gApiClient.disconnect();
         }
     }
