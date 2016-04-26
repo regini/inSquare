@@ -108,7 +108,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                 }
         );
 
-        castHolder.itemView.setOnLongClickListener(
+        castHolder.squareRowLayout.setOnLongClickListener(
                 new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -116,6 +116,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
                             BottomNavActivity madre = (BottomNavActivity) context;
                             madre.showBottomSheetDialog(listItem, RecyclerSquareAdapter.this, castHolder.getAdapterPosition());
                         }
+                        Log.d(TAG, "onLongClick");
                         return true;
                     }
                 }

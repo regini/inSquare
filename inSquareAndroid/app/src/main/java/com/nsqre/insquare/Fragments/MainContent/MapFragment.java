@@ -750,7 +750,6 @@ public class MapFragment extends Fragment
                         latitude,
                         longitude,
                         InSquareProfile.getUserId(),
-                        expireTime,
                         new VolleyManager.VolleyResponseListener() {
                             @Override
                             public void responseGET(Object object) {

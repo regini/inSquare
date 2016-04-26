@@ -78,7 +78,7 @@
                     android:id="@+id/lower_section_edit_button"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="EDIT"
+                    android:text="@string/card_profile_modifica"
                     android:textColor="@color/colorPrimaryDark"
                     style="?attr/borderlessButtonStyle"
                     />

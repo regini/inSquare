@@ -399,7 +399,6 @@ public class VolleyManager {
                            final String latitude,
                            final String longitude,
                            final String ownerId,
-                           final String expireTime,
                            final VolleyResponseListener listener)
     {
          
@@ -413,7 +412,6 @@ public class VolleyManager {
         volleyURL += "&lon=" + longitude;
         volleyURL += "&ownerId=" + ownerId;
         volleyURL += "&type=0";
-        volleyURL += "&expireTime=" + expireTime;
 
          Log.d(TAG, "postSquare url: " + volleyURL);
 

@@ -138,18 +138,21 @@
 
     <!--Tutorial-->
     <string name="tutorial_title1">Cos\'è inSquare?</string>
-    <string name="tutorial_title2">Square Preferite</string>
+    <string name="tutorial_title2">Tieniti aggiornato!</string>
     <string name="tutorial_title3">Crea la tua Square!</string>
-    <string name="tutorial_title4">Scopri i posti intorno a te</string>
-    <string name="tutorial_caption1">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate. \nE’ la soluzione <i>più semplice</i> per metterti in contatto direttamente con chi si trova sul posto, e sapere <b>in tempo reale</b> che cosa sta succedendo.</string>
-    <string name="tutorial_caption2">Aggiungendo una Square come <b>preferita</b>, le notifiche push ti terrano aggiornato in tempo reale, e sarai connesso in tempo reale con i posti che ti interessano</string>
-    <string name="tutorial_caption3">È semplicissimo: se <b>tieni premuto</b> sulla mappa, si aprirà il menu di creazione\nNel menu potrai inserire i dati e creare una Square manualmente, o <b>collegarla a Facebook</b> tramite il link ad un evento o una pagina</string>
-    <string name="tutorial_caption4">Grazie ai pin di colore diverso puoi individuare facilmente le Square: <b>rosso</b> indica un luogo, <b>viola</b> un evento, e <b>verde</b> un\'attività commerciale.\n<i>N.B. le chat degli eventi si cancellano automaticamente dopo 24h</i></string>
+    <string name="tutorial_title4">Gestisci le tue Square</string>
+    <string name="tutorial_1_intro">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate.\n
+        E’ la soluzione <i>più semplice</i> per metterti in contatto direttamente con chi si trova sul posto, sapere cosa sta succedendo, chiedere notizie e non perdere mai le ultime novità.</string>
+    <string name="tutorial_2_notifications">Aggiungendo una Square come <b>preferita</b>, le notifiche push ti terrano aggiornato in tempo reale, e sarai sempre aggiornato su novità, eventi e promozioni! Se hai una domanda </string>
+    <string name="tutorial_3_longpress">È semplicissimo: se <b>tieni premuto</b> sulla mappa, si aprirà il menu di creazione\nNel menu potrai inserire i dati e creare una Square manualmente, o <b>collegarla a Facebook</b> tramite il link ad un evento o una pagina</string>
+    <string name="tutorial_4_swipe">Nel tab <i>Create</i> puoi vedere le Square che hai creato. Puoi modificare nome e descrizione grazie al tasto <i>Modifica</i> e per cancellare una Square basterà <i>trascinarla verso sinistra</i></string>
+    <string name="tutorial_square_types">Grazie ai pin di colore diverso puoi individuare facilmente le Square: <b>rosso</b> indica un luogo, <b>viola</b> un evento, e <b>verde</b> un\'attività commerciale.\n<i>N.B. le chat degli eventi si cancellano automaticamente dopo 24h</i></string>
     <string name="create_square_button_date">Data</string>
     <string name="create_square_button_time">Ora</string>
     <string name="tutorial_salta">Salta</string>
     <string name="tutorial_fine">Fine</string>
     <string name="review_fine">Fine</string>
+    <string name="card_profile_modifica">Modifica</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>
