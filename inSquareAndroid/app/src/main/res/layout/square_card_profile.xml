@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_below="@+id/cardview_profile_main_section"
-                android:visibility="gone"
+                android:visibility="visible"
                 >
                 <View
                     android:layout_width="match_parent"
@@ -161,7 +161,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Via Vito Volterra, 34"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -194,7 +194,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="$$$$ (50+)"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -227,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="1234"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -263,7 +263,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="www.facebook.com"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         android:autoLink="web"
                         />
 
@@ -299,7 +299,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="+39 123 4567890"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         android:autoLink="phone"
                         />
 

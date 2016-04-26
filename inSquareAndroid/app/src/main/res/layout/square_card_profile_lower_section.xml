@@ -57,7 +57,6 @@
                     android:layout_marginStart="8dp"
                     android:padding="1dp"
                     android:src="@drawable/heart_border_black"
-                    android:tint="@color/colorTextPrimary"
                     />
 
                 <TextView

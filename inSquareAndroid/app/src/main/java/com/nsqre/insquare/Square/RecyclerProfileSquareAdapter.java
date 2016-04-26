@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -276,12 +277,12 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             case TYPE_SHOP:
                 Log.d(TAG, "setupFacebookSection: PAGINA!");
                 FacebookPageSquare fbPage = (FacebookPageSquare) listItem;
-                downloadAndFillePageDetails(castHolder, fbPage);
+                fillPageDetails(castHolder, fbPage);
                 break;
         }
     }
 
-    private void downloadAndFillePageDetails(final SquareViewHolder castHolder, FacebookPageSquare page) {
+    private void fillPageDetails(final SquareViewHolder castHolder, FacebookPageSquare page) {
 
         castHolder.facebookSection.setVisibility(View.VISIBLE);
         potentialEmptySection(castHolder.facebookLikeCount, page.likeCount);
@@ -310,6 +311,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                 params.setMargins(0, 0, px, px);
                 tv.setLayoutParams(params);
                 tv.setText(s);
+                tv.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
                 castHolder.facebookHoursList.addView(tv);
             }
         }
@@ -341,6 +343,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
             params.setMargins(0, 0, px, px);
             tv.setLayoutParams(params);
             tv.setText(event.time);
+            tv.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
             castHolder.facebookHoursList.addView(tv);
         }
     }
