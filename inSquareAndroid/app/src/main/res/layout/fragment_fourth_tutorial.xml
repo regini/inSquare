@@ -6,67 +6,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="ContentDescription"
-    tools:background="@color/md_red_700"
+    tools:background="@color/md_red_600"
     >
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/pin_viola"
-        app:layout_widthPercent="25%"
-        app:layout_marginTopPercent="20%"
-        app:layout_marginRightPercent="10%"
-        />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/pin_verde"
-        app:layout_widthPercent="25%"
-        app:layout_marginTopPercent="13%"
-        app:layout_marginLeftPercent="36%"
-        />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/pin_rosso"
-        app:layout_widthPercent="25%"
-        app:layout_marginTopPercent="20%"
-        app:layout_marginLeftPercent="10%"
-        />
-
-    <TextView
+        android:id="@+id/fourth_tutorial_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
+        android:src="@drawable/swipe_to_delete"
+        app:layout_widthPercent="65%"
+        app:layout_heightPercent="45%"
+        app:layout_marginTopPercent="5%"
+        android:scaleX="0"
+        android:scaleY="0"
+        />
+
+    <TextView
+        android:id="@+id/fourth_tutorial_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fourth_tutorial_logo"
+        android:layout_marginBottom="@dimen/big_vertical_margin"
+        android:layout_centerHorizontal="true"
         android:text="@string/tutorial_title4"
         android:textColor="@android:color/white"
         android:textSize="@dimen/title_text_size"
         android:fontFamily="sans-serif-condensed"
         android:textStyle="bold"
-        app:layout_marginBottomPercent="43%"
+        android:scaleY="1.25"
+        android:scaleX="1.25"
         />
     <TextView
+        android:id="@+id/fourth_tutorial_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/fourth_tutorial_title"
         android:layout_centerHorizontal="true"
         android:text="@string/tutorial_4_swipe"
         android:textColor="@android:color/white"
         android:textSize="@dimen/caption_text_size"
         android:fontFamily="sans-serif-condensed-light"
-        app:layout_marginBottomPercent="11%"
         app:layout_marginLeftPercent="10%"
         app:layout_marginStartPercent="10%"
         app:layout_marginRightPercent="10%"
         app:layout_marginEndPercent="10%"
+        android:scaleY="1.25"
+        android:scaleX="1.25"
         />
 </android.support.percent.PercentRelativeLayout>

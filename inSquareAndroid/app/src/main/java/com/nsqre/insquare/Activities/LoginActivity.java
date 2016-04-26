@@ -12,10 +12,15 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -62,7 +67,10 @@ public class LoginActivity extends AppCompatActivity
 {
 
     private static final String TAG = "LoginActivity";
+    public static final int ITEM_DELAY = 300;
+
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     private User user;
     private InSquareProfile profile;
 
@@ -139,11 +147,35 @@ public class LoginActivity extends AppCompatActivity
         initLoginButtons();
     }
 
-
     /**
      * This method manages the authentication of the user
      * @see #launchInSquare()
      */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        ViewGroup container = (ViewGroup) findViewById(R.id.login_container);
+
+        for(int i = 0; i < container.getChildCount(); i++)
+        {
+            View v = container.getChildAt(i);
+            ViewPropertyAnimatorCompat viewAnimator;
+
+            if (!(v instanceof Button) && !(v instanceof ImageView)) {
+                viewAnimator = ViewCompat.animate(v)
+                        .translationY(50).alpha(1)
+                        .setStartDelay((ITEM_DELAY * i) + 500)
+                        .setDuration(1000);
+            } else {
+                viewAnimator = ViewCompat.animate(v)
+                        .scaleY(1).scaleX(1)
+                        .setStartDelay((ITEM_DELAY * i) + 500)
+                        .setDuration(500);
+            }
+
+            viewAnimator.setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
     public void initLoginButtons() {
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -233,6 +265,10 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
+        if(gApiClient != null)
+        {
+            gApiClient.connect();
+        }
         super.onStart();
     }
 
@@ -246,6 +282,9 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onStop() {
+        if (gApiClient != null && gApiClient.isConnected()) {
+            gApiClient.disconnect();
+        }
         super.onStop();
     }
 
@@ -307,21 +346,13 @@ public class LoginActivity extends AppCompatActivity
      */
     private void launchInSquare() {
         Intent intent = new Intent(this, BottomNavActivity.class);
-        /*
-        if(getIntent().getExtras() != null) {
-            if(getIntent().getExtras().getInt("map") == 0) {
-                intent.putExtra("map", getIntent().getIntExtra("map",0));
-            }
-            else if(getIntent().getStringExtra("squareId") != null) {
-                intent.putExtra("s  quareId", getIntent().getStringExtra("squareId"));
-            }
-            getIntent().getExtras().clear();
-        }
-        */
-        
         intent.putExtra(SplashActivity.SHOW_TUTORIAL_KEY, true);
-        
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finishAffinity();
     }
 
     /**

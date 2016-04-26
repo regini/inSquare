@@ -72,7 +72,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
 
-        setupLeftSection(castHolder, squareName);
+        setupLeftSection(castHolder, listItem.getInitials());
 
         castHolder.squareRowLayout.setOnClickListener(
                 new View.OnClickListener() {
@@ -123,7 +123,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         );
     }
 
-    private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
+    private void setupLeftSection(SquareViewHolder castHolder, String initials) {
         int position = castHolder.getAdapterPosition()%(BottomNavActivity.backgroundColors.length);
 
         ColorStateList circleColor = ContextCompat.getColorStateList(context, BottomNavActivity.backgroundColors[position]);
@@ -133,7 +133,6 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         DrawableCompat.setTintList(wrappedDrawable, circleColor);
         castHolder.squareCircle.setBackground(wrappedDrawable);
 
-        String initials = BottomNavActivity.setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
     }
 

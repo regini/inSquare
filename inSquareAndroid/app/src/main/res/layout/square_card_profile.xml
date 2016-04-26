@@ -151,7 +151,7 @@
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:layout_gravity="center_vertical"
                             android:src="@drawable/map_marker_radius"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
                             />
                     </RelativeLayout>
 
@@ -161,7 +161,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Via Vito Volterra, 34"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -184,7 +184,7 @@
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:layout_gravity="center_vertical"
                             android:src="@drawable/dollar_sign"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
                             />
                     </RelativeLayout>
 
@@ -194,7 +194,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="$$$$ (50+)"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -217,7 +217,7 @@
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:layout_gravity="center_vertical"
                             android:src="@drawable/thumb_up"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
                             />
                     </RelativeLayout>
 
@@ -227,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="1234"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         />
 
 
@@ -252,7 +252,7 @@
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:layout_gravity="center_vertical"
                             android:src="@drawable/link"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
 
                             />
                     </RelativeLayout>
@@ -263,7 +263,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="www.facebook.com"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         android:autoLink="web"
                         />
 
@@ -287,7 +287,7 @@
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:layout_gravity="center_vertical"
                             android:src="@drawable/phone"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
                             />
                     </RelativeLayout>
 
@@ -299,7 +299,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="+39 123 4567890"
-                        android:fontFamily="sans-serif-condensed"
+                        android:fontFamily="sans-serif-condensed-light"
                         android:autoLink="phone"
                         />
 
@@ -316,13 +316,14 @@
                         android:layout_height="@dimen/square_card_pic_size"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center"
                         >
                         <ImageView
                             android:layout_width="@dimen/card_profile_small_icons"
                             android:layout_height="@dimen/card_profile_small_icons"
                             android:src="@drawable/clock"
-                            android:tint="@color/com_facebook_blue"
+                            android:tint="@color/colorTextPrimary"
                             />
                     </RelativeLayout>
 

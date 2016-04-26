@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -53,6 +54,8 @@ import com.nsqre.insquare.Activities.BottomNavActivity;
 import com.nsqre.insquare.Activities.ChatActivity;
 import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
+import com.nsqre.insquare.Square.FacebookEventSquare;
+import com.nsqre.insquare.Square.FacebookPageSquare;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.SquareSuggestion;
 import com.nsqre.insquare.User.InSquareProfile;
@@ -727,7 +730,7 @@ public class MapFragment extends Fragment
         }
 
         intent.putExtra(SQUARE_TAG, s);
-        intent.putExtra(BottomNavActivity.INITIALS_TAG, BottomNavActivity.setupInitials(s.getName()));
+        intent.putExtra(BottomNavActivity.INITIALS_TAG, s.getInitials());
 
         int max = BottomNavActivity.backgroundColors.length;
         int randomBackgroundIndex = (new Random()).nextInt(max);
@@ -1144,10 +1147,13 @@ public class MapFragment extends Fragment
         private static final String TAG = "MarkerInfoWindowAdapter";
 
         // Componenti della View
-        private ImageView heartButton;
-        private ImageView squareIcon;
         private TextView squareName;
+        private TextView squareInitials;
         private TextView squareActivity;
+        private LinearLayout facebookLikes;
+        private TextView likeNumber;
+        private LinearLayout facebookTime;
+        private TextView timeText;
 
         @Override
         public View getInfoContents(Marker marker) {
@@ -1159,8 +1165,12 @@ public class MapFragment extends Fragment
             View view = getActivity().getLayoutInflater().inflate(R.layout.info_window_layout, null);
 
             squareName = (TextView) view.findViewById(R.id.info_window_square_name);
+            squareInitials = (TextView) view.findViewById(R.id.info_window_square_initials);
             squareActivity = (TextView) view.findViewById(R.id.info_window_square_last_activity);
-            heartButton = (ImageView) view.findViewById(R.id.info_window_heart_button);
+            facebookLikes = (LinearLayout) view.findViewById(R.id.info_window_facebook_likes);
+            facebookTime = (LinearLayout) view.findViewById(R.id.info_window_facebook_time);
+            likeNumber = (TextView) view.findViewById(R.id.info_window_like_number);
+            timeText = (TextView) view.findViewById(R.id.info_window_time_text);
 
             Square s = squareHashMap.get(marker);
             setupSquare(s);
@@ -1171,11 +1181,20 @@ public class MapFragment extends Fragment
         private void setupSquare(final Square square)
         {
             squareName.setText(square.getName());
+            squareInitials.setText(square.getInitials());
             squareActivity.setText(square.formatTime());
 
-            if(InSquareProfile.isFav(square.getId()))
+            if(square.isFacebookPage)
             {
-                heartButton.setImageResource(R.drawable.like_filled_96);
+                facebookLikes.setVisibility(View.VISIBLE);
+                FacebookPageSquare fbPage = (FacebookPageSquare) square;
+                likeNumber.setText(fbPage.likeCount);
+            }else if(square.isFacebookEvent)
+            {
+                squareActivity.setVisibility(View.GONE);
+                facebookTime.setVisibility(View.VISIBLE);
+                FacebookEventSquare fbEvent = (FacebookEventSquare) square;
+                timeText.setText(fbEvent.time);
             }
         }
     }

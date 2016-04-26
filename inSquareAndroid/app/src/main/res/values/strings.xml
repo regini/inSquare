@@ -153,6 +153,7 @@
     <string name="tutorial_fine">Fine</string>
     <string name="review_fine">Fine</string>
     <string name="card_profile_modifica">Modifica</string>
+    <string name="login_slogan">Where we go.\nWho we meet.</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>

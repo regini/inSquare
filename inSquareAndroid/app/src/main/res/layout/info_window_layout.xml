@@ -8,30 +8,34 @@
     android:paddingRight="@dimen/activity_vertical_margin"
     >
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/info_window_top_section"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="@drawable/info_window_background"
         android:padding="@dimen/info_window_padding"
         >
 
-        <ImageView
-            android:id="@+id/info_window_heart_button"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/info_window_padding"
-            android:src="@drawable/like_96"
-            />
-
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/info_window_top_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/info_window_heart_button"
-            android:layout_centerVertical="true"
             >
+
+            <TextView
+                android:id="@+id/info_window_square_initials"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_marginRight="@dimen/info_window_padding"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="SN"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-condensed"
+                android:background="@drawable/linear_layout_rounded_background"
+                android:backgroundTint="@color/colorAccent"
+                />
 
             <LinearLayout
                 android:id="@+id/info_window_name_activity_layout"
@@ -63,20 +67,82 @@
                     android:fontFamily="sans-serif-condensed-light"
                     />
 
+                <LinearLayout
+                    android:id="@+id/info_window_facebook_likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/info_window_padding"
+                    android:visibility="gone"
+                    >
+
+                    <ImageView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="@dimen/activity_vertical_margin"
+                        android:layout_height="@dimen/activity_vertical_margin"
+                        android:layout_marginRight="@dimen/info_window_padding"
+                        android:src="@drawable/thumb_up"
+                        android:tint="@color/colorTextPrimary"
+                        />
+
+                    <TextView
+                        android:id="@+id/info_window_like_number"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1234"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-condensed-light"
+                        />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/info_window_facebook_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/info_window_padding"
+                    android:visibility="gone"
+                    >
+
+                    <ImageView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="@dimen/activity_vertical_margin"
+                        android:layout_height="@dimen/activity_vertical_margin"
+                        android:layout_marginRight="@dimen/info_window_padding"
+                        android:src="@drawable/clock"
+                        android:tint="@color/colorTextPrimary"
+                        />
+
+                    <TextView
+                        android:id="@+id/info_window_time_text"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sat 24 at 19:30"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-condensed-light"
+                        />
+
+
+                </LinearLayout>
+
             </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
+
+
 
     <RelativeLayout
         android:id="@+id/info_window_bottom_section"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="@drawable/triangle"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
         android:layout_gravity="center_horizontal"
-        >
+    />
 
-    </RelativeLayout>
 
 </LinearLayout>

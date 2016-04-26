@@ -14,54 +14,56 @@ import java.util.TimeZone;
  */
 public class Square implements Serializable {
 
-    private static final String TAG = "Square";
+    protected static final String TAG = "Square";
     /**
      * The square id
      */
-    private String id;
+    protected String id;
     /**
      * The square name
      */
-    private String name;
+    protected String name;
     /**
      * A user written description for the square
      */
-    private String description;
+    protected String description;
     /**
      * The latitude value of the position of the square
      */
-    private double lat;
+    protected double lat;
     /**
      * The longitude value of the position of the square
      */
-    private double lon;
-    private String type;
-    private String facebookEventId, facebookPageId;
+    protected double lon;
+    protected String type;
     /**
      * The id of the user that has created the square
      */
-    private String ownerId;
+    protected String ownerId;
     /**
      * The number of how many people are following the square
      */
-    private long favouredBy;
-    private String[] favourers;
+    protected long favouredBy;
+    protected String[] favourers;
     /**
      * The number of how many people have seen this square
      */
-    private long views;
+    protected long views;
     /**
      * The state of the square
      * @see SquareState
      */
-    private SquareState squareState;
+    protected SquareState squareState;
     /**
      * The date of the last message sent to this square
      */
-    private Calendar lastMessageDate;
-    private String lastMessageDateString;
+    protected Calendar lastMessageDate;
+    protected String lastMessageDateString;
 
-    private Locale myLocale;
+    protected Locale myLocale;
+
+    public boolean isFacebookEvent;
+    public boolean isFacebookPage;
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
@@ -83,8 +85,6 @@ public class Square implements Serializable {
                   String state,
                   String lastMessageDate,
                   String type,
-                  String eventId,
-                  String pageId,
                   Locale l) {
         this.id = id;
         this.name = name;
@@ -125,11 +125,7 @@ public class Square implements Serializable {
 
         this.type = type;
 
-        this.facebookEventId = eventId;
-        this.facebookPageId = pageId;
-
         this.myLocale = l;
-//        Log.d(TAG, "NEWSQUARE:\n" + this.toString());
     }
 
     @Override
@@ -231,14 +227,6 @@ public class Square implements Serializable {
         return lastMessageDate;
     }
 
-    public String getFacebookEventId() {
-        return facebookEventId;
-    }
-
-    public String getFacebookPageId() {
-        return facebookPageId;
-    }
-
     /**
      * Creates a string out of the lastMessageDate Calendar object
      * @return A string representing the date of the last message sent to the square
@@ -272,6 +260,23 @@ public class Square implements Serializable {
         return "Ultimo messaggio: " + timetoShow;
     }
 
+    public String getInitials()
+    {
+        String[] division = this.name.split("\\s+");
+
+        if(division.length <= 1)
+        {
+            return this.name.substring(0,1).toUpperCase();
+        }
+        else if(division.length == 2)
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
+        }
+        else
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
+        }
+    }
 
     @Override
     public int hashCode() {

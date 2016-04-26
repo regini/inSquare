@@ -72,7 +72,7 @@ public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
         castHolder.squareName.setText(squareName);
         castHolder.squareActivity.setText(listItem.formatTime());
 
-        setupLeftSection(castHolder, squareName);
+        setupLeftSection(castHolder, listItem.getInitials());
 
         setupSwipeLayout(castHolder, listItem);
 
@@ -175,7 +175,7 @@ public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
         );
     }
 
-    private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
+    private void setupLeftSection(SquareViewHolder castHolder, String initials) {
         int position = castHolder.getAdapterPosition()%(BottomNavActivity.backgroundColors.length);
 
         ColorStateList circleColor = ContextCompat.getColorStateList(context, BottomNavActivity.backgroundColors[position]);
@@ -184,8 +184,6 @@ public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
         final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
         DrawableCompat.setTintList(wrappedDrawable, circleColor);
         castHolder.squareCircle.setBackground(wrappedDrawable);
-
-        String initials = BottomNavActivity.setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
     }
 
