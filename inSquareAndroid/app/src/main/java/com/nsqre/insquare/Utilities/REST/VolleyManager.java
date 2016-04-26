@@ -135,7 +135,7 @@ public class VolleyManager {
         reqURL += "&lat=" + lat;
         reqURL += "&lon=" + lon;
 
-         Log.d(TAG, "getClosestSquares: " + reqURL);
+//         Log.d(TAG, "getClosestSquares: " + reqURL);
 
         StringRequest closeSquareRequest = new StringRequest(Request.Method.GET, reqURL,
                 new Response.Listener<String>() {

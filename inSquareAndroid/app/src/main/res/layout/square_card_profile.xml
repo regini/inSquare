@@ -316,6 +316,7 @@
                         android:layout_height="@dimen/square_card_pic_size"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center"
                         >
                         <ImageView
