@@ -270,12 +270,10 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         switch (typeShop)
         {
             case TYPE_EVENT:
-                Log.d(TAG, "setupFacebookSection: EVENTO");
                 FacebookEventSquare fbEvent = (FacebookEventSquare) listItem;
                 fillEventDetails(castHolder, fbEvent);
                 break;
             case TYPE_SHOP:
-                Log.d(TAG, "setupFacebookSection: PAGINA!");
                 FacebookPageSquare fbPage = (FacebookPageSquare) listItem;
                 fillPageDetails(castHolder, fbPage);
                 break;

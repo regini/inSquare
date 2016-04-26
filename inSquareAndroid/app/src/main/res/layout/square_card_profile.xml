@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_below="@+id/cardview_profile_main_section"
-                android:visibility="visible"
+                android:visibility="gone"
                 >
                 <View
                     android:layout_width="match_parent"
