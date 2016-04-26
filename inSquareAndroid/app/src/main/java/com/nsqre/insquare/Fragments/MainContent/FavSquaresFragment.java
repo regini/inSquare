@@ -90,6 +90,9 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
         return v;
     }
 
+    /**
+     * Sets up the toolbar with the profile image of the user and infos about the view
+     */
     private void setupToolbar(View v) {
         toolbar = (Toolbar) v.findViewById(R.id.recents_toolbar);
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
@@ -113,9 +116,7 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
         title.setText(getString(R.string.bottom_nav_tab_favs));
     }
 
-    /**
-     * TODO ???
-     */
+
     @Override
     public void onStart() {
         super.onStart();
@@ -144,7 +145,7 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
     }
 
     /**
-     * TODO ???
+     * Receives a notification whenever a square is deleted and updates the view if needed
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override

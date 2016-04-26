@@ -64,6 +64,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The fragment shown as soon as the user logs in the app. It shows the map filled with pins representing Squares active, gives the user the possibility to create his own via long press and start chatting with other people
+ */
 public class MapFragment extends Fragment
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -225,6 +228,9 @@ public class MapFragment extends Fragment
         InSquareProfile.removeListener(this);
     }
 
+    /**
+     * Broadcast receiver that manages in real time the creation, update and deletion of squares on the map
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -268,6 +274,9 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * Sets on the map the marker in the actual position of the user
+     */
     private void setupLocation()
     {
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -356,8 +365,10 @@ public class MapFragment extends Fragment
         }
     }
 
-    // Permessi di locazioni richiesti
-    // Gestione di ritorno dalla richiesta
+    /**
+     * When the user gives the location permissions to the app, it calls setupLocation
+     * @see #setupLocation()
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode)
@@ -377,7 +388,9 @@ public class MapFragment extends Fragment
         }
     }
 
-
+    /**
+     * Manages the list of results from the search bar. From the results shown the user can move the map to the location of the square or he can enter directly in the chat
+     */
     private void setupSearchView() {
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
@@ -499,6 +512,10 @@ public class MapFragment extends Fragment
 
     }
 
+    /**
+     * Moves the map to a given location
+     * @param toLocation The location in which the map will be centered
+     */
     private void moveToPosition(Location toLocation) {
         CameraPosition position = CameraPosition.builder()
                 .target(new LatLng(toLocation.getLatitude(),
@@ -510,6 +527,9 @@ public class MapFragment extends Fragment
         mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
+    /**
+     * Initializes the Google Maps map
+     */
     private void initCamera() {
 
         moveToPosition(mCurrentLocation);
@@ -525,6 +545,9 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * TODO documentare
+     */
     public void checkActivityIntent(Intent intent) {
         if(intent != null && intent.getStringExtra("squareId") != null) {
             String squareId = intent.getStringExtra("squareId");
@@ -553,6 +576,10 @@ public class MapFragment extends Fragment
 
     }
 
+    /**
+     * Triggers when the user scrolls the map and eventually downloads nearby squares
+     * @param cameraPosition The new camera position
+     */
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
 
@@ -582,6 +609,12 @@ public class MapFragment extends Fragment
         }
     }
 
+    /**
+     * Downloads and draws on the map the closest squares, based on the zoom distance and the actual center of the map
+     * @see #getClosestSquares(String, double, double)
+     * @param distance The zoom distance
+     * @param position The actual center of the map
+     */
     private void downloadAndInsertPins(double distance, LatLng position)
     {
         String d = distance + "km";
@@ -599,6 +632,12 @@ public class MapFragment extends Fragment
         mLastUpdateLocation = position;
     }
 
+    /**
+     * Sends a request to the server to download the closest squares based on a position and a radius of research
+     * @param distance
+     * @param lat Latitude of the actual center of the map
+     * @param lon Longitude of the actual center of the map
+     */
     private void getClosestSquares(String distance, double lat, double lon) {
 
         VolleyManager.getInstance().getClosestSquares(distance, lat, lon,
@@ -630,7 +669,12 @@ public class MapFragment extends Fragment
                 });
     }
 
-    // Con due locazioni restituisce il valore in km di distanza
+    /**
+     * Calculates the distance between 2 locations
+     * @param southwest location 1
+     * @param frnd_latlong location 2
+     * @return the distance in meters
+     */
     private float getDistance(LatLng southwest, LatLng frnd_latlong){
         Location l1=new Location("Southwest");
         l1.setLatitude(southwest.latitude);
@@ -659,6 +703,11 @@ public class MapFragment extends Fragment
         startChatActivity(squareHashMap.get(marker));
     }
 
+    /**
+     * Opens the ChatActivity relative to a given Square
+     * @param s A square
+     * @see ChatActivity
+     */
     public void startChatActivity(Square s) {
 
         // [START PinButton_event]
@@ -687,7 +736,14 @@ public class MapFragment extends Fragment
         startActivity(intent);
     }
 
-    // LatLng | Name |
+    /**
+     * Creates and adds a marker on the map
+     * @param pos location of the marker
+     * @param name name to be shown
+     * @param type type of the square
+     * @return The marker just created
+     * @see #correctMapPin(String, int)
+     */
     private Marker createSquarePin(LatLng pos, String name, int type) {
 
         MarkerOptions options = new MarkerOptions().position(pos);
@@ -711,7 +767,12 @@ public class MapFragment extends Fragment
         return mGoogleMap.addMarker(options);
     }
 
-    // Codice per gestire la creazione di pin di colore e grandezza corretta
+    /**
+     * Defines the size and color of a pin
+     * @param name name of the pin
+     * @param scaleSize scale size
+     * @return an object that contains the informations elaborated
+     */
     private BitmapDescriptor correctMapPin(final String name, final int scaleSize)
     {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(name, "drawable", getContext().getPackageName()));
@@ -731,6 +792,11 @@ public class MapFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
     }
 
+    /**
+     * Manages the kind of request that will be done to the server to create a new Square
+     * @param resultCode The code of which kind of square is being created
+     * @param data The package of data of the new Square
+     */
     public void handleSquareCreation(int resultCode, Intent data)
     {
         String name = data.getStringExtra(CreateSquareActivity.RESULT_SQUARE_NAME);
@@ -844,7 +910,10 @@ public class MapFragment extends Fragment
         }
     }
 
-
+    /**
+     * Listens to a longpress on the map and shows the CreateSquareActivity
+     * @param latLng the position of the longpress
+     */
     @Override
     public void onMapLongClick(final LatLng latLng) {
         String latitude = String.valueOf(latLng.latitude);
@@ -866,6 +935,10 @@ public class MapFragment extends Fragment
         );*/
     }
 
+    /**
+     * Triggered when the Google Map is ready. Sets up the pins on the map
+     * @see #downloadAndInsertPins(double, LatLng)
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if(mapFragment != null)
@@ -903,6 +976,9 @@ public class MapFragment extends Fragment
         initListeners();
     }
 
+    /**
+     * Initializes all the necessary listeners for the MapFragment
+     */
     private void initListeners() {
         mGoogleMap.setOnMarkerClickListener(this);
         mGoogleMap.setOnMapLongClickListener(this);
@@ -912,6 +988,10 @@ public class MapFragment extends Fragment
         mGoogleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
     }
 
+    /**
+     * Shows the info windows for a square when the user taps on its marker
+     * @param marker the marker of the square
+     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
@@ -936,6 +1016,10 @@ public class MapFragment extends Fragment
         return true;
     }
 
+    /**
+     * TODO documentare
+     * da eliminare? sembra inutilizzato
+     */
     public void favouriteSquare(final int method, final Square square) {
         VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),
                 new VolleyManager.VolleyResponseListener() {
@@ -993,6 +1077,9 @@ public class MapFragment extends Fragment
         Log.d(TAG, "onRecentChanged: Recent changed!");
     }
 
+    /**
+     * Manages the list of pins to draw on the map
+     */
     public class MapFiller extends AsyncTask<String,Void,HashMap<String,Square>> {
 
         @Override
@@ -1049,6 +1136,9 @@ public class MapFragment extends Fragment
         return mCurrentLocation;
     }
 
+    /**
+     * Manages the data shown in the info window
+     */
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         private static final String TAG = "MarkerInfoWindowAdapter";

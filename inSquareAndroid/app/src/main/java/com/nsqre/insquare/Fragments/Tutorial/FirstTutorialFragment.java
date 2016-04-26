@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.nsqre.insquare.R;
 
 /**
-
+ * Fragment for the first page of the tutorial
  */
 public class FirstTutorialFragment extends Fragment {
 

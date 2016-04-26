@@ -217,9 +217,6 @@ public class ProfileFragment extends Fragment implements
 //        squaresRecyclerView.addItemDecoration(new RecyclerProfileSquareDecoration(getContext()));
     }
 
-    /**
-     * TODO ??
-     */
     @Override
     public void onStart() {
         super.onStart();
@@ -260,7 +257,7 @@ public class ProfileFragment extends Fragment implements
     }
 
     /**
-     * TODO ???
+     * Receives a notification whenever a square is deleted and updates the view if needed
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override

@@ -55,8 +55,7 @@ import java.util.Arrays;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * This is the fragment that show the user's Profile. In it you can find information about the user:
- * his name, his photo and the lists of squares created and favoured
+ * This is the fragment that show the settings of the app
  */
 public class SettingsFragment extends Fragment implements
         InSquareProfile.InSquareProfileListener,
@@ -152,7 +151,7 @@ public class SettingsFragment extends Fragment implements
 
 
     /**
-     * Initialized the view of this fragment setting the lists of favourite and owned squares
+     * Initializes the view of this fragment setting the lists of favourite and owned squares
      * and the profile image(downloading it if not saved in the local storage)
      * @param inflater
      * @param container

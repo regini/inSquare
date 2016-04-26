@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 
 import com.nsqre.insquare.R;
 
-
+/**
+ * This fragment will never show.
+ */
 public class BlankFragment extends Fragment {
 
 

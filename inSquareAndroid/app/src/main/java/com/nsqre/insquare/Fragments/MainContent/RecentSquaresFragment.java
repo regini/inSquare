@@ -91,6 +91,9 @@ public class RecentSquaresFragment extends Fragment implements
         return v;
     }
 
+    /**
+     * Sets up the toolbar with the profile image of the user and infos about the view
+     */
     private void setupToolbar(View v) {
         toolbar = (Toolbar) v.findViewById(R.id.recents_toolbar);
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
@@ -114,9 +117,6 @@ public class RecentSquaresFragment extends Fragment implements
         title.setText(getString(R.string.bottom_nav_tab_recent));
     }
 
-    /**
-     * TODO ???
-     */
     @Override
     public void onStart() {
         super.onStart();
@@ -145,7 +145,7 @@ public class RecentSquaresFragment extends Fragment implements
     }
 
     /**
-     * TODO ???
+     * Receives a notification whenever a square is deleted and updates the view if needed
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
