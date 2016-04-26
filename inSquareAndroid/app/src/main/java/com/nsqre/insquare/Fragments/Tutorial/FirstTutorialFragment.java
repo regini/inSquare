@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nsqre.insquare.R;
 
@@ -33,6 +34,8 @@ public class FirstTutorialFragment extends LogoFragment
         View v = inflater.inflate(R.layout.fragment_first_tutorial, container, false);
 
         logo = (ImageView) v.findViewById(R.id.first_tutorial_logo);
+        title = (TextView) v.findViewById(R.id.first_tutorial_title);
+        content = (TextView) v.findViewById(R.id.first_tutorial_content);
 
         return v;
     }

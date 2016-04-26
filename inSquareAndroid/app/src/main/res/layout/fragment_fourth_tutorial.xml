@@ -36,8 +36,11 @@
         android:textSize="@dimen/title_text_size"
         android:fontFamily="sans-serif-condensed"
         android:textStyle="bold"
+        android:scaleY="1.25"
+        android:scaleX="1.25"
         />
     <TextView
+        android:id="@+id/fourth_tutorial_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/fourth_tutorial_title"
@@ -50,5 +53,7 @@
         app:layout_marginStartPercent="10%"
         app:layout_marginRightPercent="10%"
         app:layout_marginEndPercent="10%"
+        android:scaleY="1.25"
+        android:scaleX="1.25"
         />
 </android.support.percent.PercentRelativeLayout>

@@ -185,6 +185,7 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         Log.d(TAG, "onPageSelected: " + position);
         LogoFragment visible = (LogoFragment) pagerAdapter.getItem(position);
         visible.animateLogo();
+        visible.animateText();
     }
 
     @Override
