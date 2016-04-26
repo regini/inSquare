@@ -84,7 +84,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         final String squareName = listItem.getName();
         setupTopSection(castHolder, listItem);
 
-        setupLeftSection(castHolder, squareName);
+        setupLeftSection(castHolder, listItem.getInitials());
 
         castHolder.lowerSectionViews.setText("" + listItem.getViews());
         castHolder.heartFavs.setText("" + listItem.getFavouredBy());
@@ -227,7 +227,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         Cambia il colore del cerchio nella lista a seconda della posizione
         Utilizza DrawableCompat per retrocompatibilità
      */
-    private void setupLeftSection(SquareViewHolder castHolder, String squareName) {
+    private void setupLeftSection(SquareViewHolder castHolder, String initials) {
         int position = castHolder.getAdapterPosition()%(BottomNavActivity.backgroundColors.length);
 
         ColorStateList circleColor = ContextCompat.getColorStateList(context, BottomNavActivity.backgroundColors[position]);
@@ -237,25 +237,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         DrawableCompat.setTintList(wrappedDrawable, circleColor);
         castHolder.squareInitials.setBackground(wrappedDrawable);
 
-        String initials = setupInitials(squareName);
         castHolder.squareInitials.setText(initials);
-    }
-
-    private String setupInitials(String words) {
-        String[] division = words.split("\\s+");
-
-        if(division.length <= 1)
-        {
-            return words.substring(0,1).toUpperCase();
-        }
-        else if(division.length == 2)
-        {
-            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
-        }
-        else
-        {
-            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
-        }
     }
 
     private void setupHeart(final SquareViewHolder castHolder, final Square listItem) {

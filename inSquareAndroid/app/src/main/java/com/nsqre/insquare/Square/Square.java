@@ -62,8 +62,8 @@ public class Square implements Serializable {
 
     protected Locale myLocale;
 
-    protected boolean isFacebookEvent;
-    protected boolean isFacebookPage;
+    public boolean isFacebookEvent;
+    public boolean isFacebookPage;
 
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
@@ -260,6 +260,23 @@ public class Square implements Serializable {
         return "Ultimo messaggio: " + timetoShow;
     }
 
+    public String getInitials()
+    {
+        String[] division = this.name.split("\\s+");
+
+        if(division.length <= 1)
+        {
+            return this.name.substring(0,1).toUpperCase();
+        }
+        else if(division.length == 2)
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
+        }
+        else
+        {
+            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
+        }
+    }
 
     @Override
     public int hashCode() {

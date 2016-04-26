@@ -314,28 +314,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     }
 
     /**
-     * Extracts the inital letters from the name of the Square
-     * @param words the name of the Square
-     * @return The initials
-     */
-    public static String setupInitials(String words) {
-        String[] division = words.split("\\s+");
-
-        if(division.length <= 1)
-        {
-            return words.substring(0,1).toUpperCase();
-        }
-        else if(division.length == 2)
-        {
-            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase();
-        }
-        else
-        {
-            return division[0].substring(0,1).toUpperCase() + division[1].substring(0,1).toUpperCase() + division[2].substring(0, 1).toUpperCase();
-        }
-    }
-
-    /**
      * TODO documentare
      * @param square
      * @param adapter
