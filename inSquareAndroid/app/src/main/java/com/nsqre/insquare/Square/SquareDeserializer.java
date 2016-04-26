@@ -127,6 +127,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         }else
         {
             facebookPageId = facebookIdPageElement.getAsString();
+            return new FacebookPageSquare(id, name,description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, facebookPageId, this.locale);
         }
 
         JsonElement facebookIdEventElement = source.get("facebook_id_event");
@@ -137,10 +138,10 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         else
         {
             facebookEventId = facebookIdEventElement.getAsString();
+            return new FacebookEventSquare(id, name,description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, facebookEventId, this.locale);
         }
 
-        final Square square = new Square(id, name, description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, facebookEventId, facebookPageId, this.locale);
+        return new Square(id, name, description, geoloc, ownerid, favouredby, fav, views, state, lmd, type, this.locale);
 
-        return square;
     }
 }

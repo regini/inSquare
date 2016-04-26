@@ -174,7 +174,7 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
             case 2:
                 return ContextCompat.getColor(getApplicationContext(), R.color.md_blue_700);
             case 3:
-                return ContextCompat.getColor(getApplicationContext(), R.color.md_red_700);
+                return ContextCompat.getColor(getApplicationContext(), R.color.md_red_600);
             default:
                 return Color.TRANSPARENT;
         }
