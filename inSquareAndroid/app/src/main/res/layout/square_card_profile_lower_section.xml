@@ -37,6 +37,7 @@
                     android:layout_height="@dimen/card_profile_small_icons"
                     android:layout_marginRight="8dp"
                     android:src="@drawable/eye"
+                    android:tint="@color/colorTextPrimary"
                     />
                 <TextView
                     android:id="@+id/lower_section_square_views"
@@ -56,6 +57,7 @@
                     android:layout_marginStart="8dp"
                     android:padding="1dp"
                     android:src="@drawable/heart_border_black"
+                    android:tint="@color/colorTextPrimary"
                     />
 
                 <TextView
@@ -79,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/card_profile_modifica"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@color/colorTextPrimary"
                     style="?attr/borderlessButtonStyle"
                     />
             </LinearLayout>
