@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
@@ -34,7 +35,10 @@ public class FacebookPageSquare extends Square {
         super(id, name, description, geoloc, ownerId, favouredBy, favourers, views, state, lastMessageDate, type, l);
         this.pageId = pageId;
         this.isFacebookPage = true;
-        downloadAndFillPageDetails();
+
+        if(FacebookSdk.isInitialized()) {
+            downloadAndFillPageDetails();
+        }
     }
 
     private void downloadAndFillPageDetails() {

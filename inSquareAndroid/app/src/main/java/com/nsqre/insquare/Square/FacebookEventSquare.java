@@ -3,6 +3,7 @@ package com.nsqre.insquare.Square;/* Created by umbertosonnino on 26/4/16  */
 import android.util.Log;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
@@ -32,7 +33,9 @@ public class FacebookEventSquare extends Square {
 
         website = "www.facebook.com/events/" + eventId;
 
-        downloadAndFillEventDetails();
+        if(FacebookSdk.isInitialized()) {
+            downloadAndFillEventDetails();
+        }
     }
 
     private void downloadAndFillEventDetails() {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/white"
     android:fitsSystemWindows="true"
     >
 
@@ -31,7 +31,7 @@
             app:dotDiameter="8dp"
             app:dotGap="8dp"
             app:animationDuration="320"
-            app:pageIndicatorColor="@color/colorPrimary"
+            app:pageIndicatorColor="@color/colorPrimaryDark"
             app:currentPageIndicatorColor="@color/colorAccent"
             />
 
@@ -44,7 +44,7 @@
             android:paddingRight="8dp"
             android:paddingEnd="8dp"
             android:text="Avanti"
-            android:textColor="@color/colorText"
+            android:textColor="@color/colorTextPrimary"
             style="?android:attr/borderlessButtonStyle"
             />
 
@@ -56,7 +56,7 @@
             android:paddingLeft="8dp"
             android:paddingStart="8dp"
             android:text="Indietro"
-            android:textColor="@color/colorText"
+            android:textColor="@color/colorTextPrimary"
             android:fontFamily="sans-serif-condensed"
             style="?android:attr/borderlessButtonStyle"
             />
