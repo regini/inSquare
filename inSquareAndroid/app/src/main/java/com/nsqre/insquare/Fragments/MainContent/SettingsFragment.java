@@ -107,6 +107,9 @@ public class SettingsFragment extends Fragment implements
         super.onAttach(context);
     }
 
+    /**
+     * Sets up the authentication parameters for Google and Facebook sign-in
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -150,13 +153,13 @@ public class SettingsFragment extends Fragment implements
 
 
     /**
-     * Initializes the view of this fragment setting the lists of favourite and owned squares
-     * and the profile image(downloading it if not saved in the local storage)
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
+     * Initializes the view of this fragment
      * @return The view created
-     * @see DownloadImageTask
+     * @see #setupProfile(View)
+     * @see #setupLoginButtons(View)
+     * @see #setupFeedbackButton(View)
+     * @see #setupAppInvitesButton(View)
+     * @see #setupTutorialButton(View)
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -177,6 +180,9 @@ public class SettingsFragment extends Fragment implements
         return v;
     }
 
+    /**
+     * On click, it shows a dialog to get user's feedback, and sends it to the backend
+     */
     private void setupFeedbackButton(View layout)
     {
         feedbackSendButton = (TextView) layout.findViewById(R.id.settings_send_feedback);
@@ -239,6 +245,9 @@ public class SettingsFragment extends Fragment implements
         );
     }
 
+    /**
+     * Loads and shows the profile image and the username
+     */
     private void setupProfile(View layout) {
         userAvatar = (CircleImageView) layout.findViewById(R.id.settings_top_user_avatar);
 
@@ -254,6 +263,9 @@ public class SettingsFragment extends Fragment implements
         username.setText(InSquareProfile.getUsername());
     }
 
+    /**
+     * Manages App Invites
+     */
     private void setupAppInvitesButton(View layout) {
         appInvitesButton = (TextView) layout.findViewById(R.id.settings_app_invites);
 
@@ -272,6 +284,10 @@ public class SettingsFragment extends Fragment implements
 
     }
 
+    /**
+     * Shows 2 buttons. With them, the user can log-in or log-out with his facebook or google account
+     * @see #handleLogout(Context)
+     */
     private void setupLoginButtons(View layout)
     {
         final Context c = getContext();
@@ -383,6 +399,9 @@ public class SettingsFragment extends Fragment implements
 
     }
 
+    /**
+     * Shows a dialog to confirm the logout, and eventually logs out from Google's service
+     */
     private void handleLogout(final Context c) {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(c);
@@ -446,6 +465,10 @@ public class SettingsFragment extends Fragment implements
         }
     }
 
+    /**
+     * Called if the Google sign in procedure is successful, calls googlePatchRequest()
+     * @see #googlePatchRequest()
+     */
     private void googleSignInResult(GoogleSignInResult result) {
 
         Log.d("Google" + TAG, "Success? " + result.isSuccess() + "\nStatus Code: " + result.getStatus().getStatusCode());
@@ -467,12 +490,19 @@ public class SettingsFragment extends Fragment implements
         }
     }
 
+    /**
+     * Gets the Facebook Access Token and calls facebookPatchRequest()
+     * @see #facebookPatchRequest()
+     */
     private void requestFacebookData()
     {
         fbAccessToken = AccessToken.getCurrentAccessToken().getToken();
         facebookPatchRequest();
     }
 
+    /**
+     * Logs in the app sending Google's data to the backend, and updates the InSquareProfile
+     */
     private void googlePatchRequest() {
         final String serviceName = "google";
 
@@ -515,6 +545,9 @@ public class SettingsFragment extends Fragment implements
                 });
     }
 
+    /**
+     * Logs in the app sending Facebook's data to the backend, and updates the InSquareProfile
+     */
     private void facebookPatchRequest() {
         final String serviceName = "facebook";
 
@@ -557,6 +590,9 @@ public class SettingsFragment extends Fragment implements
                 });
     }
 
+    /**
+     * On click, shows the tutorial of the app
+     */
     private void setupTutorialButton(final View layout)
     {
         tutorialButton = (TextView) layout.findViewById(R.id.settings_tutorial);
@@ -579,9 +615,6 @@ public class SettingsFragment extends Fragment implements
         );
     }
 
-    /**
-     * TODO ??
-     */
     @Override
     public void onStart() {
         super.onStart();

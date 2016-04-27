@@ -62,7 +62,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * A simple {@link Fragment} subclass.
+ * TODO Documentare
  */
 public class SquareCreateFragment extends Fragment {
 
@@ -125,6 +125,11 @@ public class SquareCreateFragment extends Fragment {
     }
 
 
+    /**
+     * TODO Documentare
+     * @see #setupMainContent(View)
+     * @see #setupFacebookLink(View)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -141,6 +146,10 @@ public class SquareCreateFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Shows the right layout, based on the SquareType
+     * @see SquareType
+     */
     public void setLayoutType()
     {
 
@@ -173,6 +182,10 @@ public class SquareCreateFragment extends Fragment {
 
     }
 
+    /**
+     * Sets a new color for the status bar
+     * @param color The color needed
+     */
     private void changeStatusBarColor(int color)
     {
 
@@ -184,6 +197,10 @@ public class SquareCreateFragment extends Fragment {
         }
     }
 
+    /**
+     * TODO Documentare
+     * è inutilizzato?
+     */
     private void setupUpperSection(View v,int layoutType)
     {
         mapImage = (ImageView) v.findViewById(R.id.create_square_map_image);
@@ -220,6 +237,9 @@ public class SquareCreateFragment extends Fragment {
 
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupMainContent(View v)
     {
         sectionUserData = (LinearLayout) v.findViewById(R.id.create_square_userdata_section);
@@ -333,7 +353,9 @@ public class SquareCreateFragment extends Fragment {
 
     }
 
-
+    /**
+     * TODO Documentare
+     */
     public void setupFacebookLink(View v)
     {
         sectionFacebook = (LinearLayout) v.findViewById(R.id.create_square_facebook_section);
@@ -366,6 +388,10 @@ public class SquareCreateFragment extends Fragment {
         );
     }
 
+    /**
+     * TODO Documentare
+     * è inutilizzato?
+     */
     public boolean validLink()
     {
         boolean validLink = !facebookUrl.getText().toString().trim().isEmpty();
@@ -379,6 +405,10 @@ public class SquareCreateFragment extends Fragment {
         return validLink;
     }
 
+    /**
+     * TODO Documentare
+     * è inutilizzato?
+     */
     public boolean validName()
     {
         boolean validName = !newSquareName.getText().toString().trim().isEmpty();
@@ -389,6 +419,9 @@ public class SquareCreateFragment extends Fragment {
         return validName;
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupFacebook(final View v)
     {
         fbCallbackManager = CallbackManager.Factory.create();
@@ -414,6 +447,11 @@ public class SquareCreateFragment extends Fragment {
         );
     }
 
+    /**
+     * Loads the login data from Facebook's API and logs in inSquare, then retrieves page or event data from Facebook's Graph
+     * @see #requestFacebookEventDetail(String)
+     * @see #requestFacebookPageDetail(String)
+     */
     private void requestFacebookUserData()
     {
         final SquareType requestType = father.squareType;
@@ -486,6 +524,10 @@ public class SquareCreateFragment extends Fragment {
         graphRequest.executeAsync();
     }
 
+    /**
+     * Uses Facebook's API to get a Page's data(name,fan count,description,price range,hours,phone,location,website)
+     * @param url The url of the page
+     */
     private void requestFacebookPageDetail(String url)
     {
         String pageId = extractPageName(url);
@@ -604,12 +646,19 @@ public class SquareCreateFragment extends Fragment {
         ).executeAsync();
     }
 
+    /**
+     * Called when there are enough data in their relative fields, shows the 'NEXT' button.
+     */
     public void displayNextButton()
     {
         father.circularReveal(father.nextButton);
         father.vpager.setCurrentItem(2, true);
     }
 
+    /**
+     * Uses Facebook's API to get an Event's data
+     * @param url The url of the event
+     */
     private void requestFacebookEventDetail(String url)
     {
         String eventId = extractEventId(url);
@@ -733,6 +782,10 @@ public class SquareCreateFragment extends Fragment {
         request.executeAsync();
     }
 
+    /**
+     * Checks if the Url is valid, and eventually shows an error message
+     * @return the url
+     */
     @Nullable
     private String getAndCheckURL() {
         String url = facebookUrl.getText().toString();
@@ -745,6 +798,11 @@ public class SquareCreateFragment extends Fragment {
         return url;
     }
 
+    /**
+     * Extracts the Event's ID from the url
+     * @param eventUrl url of the event
+     * @return event's id
+     */
     private String extractEventId(String eventUrl) {
         String eventId = "";
         String[] tokens = eventUrl.split("/");
@@ -762,7 +820,11 @@ public class SquareCreateFragment extends Fragment {
         return StringUtil.isNumeric(eventId) ? eventId : "";
     }
 
-
+    /**
+     * Extracts the Page's name from the url
+     * @param pageUrl url of the page
+     * @return name of the page
+     */
     private String extractPageName(String pageUrl)
     {
         String pageId = "";

@@ -18,7 +18,7 @@ import com.nsqre.insquare.Utilities.SquareType;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
+ * TODO Documentare
  */
 public class ReviewCreateFragment extends Fragment {
 
@@ -72,6 +72,9 @@ public class ReviewCreateFragment extends Fragment {
         return containerView;
     }
 
+    /**
+     * TODO Documentare
+     */
     public void setupShopInfo(
             String name, String price,
             String description, String likeCount, String website, String phone, String street, List<String> hours,
@@ -93,6 +96,9 @@ public class ReviewCreateFragment extends Fragment {
         }
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupShopLowerSection(String description, String likeCount, String website, String phone, String streetName, List<String> hours)
     {
         squareDescription = (TextView) containerView.findViewById(R.id.review_description_text);
@@ -135,7 +141,9 @@ public class ReviewCreateFragment extends Fragment {
 
     }
 
-
+    /**
+     * TODO Documentare
+     */
     private void setupShopTopSection(String name, String priceRange)
     {
         TextView squareInitials = (TextView) containerView.findViewById(R.id.review_square_initials);
@@ -163,6 +171,9 @@ public class ReviewCreateFragment extends Fragment {
 
     }
 
+    /**
+     * TODO Documentare
+     */
     public void setupEventInfo(
             String name, String description, String time, String street, String website,
             String facebookId, String latitude, String longitude,
@@ -189,6 +200,9 @@ public class ReviewCreateFragment extends Fragment {
         }
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupEventLowerSection(String time, String street, String website)
     {
         TextView squareWebsite = (TextView) containerView.findViewById(R.id.review_website);
@@ -220,12 +234,17 @@ public class ReviewCreateFragment extends Fragment {
 
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupEventTopSection(String name, String description)
     {
         setupPlaceMainInfo(name, description);
     }
 
-
+    /**
+     * TODO Documentare
+     */
     private void potentialEmptySection(TextView v, String value)
     {
         if(value.isEmpty()){
@@ -237,6 +256,9 @@ public class ReviewCreateFragment extends Fragment {
         v.setText(value);
     }
 
+    /**
+     * TODO Documentare
+     */
     private void showDetailsSection(boolean show)
     {
         LinearLayout details = (LinearLayout) containerView.findViewById(R.id.review_details);
@@ -249,6 +271,9 @@ public class ReviewCreateFragment extends Fragment {
         }
     }
 
+    /**
+     * TODO Documentare
+     */
     public void setupPlaceInfo(String name, String description, String squareLatitude, String squareLongitude) {
         father.setupResults(name, description, squareLatitude, squareLongitude, "", "");
         this.latitude = squareLatitude;
@@ -259,6 +284,9 @@ public class ReviewCreateFragment extends Fragment {
         showDetailsSection(false);
     }
 
+    /**
+     * TODO Documentare
+     */
     private void setupPlaceMainInfo(String name, String description) {
         TextView squareInitials =  (TextView) containerView.findViewById(R.id.review_square_initials);
         squareName = (TextView) containerView.findViewById(R.id.review_square_name);

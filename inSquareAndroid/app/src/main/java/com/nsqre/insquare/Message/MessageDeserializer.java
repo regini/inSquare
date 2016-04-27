@@ -24,9 +24,6 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 
     /**
      * Manages the particular format of messages's JSON representation, so it has sufficient data to instantiate a Message object
-     * @param json
-     * @param typeOfT
-     * @param context
      * @return A Square object based on the data deserialized
      * @throws JsonParseException
      * @see Message

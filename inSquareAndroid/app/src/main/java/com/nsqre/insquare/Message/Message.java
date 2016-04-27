@@ -37,7 +37,7 @@ public class Message implements Serializable {
      */
     private Calendar calendar;
     /**
-     * Wheter the user was in that particular place when he sent the message
+     * Whether the user was in that particular place when he sent the message
      */
     private Boolean userSpot;
 

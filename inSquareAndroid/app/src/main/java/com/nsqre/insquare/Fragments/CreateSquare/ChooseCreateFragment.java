@@ -18,7 +18,7 @@ import com.nsqre.insquare.R;
 import com.nsqre.insquare.Utilities.SquareType;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A Fragment that gives the user the possibility to choose which kind of square he wants to create
  */
 public class ChooseCreateFragment extends Fragment {
 
@@ -49,6 +49,9 @@ public class ChooseCreateFragment extends Fragment {
         super.onResume();
     }
 
+    /**
+     * Sets up the layout and manages the click on every choice
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -117,12 +120,18 @@ public class ChooseCreateFragment extends Fragment {
     }
 
 
+    /**
+     * TODO Documentare
+     */
     private void enhanceText(TextView v)
     {
         v.setShadowLayer(3f, 0, 0, Color.WHITE);
         v.setPaintFlags(textPlace.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG );
     }
 
+    /**
+     * TODO documentare
+     */
     private void resetText(TextView v)
     {
         v.setShadowLayer(1f, 1,1, Color.BLACK);

@@ -77,11 +77,9 @@ public class ProfileFragment extends Fragment implements
     /**
      * Initialized the view of this fragment setting the lists of favourite and owned squares
      * and the profile image(downloading it if not saved in the local storage)
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
      * @return The view created
-     * @see DownloadImageTask
+     * @see #setupProfile()
+     * @see #setupSwipeGesture()
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -106,6 +104,9 @@ public class ProfileFragment extends Fragment implements
         return v;
     }
 
+    /**
+     * Loads, or eventually downlaods, and sets the profile image
+     */
     private void setupProfile() {
         Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
                 R.drawable.logo_icon_144);
@@ -121,6 +122,9 @@ public class ProfileFragment extends Fragment implements
         }
     }
 
+    /**
+     * Manages the swipe on one card from the layout. With this feature the user is able to delete one of his own square
+     */
     private void setupSwipeGesture()
     {
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)

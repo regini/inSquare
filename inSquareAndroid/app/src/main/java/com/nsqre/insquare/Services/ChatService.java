@@ -18,6 +18,9 @@ import org.json.JSONObject;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * A background service that handles the sending of messages through socket.io
+ */
 public class ChatService extends Service {
 
     private static final String TAG = "ChatService";
@@ -31,6 +34,10 @@ public class ChatService extends Service {
     public ChatService() {
     }
 
+    /**
+     * Gets the needed data from the intent and calls sendmessage
+     * @see #sendMessage(JSONObject, Message)
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -64,6 +71,9 @@ public class ChatService extends Service {
         return null;
     }
 
+    /**
+     * Connects to socket.io and tries to send the message. If it fails, it will retry after 5 seconds.
+     */
     private void sendMessage(final JSONObject data, final Message m) {
         try {
             String url = getString(R.string.socket);
@@ -114,7 +124,11 @@ public class ChatService extends Service {
         }
     }
 
-    //notifica che l'invio è stato effettuato
+    /**
+     * Removes the sent message from the list of outgoing messages and notifies it to the ChatActivity if it is open.
+     * The service stops himself after concluding the execution of this method.
+     * @param m the message sent
+     */
     private void publishResults(Message m) {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra("messageSent", m);
