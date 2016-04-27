@@ -28,9 +28,6 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
 
     /**
      * Manages the particular format of square's JSON representation, so it has sufficient data to instantiate a Square object
-     * @param json
-     * @param typeOfT
-     * @param context
      * @return A Square object based on the data deserialized
      * @throws JsonParseException
      * @see Square

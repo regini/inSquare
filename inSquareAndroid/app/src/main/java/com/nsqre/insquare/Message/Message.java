@@ -49,6 +49,13 @@ public class Message implements Serializable {
 
     private Locale locale;
 
+    /**
+     * Creates a Message object
+     * @param m the text of the message
+     * @param username the username of the sender
+     * @param userId the id of the sender
+     * @param l the locale
+     */
     public Message(String m, String username, String userId, Locale l)
     {
         //this.msg_id
@@ -63,6 +70,16 @@ public class Message implements Serializable {
         this.locale = l;
     }
 
+    /**
+     * Creates a Message object
+     * @param mes_id the id of the message
+     * @param contents the text of the message
+     * @param username the username of the sender
+     * @param userId the id of the sender
+     * @param date the day and time in which the message was sent
+     * @param userSpot whether the user was in the location of the square that contains the message
+     * @param l the locale
+     */
     public Message(String mes_id, String contents, String username, String userId, String date, Boolean userSpot, Locale l)
     {
         this.msg_id = mes_id;

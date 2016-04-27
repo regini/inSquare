@@ -21,7 +21,7 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.ArrayList;
 
 /**
- * Created by emanu on 25/02/2016.
+ * Unused
  */
 public class SquareAdapter extends BaseAdapter {
 

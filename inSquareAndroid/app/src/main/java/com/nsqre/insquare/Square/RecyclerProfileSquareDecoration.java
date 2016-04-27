@@ -10,6 +10,10 @@ import android.view.View;
 
 import com.nsqre.insquare.R;
 
+/**
+ * TODO Documentare
+ * inutilizzato?
+ */
 public class RecyclerProfileSquareDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable background;

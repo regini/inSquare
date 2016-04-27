@@ -62,9 +62,25 @@ public class Square implements Serializable {
 
     protected Locale myLocale;
 
+    /**
+     * Whether this square is for a Facebook event or not
+     */
     public boolean isFacebookEvent;
+
+    /**
+     * Whether this square is for a Facebook page or not
+     */
     public boolean isFacebookPage;
 
+    /**
+     * Creates a Square object
+     * @param id id of the square
+     * @param name name of the square
+     * @param lat latitude of the position of the square
+     * @param lon longitude of the position of the square
+     * @param type type of square
+     * @param ownerId id of the owner of the square
+     */
     public Square(String id, String name, double lat, double lon, String type, String ownerId) {
         this.id = id;
         this.name = name;
@@ -74,6 +90,21 @@ public class Square implements Serializable {
         this.ownerId = ownerId;
     }
 
+    /**
+     * Creates a Square object
+     * @param id id of the square
+     * @param name name of the square
+     * @param description description of the Square
+     * @param geoloc latitude and longitude of the square. Format is "lat,long"
+     * @param ownerId id of the owner of the square
+     * @param favouredBy how many people have favoured the square
+     * @param favourers an array of IDs of the people who favoured the square
+     * @param views how many times the square has been seen
+     * @param state the state of the square
+     * @param lastMessageDate the date of the last message sent on the square
+     * @param type the type of the square
+     * @param l the locale
+     */
     public Square(String id,
                   String name,
                   String description,
@@ -260,6 +291,10 @@ public class Square implements Serializable {
         return "Ultimo messaggio: " + timetoShow;
     }
 
+    /**
+     * Extracts the initials of the name of the Square
+     * @return the initials as a string
+     */
     public String getInitials()
     {
         String[] division = this.name.split("\\s+");

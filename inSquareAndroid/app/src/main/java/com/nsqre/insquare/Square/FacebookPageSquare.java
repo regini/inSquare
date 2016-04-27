@@ -20,14 +20,47 @@ import java.util.Locale;
 public class FacebookPageSquare extends Square {
 
     private static final String TAG = "FacebookPageSquare";
+
+    /**
+     * Facebook's page ID
+     */
     private String pageId;
+
+    /**
+     * The number of Likes of the page
+     */
     public String likeCount;
+
+    /**
+     * The price range of the subject of the page
+     */
     public String priceRange;
+
+    /**
+     * Phone number provided by the owner of the page
+     */
     public String phoneNumber;
+
+    /**
+     * The website of the page as shown on Facebook
+     */
     public String website;
+
+    /**
+     * The address of the page as shown on Facebook
+     */
     public String street;
+
+    /**
+     * Timetable of the subject of the page
+     */
     public List<String> hoursList;
 
+    /**
+     * Creates a FacebookPageSquare object using Square's constructor and calling downloadAndFillPageDetails with the eventId
+     * @param pageId Facebook's page id for the event
+     * @see #downloadAndFillPageDetails()
+     */
     public FacebookPageSquare(String id, String name, String description, String geoloc, String ownerId, String favouredBy,
                               String[] favourers, String views, String state, String lastMessageDate, String type,
                               String pageId, Locale l) {
@@ -41,6 +74,9 @@ public class FacebookPageSquare extends Square {
         }
     }
 
+    /**
+     * Creates a request to Facebook's Graph to get the details for the page
+     */
     private void downloadAndFillPageDetails() {
         Bundle requestParams = new Bundle();
         requestParams.putString("fields", "fan_count,price_range,hours,phone,location,website");

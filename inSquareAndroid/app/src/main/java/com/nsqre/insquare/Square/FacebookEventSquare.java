@@ -16,14 +16,37 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Extension of the Square class
+ */
 public class FacebookEventSquare extends Square {
 
     private static final String TAG = "FacebookEventSquare";
+    /**
+     * Facebook's event ID
+     */
     private String eventId;
+
+    /**
+     * The address of the event as shown on Facebook
+     */
     public String street;
+
+    /**
+     * The website of the event as shown on Facebook
+     */
     public String website;
+
+    /**
+     * Time of the event as shown on Facebook
+     */
     public String time;
 
+    /**
+     * Creates a FacebookEventSquare object using Square's constructor and calling downloadAndFillEventDetails with the eventId
+     * @param eventId Facebook's event id for the event
+     * @see #downloadAndFillEventDetails()
+     */
     public FacebookEventSquare(String id, String name, String description, String geoloc, String ownerId, String favouredBy,
                                String[] favourers, String views, String state, String lastMessageDate, String type, String eventId, Locale l)
     {
@@ -38,6 +61,9 @@ public class FacebookEventSquare extends Square {
         }
     }
 
+    /**
+     * Creates a request to Facebook's Graph to get the details for the event
+     */
     private void downloadAndFillEventDetails() {
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

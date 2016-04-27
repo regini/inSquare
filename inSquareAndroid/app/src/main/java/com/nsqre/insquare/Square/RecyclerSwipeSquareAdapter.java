@@ -36,6 +36,11 @@ import java.util.ArrayList;
 /**
  * Created by Umberto Sonnino on 29/03/2016.
  */
+
+/**
+ * TODO Documentare
+ * inutilizzato?
+ */
 public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
 
     private static final String TAG = "SquareAdapter";
