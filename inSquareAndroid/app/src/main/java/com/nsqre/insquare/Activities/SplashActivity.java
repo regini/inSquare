@@ -23,37 +23,40 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private static final String TAG = "SplashActivity";
     private Intent nextScreen;
     private GoogleApiClient gApiClient;
+    public boolean isFacebookInit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(getApplicationContext(),
+                new FacebookSdk.InitializeCallback() {
+                    @Override
+                    public void onInitialized() {
+                        Log.d(TAG, "onInitialized: I've been ");
+                        isFacebookInit = true;
+                    }
+                });
         InSquareProfile.getInstance(getApplicationContext());
 
-        if(isFacebookSignedIn() || isGoogleSignedIn())
-        {
-            Log.d(TAG, "onCreate: vado alla mappa!");
-            nextScreen = new Intent(this, BottomNavActivity.class);
+        OptionalPendingResult<GoogleSignInResult> googleSignedIn = initGoogle();
 
+        while(!isFacebookInit)
+        {
+            Log.d(TAG, "onCreate: init'ing");
+        }
+
+        if(googleSignedIn.isDone() || isFacebookSignedIn())
+        {
+            nextScreen = new Intent(SplashActivity.this, BottomNavActivity.class);
         }else
         {
-            nextScreen = new Intent(this, LoginActivity.class);
-            if(getIntent().getExtras() != null) {
-                if(getIntent().getExtras().getInt("map") == 0) {
-                    nextScreen.putExtra("map", getIntent().getIntExtra("map",0));
-                }
-                else if(getIntent().getStringExtra("squareId") != null) {
-                    nextScreen.putExtra("s  quareId", getIntent().getStringExtra("squareId"));
-                }
-                getIntent().getExtras().clear();
-            }
+            nextScreen = new Intent(SplashActivity.this, LoginActivity.class);
         }
 
         startActivity(nextScreen);
-
     }
 
-    private boolean isGoogleSignedIn() {
+    private OptionalPendingResult<GoogleSignInResult> initGoogle() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -63,9 +66,9 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
-        return opr.isDone();
+
+        return opr;
     }
 
     private boolean isFacebookSignedIn() {

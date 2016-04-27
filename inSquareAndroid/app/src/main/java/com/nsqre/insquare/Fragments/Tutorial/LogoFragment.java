@@ -23,13 +23,13 @@ public abstract class LogoFragment extends Fragment {
     {
         ViewCompat.animate(title)
                 .scaleY(1).scaleX(1)
-                .setStartDelay(300)
+                .setStartDelay(150)
                 .setDuration(300)
                 .start();
 
         ViewCompat.animate(content)
                 .scaleY(1).scaleX(1)
-                .setStartDelay(300)
+                .setStartDelay(150)
                 .setDuration(300)
                 .start();
     }
