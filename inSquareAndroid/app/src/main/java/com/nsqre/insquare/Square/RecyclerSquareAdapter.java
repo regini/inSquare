@@ -50,6 +50,33 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         this.squaresArrayList = squares;
     }
 
+    public void setDataList(ArrayList<Square> data)
+    {
+        if(!listEquals(data, this.squaresArrayList))
+            this.squaresArrayList = data;
+    }
+
+    private boolean listEquals(ArrayList<Square> first, ArrayList<Square> second) {
+        if(first == null && second == null)
+            return true;
+
+        if(first == null && second != null
+                || first != null && second == null
+                || first.size() != second.size())
+        {
+            return false;
+        }
+
+        for (int i = 0; i < first.size(); i++) {
+            if(!first.get(i).equals(second.get(i)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public SquareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.square_card, parent, false);
