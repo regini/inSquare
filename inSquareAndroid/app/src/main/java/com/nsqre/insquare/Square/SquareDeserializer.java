@@ -118,7 +118,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         }
 
         JsonElement facebookIdPageElement = source.get("facebook_id_page");
-        if(facebookIdPageElement == null)
+        if(facebookIdPageElement == null || facebookIdPageElement.getAsString().isEmpty())
         {
             facebookPageId = "";
         }else
@@ -128,7 +128,7 @@ public class SquareDeserializer implements JsonDeserializer<Square> {
         }
 
         JsonElement facebookIdEventElement = source.get("facebook_id_event");
-        if(facebookIdEventElement == null)
+        if(facebookIdEventElement == null || facebookIdEventElement.getAsString().isEmpty())
         {
             facebookEventId = "";
         }

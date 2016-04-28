@@ -1202,15 +1202,21 @@ public class MapFragment extends Fragment
 
             if(square.isFacebookPage)
             {
-                facebookLikes.setVisibility(View.VISIBLE);
+                Log.d(TAG, "Sono una pagina Facebook");
                 FacebookPageSquare fbPage = (FacebookPageSquare) square;
-                likeNumber.setText(fbPage.likeCount);
+                if(!fbPage.likeCount.isEmpty()) {
+                    likeNumber.setText(fbPage.likeCount);
+                    facebookLikes.setVisibility(View.VISIBLE);
+                }
             }else if(square.isFacebookEvent)
             {
+                Log.d(TAG, "Sono un evento Facebook");
                 squareActivity.setVisibility(View.GONE);
-                facebookTime.setVisibility(View.VISIBLE);
                 FacebookEventSquare fbEvent = (FacebookEventSquare) square;
-                timeText.setText(fbEvent.time);
+                if(!fbEvent.time.isEmpty()) {
+                    facebookTime.setVisibility(View.VISIBLE);
+                    timeText.setText(fbEvent.time);
+                }
             }
         }
     }

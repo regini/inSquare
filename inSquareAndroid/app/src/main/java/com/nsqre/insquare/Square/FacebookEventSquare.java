@@ -56,7 +56,7 @@ public class FacebookEventSquare extends Square {
 
         website = "www.facebook.com/events/" + eventId;
 
-        if(FacebookSdk.isInitialized()) {
+        if(FacebookSdk.isInitialized() && AccessToken.getCurrentAccessToken() != null) {
             downloadAndFillEventDetails();
         }
     }
@@ -65,7 +65,7 @@ public class FacebookEventSquare extends Square {
      * Creates a request to Facebook's Graph to get the details for the event
      */
     private void downloadAndFillEventDetails() {
-        Log.d(TAG, "downloadAndFillEventDetails: " + this.eventId);
+        Log.d(TAG, "downloadAndFillEventDetails: " + this.eventId + " " + this.name);
 
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

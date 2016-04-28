@@ -305,7 +305,7 @@ public class SquareCreateFragment extends Fragment {
                     }
                 }, currentYear, currentMonth, currentDay);
 
-        dpd.getDatePicker().setMinDate(System.currentTimeMillis());
+        dpd.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
 
 
         dateButtonPicker.setOnClickListener(
