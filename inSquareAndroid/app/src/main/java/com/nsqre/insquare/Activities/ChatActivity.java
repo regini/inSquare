@@ -277,20 +277,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         Log.d(TAG, mSquare.toString());
 
         toolbarInitials = intent.getStringExtra(BottomNavActivity.INITIALS_TAG);
-        if(toolbarInitials == null || toolbarInitials.isEmpty())
-        {
-            Log.d(TAG, "onCreate: no initials!");
-        }else{
-            Log.d(TAG, "onCreate: " + toolbarInitials);
-        }
         toolbarCircleColor = intent.getIntExtra(BottomNavActivity.INITIALS_COLOR_TAG, 0);
-        if(toolbarCircleColor == 0)
-        {
-            Log.d(TAG, "onCreate: we have no circle color =(");
-        }else
-        {
-            Log.d(TAG, "onCreate: we have circle color " + toolbarCircleColor);
-        }
 
         mSquareId = mSquare.getId();
         mSquareName = mSquare.getName();
@@ -576,7 +563,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         try {
             String url = getString(R.string.socket);
-            Log.d(TAG, "onCreate: " + url);
             mSocket = IO.socket(url);
 
             mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);

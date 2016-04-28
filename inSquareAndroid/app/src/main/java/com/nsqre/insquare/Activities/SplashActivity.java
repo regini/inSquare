@@ -18,42 +18,44 @@ import com.nsqre.insquare.User.InSquareProfile;
 
 public class SplashActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener
 {
-
-    public static final String SHOW_TUTORIAL_KEY = "tutorial";
     private static final String TAG = "SplashActivity";
     private Intent nextScreen;
     private GoogleApiClient gApiClient;
+    private OptionalPendingResult<GoogleSignInResult> googleSignedIn;
     public boolean isFacebookInit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        googleSignedIn = initGoogle();
+
         FacebookSdk.sdkInitialize(getApplicationContext(),
                 new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
-                        Log.d(TAG, "onInitialized: I've been ");
-                        isFacebookInit = true;
+                        new Thread()
+                        {
+                            @Override
+                            public void run() {
+                                super.run();
+
+                                if(googleSignedIn.isDone() || isFacebookSignedIn())
+                                {
+                                    nextScreen = new Intent(SplashActivity.this, BottomNavActivity.class);
+                                }else
+                                {
+                                    nextScreen = new Intent(SplashActivity.this, LoginActivity.class);
+                                }
+
+                                startActivity(nextScreen);
+                            }
+                        }.start();
                     }
                 });
         InSquareProfile.getInstance(getApplicationContext());
 
-        OptionalPendingResult<GoogleSignInResult> googleSignedIn = initGoogle();
 
-        while(!isFacebookInit)
-        {
-            Log.d(TAG, "onCreate: init'ing");
-        }
-
-        if(googleSignedIn.isDone() || isFacebookSignedIn())
-        {
-            nextScreen = new Intent(SplashActivity.this, BottomNavActivity.class);
-        }else
-        {
-            nextScreen = new Intent(SplashActivity.this, LoginActivity.class);
-        }
-
-        startActivity(nextScreen);
     }
 
     private OptionalPendingResult<GoogleSignInResult> initGoogle() {
@@ -62,7 +64,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 .build();
 
         gApiClient = new GoogleApiClient.Builder(getApplicationContext())
-                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 

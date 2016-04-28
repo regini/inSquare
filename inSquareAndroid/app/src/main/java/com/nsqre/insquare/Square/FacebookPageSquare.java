@@ -81,7 +81,7 @@ public class FacebookPageSquare extends Square {
         Bundle requestParams = new Bundle();
         requestParams.putString("fields", "fan_count,price_range,hours,phone,location,website");
 
-        Log.d(TAG, "downloadAndFillePageDetails: " + this.pageId);
+        Log.d(TAG, "downloadAndFillPageDetails: " + this.pageId);
 
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

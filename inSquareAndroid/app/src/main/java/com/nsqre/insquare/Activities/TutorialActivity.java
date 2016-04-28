@@ -1,6 +1,7 @@
 package com.nsqre.insquare.Activities;
 
 import android.animation.ArgbEvaluator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,7 +60,8 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
             @Override
             public void onClick(View v) {
                 InSquareProfile.setShowTutorial(false, getApplicationContext());
-                finish();
+                Intent mainContent = new Intent(TutorialActivity.this, BottomNavActivity.class);
+                startActivity(mainContent);
             }
         };
         skipButton.setOnClickListener( endClickListener );

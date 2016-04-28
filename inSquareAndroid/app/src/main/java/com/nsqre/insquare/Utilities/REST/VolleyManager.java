@@ -71,7 +71,7 @@ public class VolleyManager {
             locale = c.getResources().getConfiguration().locale;
             instance = new VolleyManager(c);
         }
-        Log.d(TAG, "getInstance: returning VolleyManger");
+//        Log.d(TAG, "getInstance: returning VolleyManger");
         baseURL = c.getString(R.string.baseUrl);
         return instance;
     }
@@ -135,7 +135,7 @@ public class VolleyManager {
         reqURL += "&lat=" + lat;
         reqURL += "&lon=" + lon;
 
-//         Log.d(TAG, "getClosestSquares: " + reqURL);
+         Log.d(TAG, "getClosestSquares: " + reqURL);
 
         StringRequest closeSquareRequest = new StringRequest(Request.Method.GET, reqURL,
                 new Response.Listener<String>() {
@@ -514,16 +514,13 @@ public class VolleyManager {
         volleyURL += "byOwner=" + byOwner;
         volleyURL += "&ownerId=" + ownerId;
 
-        // Log.d(TAG, "getOwnedSquares url: " + volleyURL);
+         Log.d(TAG, "getOwnedSquares url: " + volleyURL);
 
         StringRequest getOwnedRequest = new StringRequest(Request.Method.GET, volleyURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                        Log.d(TAG, "getOwnedSquares response: " + response);
-
                         List<Square> squares = deserializeSquares(response);
-//                        Log.d(TAG, "I created: " + squares.toString());
 
                         listener.responseGET(squares);
                     }
@@ -548,7 +545,7 @@ public class VolleyManager {
         String volleyURL = baseURL + "favouritesquares/";
         volleyURL += userId;
 
-        // Log.d(TAG, "getFavoriteSquares url: " + volleyURL);
+         Log.d(TAG, "getFavoriteSquares url: " + volleyURL);
 
         StringRequest getFavsRequest = new StringRequest(
                 Request.Method.GET,
@@ -587,7 +584,7 @@ public class VolleyManager {
         String volleyURL = baseURL + "recentSquares/";
         volleyURL += userId;
 
-        // Log.d(TAG, "getRecentSquares url: " + volleyURL);
+         Log.d(TAG, "getRecentSquares url: " + volleyURL);
 
         StringRequest getRecentsRequest= new StringRequest(
                 Request.Method.GET,
@@ -759,77 +756,6 @@ public class VolleyManager {
             }
         });
         requestQueue.add(deleteSquareRequest);
-    }
-
-    public void muteSquare(
-            final String userId,
-            final String squareId,
-            final int which,
-            final VolleyResponseListener listener
-    )
-    {
-        /*
-         * Valori possibili di expireTime:
-         *  off - Notifiche attive
-         *  on - Notifiche mute
-         *  1h - Notifiche mute per 1 ora
-         *  8h - Notifiche mute per 8 ore
-         *  2d - Notifiche in 2 dimensioni? :|
-        */
-
-        String expireTime = "";
-        switch (which)
-        {
-            case 0:
-                expireTime = context.getString(R.string.mute_off);
-                break;
-            case 1:
-                expireTime = context.getString(R.string.mute_1h);
-                break;
-            case 2:
-                expireTime = context.getString(R.string.mute_8h);
-                break;
-            case 3:
-                expireTime = context.getString(R.string.mute_2d);
-                break;
-            case 4:
-                expireTime = context.getString(R.string.mute_on);
-                break;
-        }
-
-        String volleyURL = baseURL + "mute?";
-        volleyURL += "userId=" + userId;
-        volleyURL += "&squareId=" + squareId;
-        volleyURL += "&expireTime=" + expireTime;
-
-        // Log.d(TAG, "muteSquare: " + volleyURL);
-
-        StringRequest muteSquareRequest = new StringRequest(
-                Request.Method.PATCH,
-                volleyURL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "patchMuteResponse: " + response);
-                        if(response.toLowerCase().contains("storto"))
-                        {
-                            listener.responsePATCH(false);
-                        }else
-                        {
-                            listener.responsePATCH(true);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "onErrorPatchMute Response: " + error.toString());
-                        listener.responseDELETE(false);
-                    }
-                }
-        );
-
-        requestQueue.add(muteSquareRequest);
     }
 
     private String emptySpacesForParams(String urlParameter)

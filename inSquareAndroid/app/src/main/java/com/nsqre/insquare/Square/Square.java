@@ -179,7 +179,6 @@ public class Square implements Serializable {
     @Override
     public boolean equals(Object o) {
         return this.id.equals(((Square)o).getId());
-//        return this.id.equals(((Square)o).getId());
     }
 
     public String getId() {
@@ -299,6 +298,8 @@ public class Square implements Serializable {
     {
         String[] division = this.name.split("\\s+");
 
+        if(this.name.isEmpty())
+            return "S";
         if(division.length <= 1)
         {
             return this.name.substring(0,1).toUpperCase();

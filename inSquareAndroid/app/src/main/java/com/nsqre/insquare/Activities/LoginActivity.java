@@ -345,8 +345,12 @@ public class LoginActivity extends AppCompatActivity
      * @see BottomNavActivity
      */
     private void launchInSquare() {
-        Intent intent = new Intent(this, BottomNavActivity.class);
-        intent.putExtra(SplashActivity.SHOW_TUTORIAL_KEY, true);
+        Intent intent;
+        if(InSquareProfile.showTutorial()) {
+            intent = new Intent(this, TutorialActivity.class);
+        }else {
+            intent = new Intent(this, BottomNavActivity.class);
+        }
         startActivity(intent);
     }
 
@@ -576,14 +580,4 @@ public class LoginActivity extends AppCompatActivity
         }
         return true;
     }
-
-    /**
-     * Launches an intent to show the TutorialActivity
-     * @see TutorialActivity
-     */
-    public void showTutorial() {
-        Intent tutorialIntent = new Intent(LoginActivity.this, TutorialActivity.class);
-        startActivity(tutorialIntent);
-    }
-
 }
