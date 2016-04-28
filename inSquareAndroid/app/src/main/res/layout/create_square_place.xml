@@ -72,7 +72,7 @@
                         android:id="@+id/create_square_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Inserisci un nome"
+                        android:hint="@string/create_square_place_insert_name"
                         android:maxLines="3"
                         android:fontFamily="sans-serif-condensed" />
                 </android.support.design.widget.TextInputLayout>
@@ -89,7 +89,7 @@
                     android:id="@+id/create_square_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Inserisci una descrizione"
+                    android:hint="@string/create_square_place_insert_descr"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLines="7" />
             </android.support.design.widget.TextInputLayout>

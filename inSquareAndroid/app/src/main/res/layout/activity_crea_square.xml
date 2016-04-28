@@ -43,7 +43,7 @@
             android:layout_centerVertical="true"
             android:paddingRight="8dp"
             android:paddingEnd="8dp"
-            android:text="Avanti"
+            android:text="@string/create_square_next"
             android:textColor="@color/colorTextPrimary"
             style="?android:attr/borderlessButtonStyle"
             />
@@ -55,7 +55,7 @@
             android:layout_centerVertical="true"
             android:paddingLeft="8dp"
             android:paddingStart="8dp"
-            android:text="Indietro"
+            android:text="@string/create_square_back"
             android:textColor="@color/colorTextPrimary"
             android:fontFamily="sans-serif-condensed"
             style="?android:attr/borderlessButtonStyle"

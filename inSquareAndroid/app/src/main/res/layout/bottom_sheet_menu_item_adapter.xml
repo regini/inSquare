@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/search_bar_margin"
         android:layout_marginStart="@dimen/search_bar_margin"
-        android:text="Menu Item"
+        android:text="@string/bottomsheet_adapter_menu"
         android:gravity="center_vertical"
         android:textColor="@color/colorTextPrimary" />
 

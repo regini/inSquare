@@ -31,7 +31,7 @@
             android:id="@+id/square_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Square Name"
+            android:text="@string/square_item_name"
             android:textColor="#000000"
             android:textSize="18sp"
             android:fontFamily="sans-serif-condensed"
@@ -40,7 +40,7 @@
             android:id="@+id/square_item_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ultima attivita'"
+            android:text="@string/square_item_last_activity"
             android:textColor="#000000"
             android:fontFamily="sans-serif-condensed-light"
             />

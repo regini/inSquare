@@ -34,7 +34,7 @@
             android:id="@+id/drawer_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Line 1"
+            android:text="@string/drawer_item_line1"
             android:textSize="18sp"
             android:textColor="@color/colorPrimaryDark"
             android:fontFamily="sans-serif-condensed"
@@ -43,7 +43,7 @@
         <TextView android:id="@+id/drawer_subTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Line 2"
+            android:text="@string/drawer_item_line2"
             android:textColor="@color/colorPrimary"
             android:fontFamily="sans-serif-condensed-light"
             />

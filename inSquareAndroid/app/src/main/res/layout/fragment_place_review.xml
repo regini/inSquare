@@ -39,7 +39,7 @@
                     android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:text="SN"
+                    android:text="@string/frag_place_initials"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-condensed"
                     android:background="@drawable/linear_layout_rounded_background"
@@ -57,7 +57,7 @@
                         android:id="@+id/review_square_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="A very long square name that should resemble ones that we might have in our db"
+                        android:text="@string/frag_place_name"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp"
@@ -72,7 +72,7 @@
                             android:id="@+id/review_square_price_range"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="$$$$ (50+)"
+                            android:text="@string/frag_place_price"
                             android:textColor="@color/colorTextSecondary"
                             android:maxLines="5"
                             android:fontFamily="sans-serif-condensed-light"
@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/search_bar_margin"
                     android:layout_marginTop="@dimen/search_bar_margin"
-                    android:text="This is a beautiful square that hasn't ever left us with nothing to think or talk about. It is just beautiful and marvellous to go to"
+                    android:text="@string/frag_place_descr"
                     android:textColor="@color/colorTextSecondary"
                     android:fontFamily="sans-serif-condensed"
                     />
@@ -156,7 +156,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Via Vito Volterra, 34"
+                        android:text="@string/frag_place_address"
                         android:fontFamily="sans-serif-condensed"
                         />
 
@@ -189,7 +189,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="1234"
+                        android:text="@string/frag_place_num_likes"
                         android:fontFamily="sans-serif-condensed"
                         />
 
@@ -225,7 +225,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="www.facebook.com"
+                        android:text="@string/frag_place_link"
                         android:fontFamily="sans-serif-condensed"
                         android:autoLink="web"
                         />
@@ -261,7 +261,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="+39 123 4567890"
+                        android:text="@string/frag_place_phone_number"
                         android:fontFamily="sans-serif-condensed"
                         android:autoLink="phone"
                         />

@@ -37,7 +37,7 @@
                         android:id="@+id/create_square_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Inserisci un nome"
+                        android:hint="@string/create_event_insert_name"
                         android:maxLines="3"
                         android:fontFamily="sans-serif-condensed" />
                 </android.support.design.widget.TextInputLayout>
@@ -53,7 +53,7 @@
                     android:id="@+id/create_square_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Inserisci una descrizione"
+                    android:hint="@string/create_event_insert_description"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLines="7"
                     />
@@ -70,7 +70,7 @@
                     android:id="@+id/create_square_date_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data"
+                    android:text="@string/create_event_date"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-condensed"
                     style="?android:attr/borderlessButtonStyle"
@@ -80,7 +80,7 @@
                     android:id="@+id/create_square_time_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ora"
+                    android:text="@string/create_event_time"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-condensed"
                     style="?android:attr/borderlessButtonStyle"
@@ -114,7 +114,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="oppure"
+                    android:text="@string/create_event_or"
                     />
                 <View
                     android:layout_width="wrap_content"
@@ -138,7 +138,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="3"
-                    android:hint="Link all'evento di Facebook"
+                    android:hint="@string/create_event_link"
                     android:fontFamily="sans-serif-condensed"
                     />
             </android.support.design.widget.TextInputLayout>
@@ -150,7 +150,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_marginRight="@dimen/activity_vertical_margin"
-                android:text="Collega con Facebook"
+                android:text="@string/create_event_connect"
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif-condensed-bold"
                 android:theme="@style/RaisedFacebookButton"

@@ -43,7 +43,7 @@
                     android:id="@+id/lower_section_square_views"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="120"
+                    android:text="@string/card_profile_view_number"
                     android:fontFamily="sans-serif-condensed-light"
                     />
 
@@ -63,7 +63,7 @@
                     android:id="@+id/carview_profile_heart_favorites"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="43"
+                    android:text="@string/card_profile_likes"
                     android:fontFamily="sans-serif-condensed-light"
                     />
 
