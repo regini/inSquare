@@ -65,6 +65,8 @@ public class FacebookEventSquare extends Square {
      * Creates a request to Facebook's Graph to get the details for the event
      */
     private void downloadAndFillEventDetails() {
+        Log.d(TAG, "downloadAndFillEventDetails: " + this.eventId);
+
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + this.eventId,

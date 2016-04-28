@@ -25,9 +25,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
@@ -83,6 +83,7 @@ public class MapFragment extends Fragment
 {
 
 
+    private static final int PERMISSION_REQUEST_CODE = 1;
     private List<Square> searchResult;
     public static MapFragment instance;
     private SupportMapFragment mapFragment;
@@ -107,15 +108,8 @@ public class MapFragment extends Fragment
     private int curMapTypeIndex = 1;
     public GoogleMap mGoogleMap;
 
-    private static final int REQUEST_FINE_LOCATION = 0;
-    private static final int REQUEST_COARSE_LOCATION = 1;
-
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute in milliseconds
-    private static String[] PERMISSIONS = {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
 
     // Relazione fra Square e Marker sulla mappa
     private HashMap<Marker, Square> squareHashMap;
@@ -185,16 +179,17 @@ public class MapFragment extends Fragment
 
         if(mGoogleApiClient == null)
         {
-            Snackbar.make(mapCoordinatorLayout, "Google API Client is null", Snackbar.LENGTH_SHORT).show();
+            Log.d(TAG, "Google API Client is null");
+        }else
+        {
+            mGoogleApiClient.connect();
         }
-
-        mGoogleApiClient.connect();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: started");
+//        Log.d(TAG, "onStart: started");
     }
 
     @Override
@@ -210,7 +205,7 @@ public class MapFragment extends Fragment
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mMessageReceiver);
         super.onPause();
-        Log.d(TAG, "onPause: I've just paused!");
+//        Log.d(TAG, "onPause: I've just paused!");
     }
 
     @Override
@@ -221,13 +216,13 @@ public class MapFragment extends Fragment
         {
             mGoogleApiClient.disconnect();
         }
-        Log.d(TAG, "onStop: I've just stopped!");
+//        Log.d(TAG, "onStop: I've just stopped!");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(TAG, "onDetach: removing the fragment from the system!");
+//        Log.d(TAG, "onDetach: removing the fragment from the system!");
         InSquareProfile.removeListener(this);
     }
 
@@ -261,18 +256,35 @@ public class MapFragment extends Fragment
 
     @Override
     public void onConnected(Bundle bundle) {
+        boolean locationEnabled = false;
         if(getContext() != null) {
-            if (ActivityCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            int hasFineLocationPermission = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+            int hasCoarseLocationPermission = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+            List<String> permissions = new ArrayList<>();
 
-                this.requestPermissions(PERMISSIONS,
-                        REQUEST_COARSE_LOCATION);
-                this.requestPermissions(PERMISSIONS,
-                        REQUEST_FINE_LOCATION);
-                return;
+            if ( ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)
+                    && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) )
+            {
+
+                Snackbar.make(mapCoordinatorLayout, "Mi hai negato i permessi di locazione!", Snackbar.LENGTH_LONG).show();
+            }else {
+                if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                }else if (hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                    permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                }else
+                {
+                    locationEnabled = true;
+                }
+
+                if (!permissions.isEmpty()) {
+                    requestPermissions(permissions.toArray(new String[permissions.size()]), PERMISSION_REQUEST_CODE);
+                }
             }
+        }
+
+        if(locationEnabled)
+        {
             setupLocation();
         }
     }
@@ -374,20 +386,30 @@ public class MapFragment extends Fragment
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        boolean permissionsGranted = false;
         switch (requestCode)
         {
-            case REQUEST_COARSE_LOCATION:
-            case REQUEST_FINE_LOCATION:
-                if(grantResults.length>0)
+            case PERMISSION_REQUEST_CODE:
+                for (int i = 0; i < permissions.length; i++) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d("Permissions", "Permission Granted: " + permissions[i]);
+                        permissionsGranted = true;
+                    } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        Log.d("Permissions", "Permission Denied: " + permissions[i]);
+                    }
+                }
+
+                if(permissionsGranted)
                 {
                     setupLocation();
-                }
-                else{
+                }else {
                     Snackbar.make(mapCoordinatorLayout,
                             "Senza permessi non posso funzionare!", Snackbar.LENGTH_SHORT).show();
                 }
-
-                return;
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
         }
     }
 
@@ -520,14 +542,16 @@ public class MapFragment extends Fragment
      * @param toLocation The location in which the map will be centered
      */
     private void moveToPosition(Location toLocation) {
-        CameraPosition position = CameraPosition.builder()
-                .target(new LatLng(toLocation.getLatitude(),
-                        toLocation.getLongitude()))
-                .zoom(16f)
-                .bearing(0.0f)
-                .tilt(0.0f)
-                .build();
-        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+        if(toLocation != null) {
+            CameraPosition position = CameraPosition.builder()
+                    .target(new LatLng(toLocation.getLatitude(),
+                            toLocation.getLongitude()))
+                    .zoom(16f)
+                    .bearing(0.0f)
+                    .tilt(0.0f)
+                    .build();
+            mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+        }
     }
 
     /**
@@ -608,7 +632,6 @@ public class MapFragment extends Fragment
                 // I'm closer
                 downloadAndInsertPins(PIN_DOWNLOAD_RADIUS, cameraPosition.target);
             }
-            Log.d(TAG, "Downloading From: " + cameraPosition.target.toString());
         }
     }
 
@@ -1066,13 +1089,6 @@ public class MapFragment extends Fragment
     @Override
     public void onFavChanged() {
         Log.d(TAG, "onFavChanged: Favs changed!");
-        if(InSquareProfile.isFav(mLastSelectedSquareId)) {
-            for(Square s : InSquareProfile.getFavouriteSquaresList()) {
-                if(mLastSelectedSquareId.equals(s.getId())) {
-                    break;
-                }
-            }
-        }
     }
 
     @Override

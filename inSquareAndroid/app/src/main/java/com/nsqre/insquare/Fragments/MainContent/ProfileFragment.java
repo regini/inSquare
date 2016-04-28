@@ -233,6 +233,10 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        listShowHide();
+    }
+
+    private void listShowHide() {
         if(this.adapterOwned.getItemCount() == 0)
         {
             squaresRecyclerView.setVisibility(View.INVISIBLE);
@@ -286,7 +290,8 @@ public class ProfileFragment extends Fragment implements
 
     @Override
     public void onOwnedChanged() {
-        Log.d(TAG, "onOwnedChanged!");
+        adapterOwned.setDataList(InSquareProfile.getOwnedSquaresList());
+        listShowHide();
         adapterOwned.notifyDataSetChanged();
     }
 
@@ -296,6 +301,5 @@ public class ProfileFragment extends Fragment implements
 
     @Override
     public void onRecentChanged() {
-        Log.d(TAG, "onRecentChanged!");
     }
 }

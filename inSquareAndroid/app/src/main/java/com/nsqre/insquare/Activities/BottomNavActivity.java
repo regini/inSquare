@@ -136,15 +136,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                         + squareid + ", " + mess.toString());
             }
         }
-
-        Bundle data = getIntent().getExtras();
-        if(data != null)
-        {
-            if(data.getBoolean(SplashActivity.SHOW_TUTORIAL_KEY, true)) {
-                Intent tutorialIntent = new Intent(this, TutorialActivity.class);
-                startActivity(tutorialIntent);
-            }
-        }
     }
 
     /**
@@ -400,10 +391,5 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     @Override
     public void onBackPressed() {
         this.finishAffinity();
-    }
-
-    public void showTutorial() {
-        Intent tutorialIntent = new Intent(BottomNavActivity.this, TutorialActivity.class);
-        startActivity(tutorialIntent);
     }
 }
