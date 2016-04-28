@@ -2,11 +2,19 @@ package com.nsqre.insquare.Utilities.BottomSheetMenu;/* Created by umbertosonnin
 
 import android.support.annotation.DrawableRes;
 
+/**
+ * An item of the bottom navigation bar
+ */
 public class BottomSheetItem
 {
     private int drawableRes;
     private String title;
 
+    /**
+     * Creates a BottomSheetItem object
+     * @param drawable the icon of the item
+     * @param title the name of the item
+     */
     public BottomSheetItem(@DrawableRes int drawable, String title)
     {
         this.drawableRes = drawable;

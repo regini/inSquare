@@ -19,6 +19,9 @@ import com.google.android.gms.location.LocationServices;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
+/**
+ * TODO Documentare
+ */
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
 {

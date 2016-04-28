@@ -33,6 +33,9 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
+/**
+ * The adapter for the message list that the user views in the ChatActivity
+ */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder>
 {
     private static final String TAG = "MessageAdapter";
@@ -50,18 +53,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         urlPositionsQueue = new LinkedList<>();
     }
 
-    //  0 Messaggio TEXT from OTHER USER
-    //  1 Messaggio TEXT from ME
-    //  2 Messaggio PHOTO from OTHER USER
-    //  3 Messaggio PHOTO from ME
-    //  4 Messaggio PHOTO outgoing
-    //  5 Messaggio TEXT outgoing
+    /**
+     * Returns the view type of the message in a certain position
+     * 0 for text message from someone else, 1 for text message from me
+     * 2 for photo from someone else, 3 for photo from me
+     * 4 for outgoing photo, 5 for outgoing text message
+     * @param position the position on the view of the message
+     * @return the type of the message
+     */
     @Override
     public int getItemViewType(int position) {
         Message m = mDataset.get(position);
 
-        if(m.getFrom().equals(InSquareProfile.getUserId())) {
-            if(m.getText().contains("http://i.imgur.com/") && isOutgoing(m)){
+        if (m.getFrom().equals(InSquareProfile.getUserId())) {
+            if (m.getText().contains("http://i.imgur.com/") && isOutgoing(m)) {
                 return 4;
             } else if (m.getText().contains("http://i.imgur.com/")) {
                 return 3;
@@ -70,13 +75,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 return 5;
             else
                 return 1;
-        } else if(m.getText().contains("http://i.imgur.com/")){
+        } else if (m.getText().contains("http://i.imgur.com/")) {
             return 2;
         }
         return 0;
     }
 
-    //2: appena ho tutti i messaggi inizio a creare gli item
+    /**
+     * Inflates the right layout for the kind of message it has to show. Calls getItemViewType to know it
+     * @return a message holder
+     * @see #getItemViewType(int)
+     */
     @Override
     public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = null;
@@ -102,7 +111,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         return msgHld;  //dopo aver creato il msgHld va su 4
     }
 
-    //4: con la position nel dataset, si prende i messaggi, e setta il text nell'item, se gli id sono uguali cambia bubble
+    /**
+     * Draws on the screen the correct layout for the file
+     * @param holder the message to show
+     * @param position position of the message on the list
+     */
     @Override
     public void onBindViewHolder(final MessageHolder holder, int position) {
         final Message m = mDataset.get(position);
@@ -253,12 +266,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
+    /**
+     * Calculates the number of pixels given a number of dp
+     * @param dp the dp to convert
+     * @return the conversion of dp into pixels
+     */
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
 
+    /**
+     * TODO Documentare
+     * @param message
+     * @param position
+     */
     private void checkUrl(final Message message, int position) {
         Matcher m = Patterns.WEB_URL.matcher(message.getText());
         if(m.find() && message.getUrlProvider() == null
@@ -297,7 +320,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         }
     }
 
-    //1: quando entro in una piazza, scarico n messaggi ed eseguo n volte questo
+    /**
+     * Adds an item to the dataset
+     * @param msg the message to add
+     */
     public void addItem(Message msg) {
         mDataset.add(msg);
         checkUrl(msg,mDataset.size()-1);
@@ -338,6 +364,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         this.myClickListener = clickListener;
     }
 
+    /**
+     * Checks if the app is still trying to send that message
+     * @param m the message to check
+     * @return true if the message is still not sent
+     */
     private boolean isOutgoing(Message m) {
         InSquareProfile mProfile = InSquareProfile.getInstance(context);
         for (ArrayList<Message> arr : mProfile.getOutgoingMessages().values()) {
@@ -349,6 +380,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         return false;
     }
 
+    /**
+     * Contains relevant data on how to draw messages on the screen
+     */
     public static class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView content;
         private ImageView foto;
