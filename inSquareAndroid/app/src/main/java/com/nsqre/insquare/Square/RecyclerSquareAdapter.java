@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
+ * TODO Documentare
  */
 public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
@@ -48,6 +49,33 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
     public RecyclerSquareAdapter(Context c, ArrayList<Square> squares) {
         this.context = c;
         this.squaresArrayList = squares;
+    }
+
+    public void setDataList(ArrayList<Square> data)
+    {
+        if(!listEquals(data, this.squaresArrayList))
+            this.squaresArrayList = data;
+    }
+
+    private boolean listEquals(ArrayList<Square> first, ArrayList<Square> second) {
+        if(first == null && second == null)
+            return true;
+
+        if(first == null && second != null
+                || first != null && second == null
+                || first.size() != second.size())
+        {
+            return false;
+        }
+
+        for (int i = 0; i < first.size(); i++) {
+            if(!first.get(i).equals(second.get(i)))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

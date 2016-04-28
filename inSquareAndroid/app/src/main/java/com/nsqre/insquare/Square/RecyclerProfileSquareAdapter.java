@@ -43,6 +43,7 @@ import java.util.HashMap;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
+ * TODO Documentare
  */
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 

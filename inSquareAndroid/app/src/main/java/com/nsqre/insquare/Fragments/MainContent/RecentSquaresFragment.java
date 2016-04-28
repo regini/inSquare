@@ -130,6 +130,10 @@ public class RecentSquaresFragment extends Fragment implements
     public void onResume() {
         super.onResume();
 
+        listShowHide();
+    }
+
+    private void listShowHide() {
         if(this.adapterRecents.getItemCount() == 0)
         {
             recyclerListRecent.setVisibility(View.INVISIBLE);
@@ -193,6 +197,8 @@ public class RecentSquaresFragment extends Fragment implements
 
     @Override
     public void onRecentChanged() {
+        adapterRecents.setDataList(InSquareProfile.getRecentSquaresList());
+        listShowHide();
         adapterRecents.notifyDataSetChanged();
     }
 }

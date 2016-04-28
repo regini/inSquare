@@ -130,6 +130,10 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
     public void onResume() {
         super.onResume();
 
+        listShowHide();
+    }
+
+    private void listShowHide() {
         if(this.adapterFavs.getItemCount() == 0)
         {
             recyclerListFavs.setVisibility(View.INVISIBLE);
@@ -182,7 +186,8 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
 
     @Override
     public void onFavChanged() {
-        Log.d(TAG, "onFavChanged: something has changed in these favorites!");
+        adapterFavs.setDataList(InSquareProfile.getFavouriteSquaresList());
+        listShowHide();
         adapterFavs.notifyDataSetChanged();
     }
 

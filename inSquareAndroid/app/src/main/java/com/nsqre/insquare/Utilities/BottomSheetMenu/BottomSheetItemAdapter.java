@@ -12,6 +12,9 @@ import com.nsqre.insquare.Square.RecyclerSquareAdapter;
 
 import java.util.List;
 
+/**
+ * The adapter for the bottom sheet item of the bottom navigation bar
+ */
 public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItemAdapter.BottomSheetViewHolder> {
 
     private List<BottomSheetItem> menuItems;
@@ -19,6 +22,9 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
     private RecyclerSquareAdapter listAdapter;
     private int listHolderPosition;
 
+    /**
+     * Creates a BottomSheetItemAdapter object
+     */
     public BottomSheetItemAdapter(List<BottomSheetItem> items, BottomSheetItemListener listener,
                                   RecyclerSquareAdapter adapter, int viewHolderPosition
     )
@@ -50,6 +56,9 @@ public class BottomSheetItemAdapter extends RecyclerView.Adapter<BottomSheetItem
         return menuItems.size();
     }
 
+    /**
+     * The view holder of the bottom sheet view
+     */
     public class BottomSheetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView bottomSheetIcon;

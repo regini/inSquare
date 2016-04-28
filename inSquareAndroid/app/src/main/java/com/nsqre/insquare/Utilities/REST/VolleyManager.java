@@ -27,25 +27,42 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * This class manages the HTTP requests made with Volley from all the Activities andr Fragments of the application
+ * This class manages the HTTP requests made with Volley from all the Activities and Fragments of the application
  */
 public class VolleyManager {
 
     public static final String OK_RESPONSE = "OK!";
 
+    /**
+     * An interface to manage responses from the server
+     */
     public interface VolleyResponseListener<E>
     {
-        // Handler per le risposte
-        // =======================
-        // Risposta ad una GET
+        /**
+         * Manages the response to the GET request
+         * @param object the data on the response of the server
+         */
         void responseGET(E object);
-        // Risposta ad una POST
+
+        /**
+         * Manages the response to the POST request
+         * @param object the data on the response of the server
+         */
         void responsePOST(E object);
-        // Risposta per la PATCH
+
+        /**
+         * Manages the response to the PATCH request
+         * @param object the data on the response of the server
+         */
         void responsePATCH(E object);
-        // Risposta per la DELETE
+
+        /**
+         * Manages the response to the DELETE request
+         * @param object the data on the response of the server
+         */
         void responseDELETE(E object);
     }
+
     private static final String TAG = "VolleyManager";
     private static VolleyManager instance = null;
     private static Locale locale;
@@ -87,6 +104,14 @@ public class VolleyManager {
         return instance;
     }
 
+    /**
+     * Searches for squares in the server's database
+     * @param query the query of the user
+     * @param userId the id of the user
+     * @param lat the latitude of the position of the user
+     * @param lon the longitude of the position of the user
+     * @param listener the listener to handle the results
+     */
     public void searchSquares(String query, String userId, double lat, double lon, final VolleyResponseListener listener)
     {
          
@@ -123,6 +148,13 @@ public class VolleyManager {
         requestQueue.add(searchSquaresRequest);
     }
 
+    /**
+     * Searchs on the server's database for squares around a certain position and a certain distance
+     * @param distance the radius of research
+     * @param lat the latitude of the position of the user
+     * @param lon the longitude of the position of the user
+     * @param listener the listener to handle the results
+     */
     public void getClosestSquares(String distance,
                                   double lat,
                                   double lon,
@@ -157,6 +189,13 @@ public class VolleyManager {
         requestQueue.add(closeSquareRequest);
     }
 
+    /**
+     * Gets the most recent messages from a square
+     * @param isRecentRequest if true gets the user the most recent messages
+     * @param howMany the number of messages to download
+     * @param squareId the square id from which to download
+     * @param listener the listener to handle the results
+     */
     public void getRecentMessages(
             String isRecentRequest,
             String howMany,
@@ -194,7 +233,13 @@ public class VolleyManager {
         requestQueue.add(getRecentMessages);
     }
 
-    // Gestisce sia POST che DELETE delle Favs
+    /**
+     * Adds or removes a square from the user's favourite
+     * @param requestType POST for adding, DELETE for removing
+     * @param squareId the square to add/remove
+     * @param userId the user's id
+     * @param listener the listener to handle the results
+     */
     public void handleFavoriteSquare(
             final int requestType,
             String squareId,
@@ -244,6 +289,12 @@ public class VolleyManager {
         requestQueue.add(favoriteSquare);
     }
 
+    /**
+     * Manages the POST request to login via Google/Facebook
+     * @param service the service you want to use
+     * @param accessToken the access token
+     * @param listener the listener to handle the results
+     */
     public void postLoginToken(
             final String service,
             final String accessToken,
@@ -282,6 +333,12 @@ public class VolleyManager {
         requestQueue.add(postTokenRequest);
     }
 
+    /**
+     * Updates the access token for the login
+     * @param service the service you want to use
+     * @param accessToken the access token
+     * @param listener the listener to handle the results
+     */
     public void patchLoginToken (
             final String service,
             final String accessToken,
@@ -317,7 +374,11 @@ public class VolleyManager {
         requestQueue.add(patchTokenRequest);
     }
 
-
+    /**
+     * Updates the GCM Token, if expired
+     * @param token the new token
+     * @param listener the listener to handle the results
+     */
     public void patchGCMToken(
             final String token,
             final VolleyResponseListener listener
@@ -353,7 +414,13 @@ public class VolleyManager {
         requestQueue.add(patchGCMTokenRequest);
     }
 
-
+    /**
+     * Sends a feedback that will be stored on the backend database
+     * @param feedback the feedback
+     * @param userId the user that submitted it
+     * @param fromActivity from which activity it was submitted
+     * @param listener the listener to handle the results
+     */
     public void postFeedback(final String feedback,
                              String userId,
                              String fromActivity,
@@ -394,6 +461,15 @@ public class VolleyManager {
 
     }
 
+    /**
+     * POST request to create a new square
+     * @param squareName name of the square
+     * @param squareDescr description of the square
+     * @param latitude latitude of the position of the square
+     * @param longitude longitude of the position of the square
+     * @param ownerId the id of the owner
+     * @param listener the listener to handle the results
+     */
     public void postSquare(final String squareName,
                            final String squareDescr,
                            final String latitude,
@@ -441,7 +517,18 @@ public class VolleyManager {
 
     }
 
-
+    /**
+     * POST request to create a Facebook square (Page or Event)
+     * @param squareName name of the square
+     * @param squareDescr description of the square
+     * @param latitude latitude of the position of the square
+     * @param longitude longitude of the position of the square
+     * @param ownerId the id of the owner
+     * @param squareType type of the square
+     * @param facebookId Facebook's id of the page/event
+     * @param expireTime expiration time of the square
+     * @param listener the listener to handle the results
+     */
     public void postFacebookSquare(
            final String squareName,
            final String squareDescr,
@@ -504,7 +591,12 @@ public class VolleyManager {
 
     }
 
-
+    /**
+     * Downloads user's owned squares
+     * @param byOwner true if the research is for the owner
+     * @param ownerId the id of the owner
+     * @param listener the listener to handle the results
+     */
     public void getOwnedSquares(String byOwner,
                                 String ownerId,
                                 final VolleyResponseListener listener)
@@ -537,6 +629,11 @@ public class VolleyManager {
         requestQueue.add(getOwnedRequest);
     }
 
+    /**
+     * Downloads user's favourite squares
+     * @param userId the id of the user
+     * @param listener the listener to handle the results
+     */
     public void getFavoriteSquares(
             final String userId,
             final VolleyResponseListener listener)
@@ -575,6 +672,11 @@ public class VolleyManager {
         requestQueue.add(getFavsRequest);
     }
 
+    /**
+     * Downloads user's recent squares
+     * @param userId the id of the user
+     * @param listener the listener to handle the results
+     */
     public void getRecentSquares(
             String userId,
             final VolleyResponseListener listener
@@ -610,7 +712,11 @@ public class VolleyManager {
     }
 
 
-    // Deserializza dalla risposta JSON una lista di Squares
+    /**
+     * Deserializes a list of squares received from the server
+     * @param jsonResponse the data received from the server
+     * @return a list of Square objects
+     */
     public List<Square> deserializeSquares(String jsonResponse)
     {
 
@@ -623,7 +729,11 @@ public class VolleyManager {
         return squares;
     }
 
-    // Deserializza dalla risposta JSON una lista di Messages
+    /**
+     * Deserializes a list of messages received from the server
+     * @param jsonResponse the data received from the server
+     * @return a list of Message objects
+     */
     public List<Message> deserializeMessages(String jsonResponse)
     {
         GsonBuilder builder = new GsonBuilder();
@@ -637,6 +747,14 @@ public class VolleyManager {
         return messages;
     }
 
+    /**
+     * Updates name and description of the square
+     * @param name the new name
+     * @param description the new description
+     * @param squareId the id of the square to update
+     * @param ownerId the id of the owner of the square
+     * @param listener the listener to handle the results
+     */
     public void patchDescription(
             String name,
             String description,
@@ -686,6 +804,14 @@ public class VolleyManager {
         requestQueue.add(patchDescriptionRequest);
     }
 
+    /**
+     * Updates the location of a square
+     * @param latitude the new latitude of the square
+     * @param longitude the new longitude of the square
+     * @param userId the id of the user
+     * @param isUpdateLocation true if the location has to be updated
+     * @param listener the listener to handle the results
+     */
     public void patchLocation(
             final String latitude,
             final String longitude,
@@ -726,6 +852,12 @@ public class VolleyManager {
         requestQueue.add(patchLocationRequest);
     }
 
+    /**
+     * Deletes a square and all the messages contained in it from the database
+     * @param squareId the id of the square
+     * @param ownerId the id of the owner
+     * @param listener the listener to handle the results
+     */
     public void deleteSquare(
             final String squareId,
             final String ownerId,
@@ -758,6 +890,11 @@ public class VolleyManager {
         requestQueue.add(deleteSquareRequest);
     }
 
+    /**
+     * Removes empty spaces from strings
+     * @param urlParameter the url
+     * @return the initial string with spaces replaced by '%20'
+     */
     private String emptySpacesForParams(String urlParameter)
     {
         // Gli url con spazi vuoti causano problemi
