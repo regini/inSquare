@@ -69,7 +69,7 @@ public class FacebookPageSquare extends Square {
         this.pageId = pageId;
         this.isFacebookPage = true;
 
-        if(FacebookSdk.isInitialized()) {
+        if(FacebookSdk.isInitialized() && AccessToken.getCurrentAccessToken() != null) {
             downloadAndFillPageDetails();
         }
     }
@@ -81,7 +81,7 @@ public class FacebookPageSquare extends Square {
         Bundle requestParams = new Bundle();
         requestParams.putString("fields", "fan_count,price_range,hours,phone,location,website");
 
-        Log.d(TAG, "downloadAndFillPageDetails: " + this.pageId);
+        Log.d(TAG, "downloadAndFillPageDetails: " + this.pageId + " " + this.name);
 
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

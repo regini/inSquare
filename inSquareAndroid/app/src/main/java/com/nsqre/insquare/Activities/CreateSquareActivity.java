@@ -1,7 +1,5 @@
 package com.nsqre.insquare.Activities;
 
-import android.animation.Animator;
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -289,17 +287,17 @@ public class CreateSquareActivity extends AppCompatActivity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Animator circularReveal(View v)
+    public void circularReveal(View v)
     {
         int cx = v.getMeasuredWidth() / 2;
         int cy = v.getMeasuredHeight() / 2;
 
         int finalRadius = Math.max(v.getWidth(), v.getHeight()) / 2;
 
-        Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+           ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
+        }
         v.setVisibility(View.VISIBLE);
-        return anim;
 
     }
 
