@@ -32,6 +32,7 @@ import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
@@ -53,8 +54,16 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
     public void setDataList(ArrayList<Square> data)
     {
-        if(!listEquals(data, this.squaresArrayList))
+        if(!listEquals(data, this.squaresArrayList)) {
             this.squaresArrayList = data;
+            sortData();
+        }
+    }
+
+    public void sortData() {
+        Collections.sort(this.squaresArrayList);
+        Collections.reverse(this.squaresArrayList);
+        notifyDataSetChanged();
     }
 
     private boolean listEquals(ArrayList<Square> first, ArrayList<Square> second) {

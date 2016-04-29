@@ -129,7 +129,7 @@ public class RecentSquaresFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-
+        adapterRecents.sortData();
         listShowHide();
     }
 
@@ -199,6 +199,5 @@ public class RecentSquaresFragment extends Fragment implements
     public void onRecentChanged() {
         adapterRecents.setDataList(InSquareProfile.getRecentSquaresList());
         listShowHide();
-        adapterRecents.notifyDataSetChanged();
     }
 }

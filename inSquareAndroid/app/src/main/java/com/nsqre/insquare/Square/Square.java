@@ -12,7 +12,7 @@ import java.util.TimeZone;
 /**
  * Square is the class that represents the concept of Square inside the application
  */
-public class Square implements Serializable {
+public class Square implements Serializable, Comparable<Square> {
 
     protected static final String TAG = "Square";
     /**
@@ -317,5 +317,10 @@ public class Square implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Square another) {
+        return this.getLastMessageDate().compareTo(another.getLastMessageDate());
     }
 }

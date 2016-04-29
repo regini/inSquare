@@ -129,7 +129,7 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
     @Override
     public void onResume() {
         super.onResume();
-
+        adapterFavs.sortData();
         listShowHide();
     }
 
@@ -188,7 +188,6 @@ public class FavSquaresFragment extends Fragment implements InSquareProfile.InSq
     public void onFavChanged() {
         adapterFavs.setDataList(InSquareProfile.getFavouriteSquaresList());
         listShowHide();
-        adapterFavs.notifyDataSetChanged();
     }
 
     @Override
