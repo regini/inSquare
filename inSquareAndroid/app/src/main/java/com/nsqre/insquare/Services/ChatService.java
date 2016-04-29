@@ -46,7 +46,7 @@ public class ChatService extends Service {
         if (intent != null) {
             Log.d(TAG, "onHandleIntent: " + this.getClass().getName());
             mSquareId = intent.getStringExtra("squareid");
-            Message message = (Message) intent.getSerializableExtra("message");
+            Message message = (Message) intent.getParcelableExtra("message");
             String mUsername = message.getName();
             String mUserId = message.getFrom();
             String messageText = message.getText();

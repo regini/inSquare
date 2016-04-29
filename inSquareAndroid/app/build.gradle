@@ -78,19 +78,20 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-appinvite:8.4.0'
-    compile 'com.facebook.android:facebook-android-sdk:4.10.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.11.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.android.volley:volley:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'org.jsoup:jsoup:1.8.3'
+    compile 'org.jsoup:jsoup:1.9.1'
     compile 'com.leocardz:link-preview:1.2.1@aar'
-    compile 'com.aurelhubert:ahbottomnavigation:1.0.5'
+    compile 'com.aurelhubert:ahbottomnavigation:1.1.8'
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
-    compile "com.daimajia.swipelayout:library:1.2.0@aar"
     compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+
 }
 
 apply plugin: 'com.google.gms.google-services'

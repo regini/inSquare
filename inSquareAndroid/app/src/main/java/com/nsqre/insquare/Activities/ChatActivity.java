@@ -147,7 +147,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         public void onReceive(Context context, Intent intent) {
             try {
                 Log.d(TAG, "onReceive: messaggio inviato con chatservice");
-                Message m = (Message) intent.getSerializableExtra("messageSent");
+                Message m = (Message) intent.getParcelableExtra("messageSent");
                 int position = positions.getFirst();
                 positions.remove(positions.getFirst());
                 Message messageFromAdapter = messageAdapter.getMessage(position);
@@ -273,7 +273,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         // Recuperiamo i dati passati dalla BottomNavActivity
         Intent intent = getIntent();
 
-        mSquare = (Square) intent.getSerializableExtra(MapFragment.SQUARE_TAG);
+        mSquare = (Square) intent.getParcelableExtra(MapFragment.SQUARE_TAG);
         Log.d(TAG, mSquare.toString());
 
         toolbarInitials = intent.getStringExtra(BottomNavActivity.INITIALS_TAG);
