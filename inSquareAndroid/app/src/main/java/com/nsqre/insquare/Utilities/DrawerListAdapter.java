@@ -13,7 +13,7 @@ import com.nsqre.insquare.R;
 import java.util.ArrayList;
 
 /**
- * Created by emanu on 24/02/2016.
+ * unused
  */
 public class DrawerListAdapter extends BaseAdapter {
 

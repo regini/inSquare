@@ -7,6 +7,7 @@ import android.text.style.LeadingMarginSpan;
 
 /**
  * Created by mrsa on 11/04/2016.
+ * TODO Documentare
  */
 public class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
     private int margin;

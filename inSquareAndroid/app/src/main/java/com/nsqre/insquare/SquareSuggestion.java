@@ -10,6 +10,9 @@ import android.os.Parcel;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.nsqre.insquare.Square.Square;
 
+/**
+ * TODO Documentare
+ */
 public class SquareSuggestion implements SearchSuggestion {
 
     private Square mSquare;

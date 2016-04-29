@@ -12,7 +12,7 @@ import com.nsqre.insquare.User.InSquareProfile;
 import java.io.InputStream;
 
 /**
- * Created by emanu on 27/02/2016.
+ * Downloads and locally stores an image
  */
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
@@ -23,6 +23,12 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         this.context = c;
     }
 
+    /**
+     * Downloads an image from a link
+     * @param urls the link of the image
+     * @return a bitmap
+     * @see #onPostExecute(Bitmap)
+     */
     protected Bitmap doInBackground(String... urls) {
         String urldisplay = urls[0];
         Bitmap mIcon11 = null;
@@ -36,6 +42,10 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         return mIcon11;
     }
 
+    /**
+     * Resizes the image into a circular one with 100px radius and stores it locally
+     * @param result the image downloaded
+     */
     protected void onPostExecute(Bitmap result) {
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(result, 100);
         bmImage.setImageBitmap(circularBitmap);
