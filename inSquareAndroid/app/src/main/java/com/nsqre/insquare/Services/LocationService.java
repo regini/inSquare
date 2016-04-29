@@ -20,7 +20,7 @@ import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 /**
- * TODO Documentare
+ * A service that gets the actual position of the user and sends it to the server
  */
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
@@ -33,6 +33,10 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     private LocationRequest mLocationRequest;
     private LocationListener locationListener;
 
+    /**
+     * Since the Google API Client is connected, the device can start the location services
+     * @see #startLocationUpdates()
+     */
     @Override
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
@@ -42,6 +46,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         startLocationUpdates();
     }
 
+    /**
+     * Starts up the location services
+     */
     private void startLocationUpdates() {
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -61,6 +68,10 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
     }
 
+    /**
+     * Calls sendLocationToServer when the location changes
+     * @see #sendLocationToServer(Location)
+     */
     private class LocationListener implements com.google.android.gms.location.LocationListener {
 
         public LocationListener() {
@@ -81,6 +92,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     {
         return null;
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
@@ -103,6 +115,10 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         return START_STICKY;
     }
 
+    /**
+     * Tries to connect to the Google API client
+     * @see #onConnected(Bundle)
+     */
     @Override
     public void onCreate()
     {
@@ -119,6 +135,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         super.onDestroy();
     }
 
+    /**
+     * Stops the location services
+     */
     public void stopLocationUpdates() {
 
         LocationServices.FusedLocationApi.removeLocationUpdates(
@@ -128,6 +147,10 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
             mGoogleApiClient.disconnect();
     }
 
+    /**
+     * Sends a PATCH request to the server with the location of the user
+     * @param lastLocation the location
+     */
     private void sendLocationToServer(final Location lastLocation) {
         VolleyManager.getInstance(getApplicationContext());
         InSquareProfile.getInstance(getApplicationContext());

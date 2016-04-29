@@ -320,7 +320,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO Documentare
+     * Sets up the toolbar for the ChatActivity
      */
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
@@ -362,7 +362,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO Documentare
+     * Checks if the app has permissions. If not it requests them
      */
     private void insertPhotoWrapper() {
         List<String> permissionsNeeded = new ArrayList<String>();
@@ -411,9 +411,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO documentare
-     * @param message
-     * @param okListener
+     * Shows a certain message on the screen with an OK and a Cancel buttons.
+     * @param message the message to show
+     * @param okListener the listener for the OK button
      */
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
@@ -1035,7 +1035,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO Documentare
+     * Manages the callbacks for the upload of a photo
      */
     private class UiCallback implements Callback<ImageResponse> {
 

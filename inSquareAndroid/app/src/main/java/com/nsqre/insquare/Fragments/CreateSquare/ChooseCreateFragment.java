@@ -121,7 +121,8 @@ public class ChooseCreateFragment extends Fragment {
 
 
     /**
-     * TODO Documentare
+     * Enhances the text of a text view
+     * @param v the text view
      */
     private void enhanceText(TextView v)
     {
@@ -130,7 +131,8 @@ public class ChooseCreateFragment extends Fragment {
     }
 
     /**
-     * TODO documentare
+     * Reset the text of a text view
+     * @param v the text view
      */
     private void resetText(TextView v)
     {

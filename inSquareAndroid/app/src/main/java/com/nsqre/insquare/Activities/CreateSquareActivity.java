@@ -59,9 +59,7 @@ public class CreateSquareActivity extends AppCompatActivity {
     // DATI DA RITORNARE ALLA MAPPA PER LA CREAZIONE
     private String resultName, resultDescription, resultLat, resultLon, resultFacebookId, resultExpireTime;
 
-    /**
-     * TODO documentare
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,7 +250,7 @@ public class CreateSquareActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO documentare
+     * Manages the correct fragment to show while creating a square
      */
     public static class CreateSquarePagerAdapter extends FragmentPagerAdapter
     {
@@ -301,6 +299,15 @@ public class CreateSquareActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Initializes all the variables for the creation of a square
+     * @param name the name of the square
+     * @param description the description of the square
+     * @param lat the latitude of the position of the square
+     * @param lon the longitude of the position of the square
+     * @param id Facebook's ID for the square
+     * @param time expiration time of the square
+     */
     public void setupResults(String name, String description, String lat, String lon, String id, String time)
     {
         this.resultName = name;
@@ -312,7 +319,8 @@ public class CreateSquareActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO documentare
+     * Shows the correct fragment, depends on the square type selected
+     * @param placeType the square type selected
      */
     public void squareTypeSelected(SquareType placeType)
     {
@@ -333,7 +341,7 @@ public class CreateSquareActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO documentare
+     * Manages the tap on the back button
      */
     @Override
     public void onBackPressed() {

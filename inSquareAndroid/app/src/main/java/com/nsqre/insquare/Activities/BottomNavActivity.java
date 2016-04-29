@@ -138,9 +138,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
-    /**
-     * TODO documentare
-     */
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

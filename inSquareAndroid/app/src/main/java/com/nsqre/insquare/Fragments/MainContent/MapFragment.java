@@ -1043,8 +1043,7 @@ public class MapFragment extends Fragment
     }
 
     /**
-     * TODO documentare
-     * da eliminare? sembra inutilizzato
+     * unused
      */
     public void favouriteSquare(final int method, final Square square) {
         VolleyManager.getInstance().handleFavoriteSquare(method, square.getId(), InSquareProfile.getUserId(),

@@ -238,7 +238,7 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Sets up the content of the fragment
      */
     private void setupMainContent(View v)
     {
@@ -389,8 +389,7 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
-     * è inutilizzato?
+     * unused
      */
     public boolean validLink()
     {
@@ -406,8 +405,7 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
-     * è inutilizzato?
+     * unused
      */
     public boolean validName()
     {

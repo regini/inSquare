@@ -38,8 +38,7 @@ import java.util.ArrayList;
  */
 
 /**
- * TODO Documentare
- * inutilizzato?
+ * unused
  */
 public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
 

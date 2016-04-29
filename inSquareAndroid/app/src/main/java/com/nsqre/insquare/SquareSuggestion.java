@@ -11,7 +11,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.nsqre.insquare.Square.Square;
 
 /**
- * TODO Documentare
+ * Manages the details of a suggestion from the research bar
  */
 public class SquareSuggestion implements SearchSuggestion {
 
