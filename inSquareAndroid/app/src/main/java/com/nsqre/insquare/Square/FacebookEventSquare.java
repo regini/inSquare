@@ -51,7 +51,6 @@ public class FacebookEventSquare extends Square {
                                String[] favourers, String views, String state, String lastMessageDate, String type, String eventId, Locale l)
     {
         super(id, name, description, geoloc, ownerId, favouredBy, favourers, views, state, lastMessageDate, type, l);
-        Log.d(TAG, "FacebookPageSquare: page with id " + eventId);
         this.eventId = eventId;
         this.isFacebookEvent = true;
 

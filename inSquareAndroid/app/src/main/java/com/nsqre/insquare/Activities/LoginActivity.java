@@ -113,18 +113,6 @@ public class LoginActivity extends AppCompatActivity
         // Singleton -> non puo' essere duplicato
         profile = InSquareProfile.getInstance(getApplicationContext());
 
-        // TODO spostare nel BottomNavActivity
-        /*try {
-            if (InSquareProfile.showTutorial()) {
-                showTutorial();
-            } else {
-                initLoginButtons();
-            }
-        }
-        catch (Exception e) {
-            Log.d(TAG, "onCreate: exception " + e.toString());
-        }*/
-
         //ANALYTICS
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
@@ -511,43 +499,6 @@ public class LoginActivity extends AppCompatActivity
         graphRequest.setParameters(params);
         graphRequest.executeAsync();
     }
-
-    /**
-     * This method checks if the user is logged in via Google
-     * @return true if the user is logged in via Google
-     */
-    /*private boolean isGoogleSignedIn()
-    {
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(gApiClient);
-        boolean result = opr.isDone();
-        if(result)
-            gAccessToken = opr.get().getSignInAccount().getIdToken();
-
-        return result;
-    }*/
-
-    /**
-     * This method checks if the user is logged in via Facebook
-     * @return true if the user is logged in via Facebook
-     */
-    /*private boolean isFacebookSignedIn()
-    {
-        try {
-            AccessToken token = AccessToken.getCurrentAccessToken();
-            if(token != null)
-            {
-                fbAccessToken = token.getToken();
-                Log.d(TAG, "FB Token: " + fbAccessToken);
-                return true;
-            }
-
-            return false;
-        }
-        catch (Exception e) {
-            Log.d(TAG, "FB token error: " + e.toString());
-        }
-        return false;
-    }*/
 
     /**
      * This method checks if the network is currently available

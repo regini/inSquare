@@ -69,8 +69,6 @@ public class FacebookPageSquare extends Square {
         this.pageId = pageId;
         this.isFacebookPage = true;
 
-        Log.d(TAG, "FacebookPageSquare: page with id " + pageId);
-
         if(FacebookSdk.isInitialized() && AccessToken.getCurrentAccessToken() != null) {
             downloadAndFillPageDetails();
         }

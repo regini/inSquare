@@ -1203,6 +1203,7 @@ public class MapFragment extends Fragment
             if(square.isFacebookPage)
             {
                 FacebookPageSquare fbPage = (FacebookPageSquare) square;
+                // TODO remove print
                 Log.d(TAG, "setupSquare: " + fbPage.toString());
                 if(!fbPage.likeCount.isEmpty()) {
                     likeNumber.setText(fbPage.likeCount);
@@ -1212,6 +1213,7 @@ public class MapFragment extends Fragment
             {
                 squareActivity.setVisibility(View.GONE);
                 FacebookEventSquare fbEvent = (FacebookEventSquare) square;
+                // TODO remove print
                 Log.d(TAG, "setupSquare: " + fbEvent.toString());
                 if(!fbEvent.time.isEmpty()) {
                     facebookTime.setVisibility(View.VISIBLE);
