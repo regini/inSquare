@@ -14,7 +14,7 @@ import com.nsqre.insquare.Square.Square;
 import java.util.List;
 
 /**
- * Created by Regini on 20/03/2016.
+ * unused
  */
 public class SearchAdapter extends CursorAdapter {
 

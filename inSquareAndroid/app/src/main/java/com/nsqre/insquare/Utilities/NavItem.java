@@ -1,7 +1,7 @@
 package com.nsqre.insquare.Utilities;
 
 /**
- * Created by emanu on 24/02/2016.
+ * A basic Navigation Item class
  */
 public class NavItem {
     private String mTitle;

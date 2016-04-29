@@ -24,7 +24,7 @@
             android:id="@+id/message_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:text="@string/photo_item_text"
             android:textStyle="bold"
             android:fontFamily="sans-serif-condensed"
             android:textSize="15sp"
@@ -47,7 +47,7 @@
             android:layout_alignRight="@+id/foto_content"
             android:layout_alignEnd="@+id/foto_content"
             android:gravity="bottom"
-            android:text="Time Text"
+            android:text="@string/photo_item_time"
             android:textSize="12sp"
             android:fontFamily="sans-serif-condensed-light"
             />

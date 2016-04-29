@@ -23,7 +23,7 @@
                 android:id="@+id/create_square_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Inserisci un nome"
+                android:hint="@string/create_square_middle_insert"
                 android:maxLines="3"
                 android:fontFamily="sans-serif-condensed" />
         </android.support.design.widget.TextInputLayout>
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
-            android:text="Data"
+            android:text="@string/create_square_middle_date"
             android:textSize="17sp"
             android:fontFamily="sans-serif-condensed-bold"
             style="?android:attr/borderlessButtonStyle" />
@@ -50,7 +50,7 @@
             android:id="@+id/create_square_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Inserisci una descrizione"
+            android:hint="@string/create_square_middle_insert_descr"
             android:fontFamily="sans-serif-condensed"
             android:maxLines="7" />
     </android.support.design.widget.TextInputLayout>

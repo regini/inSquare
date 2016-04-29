@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:textColor="@color/colorText"
-                    android:text="AVL"
+                    android:text="@string/swipe_layout_initials"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-condensed"
                     />
@@ -115,7 +115,7 @@
                         android:id="@+id/swipe_row_upper_square_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="A very long square name that should resemble ones that we might have in our db"
+                        android:text="@string/swipe_layout_name"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="18sp"
                         android:maxLines="2"
@@ -128,7 +128,7 @@
                         android:id="@+id/swipe_row_upper_square_last_activity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ultima attivita'"
+                        android:text="@string/swipe_layout_last_activity"
                         android:textColor="@color/colorTextSecondary"
                         android:fontFamily="sans-serif-condensed-light"
                         />

@@ -33,7 +33,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/settings_top_user_avatar"
             android:layout_marginLeft="@dimen/search_bar_margin"
-            android:text="Nome Cognome"
+            android:text="@string/frag_settings_name"
             android:textColor="@color/white"
             android:textSize="22sp"
             android:fontFamily="sans-serif-condensed"
@@ -60,7 +60,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/settings_header_row_height"
-                    android:text="inSquare"
+                    android:text="@string/frag_settings_insquare"
                     android:gravity="center_vertical"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingLeft="@dimen/activity_vertical_margin"
@@ -74,7 +74,7 @@
                     android:paddingLeft="@dimen/activity_vertical_margin"
                     android:paddingStart="@dimen/activity_vertical_margin"
                     android:gravity="start|center_vertical"
-                    android:text="Logout"
+                    android:text="@string/frag_settings_logout"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -104,7 +104,7 @@
                     android:paddingLeft="@dimen/activity_vertical_margin"
                     android:paddingStart="@dimen/activity_vertical_margin"
                     android:gravity="start|center_vertical"
-                    android:text="Invita amici"
+                    android:text="@string/frag_settings_invite"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -132,7 +132,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/settings_header_row_height"
-                    android:text="Facebook"
+                    android:text="@string/frag_settings_facebook"
                     android:gravity="center_vertical"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingLeft="@dimen/activity_vertical_margin"
@@ -173,7 +173,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/settings_header_row_height"
-                    android:text="Google"
+                    android:text="@string/frag_settings_google"
                     android:gravity="center_vertical"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingLeft="@dimen/activity_vertical_margin"
@@ -187,7 +187,7 @@
                     android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:paddingLeft="@dimen/activity_vertical_margin"
-                    android:text="Connetti con Google+"
+                    android:text="@string/frag_settings_connect_google"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed"
                     />
@@ -211,7 +211,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/settings_header_row_height"
-                    android:text="Feedback"
+                    android:text="@string/frag_settings_feedback"
                     android:gravity="center_vertical"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingLeft="@dimen/activity_vertical_margin"
@@ -225,7 +225,7 @@
                     android:paddingLeft="@dimen/activity_vertical_margin"
                     android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:text="Invia un Feedback"
+                    android:text="@string/frag_settings_send_feedback"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed"
                     />
@@ -247,7 +247,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/settings_header_row_height"
-                    android:text="Tutorial"
+                    android:text="@string/frag_settings_tutorial"
                     android:gravity="center_vertical"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingLeft="@dimen/activity_vertical_margin"
@@ -261,7 +261,7 @@
                     android:paddingLeft="@dimen/activity_vertical_margin"
                     android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:text="Mostrami di nuovo il tutorial"
+                    android:text="@string/frag_settings_show_tutorial"
                     android:textColor="@color/colorTextPrimary"
                     android:fontFamily="sans-serif-condensed"
                     />

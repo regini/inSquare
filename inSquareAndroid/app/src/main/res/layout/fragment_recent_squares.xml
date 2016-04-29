@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/recents_profile_image"
                 android:layout_centerVertical="true"
-                android:text="Titolo"
+                android:text="@string/frag_recent_title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorText"
                 android:fontFamily="sans-serif-condensed"

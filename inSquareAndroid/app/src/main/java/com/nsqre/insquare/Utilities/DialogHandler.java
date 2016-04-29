@@ -25,6 +25,9 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
+/**
+ * TODO Documentare
+ */
 public class DialogHandler {
 
     public static final String SQUARE_TYPE = "SQUARE_TYPE";

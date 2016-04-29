@@ -31,7 +31,7 @@
             android:id="@+id/square_search_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Square Name"
+            android:text="@string/search_item_name"
             android:textColor="#000000"
             android:textSize="18sp"
             android:fontFamily="sans-serif-condensed"

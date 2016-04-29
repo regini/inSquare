@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/profile_profile_image"
                 android:layout_centerVertical="true"
-                android:text="Le mie Square"
+                android:text="@string/frag_profile_title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif-condensed"
