@@ -1,6 +1,8 @@
 package com.nsqre.insquare.Square;/* Created by umbertosonnino on 6/2/16  */
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +14,7 @@ import java.util.TimeZone;
 /**
  * Square is the class that represents the concept of Square inside the application
  */
-public class Square implements Serializable {
+public class Square implements Parcelable, Comparable<Square> {
 
     protected static final String TAG = "Square";
     /**
@@ -159,11 +161,40 @@ public class Square implements Serializable {
         this.myLocale = l;
     }
 
+    protected Square(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        description = in.readString();
+        lat = in.readDouble();
+        lon = in.readDouble();
+        type = in.readString();
+        ownerId = in.readString();
+        favouredBy = in.readLong();
+        favourers = in.createStringArray();
+        views = in.readLong();
+        lastMessageDateString = in.readString();
+        isFacebookEvent = in.readByte() != 0;
+        isFacebookPage = in.readByte() != 0;
+    }
+
+    public static final Creator<Square> CREATOR = new Creator<Square>() {
+        @Override
+        public Square createFromParcel(Parcel in) {
+            return new Square(in);
+        }
+
+        @Override
+        public Square[] newArray(int size) {
+            return new Square[size];
+        }
+    };
+
     @Override
     public String toString() {
         return "Square{" +
                 "id='" + id + '\'' +
                 "\nname='" + name + '\'' +
+                "\ndescription='" + description + '\'' +
                 "\nlat=" + lat +
                 "\nlon=" + lon +
                 "\ntype='" + type + '\'' +
@@ -317,5 +348,33 @@ public class Square implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Square another) {
+        return this.getLastMessageDate().compareTo(another.getLastMessageDate());
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeDouble(lat);
+        dest.writeDouble(lon);
+        dest.writeString(type);
+        dest.writeString(ownerId);
+        dest.writeLong(favouredBy);
+        dest.writeStringArray(favourers);
+        dest.writeLong(views);
+        dest.writeString(lastMessageDateString);
+        dest.writeByte((byte) (isFacebookEvent ? 1 : 0));
+        dest.writeByte((byte) (isFacebookPage ? 1 : 0));
     }
 }

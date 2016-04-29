@@ -233,6 +233,7 @@ public class ProfileFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        adapterOwned.sortData();
         listShowHide();
     }
 
@@ -292,7 +293,6 @@ public class ProfileFragment extends Fragment implements
     public void onOwnedChanged() {
         adapterOwned.setDataList(InSquareProfile.getOwnedSquaresList());
         listShowHide();
-        adapterOwned.notifyDataSetChanged();
     }
 
     @Override

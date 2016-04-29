@@ -1201,17 +1201,19 @@ public class MapFragment extends Fragment
 
             if(square.isFacebookPage)
             {
-                Log.d(TAG, "Sono una pagina Facebook");
                 FacebookPageSquare fbPage = (FacebookPageSquare) square;
+                // TODO remove print
+                Log.d(TAG, "setupSquare: " + fbPage.toString());
                 if(!fbPage.likeCount.isEmpty()) {
                     likeNumber.setText(fbPage.likeCount);
                     facebookLikes.setVisibility(View.VISIBLE);
                 }
             }else if(square.isFacebookEvent)
             {
-                Log.d(TAG, "Sono un evento Facebook");
                 squareActivity.setVisibility(View.GONE);
                 FacebookEventSquare fbEvent = (FacebookEventSquare) square;
+                // TODO remove print
+                Log.d(TAG, "setupSquare: " + fbEvent.toString());
                 if(!fbEvent.time.isEmpty()) {
                     facebookTime.setVisibility(View.VISIBLE);
                     timeText.setText(fbEvent.time);

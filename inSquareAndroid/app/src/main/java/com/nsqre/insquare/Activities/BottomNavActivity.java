@@ -387,6 +387,12 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     }
     @Override
     public void onBackPressed() {
-        this.finishAffinity();
+        if(this.bottomNavigation.getCurrentItem() != 0)
+        {
+            this.bottomNavigation.setCurrentItem(0);
+        }else
+        {
+            this.finishAffinity();
+        }
     }
 }

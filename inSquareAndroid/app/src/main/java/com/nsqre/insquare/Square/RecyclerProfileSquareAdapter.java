@@ -39,6 +39,7 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import com.nsqre.insquare.Utilities.SquareType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -69,8 +70,16 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     public void setDataList(ArrayList<Square> data)
     {
-        if(!listEquals(data, this.squaresArrayList))
+        if(!listEquals(data, this.squaresArrayList)) {
             this.squaresArrayList = data;
+            sortData();
+        }
+    }
+
+    public void sortData() {
+        Collections.sort(this.squaresArrayList);
+        Collections.reverse(this.squaresArrayList);
+        notifyDataSetChanged();
     }
 
     private boolean listEquals(ArrayList<Square> first, ArrayList<Square> second) {
@@ -345,6 +354,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private void fillEventDetails(final SquareViewHolder castHolder, final FacebookEventSquare event) {
 
+        Log.d(TAG, "fillEventDetails: " + event.toString());
         castHolder.facebookSection.setVisibility(View.VISIBLE);
         potentialEmptySection(castHolder.facebookLikeCount, "");
         potentialEmptySection(castHolder.facebookPhone, "");
