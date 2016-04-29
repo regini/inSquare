@@ -12,6 +12,7 @@ import java.util.TimeZone;
 /**
  * Square is the class that represents the concept of Square inside the application
  */
+// TODO implement Parcelable invece di Serializable
 public class Square implements Serializable, Comparable<Square> {
 
     protected static final String TAG = "Square";
@@ -164,6 +165,7 @@ public class Square implements Serializable, Comparable<Square> {
         return "Square{" +
                 "id='" + id + '\'' +
                 "\nname='" + name + '\'' +
+                "\ndescription='" + description + '\'' +
                 "\nlat=" + lat +
                 "\nlon=" + lon +
                 "\ntype='" + type + '\'' +

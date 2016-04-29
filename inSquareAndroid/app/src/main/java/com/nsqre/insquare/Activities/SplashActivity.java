@@ -28,6 +28,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        InSquareProfile.getInstance(getApplicationContext());
         googleSignedIn = initGoogle();
 
         FacebookSdk.sdkInitialize(getApplicationContext(),
@@ -53,9 +54,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                         }.start();
                     }
                 });
-        InSquareProfile.getInstance(getApplicationContext());
-
-
     }
 
     private OptionalPendingResult<GoogleSignInResult> initGoogle() {

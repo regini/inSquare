@@ -354,6 +354,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private void fillEventDetails(final SquareViewHolder castHolder, final FacebookEventSquare event) {
 
+        Log.d(TAG, "fillEventDetails: " + event.toString());
         castHolder.facebookSection.setVisibility(View.VISIBLE);
         potentialEmptySection(castHolder.facebookLikeCount, "");
         potentialEmptySection(castHolder.facebookPhone, "");
