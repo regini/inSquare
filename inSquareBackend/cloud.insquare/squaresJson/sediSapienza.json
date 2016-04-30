@@ -1,0 +1,798 @@
+[
+    {
+        "address": "Viale del Policlinico 155",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "b2c651ff-dbec-4db9-9f95-386c9b308352",
+        "latitude": 41.90655,
+        "locality": "Roma",
+        "longitude": 12.509545,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 445 6695",
+        "website": "http://www.policlinicoumberto1.it"
+    },
+    {
+        "address": "Via del Castro Laurenziano 9",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "2ddacebb-723b-41e3-97f2-6974482a76e9",
+        "latitude": 41.90523,
+        "locality": "Roma",
+        "longitude": 12.518575,
+        "name": "Univ. degli Studi La Sapienza - Dipartimento di Economia Pubblica",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 446 2040",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Eudossiana 18",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "8b5aff4a-636e-479e-9e77-d627b903f340",
+        "latitude": 41.893005,
+        "locality": "Roma",
+        "longitude": 12.492987,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "06 4458 5706",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Principe Amedeo 184",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "d366b174-ca73-4343-873a-0bd636137fba",
+        "latitude": 41.895831,
+        "locality": "Roma",
+        "longitude": 12.505378,
+        "name": "Università degli Studi di Roma 'La Sapienzà",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 4436 2973",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Piazzale Aldo Moro 5",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "953ffda7-eb3a-41dc-85cc-fba27b7c44b6",
+        "latitude": 41.901564,
+        "locality": "Roma",
+        "longitude": 12.512216,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 446 3063",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Salaria 851",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "97614647-e524-4a81-9313-afa36d66753b",
+        "latitude": 41.956276,
+        "locality": "Roma",
+        "longitude": 12.505821,
+        "name": "Università La Sapienza Centro di Ricerca Progetto S. Marco",
+        "postcode": "00138",
+        "region": "Roma",
+        "tel": "06 812 5793",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Salaria 113",
+        "admin_region": "Lazio",
+        "category_ids": [
+            107,
+            29
+        ],
+        "category_labels": [
+            [
+                "Landmarks"
+            ],
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "627ea5e2-87cf-4ac9-9215-4ef4092cc876",
+        "hours": {
+            "monday": [
+                [
+                    "8:00",
+                    "20:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "8:00",
+                    "20:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "8:00",
+                    "20:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "8:00",
+                    "20:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "8:00",
+                    "20:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "8:00",
+                    "13:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon-Fri 8:00-20:00; Sat 8:00-13:00",
+        "latitude": 41.914068,
+        "locality": "Roma",
+        "longitude": 12.497252,
+        "name": "Coris - Dipartimento di Comunicazione e Ricerca Sociale - Sapienza",
+        "postcode": "00198",
+        "region": "Roma",
+        "tel": "06 8535 8133",
+        "website": "http://coris.uniroma1.it"
+    },
+    {
+        "address": "Piazzale Aldo Moro",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "fc9a43ca-f785-4f1d-b2c6-009240b27f65",
+        "locality": "Roma",
+        "name": "Univ. di Roma La Sapienza - Fac. di Architettura Valle Giulia",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 4991 2376"
+    },
+    {
+        "address": "Via di Monte d'Oro 28",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "2981ce01-86d4-42f8-a840-337500359c01",
+        "latitude": 41.904171,
+        "locality": "Roma",
+        "longitude": 12.476951,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 686 4742",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Piazzale Aldo Moro 5",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "1f782da3-5887-4ec3-bb84-533430fddcab",
+        "hours": {
+            "monday": [
+                [
+                    "9:00",
+                    "16:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "8:00",
+                    "17:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "8:00",
+                    "17:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "8:00",
+                    "17:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "8:00",
+                    "10:00"
+                ],
+                [
+                    "12:00",
+                    "17:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "1:00",
+                    "2:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 9:00-16:00; Tue-Thu 8:00-17:00; Fri 8:00-10:00, 12:00-17:00; Sat 1:00-2:00",
+        "latitude": 41.903475,
+        "locality": "Roma",
+        "longitude": 12.516528,
+        "name": "Pratone Sapienza",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 445 2993"
+    },
+    {
+        "address": "Via degli Apuli 8",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "8d4f7a16-e5ef-4bd8-bbec-55c7d2518587",
+        "latitude": 41.896246,
+        "locality": "Roma",
+        "longitude": 12.515628,
+        "name": "Università La Sapienza",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 494 0804",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Largo Cristina di Svezia 24",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "56d760a4-aa63-4197-9080-571bce3b2136",
+        "latitude": 41.891573,
+        "locality": "Roma",
+        "longitude": 12.464874,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00165",
+        "region": "Roma",
+        "tel": "06 6830 1335",
+        "website": "http://www.uniroma1.it/"
+    },
+    {
+        "address": "Corso d'italia 38",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "03bf1b31-4afb-4107-8209-1624d306c873",
+        "latitude": 41.91104,
+        "locality": "Roma",
+        "longitude": 12.496048,
+        "name": "Università di Roma 'la Sapienza'facoltà di Sociologia",
+        "postcode": "00198",
+        "region": "Roma",
+        "tel": "06 844 0331",
+        "website": "http://www.uniroma1.it/"
+    },
+    {
+        "address": "Corso Vittorio Emanuele II 244",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "23348882-5968-49d0-a675-860d0b8224bc",
+        "latitude": 41.897879,
+        "locality": "Roma",
+        "longitude": 12.468922,
+        "name": "Universita di Roma 'la Sapienzà Dipartimento di Ingegneria Nucleare",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 686 8095",
+        "website": "http://www.uniroma1.it/"
+    },
+    {
+        "address": "Via Cavour 256",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "2e566d11-a2b1-43d1-bfd1-a1b287eaf905",
+        "latitude": 41.894365,
+        "locality": "Roma",
+        "longitude": 12.492319,
+        "name": "Università degli Studi di Roma 'la Sapienzà",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "06 462 0401",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via delle Sette Sale",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "ec1e0a32-9f8d-4867-8fb7-ad45831d7b91",
+        "latitude": 41.893883,
+        "locality": "Roma",
+        "longitude": 12.494167,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "06 474 7387",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Carlo Fea 2",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "d2f970f2-261b-4ea5-bdaf-daf40027872c",
+        "latitude": 41.919142,
+        "locality": "Roma",
+        "longitude": 12.517709,
+        "name": "Università degli Studi di Roma La Sapienza - Facoltà di Filosofia",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 4991 2851"
+    },
+    {
+        "address": "Sapienza – Università di Roma Piazzale Aldo Moro 5",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "0f723e31-e76e-42c1-8a66-1149803b79b4",
+        "latitude": 41.90145,
+        "locality": "Roma",
+        "longitude": 12.51226,
+        "name": "Sapienza - Università di Roma",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 49911",
+        "website": "http://www.uniroma1.it/default_e.php/"
+    },
+    {
+        "address": "Via Salaria 113",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "46ebdb9b-0c60-4d9f-b6ad-2d786181e1bf",
+        "latitude": 41.91425,
+        "locality": "Roma",
+        "longitude": 12.497333,
+        "name": "Universita'la Sapienza - Direzione Del Dipartimento di Sociologia",
+        "postcode": "00138",
+        "region": "Roma",
+        "tel": "06 841 9505",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Venezuela 43",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "e6c98338-c5e1-469c-82cb-044f95fcf776",
+        "latitude": 41.932387,
+        "locality": "Roma",
+        "longitude": 12.477551,
+        "name": "Università degli Studi di Roma 'La Sapienzà Architettura",
+        "postcode": "00196",
+        "region": "Roma",
+        "tel": "06 8068 7666",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Viale di Tor di Quinto 64",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "03ca8c1d-4882-4718-aece-f3153df17f4f",
+        "latitude": 41.93734,
+        "locality": "Roma",
+        "longitude": 12.47225,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00191",
+        "region": "Roma",
+        "tel": "06 333 8596"
+    },
+    {
+        "address": "Via Vitorchiano 81",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "f5214b31-5365-47a3-bfd1-672e3b8d0997",
+        "latitude": 41.958112,
+        "locality": "Roma",
+        "longitude": 12.4876,
+        "name": "Università degli Studi di Roma 'la Sapienzà",
+        "postcode": "00189",
+        "region": "Roma",
+        "tel": "06 332 7461",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Piazza Borghese 9",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "93ddf09b-4050-4185-b2db-a7a6bd6e4a5f",
+        "latitude": 41.904045,
+        "locality": "Roma",
+        "longitude": 12.475896,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6887 0001"
+    },
+    {
+        "address": "Via Flaminia 70",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "66d52542-af48-48c7-9dda-625447cb135c",
+        "latitude": 41.91423,
+        "locality": "Roma",
+        "longitude": 12.474902,
+        "name": "Università degli Studi di Roma La Sapienza",
+        "postcode": "00196",
+        "region": "Roma",
+        "tel": "06 3677 4001"
+    },
+    {
+        "address": "Via Salaria 113",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "a7e5f543-e958-4d95-9614-00c93e2b2903",
+        "latitude": 41.914131,
+        "locality": "Roma",
+        "longitude": 12.496982,
+        "name": "Univ. di Roma La Sapienza - Fac. di Scienze della Comunicazione",
+        "postcode": "00198",
+        "region": "Roma",
+        "tel": "06 4991 8404",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Andrea Cesalpino 12 14",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "5178a76a-f874-4bd6-a6db-d7351c3e2bff",
+        "locality": "Roma",
+        "name": "Università La Sapienza",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 4425 4211",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via Nomentana 118",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "d1a688ac-bde4-48e1-8df5-1dd42b42607a",
+        "latitude": 41.91864,
+        "locality": "Roma",
+        "longitude": 12.51539,
+        "name": "Università 'la Sapienza'dipartimento di Studi Slavi",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 4425 2796",
+        "website": "http://www.uniroma1.it/"
+    },
+    {
+        "address": "Via Andrea Cesalpino 12",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "3639d8a4-52c3-4c63-80f6-e6636e4d8317",
+        "latitude": 41.9102,
+        "locality": "Roma",
+        "longitude": 12.50889,
+        "name": "Università degli Studi di Roma 'la Sapienzà Facoltà",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 4424 0331",
+        "website": "http://www.uniroma1.it"
+    },
+    {
+        "address": "Via dei Sardi 70",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "bf62dd76-690a-4dc6-a8f3-8fb58c316758",
+        "latitude": 41.896603,
+        "locality": "Roma",
+        "longitude": 12.516874,
+        "name": "Università La Sapienza",
+        "postcode": "00185",
+        "region": "Roma",
+        "tel": "06 494 0851",
+        "website": "http://www.uniroma1.it/"
+    },
+    {
+        "address": "Via del Casal dei Pazzi 16",
+        "admin_region": "Lazio",
+        "category_ids": [
+            29
+        ],
+        "category_labels": [
+            [
+                "Community and Government",
+                "Education",
+                "Colleges and Universities"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "4e65fbe2-ccf0-4a19-82cb-bccfda459d2c",
+        "latitude": 41.93181,
+        "locality": "Roma",
+        "longitude": 12.56231,
+        "name": "Dipartimento di Scienze Cardiovascolare e Respiratorie Univ.La Sapienza",
+        "postcode": "00156",
+        "region": "Roma",
+        "tel": "06 4080 0276",
+        "website": "http://www.uniroma1.it"
+    }
+]

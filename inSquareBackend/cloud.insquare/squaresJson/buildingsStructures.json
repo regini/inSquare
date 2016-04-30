@@ -1,0 +1,1586 @@
+[
+    {
+        "address": "Piazza Navona",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "0529af83-06a9-47b5-b0ec-84cd4991c096",
+        "latitude": 41.89893,
+        "locality": "Roma",
+        "longitude": 12.473125,
+        "name": "Piazza Navona",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 0608",
+        "website": "http://www.turismoroma.it/cosa-fare/piazza-navona"
+    },
+    {
+        "address": "Piazzale dello Sport",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "f20e8f10-692b-425b-9c44-22b751f1e050",
+        "hours": {
+            "monday": [
+                [
+                    "9:00",
+                    "10:00"
+                ],
+                [
+                    "17:00",
+                    "21:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "9:00",
+                    "10:00"
+                ],
+                [
+                    "16:00",
+                    "21:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "9:00",
+                    "10:00"
+                ],
+                [
+                    "18:00",
+                    "21:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "8:00",
+                    "10:00"
+                ],
+                [
+                    "17:00",
+                    "21:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "8:00",
+                    "10:00"
+                ],
+                [
+                    "14:00",
+                    "22:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "10:00",
+                    "23:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "13:00",
+                    "20:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 9:00-10:00, 17:00-21:00; Tue 9:00-10:00, 16:00-21:00; Wed 9:00-10:00, 18:00-21:00; Thu 8:00-10:00, 17:00-21:00; Fri 8:00-10:00, 14:00-22:00; Sat 10:00-23:00; Sun 13:00-20:00",
+        "latitude": 41.825251,
+        "locality": "Roma",
+        "longitude": 12.466538,
+        "name": "Palalottomatica",
+        "postcode": "00144",
+        "region": "Roma",
+        "tel": "06 540901",
+        "website": "http://www.palalottomatica.it"
+    },
+    {
+        "address": "Piazza di Montecitorio",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "d26d3fef-2f04-4ee1-a59b-b9a4cb5f5122",
+        "latitude": 41.901025,
+        "locality": "Roma",
+        "longitude": 12.478639,
+        "name": "Palazzo Montecitorio",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 67601",
+        "website": "http://www.camera.it"
+    },
+    {
+        "address": "Via Cernaia 9",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "75efe462-2ea5-4109-9cb6-b5a48f640f9d",
+        "hours": {
+            "monday": [
+                [
+                    "7:00",
+                    "15:00"
+                ],
+                [
+                    "17:00",
+                    "18:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "8:00",
+                    "11:00"
+                ],
+                [
+                    "13:00",
+                    "21:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "8:00",
+                    "14:00"
+                ],
+                [
+                    "16:00",
+                    "17:00"
+                ],
+                [
+                    "20:00",
+                    "21:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "9:00",
+                    "18:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "7:00",
+                    "17:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "8:00",
+                    "18:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "7:00",
+                    "19:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 7:00-15:00, 17:00-18:00; Tue 8:00-11:00, 13:00-21:00; Wed 8:00-14:00, 16:00-17:00, 20:00-21:00; Thu 9:00-18:00; Fri 7:00-17:00; Sat 8:00-18:00; Sun 7:00-19:00",
+        "latitude": 41.903098,
+        "locality": "Roma",
+        "longitude": 12.496901,
+        "name": "Basilica di Santa Maria degli Angeli e dei Martiri",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "06 488 0812",
+        "website": "http://www.santamariadegliangeliroma.it"
+    },
+    {
+        "address": "Corso Sempione",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "f8ef1620-2323-4e7d-99b6-4bbc39cb8c70",
+        "hours": {
+            "monday": [
+                [
+                    "17:00",
+                    "19:00"
+                ],
+                [
+                    "21:00",
+                    "23:59"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "17:00",
+                    "23:59"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "18:00",
+                    "23:59"
+                ]
+            ],
+            "thursday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "17:00",
+                    "23:59"
+                ]
+            ],
+            "friday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "17:00",
+                    "23:59"
+                ]
+            ],
+            "saturday": [
+                [
+                    "00:00",
+                    "2:00"
+                ],
+                [
+                    "17:00",
+                    "23:59"
+                ]
+            ],
+            "sunday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "17:00",
+                    "23:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 17:00-19:00, 21:00-23:59; Tue 17:00-23:59; Wed 00:00-1:00, 18:00-23:59; Thu-Fri 00:00-1:00, 17:00-23:59; Sat 00:00-2:00, 17:00-23:59; Sun 00:00-1:00, 17:00-23:00",
+        "latitude": 41.935064,
+        "locality": "Roma",
+        "longitude": 12.533812,
+        "name": "Ponte Tazio",
+        "postcode": "00141",
+        "region": "Roma",
+        "tel": "06 822426",
+        "website": "http://www.anticaja.it"
+    },
+    {
+        "address": "Piazza Mattei",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "info@060608.it",
+        "factual_id": "3ebc0b1d-878d-4103-ae4e-60f9f471b4e6",
+        "latitude": 41.893837,
+        "locality": "Roma",
+        "longitude": 12.47755,
+        "name": "Fontana delle Tartarughe",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 0608",
+        "website": "http://www.060608.it"
+    },
+    {
+        "address": "Via delle Quattro Fontane 13",
+        "address_extended": "V",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "info@ticketeria.it",
+        "factual_id": "833e2094-7db7-4ea2-bbba-b2ddb878b151",
+        "hours": {
+            "monday": [
+                [
+                    "10:00",
+                    "13:00"
+                ],
+                [
+                    "17:00",
+                    "18:00"
+                ],
+                [
+                    "21:00",
+                    "22:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "7:00",
+                    "20:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "7:00",
+                    "19:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "9:00",
+                    "17:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "9:00",
+                    "18:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "23:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "10:00",
+                    "18:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 10:00-13:00, 17:00-18:00, 21:00-22:00; Tue 7:00-20:00; Wed 7:00-19:00; Thu 9:00-17:00; Fri 9:00-18:00; Sat 9:00-23:00; Sun 10:00-18:00",
+        "latitude": 41.902842,
+        "locality": "Roma",
+        "longitude": 12.489447,
+        "name": "Palazzo Barberini",
+        "postcode": "00187",
+        "region": "Roma",
+        "tel": "06 32810",
+        "website": "http://www.galleriaborghese.it"
+    },
+    {
+        "address": "Corso del Rinascimento 40",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "614cc346-a23e-4a30-8936-02f4cbb66f1d",
+        "hours": {
+            "sunday": [
+                [
+                    "9:00",
+                    "12:00"
+                ]
+            ]
+        },
+        "hours_display": "Sun 9:00-12:00",
+        "latitude": 41.898216,
+        "locality": "Roma",
+        "longitude": 12.474388,
+        "name": "Chiesa di Sant'Ivo Alla Sapienza",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 686 4987",
+        "website": "http://www.sivoallasapienza.eu"
+    },
+    {
+        "address": "Piazza Venezia",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "4e918805-56a7-4ab8-836c-174d52511c89",
+        "hours": {
+            "monday": [
+                [
+                    "9:00",
+                    "16:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "10:00",
+                    "20:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "9:00",
+                    "16:00"
+                ],
+                [
+                    "18:00",
+                    "20:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "20:00"
+                ],
+                [
+                    "22:00",
+                    "23:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "10:00",
+                    "19:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 9:00-16:00; Tue-Wed 9:00-19:00; Thu 10:00-20:00; Fri 9:00-16:00, 18:00-20:00; Sat 9:00-20:00, 22:00-23:00; Sun 10:00-19:00",
+        "latitude": 41.895605,
+        "locality": "Roma",
+        "longitude": 12.482632,
+        "name": "Vittoriano",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 678 0664"
+    },
+    {
+        "address": "Piazza di Campitelli 9",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "santamariainportico@vicariatusurbis.org",
+        "factual_id": "7dfce221-04c0-4d32-8491-9d6e42f4e2b4",
+        "latitude": 41.893014,
+        "locality": "Roma",
+        "longitude": 12.479412,
+        "name": "Chiesa di Santa Maria in Portico in Campitelli",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6880 3978",
+        "website": "http://www.santamariainportico.it"
+    },
+    {
+        "address": "Via Appia Nuova 1092",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "6af8fce9-9441-45fa-acc7-4fc6cb59a247",
+        "latitude": 41.831667,
+        "locality": "Roma",
+        "longitude": 12.554602,
+        "name": "Villa dei Quintili",
+        "postcode": "00178",
+        "region": "Roma",
+        "tel": "06 3996 7700",
+        "website": "http://www.pierreci.it"
+    },
+    {
+        "address": "Via del Banco di Santo Spirito 20",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "info@fraschettadicastelsantangelo.it",
+        "factual_id": "486351ce-dd6f-4fe9-9c5f-0749ed9882e6",
+        "hours": {
+            "monday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "thursday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "friday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "saturday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ],
+            "sunday": [
+                [
+                    "00:00",
+                    "23:59"
+                ]
+            ]
+        },
+        "hours_display": "Open Daily 00:00-23:59",
+        "latitude": 41.900152,
+        "locality": "Roma",
+        "longitude": 12.466583,
+        "name": "Castel Sant'Angelo",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6830 7661",
+        "website": "http://fraschettadicastelsantangelo.it"
+    },
+    {
+        "address": "Piazza di San Pietro",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "f3dd1046-effc-4e0d-9758-595876e72974",
+        "hours": {
+            "monday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "thursday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "friday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "saturday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ],
+            "sunday": [
+                [
+                    "7:00",
+                    "18:30"
+                ]
+            ]
+        },
+        "hours_display": "Open Daily 7:00-18:30",
+        "latitude": 41.90199,
+        "locality": "Roma",
+        "longitude": 12.454659,
+        "name": "Basilica di San Pietro",
+        "postcode": "00193",
+        "region": "Roma",
+        "tel": "06 6988 3731",
+        "website": "http://www.vatican.va/various/basiliche/san_pietro/index_it.htm"
+    },
+    {
+        "address": "Piazza del Colosseo",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "7a514d29-425d-4464-9261-3388d8d553e4",
+        "latitude": 41.889799,
+        "locality": "Roma",
+        "longitude": 12.49062,
+        "name": "Arco di Costantino",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "390 648 8991"
+    },
+    {
+        "address": "Piazza della Trinità dei Monti",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "8d462c54-411e-4733-bbc7-6293ec14dad1",
+        "hours": {
+            "monday": [
+                [
+                    "00:00",
+                    "1:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ],
+            "thursday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ],
+            "friday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ],
+            "saturday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ],
+            "sunday": [
+                [
+                    "00:00",
+                    "1:00"
+                ],
+                [
+                    "3:00",
+                    "23:59"
+                ]
+            ]
+        },
+        "hours_display": "Mon 00:00-1:00; Tue 3:00-23:59; Wed-Sun 00:00-1:00, 3:00-23:59",
+        "latitude": 41.906291,
+        "locality": "Roma",
+        "longitude": 12.483408,
+        "name": "Chiesa della Trinità dei Monti",
+        "postcode": "00187",
+        "region": "Roma",
+        "tel": "06 679 4179",
+        "website": "http://www.ristorantepiazzadispagna.com"
+    },
+    {
+        "address": "Piazzale dei Santi Pietro e Paolo 8",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "e5ad311f-38a6-4ea8-a5c7-162afe0cf70f",
+        "latitude": 41.833513,
+        "locality": "Roma",
+        "longitude": 12.459531,
+        "name": "Basilica dei Santi Pietro e Paolo",
+        "postcode": "00167",
+        "region": "Roma",
+        "tel": "06 592 6166",
+        "website": "http://www.santipietroepaoloroma.it/"
+    },
+    {
+        "address": "Via Nomentana 70",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "villeparchistorici@comune.roma.it",
+        "factual_id": "7bc891d2-8675-406c-899b-5f919d6e3db1",
+        "hours": {
+            "tuesday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "9:00",
+                    "19:00"
+                ]
+            ]
+        },
+        "hours_display": "Tue-Sun 9:00-19:00",
+        "latitude": 41.915586,
+        "locality": "Roma",
+        "longitude": 12.511133,
+        "name": "Villa Torlonia",
+        "postcode": "00161",
+        "region": "Roma",
+        "tel": "06 0608",
+        "website": "http://www.museivillatorlonia.it"
+    },
+    {
+        "address": "West end of Via della Conciliazione Rome",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "c08c6cfc-0dd4-4631-9c9c-9cfe3ef43aa0",
+        "latitude": 41.902266,
+        "locality": "Roma",
+        "longitude": 12.456543,
+        "name": "Piazza San Pietro",
+        "postcode": "00120",
+        "region": "Roma",
+        "tel": "06 6988 1662",
+        "website": "http://en.wikipedia.org/wiki/St._Peter's_Square"
+    },
+    {
+        "address": "Viale della Moschea 85",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "dcd06f03-8708-4f4c-ba3e-6d02fbb2e71c",
+        "hours": {
+            "wednesday": [
+                [
+                    "9:00",
+                    "11:30"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "11:30"
+                ]
+            ]
+        },
+        "hours_display": "Wed 9:00-11:30; Sat 9:00-11:30",
+        "latitude": 41.934821,
+        "locality": "Roma",
+        "longitude": 12.495326,
+        "name": "Moschea di Roma",
+        "postcode": "00197",
+        "region": "Roma",
+        "tel": "06 808 2258",
+        "website": "http://www.moscheadiroma.com"
+    },
+    {
+        "address": "Via Acciaioli 2",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "sangiovannibattistadeifiorentini@vicariatusurbis.org",
+        "factual_id": "351b6ebd-7ce8-4115-a2f7-ed9f2e572bf6",
+        "hours": {
+            "monday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "9:00",
+                    "12:00"
+                ],
+                [
+                    "15:00",
+                    "18:00"
+                ]
+            ]
+        },
+        "hours_display": "Open Daily 9:00-12:00, 15:00-18:00",
+        "latitude": 41.899683,
+        "locality": "Roma",
+        "longitude": 12.464727,
+        "name": "Basilica di San Giovanni Battista dei Fiorentini",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6889 2059",
+        "website": "http://www.vicariatusurbis.org/"
+    },
+    {
+        "address": "Piazzale Porta Pia",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "739191e1-e461-4d49-aa59-c2d441568e40",
+        "hours": {
+            "monday": [
+                [
+                    "10:00",
+                    "20:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "6:00",
+                    "7:00"
+                ],
+                [
+                    "9:00",
+                    "10:00"
+                ],
+                [
+                    "12:00",
+                    "14:00"
+                ],
+                [
+                    "16:00",
+                    "20:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "7:00",
+                    "10:00"
+                ],
+                [
+                    "12:00",
+                    "13:00"
+                ],
+                [
+                    "16:00",
+                    "20:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "6:00",
+                    "10:00"
+                ],
+                [
+                    "12:00",
+                    "21:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "6:00",
+                    "23:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "9:00",
+                    "10:00"
+                ],
+                [
+                    "14:00",
+                    "22:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "10:00",
+                    "14:00"
+                ],
+                [
+                    "17:00",
+                    "20:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 10:00-20:00; Tue 6:00-7:00, 9:00-10:00, 12:00-14:00, 16:00-20:00; Wed 7:00-10:00, 12:00-13:00, 16:00-20:00; Thu 6:00-10:00, 12:00-21:00; Fri 6:00-23:00; Sat 9:00-10:00, 14:00-22:00; Sun 10:00-14:00, 17:00-20:00",
+        "latitude": 41.909384,
+        "locality": "Roma",
+        "longitude": 12.501401,
+        "name": "Porta Pia",
+        "postcode": "00198",
+        "region": "Roma",
+        "tel": "06 0608"
+    },
+    {
+        "address": "Via di Porta San Sebastiano Rome",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "bc9171e5-9822-4f8a-a918-0c5297bcb9c2",
+        "hours": {
+            "monday": [
+                [
+                    "8:00",
+                    "10:00"
+                ],
+                [
+                    "12:00",
+                    "14:00"
+                ],
+                [
+                    "17:00",
+                    "21:00"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "9:00",
+                    "11:00"
+                ],
+                [
+                    "13:00",
+                    "14:00"
+                ],
+                [
+                    "16:00",
+                    "19:00"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "8:00",
+                    "9:00"
+                ],
+                [
+                    "11:00",
+                    "14:00"
+                ],
+                [
+                    "17:00",
+                    "19:00"
+                ]
+            ],
+            "thursday": [
+                [
+                    "8:00",
+                    "19:00"
+                ],
+                [
+                    "21:00",
+                    "22:00"
+                ]
+            ],
+            "friday": [
+                [
+                    "7:00",
+                    "11:00"
+                ],
+                [
+                    "14:00",
+                    "21:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "10:00",
+                    "12:00"
+                ],
+                [
+                    "14:00",
+                    "15:00"
+                ],
+                [
+                    "17:00",
+                    "19:00"
+                ],
+                [
+                    "22:00",
+                    "23:00"
+                ]
+            ],
+            "sunday": [
+                [
+                    "11:00",
+                    "17:00"
+                ]
+            ]
+        },
+        "hours_display": "Mon 8:00-10:00, 12:00-14:00, 17:00-21:00; Tue 9:00-11:00, 13:00-14:00, 16:00-19:00; Wed 8:00-9:00, 11:00-14:00, 17:00-19:00; Thu 8:00-19:00, 21:00-22:00; Fri 7:00-11:00, 14:00-21:00; Sat 10:00-12:00, 14:00-15:00, 17:00-19:00, 22:00-23:00; Sun 11:00-17:00",
+        "latitude": 41.873441,
+        "locality": "Roma",
+        "longitude": 12.501631,
+        "name": "Porta San Sebastiano",
+        "postcode": "00153",
+        "region": "Roma",
+        "tel": "06 7047 5284",
+        "website": "http://www.museodellemuraroma.it"
+    },
+    {
+        "address": "Piazza del Popolo",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "b033e54c-cf32-4958-93cb-e0e744cb8dba",
+        "hours": {
+            "monday": [
+                [
+                    "4:00",
+                    "19:00"
+                ]
+            ],
+            "saturday": [
+                [
+                    "8:00",
+                    "13:30"
+                ]
+            ],
+            "sunday": [
+                [
+                    "4:30",
+                    "19:30"
+                ]
+            ]
+        },
+        "hours_display": "Mon 4:00-19:00; Sat 8:00-13:30; Sun 4:30-19:30",
+        "latitude": 41.909868,
+        "locality": "Roma",
+        "longitude": 12.476427,
+        "name": "Chiesa di Santa Maria dei Miracoli",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 361 0250",
+        "website": "http://www.free-city-guides.com/rome/twin-churches/"
+    },
+    {
+        "address": "Largo S. Susanna",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "b8478fe3-64cc-42b2-8342-48be08e236f6",
+        "latitude": 41.905045,
+        "locality": "Roma",
+        "longitude": 12.493907,
+        "name": "Palazzo dell'Ufficio Geologico",
+        "region": "Roma",
+        "tel": "06 460982"
+    },
+    {
+        "address": "Viale Antonino e Faustina",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "90f50770-966f-4254-9cb6-28501b99da13",
+        "latitude": 41.915333,
+        "locality": "Roma",
+        "longitude": 12.487303,
+        "name": "Tempio di Antonino e Faustina",
+        "postcode": "00197",
+        "region": "Roma"
+    },
+    {
+        "address": "Piazza Cavour",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "a3175f4d-1e8e-41c3-951e-a7d9e252af71",
+        "latitude": 41.90524,
+        "locality": "Roma",
+        "longitude": 12.469738,
+        "name": "Palazzo di Giustizia",
+        "postcode": "00193",
+        "region": "Roma",
+        "tel": "06 68831",
+        "website": "http://www.giustizia.it"
+    },
+    {
+        "address": "Largo Virgilio Testa 23",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "info@romaeur.it",
+        "factual_id": "3b81d419-01b4-4399-9ed7-d5f7b2963cb9",
+        "fax": "06 5425 2277",
+        "latitude": 41.836937,
+        "locality": "Roma",
+        "longitude": 12.468629,
+        "name": "Eur SPA",
+        "postcode": "00144",
+        "region": "Roma",
+        "tel": "06 54251",
+        "website": "http://www.eurspa.it"
+    },
+    {
+        "address": "Piazza Campidoglio",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "email": "info.museicapitolini@comune.roma.it",
+        "factual_id": "22e5da7e-5763-40b4-a621-9a398dcca36d",
+        "latitude": 41.893295,
+        "locality": "Roma",
+        "longitude": 12.482934,
+        "name": "Palazzo dei Conservatori",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6710 2071",
+        "website": "http://www.museicapitolini.org"
+    },
+    {
+        "address": "Via di Santa Prassede 8",
+        "address_extended": "A",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "b49154e2-7532-4f7c-93a9-0fc4a9ca4988",
+        "hours": {
+            "monday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "tuesday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "thursday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "friday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "saturday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ],
+            "sunday": [
+                [
+                    "7:00",
+                    "12:30"
+                ],
+                [
+                    "16:00",
+                    "18:30"
+                ]
+            ]
+        },
+        "hours_display": "Open Daily 7:00-12:30, 16:00-18:30",
+        "latitude": 41.896443,
+        "locality": "Roma",
+        "longitude": 12.498812,
+        "name": "Basilica di Santa Prassede",
+        "postcode": "00184",
+        "region": "Roma",
+        "tel": "06 488 2456"
+    },
+    {
+        "address": "Piazza Capo di Ferro 13",
+        "admin_region": "Lazio",
+        "category_ids": [
+            108
+        ],
+        "category_labels": [
+            [
+                "Landmarks",
+                "Buildings and Structures"
+            ]
+        ],
+        "country": "it",
+        "factual_id": "d328cb2a-2625-4a30-8ca8-ca9a746b457e",
+        "hours": {
+            "tuesday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ],
+            "wednesday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ],
+            "thursday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ],
+            "friday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ],
+            "saturday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ],
+            "sunday": [
+                [
+                    "8:30",
+                    "19:30"
+                ]
+            ]
+        },
+        "hours_display": "Tue-Sun 8:30-19:30",
+        "latitude": 41.894163,
+        "locality": "Roma",
+        "longitude": 12.471905,
+        "name": "Palazzo Spada",
+        "postcode": "00186",
+        "region": "Roma",
+        "tel": "06 6880 9814",
+        "website": "http://www.galleriaborghese.it"
+    }
+]
