@@ -177,7 +177,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         ca = this;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bitmap icon = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.logo_icon_144);
+                    R.drawable.logo_icon);
             ActivityManager.TaskDescription taskDesc =
                     new ActivityManager.TaskDescription(getString(R.string.app_name),
                             icon, Color.parseColor("#D32F2F"));

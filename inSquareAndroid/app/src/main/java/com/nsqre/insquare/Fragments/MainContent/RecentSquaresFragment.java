@@ -101,7 +101,7 @@ public class RecentSquaresFragment extends Fragment implements
 
         CircleImageView profileImage = (CircleImageView) v.findViewById(R.id.recents_profile_image);
         Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
-                R.drawable.logo_icon_144);
+                R.drawable.logo_icon);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 

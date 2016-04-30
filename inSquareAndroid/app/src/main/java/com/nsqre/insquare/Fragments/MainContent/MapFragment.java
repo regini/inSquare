@@ -772,24 +772,32 @@ public class MapFragment extends Fragment
      */
     private Marker createSquarePin(LatLng pos, String name, int type) {
 
-        MarkerOptions options = new MarkerOptions().position(pos);
-        options.title(name);
-        BitmapDescriptor bd;
-        switch (type) {
-            default:
-            case 0:
-                bd = correctMapPin("pin_rosso", 3);
-                break;
-            case 1:
-                bd = correctMapPin("pin_viola", 3);
-                break;
-            case 2:
-                bd = correctMapPin("pin_verde", 3);
-                break;
+        MarkerOptions options;
+
+        if(isAdded()) {
+            options = new MarkerOptions().position(pos);
+            options.title(name);
+            BitmapDescriptor bd;
+            switch (type) {
+                default:
+                case 0:
+                    bd = correctMapPin("pin_rosso", 3);
+                    break;
+                case 1:
+                    bd = correctMapPin("pin_viola", 3);
+                    break;
+                case 2:
+                    bd = correctMapPin("pin_verde", 3);
+                    break;
+            }
+
+            options.icon(bd);
+        }else
+        {
+            options = new MarkerOptions().position(pos);
+            options.title("A Square");
+            options.icon(BitmapDescriptorFactory.defaultMarker());
         }
-
-        options.icon(bd);
-
         return mGoogleMap.addMarker(options);
     }
 

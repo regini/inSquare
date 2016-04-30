@@ -109,7 +109,7 @@ public class ProfileFragment extends Fragment implements
      */
     private void setupProfile() {
         Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(),
-                R.drawable.logo_icon_144);
+                R.drawable.logo_icon);
         Bitmap circularBitmap = ImageConverter.getRoundedCornerBitmap(icon, 100);
         profileImage.setImageBitmap(circularBitmap);
 
