@@ -73,6 +73,11 @@ Where we go. Who we meet.
  
  
 # Final Submission
+ • UI updated and adapted to the guidelines.
+ 
+ • Better messaging(with photos!), research bar, social share and a tutorial!
+ 
+ • Personalized new kinds of square
  
   ![](http://regini.github.io/inSquare/ScreenshotsFinalSubmission.png)
  
