@@ -12,6 +12,7 @@ Where we go. Who we meet.
  • Personalized new kinds of square
  
   ![](http://regini.github.io/inSquare/ScreenshotsFinalSubmission.png)
+  ![](http://regini.github.io/inSquare/tutorialOverview.jpg)
   
 [Our app is now available on Google Play.](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
 
