@@ -198,6 +198,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             fragment.onActivityResult(requestCode, resultCode, data);
         } else if(requestCode == MapFragment.REQUEST_SQUARE && data != null)
         {
+            // Ritorno dalla creazione della Square
             MapFragment.newInstance().handleSquareCreation(resultCode, data);
         }else
         {

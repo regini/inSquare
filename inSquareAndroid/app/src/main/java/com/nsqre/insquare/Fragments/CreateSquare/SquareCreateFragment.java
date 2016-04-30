@@ -590,9 +590,13 @@ public class SquareCreateFragment extends Fragment {
                                 // Location
                                 if(object.has("location")) {
                                     location = object.getJSONObject("location");
-                                    street = location.getString("street").trim();
-                                    latitude = location.getString("latitude").trim();
-                                    longitude = location.getString("longitude").trim();
+                                    if(location.has("street")) {
+                                        street = location.getString("street").trim();
+                                    }
+                                    if(location.has("latitude") && location.has("longitude")) {
+                                        latitude = location.getString("latitude").trim();
+                                        longitude = location.getString("longitude").trim();
+                                    }
                                 }
 
                                 List<String> hoursList = new ArrayList<>();

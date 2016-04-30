@@ -194,7 +194,16 @@ public class CreateSquareActivity extends AppCompatActivity {
 
                                 resultIntent.putExtra(RESULT_SQUARE_NAME, resultName);
                                 resultIntent.putExtra(RESULT_SQUARE_DESCRIPTION, resultDescription);
+
+                                if(resultLat.isEmpty()) {
+                                    resultLat = mapLatitude;
+                                }
                                 resultIntent.putExtra(RESULT_SQUARE_LATITUDE, resultLat);
+
+                                if(resultLon.isEmpty())
+                                {
+                                    resultLon = mapLongitude;
+                                }
                                 resultIntent.putExtra(RESULT_SQUARE_LONGITUDE, resultLon);
 
                                 if(CreateSquareActivity.this.squareType == SquareType.TYPE_EVENT)
