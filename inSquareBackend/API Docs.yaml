@@ -2,8 +2,8 @@ swagger: '2.0'
 info:
   title: inSquare API
   description: Geolocalized interactions through inSquare API
-  version: "1.0.0"
-host: recapp-insquare.rhcloud.com
+  version: "2.0.0"
+host: cloud.insquare.it
 # array of all schemes that your API supports
 schemes:
   - http
@@ -90,10 +90,22 @@ paths:
           description: Square ID
           required: true
           type: string
+        - name: ownerId
+          in: query
+          required: true
+          type: string
         - name: description
           in: query
           description: Description to update
-          required: true
+          required: false
+          type: string
+        - name: name
+          in: query
+          required: false
+          type: string
+        - name: expireTime
+          in: query
+          required: false
           type: string
       responses:
         200:
@@ -106,17 +118,15 @@ paths:
             $ref: '#/definitions/Error'
     
     delete:
-      summary: Delete a square by name and owner
+      summary: Delete a square by id and owner
       parameters:
-         - name: name
+         - name: squareId
            in: query
-           description: The Square name. It is case sensitive.           
            required: true
            type: string
          - name: ownerId
            in: query
-           description: The user ID of the square owner          
-           required: true
+           required: false
            type: string
       responses:
         200:
@@ -127,26 +137,7 @@ paths:
             description: unexpected error
             schema:
              $ref: '#/definitions/Error' 
-            
-  /squaresNotOwned:
-    delete:
-      deprecated: true
-      description: Delete a square by name
-      parameters:
-         - name: name
-           in: query
-           description: The Square name. It is case sensitive.           
-           required: true
-           type: string  
-      responses:
-        200:
-          description: Square eliminata con successo!
-          schema:
-             $ref: '#/definitions/StatusMessage' 
-        default:
-            description: Error if the square have a owner
-            schema:
-             $ref: '#/definitions/Error' 
+
     
   /squares/{id}:
     get:
@@ -255,11 +246,14 @@ paths:
   
   /recentSquares:         
     delete:
-      summary: Remove all recent Squares from a specfied User
+      summary: Remove a recent Squares from a specfied User
       parameters:
          - name: userId
            in: query
-           description: The User ID            
+           required: true
+           type: string
+         - name: squareId
+           in: query
            required: true
            type: string
       responses:
@@ -325,9 +319,108 @@ paths:
             schema:
              $ref: '#/definitions/Error'       
              
+  /recents:
+    post:
+      summary: Add to a user a recent square
+      parameters: 
+        - name: squareId
+          in: query
+          required: true
+          type: string
+        - name: userId
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'          
+  
+  /notifyFavourers:
+    post:
+      summary: Notify to favourite users an event message
+      parameters: 
+        - name: squareId
+          in: query
+          required: true
+          type: string
+        - name: userId
+          in: query
+          required: true
+          type: string
+        - name: text
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'   
+             
+  /notifyRecents:
+    post:
+      summary: Notify to recent users an event message
+      parameters: 
+        - name: squareId
+          in: query
+          required: true
+          type: string
+        - name: userId
+          in: query
+          required: true
+          type: string
+        - name: text
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'    
+  
+  /notifyEvent:
+    post:
+      summary: Notify to all users a specified event
+      parameters: 
+        - name: squareId
+          in: query
+          required: true
+          type: string
+        - name: userId
+          in: query
+          required: true
+          type: string
+        - name: event
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'  
              
   /gcmToken:
-    post:
+    patch:
       summary: Post the user frontend GCM push token on server
       parameters: 
          - name: GCM
@@ -345,6 +438,33 @@ paths:
             description: unexpected error
             schema:
              $ref: '#/definitions/Error'     
+  
+  /apnToken:
+    patch:
+      summary: Post the user frontend GCM push token on server
+      parameters: 
+        - name: isApple
+          in: query
+          required: true
+          description: Must be set to true
+          type: string
+        - name: userId
+          in: query
+          required: true
+          type: string
+        - name: token
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+             $ref: '#/definitions/StatusMessage' 
+        default:
+            description: unexpected error
+            schema:
+             $ref: '#/definitions/Error'  
              
   /messages:
     get:
@@ -440,6 +560,10 @@ definitions:
       - lon
       - ownerId
       - description
+      - facebookIdPage
+      - facebookIdEvent
+      - expireTime
+      - type
     properties:
       name:
         type: string
@@ -450,6 +574,14 @@ definitions:
       ownerId:
         type: string
       description:
+        type: string
+      facebookIdPage:
+        type: string
+      facebookIdEvent:
+        type: string
+      expireTime:
+        type: string
+      type:
         type: string
 
   User:
@@ -495,17 +627,6 @@ definitions:
   StatusMessage:
     required:
       - code
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-  
-  Error:
-    required:
-      - code
-      - message
     properties:
       code:
         type: integer
