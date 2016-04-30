@@ -51,8 +51,8 @@
 
     <string name="action_share">Condividi</string>
     <string name="action_mute">Gestisci notifiche</string>
-    <string name="action_edit">Modifica</string>
-    <string name="action_delete">Elimina</string>
+    <string name="action_edit" translatable="false">Modifica</string>
+    <string name="action_delete" translatable="false">Elimina</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>

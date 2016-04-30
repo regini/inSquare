@@ -21,7 +21,7 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 import java.util.Date;
 
 /**
- * TODO Documentare
+ * Class that handles how the most relevant dialogs are created
  */
 public class DialogHandler {
 

@@ -302,10 +302,10 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     }
 
     /**
-     * TODO documentare
-     * @param square
-     * @param adapter
-     * @param viewHolderPosition
+     * It shows the bottom sheet dialog corresponding to the long press of an element in the RecyclerView.
+     * @param square the element that's being pressed
+     * @param adapter the RecyclerView adapter that refers to this element
+     * @param viewHolderPosition position in the RecyclerView
      */
     public void showBottomSheetDialog(Square square, RecyclerSquareAdapter adapter, int viewHolderPosition)
     {

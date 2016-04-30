@@ -18,7 +18,8 @@ import com.nsqre.insquare.Utilities.SquareType;
 import java.util.List;
 
 /**
- * TODO Documentare
+ * This is the last Fragment in the Square Creation process.
+ * It contains all the informations that will be added to InSquare, this the creator can review what it's doing and eventually go back to change it.
  */
 public class ReviewCreateFragment extends Fragment {
 
@@ -73,7 +74,21 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Firstly the upper activity is informed of all the relevant information that will be sent back to the calling activity.
+     * Then the sections are set up in order to display all the available information to review.
+     * @see #setupShopTopSection(String, String)
+     * @see #setupShopLowerSection(String, String, String, String, String, List)
+     * @param name
+     * @param price
+     * @param description
+     * @param likeCount
+     * @param website
+     * @param phone
+     * @param street
+     * @param hours
+     * @param facebookId
+     * @param latitude
+     * @param longitude
      */
     public void setupShopInfo(
             String name, String price,
@@ -97,7 +112,14 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * The lower section of the card is setup with the relevant information regarding this Square:
+     * description, likes, website, phone number, street name and opening hours
+     * @param description
+     * @param likeCount
+     * @param website
+     * @param phone
+     * @param streetName
+     * @param hours
      */
     private void setupShopLowerSection(String description, String likeCount, String website, String phone, String streetName, List<String> hours)
     {
@@ -142,7 +164,9 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * The top part of the Shop contains the name and the price range (from Facebook) associated with this shop.
+     * @param name
+     * @param priceRange
      */
     private void setupShopTopSection(String name, String priceRange)
     {
@@ -172,7 +196,20 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Firstly the information regarding this event is passed back to the Activity in order to have the information to be sent back to the one that lunached it.
+     * Then it it delegates the information-filling process to two other methods
+     * @see #setupEventTopSection(String, String)
+     * @see #setupEventLowerSection(String, String, String)
+     * N.B. An event does not have Likes and a Phone number
+     * @param name
+     * @param description
+     * @param time
+     * @param street
+     * @param website
+     * @param facebookId
+     * @param latitude
+     * @param longitude
+     * @param expireString
      */
     public void setupEventInfo(
             String name, String description, String time, String street, String website,
@@ -201,7 +238,10 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * The event lower section is filled with the relevant information provided
+     * @param time
+     * @param street
+     * @param website
      */
     private void setupEventLowerSection(String time, String street, String website)
     {
@@ -235,7 +275,9 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * It fills the top part of the CardView with the main information regarding this event
+     * @param name
+     * @param description
      */
     private void setupEventTopSection(String name, String description)
     {
@@ -243,7 +285,10 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Check if the LinearLayout containing the TextView is empty.
+     * If it hide it. Otherwise show it.
+     * @param v the TextView contained in the LinearLayout
+     * @param value the String value to be set in the TextView
      */
     private void potentialEmptySection(TextView v, String value)
     {
@@ -257,7 +302,10 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * It shows or hides the details section.
+     * If an event or a page is created from Facebook this section will most likely have fields.
+     * Otherwise it's better to hide it.
+     * @param show
      */
     private void showDetailsSection(boolean show)
     {
@@ -272,7 +320,11 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * The review card is filled with the information regarding this place, taken from the previous fragment.
+     * @param name
+     * @param description
+     * @param squareLatitude
+     * @param squareLongitude
      */
     public void setupPlaceInfo(String name, String description, String squareLatitude, String squareLongitude) {
         father.setupResults(name, description, squareLatitude, squareLongitude, "", "");
@@ -285,7 +337,10 @@ public class ReviewCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * The top part of the cardview is filled with the relevant information.
+     * The Main Section is always visible since it contains all the basic information regarding the Square being created
+     * @param name
+     * @param description
      */
     private void setupPlaceMainInfo(String name, String description) {
         TextView squareInitials =  (TextView) containerView.findViewById(R.id.review_square_initials);
