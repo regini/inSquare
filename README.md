@@ -1,4 +1,4 @@
-![](https://github.com/regini/inSquare/blob/gh-pages/INSQUARE%20LOGO.png)
+![](https://github.com/regini/inSquare/blob/gh-pages/logook.png)
 # inSquare
 Geolocalized interactions for anyone's need and those who want to know more about what’s going on.
 
@@ -14,6 +14,8 @@ Where we go. Who we meet.
 [Milestone 1: Proof of Concept (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOGNwU21hY0NlOUU)
 
 [Milestone 2: Release Candidate (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntOWxzMS14alQ3MG8)
+
+[Milestone 3: Public live BETA (Pdf)](https://drive.google.com/drive/folders/0B57VQrsEDXrtSTNhNFRESTdTYW8)
 
 # Our Presentation Videos
 
@@ -45,24 +47,35 @@ Where we go. Who we meet.
   ![](http://regini.github.io/inSquare/ScreenshotsMilestone1.png)
   
 # Milestone 2 - Release Candidate
- • Google, Twitter, Local Login Integration
-
- • Full Google Maps API
+ • Google login integration
  
- • Hashtag (SquareTag) tree-based structure   
+ • Google Maps integration
  
- • Improvements of the overall UI/UX with first user pilot  
+ • Improvements of the overall UI/UX with first user pilot
+ 
+ • Fully working Android Beta on the Play Store
+ 
+ • Fully working iOS Beta on TestFlight 
  
  ![](http://regini.github.io/inSquare/ScreenshotsMilestone2.png)
  
 # Milestone 3 - Public live BETA
- • Fully built mobile UI on Android  
+ • Push Notifications
  
- • Tailored suggestions for nearby #Squares   
+ • iOS & Android UI/UX
  
- • Push notifications  
+ • Backend Update & New Functionalities
+ 
+ • Public APIs & Javadocs
     
  ![](http://regini.github.io/inSquare/ScreenshotsMilestone3.png)
+ ![](http://regini.github.io/inSquare/ScreenshotIOs.png)
+ 
+
+# Documentation
+
+[The Javadoc for our Android Application.](http://regini.github.io/inSquare/insquaredoc/index.html)
+[The documentation of our backend.](http://regini.github.io/inSquare/api.html)
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
