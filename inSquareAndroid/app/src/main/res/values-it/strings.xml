@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">inSquare</string>
+    <string name="action_edit">Modifica</string>
+
+    <string name="error_connect">Connessione fallita</string>
+    <string name="message_user_joined">%s si è unito</string>
+    <string name="message_user_left">%s è uscito</string>
+    <string name="user_action_typing"> sta scrivendo</string>
+    <string name="hint_descrizione">Inserisci una descrizione</string>
+    <string name="hint_nome">Inserisci il nome</string>
+    <string name="nome_square">Inserisci il nome della Square</string>
+    <string name="descrizione_square">Inserisci la descrizione della Square</string>
+    <string name="crea_square">Crea!</string>
+    <string name="dialog_feedback_hint">Scrivi qui il tuo consiglio</string>
+    <string name="send">Invia</string>
+    <string name="thanks_feedback">Grazie per il feedback!</string>
+    <string name="error_feedback">Qualcosa è andato storto</string>
+    <string name="connFail">Connessione fallita.</string>
+    <string name="square_placeholder">Seleziona una Square sulla mappa</string>
+    <string name="hint_cerca_squares">Cerca un luogo...</string>
+    <string name="square_removed">Questa square è stata cancellata!</string>
+
+    <string name="action_delete">Elimina</string>
+    <string name="chat_favourite_action">Preferita</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_mute">Gestisci notifiche</string>
+    <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
+    <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
+    <string name="profile_empty_recent">Non hai scritto in nessuna Square</string>
+
+
+    <!-- Bottom Nav Items -->
+    <string name="bottom_nav_tab_map">Mappa</string>
+    <string name="bottom_nav_tab_created">Create</string>
+    <string name="bottom_nav_tab_favs">Preferiti</string>
+    <string name="bottom_nav_tab_recent">Recenti</string>
+    <string name="bottom_nav_tab_settings">Impostazioni</string>
+
+    <string name="settings_connect_facebook">Connetti con Facebook</string>
+
+    <!--Tutorial-->
+    <string name="tutorial_title1">Cos\'è inSquare?</string>
+    <string name="tutorial_title2">Tieniti aggiornato!</string>
+    <string name="tutorial_title3">Crea la tua Square!</string>
+    <string name="tutorial_title4">Gestisci le tue Square</string>
+    <string name="tutorial_1_intro">InSquare si propone di rendere più semplici le interazioni fra le persone ed i luoghi a cui sono interessate.\n
+        E’ la soluzione <i>più semplice</i> per metterti in contatto direttamente con chi si trova sul posto, sapere cosa sta succedendo, chiedere notizie e non perdere mai le ultime novità.</string>
+    <string name="tutorial_2_notifications">Aggiungendo una Square come <b>preferita</b>, le notifiche push ti terrano aggiornato in tempo reale, e sarai sempre aggiornato su novità, eventi e promozioni!</string>
+    <string name="tutorial_3_longpress">È semplicissimo: se <b>tieni premuto</b> sulla mappa, si aprirà il menu di creazione\nNel menu potrai inserire i dati e creare una Square manualmente, o <b>collegarla a Facebook</b> tramite il link ad un evento o una pagina</string>
+    <string name="tutorial_4_swipe">Nel tab <i>Create</i> puoi vedere le Square che hai creato. Puoi modificare nome e descrizione grazie al tasto <i>Modifica</i> e per cancellare una Square basterà <i>trascinarla verso sinistra</i></string>
+    <string name="tutorial_square_types">Grazie ai pin di colore diverso puoi individuare facilmente le Square: <b>rosso</b> indica un luogo, <b>viola</b> un evento, e <b>verde</b> un\'attività commerciale.\n<i>N.B. le chat degli eventi si cancellano automaticamente dopo 24h</i></string>
+
+    <string name="create_square_button_date">Data</string>
+    <string name="create_square_button_time">Ora</string>
+    <string name="tutorial_salta">Salta</string>
+    <string name="tutorial_fine">Fine</string>
+    <string name="review_fine">Fine</string>
+    <string name="card_profile_modifica">Modifica</string>
+
+    <string name="chat_initials">AVL</string>
+    <string name="chat_square_name">Nome Square</string>
+    <string name="chat_send_suggestion">Scrivi un messaggio</string>
+    <string name="create_square_next">Avanti</string>
+    <string name="create_square_back">Indietro</string>
+    <string name="create_event_insert_name">Inserisci un nome</string>
+    <string name="create_event_insert_description">Inserisci una descrizione</string>
+    <string name="create_event_date">Data</string>
+    <string name="create_event_time">Ora</string>
+    <string name="create_event_or">oppure</string>
+    <string name="create_event_link">Link all\'evento di Facebook</string>
+    <string name="create_event_connect">Collega con Facebook</string>
+    <string name="bottomsheet_adapter_menu">Menu Item</string>
+
+    <string name="create_square_middle_insert">Inserisci un nome</string>
+    <string name="create_square_middle_date">Data</string>
+    <string name="create_square_middle_insert_descr">Inserisci una descrizione</string>
+    <string name="create_square_place_insert_name">Inserisci un nome</string>
+    <string name="create_square_place_insert_descr">Inserisci una descrizione</string>
+    <string name="create_square_shop_insert_name">Inserisci un nome</string>
+    <string name="create_square_shop_insert_descr">Inserisci una descrizione</string>
+    <string name="create_square_shop_link">Link alla pagina Facebook</string>
+    <string name="create_square_shop_connect">Collega con Facebook</string>
+
+    <string name="frag_choose_luogo">Luogo</string>
+    <string name="frag_choose_evento">Evento</string>
+    <string name="frag_choose_attivita">Attività Commerciale</string>
+    <string name="frag_place_initials">SN</string>
+    <string name="frag_place_name">A very long square name that should resemble ones that we might have in our db</string>
+    <string name="frag_place_price">$$$$ (50+)</string>
+
+    <string name="frag_create_place_title">Crea una nuova Square</string>
+    <string name="frag_create_place_name">Inserisci un nome</string>
+    <string name="frag_create_place_descr">Inserisci una descrizione</string>
+    <string name="frag_profile_title">Le mie Square</string>
+    <string name="frag_recent_title">Titolo</string>
+    <string name="frag_settings_name">Nome Cognome</string>
+    <string name="frag_settings_insquare">inSquare</string>
+    <string name="frag_settings_logout">Logout</string>
+    <string name="frag_settings_invite">Invita amici</string>
+    <string name="frag_settings_facebook">Facebook</string>
+    <string name="frag_settings_google">Google</string>
+    <string name="frag_settings_connect_google">Connetti con Google+</string>
+    <string name="frag_settings_feedback">Feedback</string>
+    <string name="frag_settings_send_feedback">Invia un Feedback</string>
+    <string name="frag_settings_tutorial">Tutorial</string>
+    <string name="frag_settings_show_tutorial">Mostrami di nuovo il tutorial</string>
+    <string name="info_window_last_activity">Ultima attività</string>
+
+    <string name="frag_create_name">Nome</string>
+    <string name="frag_create_descr">Descrizione</string>
+    <string name="frag_create_expiration">Conclusione evento:</string>
+    <string name="frag_create_alert_expiration">La Square si cancella automaticamente 24h dopo l\'orario specificato</string>
+    <string name="frag_create_or">oppure</string>
+    <string name="frag_create_linkfb">Link all\'evento di Facebook</string>
+    <string name="frag_create_connect">Collega con Facebook</string>
+
+    <string name="card_profile_last_activity">Ultima attivita\'</string>
+    <string name="square_item_last_activity">@string/card_profile_last_activity</string>
+    <string name="square_card_last_activity">@string/card_profile_last_activity</string>
+    <string name="swipe_layout_last_activity">@string/card_profile_last_activity</string>
+
+
+    <string name="insquare_share_promo">Vieni anche tu su InSquare! - https://play.google.com/store/apps/details?id=com.nsqre.insquare</string>
+    <string name="chat_permission_fail">Non posso scrivere sul disco senza permessi!</string>
+    <string name="chat_recent_msg_fail">Non sono riuscito ad ottenere i messaggi recenti!</string>
+    <string name="chat_feedback_fail">Non sono riuscito ad inviare il feedback</string>
+    <string name="chat_feedback_success">Grazie per il Feedback!</string>
+    <string name="dialog_mute_off">Abilita</string>
+    <string name="dialog_mute_1h">Disabilita per 1h</string>
+    <string name="dialog_mute_8h">Disabilita per 8h</string>
+    <string name="dialog_mute_2d">Disabilita per 2 giorni</string>
+    <string name="dialog_mute_on">Disabilita indefinitamente</string>
+    <string name="dialog_mute_title">Gestisci notifiche</string>
+    <string name="dialog_mute_result_off">Notifiche Abilitate</string>
+    <string name="dialog_mute_result_on">Notifiche Disabilitate</string>
+    <string name="dialog_mute_cancel">Annulla</string>
+    <string name="dialog_edit_name_hint">Modifica il nome</string>
+    <string name="dialog_edit_descr_hint">Modifica la descrizione</string>
+    <string name="dialog_edit_name_empty_error">Il nome non può essere vuoto</string>
+    <string name="dialog_edit_success">Modificata con successo!</string>
+    <string name="dialog_edit_fail">Ho avuto un problema con la connessione. Riprova..?</string>
+    <string name="login_no_connection">Senza internet..?</string>
+    <string name="login_token_error">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="map_fragment_delete_success">La Square è stata eliminata</string>
+    <string name="map_fragment_no_location_permissions">Mi hai negato i permessi di locazione!</string>
+    <string name="map_fragment_no_location">Non ho modo di prendere la locazione corrente!</string>
+    <string name="map_fragment_disabled_location">Geolocalizzazione disattivata..?</string>
+    <string name="map_fragment_permissions_error">Senza permessi non posso funzionare!</string>
+    <string name="map_fragment_long_press_hint">Tieni premuto per creare una Square!</string>
+    <string name="map_fragment_create_fail">Ho avuto un problema nella creazione</string>
+    <string name="map_fragment_create_success">Square creata con successo!</string>
+    <string name="map_fragment_create_error">Ho avuto un problema nella creazione</string>
+    <string name="recycler_profile_adapter_visits">" visite"</string>
+    <string name="dialog_delete_title">Attenzione!</string>
+    <string name="dialog_delete_message_p1">"Tutti i messaggi associati a "</string>
+    <string name="dialog_delete_message_p2">" andranno perduti."</string>
+    <string name="dialog_delete_success">Cancellazione avvenuta con successo!</string>
+    <string name="dialog_delete_fail">C\'e\' stato un problema con la cancellazione!</string>
+    <string name="dialog_delete_cancel">Annulla</string>
+    <string name="dialog_card_remove_title">Attenzione!</string>
+    <string name="dialog_card_remove_msg_p1">"Tutti i messaggi associati a "</string>
+    <string name="dialog_card_remove_msg_p2">" andranno perduti."</string>
+    <string name="dialog_card_delete_success">Cancellazione avvenuta con successo!</string>
+    <string name="dialog_card_delete_error">C\'e\' stato un problema con la cancellazione!</string>
+    <string name="dialog_card_delete_btn_cancel">Annulla</string>
+    <string name="settings_feedback_fail">Non sono riuscito ad inviare il feedback</string>
+    <string name="settings_feedback_success">Feedback inviato con successo!</string>
+    <string name="settings_disconnect_from">"Disconnetti da "</string>
+    <string name="settings_google_connect">Connetti con Google+</string>
+    <string name="settings_dialog_logout_title">Attenzione!</string>
+    <string name="settings_dialog_logout_msg">Sei sicuro di volerti disconnettere?</string>
+    <string name="settings_facebook_token_fail">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="square_last_message_incipit">"Ultimo messaggio: "</string>
+    <string name="create_square_empty_name_error">Inserisci un nome</string>
+    <string name="create_square_facebook_login">Non posso collegare Facebook senza login!</string>
+    <string name="create_square_token_fail">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="square_create_invalid_link">Il link inserito non e\' valido</string>
+    <string name="square_create_facebook_fail">Facebook ha fallito...riprova?</string>
+    <string name="square_create_invalid_id">L\'Id non e\' valido</string>
+
+    <array name="create_square_type_elements">
+        <item>Luogo</item>
+        <item>Evento</item>
+        <item>Attività Commerciale</item>
+    </array>
+    <string name="bottomsheet_menu_square_name">Nome Square</string>
+    <string name="choose">Scegli l\'immagine</string>
+    <string name="custom_invite">Invito personale</string>
+    <string name="delete">Elimina</string>
+    <string name="description">Descrizione</string>
+    <string name="facebook_app_id">743420882424724</string>
+    <string name="fb_login_string">Facebook Login</string>
+    <string name="fb_logout_string">Facebook Logout</string>
+    <string name="feedback">Feedback</string>
+    <string name="info_window_expiration">Sab 24 alle 19:30</string>
+    <string name="info_window_name">Nome Square</string>
+    <string name="info_windows_initial">SN</string>
+    <string name="invitation_cta">Installa!</string>
+    <string name="invitation_message">Vieni anche tu su InSquare!</string>
+    <string name="invitation_subject">Prova questa app!</string>
+    <string name="invitation_title">Invito inSquare</string>
+    <string name="invite">Manda inviti!</string>
+    <string name="invite_dialog_title">Hai un invito!</string>
+    <string name="invite_friends">Invita gli amici</string>
+    <string name="login_slogan">Where we go.\nWho we meet.</string>
+    <string name="mute_1h">1h</string>
+    <string name="mute_2d">2g</string>
+    <string name="mute_8h">8h</string>
+    <string name="mute_off">off</string>
+    <string name="mute_on">on</string>
+    <string name="notifaction_success">Upload effettuato con successo</string>
+    <string name="notification_fail">Upload fallito</string>
+    <string name="notification_progress">Upload in corso...</string>
+    <string name="notification_share_link">Condividi il link</string>
+    <string name="ok">OK</string>
+    <string name="referrer_hint">Manca il Deep link</string>
+    <string name="search_item_name">Nome Square</string>
+    <string name="send_failed">Non sono riuscito ad inviare gli inviti</string>
+    <string name="sent_invitations_fmt">Mandato %d inviti</string>
+    <string name="simple_list_item_time">Mar: 7:00 - 22:30</string>
+    <string name="square_item_name">Nome Square</string>
+    <string name="title">Titolo</string>
+    <string name="title_activity_fab">InSquare</string>
+    <string name="upload">Upload</string>
+    <string name="welcome">App Invite\nInizio rapido</string>
+</resources>

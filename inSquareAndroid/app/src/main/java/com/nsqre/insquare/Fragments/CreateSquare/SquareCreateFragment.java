@@ -62,7 +62,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * TODO Documentare
+ * Fragment with the fields to input information for the Square Creation
  */
 public class SquareCreateFragment extends Fragment {
 
@@ -126,7 +126,6 @@ public class SquareCreateFragment extends Fragment {
 
 
     /**
-     * TODO Documentare
      * @see #setupMainContent(View)
      * @see #setupFacebookLink(View)
      */
@@ -147,7 +146,8 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * Shows the right layout, based on the SquareType
+     * Sets up the right layout, based on the SquareType set in the activity by the previous fragment
+     * @see ChooseCreateFragment
      * @see SquareType
      */
     public void setLayoutType()
@@ -198,8 +198,8 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
-     * è inutilizzato?
+     * Will be used for the upper section of the layout with the possibility of uploading a picture
+     * TODO da terminare
      */
     private void setupUpperSection(View v,int layoutType)
     {
@@ -354,7 +354,8 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Facebook link section with and ClickListeners
+     * @param v
      */
     public void setupFacebookLink(View v)
     {
@@ -418,7 +419,8 @@ public class SquareCreateFragment extends Fragment {
     }
 
     /**
-     * TODO Documentare
+     * Used to login Facebook if the user is trying to connect a Facebook event/page and is not authenticated.
+     * @param v
      */
     private void setupFacebook(final View v)
     {

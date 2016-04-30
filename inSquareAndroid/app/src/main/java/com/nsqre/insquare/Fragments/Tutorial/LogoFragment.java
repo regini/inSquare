@@ -6,7 +6,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * TODO Documentare
+ * It's the Abstract class that handles the Fragment with a big logo on top, a title and a content below the title.
+ * It also handles the animation of the corresponding fragment.
  */
 public abstract class LogoFragment extends Fragment {
 
