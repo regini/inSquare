@@ -31,6 +31,9 @@ import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import java.io.IOException;
 
+/**
+ * Class that handles the registration to the gcm service
+ */
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";

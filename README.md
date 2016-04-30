@@ -71,12 +71,17 @@ Where we go. Who we meet.
  ![](http://regini.github.io/inSquare/ScreenshotsMilestone3.png)
  ![](http://regini.github.io/inSquare/ScreenshotIOs.png)
  
+ 
+# Final Submission
+ 
+  ![](http://regini.github.io/inSquare/ScreenshotsFinalSubmission.png)
+ 
 
 # Documentation
 
 [The Javadoc for our Android Application.](http://regini.github.io/inSquare/insquaredoc/index.html)
 
-[The documentation of our backend.](http://regini.github.io/inSquare/api.html)
+[The documentation of our backend.](http://regini.github.io/inSquare/backendoc/index.html)
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
