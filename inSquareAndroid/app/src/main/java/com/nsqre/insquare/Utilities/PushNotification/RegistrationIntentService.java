@@ -88,7 +88,7 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(final String token) {
 
-        VolleyManager.getInstance().patchGCMToken(token, new VolleyManager.VolleyResponseListener() {
+        VolleyManager.getInstance(getApplicationContext()).patchGCMToken(token, new VolleyManager.VolleyResponseListener() {
             @Override
             public void responseGET(Object object) {
                 // Vuoto - PATCH Request

@@ -40,14 +40,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.User.User;
 import com.nsqre.insquare.Utilities.Analytics.AnalyticsApplication;
-import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
 import org.json.JSONException;
@@ -68,8 +66,6 @@ public class LoginActivity extends AppCompatActivity
 
     private static final String TAG = "LoginActivity";
     public static final int ITEM_DELAY = 300;
-
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private User user;
     private InSquareProfile profile;
@@ -332,10 +328,7 @@ public class LoginActivity extends AppCompatActivity
         }
 
         profile.save(getApplicationContext());
-        if (checkPlayServices()) {
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
+
         launchInSquare();
     }
 
@@ -560,24 +553,4 @@ public class LoginActivity extends AppCompatActivity
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 }

@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.nsqre.insquare.Fragments.BlankFragment;
 import com.nsqre.insquare.Fragments.MainContent.FavSquaresFragment;
 import com.nsqre.insquare.Fragments.MainContent.MapFragment;
@@ -45,6 +47,7 @@ import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItem;
 import com.nsqre.insquare.Utilities.BottomSheetMenu.BottomSheetItemAdapter;
 import com.nsqre.insquare.Utilities.DialogHandler;
+import com.nsqre.insquare.Utilities.PushNotification.RegistrationIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +86,8 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
     private InSquareProfile mProfile;
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     /**
      * Sets up the buttons and loads the MapFragment: the first fragment which will be shown to the user.
      * Eventually it will start ChatService to send outgoing messages
@@ -107,6 +112,11 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                     new ActivityManager.TaskDescription(getString(R.string.app_name),
                             icon, Color.parseColor("#D32F2F"));
             setTaskDescription(taskDesc);
+        }
+
+        if (checkPlayServices()) {
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
         }
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.bottom_nav_coordinator_layout);
@@ -218,6 +228,27 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
             bottomNavigation.setNotification(favourites,2);
             bottomNavigation.setNotification(recents,3);
         }
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     /**
