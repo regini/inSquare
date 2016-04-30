@@ -44,7 +44,7 @@ import java.util.HashMap;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
- * TODO Documentare
+ * This is the adapter that handles the information visible in the Created Section of the BottomNavActivity
  */
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 

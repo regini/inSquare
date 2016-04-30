@@ -36,7 +36,7 @@ import java.util.Collections;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
- * TODO Documentare
+ * This is the Adapter that is associated with the RecyclerViews in the Recents and Favorites lists
  */
 public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
