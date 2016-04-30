@@ -16,6 +16,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.nsqre.insquare.User.InSquareProfile;
 
+/**
+ * Runs at the opening of the app. It checks if the user is already logged in to show the proper activity
+ */
 public class SplashActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener
 {
     private static final String TAG = "SplashActivity";
@@ -28,6 +31,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        InSquareProfile.getInstance(getApplicationContext());
         googleSignedIn = initGoogle();
 
         FacebookSdk.sdkInitialize(getApplicationContext(),
@@ -53,9 +57,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                         }.start();
                     }
                 });
-        InSquareProfile.getInstance(getApplicationContext());
-
-
     }
 
     private OptionalPendingResult<GoogleSignInResult> initGoogle() {

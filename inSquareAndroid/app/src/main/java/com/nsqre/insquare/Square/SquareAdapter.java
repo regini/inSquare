@@ -137,7 +137,7 @@ public class SquareAdapter extends BaseAdapter {
             Square s = (Square)data.get(position);
             /************  Set Model values in Holder elements ***********/
             holder.name.setText( s.getName() );
-            holder.id.setText( s.formatTime() );
+            holder.id.setText( context.getString(R.string.square_last_message_incipit) + s.formatTime() );
         }
         return vi;
     }

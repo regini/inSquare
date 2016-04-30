@@ -1,11 +1,14 @@
 package com.nsqre.insquare.User;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
- * Created by mrsa on 15/01/2016.
+ * A class to represent a User object
  */
-public class User implements Serializable {
+public class User implements Parcelable {
 
     private String id;
     private String name;
@@ -15,6 +18,25 @@ public class User implements Serializable {
     public User() {
 
     }
+
+    protected User(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        email = in.readString();
+        picture = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getId() { return this.id; }
 
@@ -40,5 +62,18 @@ public class User implements Serializable {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(email);
+        dest.writeString(picture);
     }
 }

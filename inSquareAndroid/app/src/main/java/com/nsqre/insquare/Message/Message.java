@@ -1,6 +1,8 @@
 package com.nsqre.insquare.Message;/* Created by umbertosonnino on 2/1/16  */
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +14,7 @@ import java.util.TimeZone;
 /**
  * Message is the class that represents the concept of message inside the application
  */
-public class Message implements Serializable {
+public class Message implements Parcelable {
 
     private static final String TAG = "Message";
     /**
@@ -103,6 +105,31 @@ public class Message implements Serializable {
 
         this.locale = l;
     }
+
+    protected Message(Parcel in) {
+        msg_id = in.readString();
+        text = in.readString();
+        name = in.readString();
+        from = in.readString();
+        createdAt = in.readString();
+        urlProvider = in.readString();
+        urlTitle = in.readString();
+        urlDescription = in.readString();
+        urlImage = in.readString();
+        isLineVisible = in.readByte() != 0;
+    }
+
+    public static final Creator<Message> CREATOR = new Creator<Message>() {
+        @Override
+        public Message createFromParcel(Parcel in) {
+            return new Message(in);
+        }
+
+        @Override
+        public Message[] newArray(int size) {
+            return new Message[size];
+        }
+    };
 
     public String getText() {
         return text;
@@ -217,5 +244,24 @@ public class Message implements Serializable {
     @Override
     public int hashCode() {
         return msg_id.hashCode();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(msg_id);
+        dest.writeString(text);
+        dest.writeString(name);
+        dest.writeString(from);
+        dest.writeString(createdAt);
+        dest.writeString(urlProvider);
+        dest.writeString(urlTitle);
+        dest.writeString(urlDescription);
+        dest.writeString(urlImage);
+        dest.writeByte((byte) (isLineVisible ? 1 : 0));
     }
 }

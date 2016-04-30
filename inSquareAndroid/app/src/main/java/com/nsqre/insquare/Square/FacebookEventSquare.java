@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Extension of the Square class
+ * Extension of the Square class for the events
  */
 public class FacebookEventSquare extends Square {
 
@@ -25,22 +25,22 @@ public class FacebookEventSquare extends Square {
     /**
      * Facebook's event ID
      */
-    private String eventId;
+    private String eventId = "";
 
     /**
      * The address of the event as shown on Facebook
      */
-    public String street;
+    public String street = "";
 
     /**
      * The website of the event as shown on Facebook
      */
-    public String website;
+    public String website = "";
 
     /**
      * Time of the event as shown on Facebook
      */
-    public String time;
+    public String time = "";
 
     /**
      * Creates a FacebookEventSquare object using Square's constructor and calling downloadAndFillEventDetails with the eventId
@@ -148,5 +148,15 @@ public class FacebookEventSquare extends Square {
                         }
                     }
                 }).executeAsync();
+    }
+
+    @Override
+    public String toString() {
+        String upper = super.toString();
+        return upper +
+                "\ntime=" + time +
+                "\nstreet=" + street +
+                "\nwebsite=" + website
+                ;
     }
 }

@@ -51,8 +51,8 @@
 
     <string name="action_share">Condividi</string>
     <string name="action_mute">Gestisci notifiche</string>
-    <string name="action_edit">Modifica</string>
-    <string name="action_delete">Elimina</string>
+    <string name="action_edit" translatable="false">Modifica</string>
+    <string name="action_delete" translatable="false">Elimina</string>
     <string name="chat_favourite_action">Preferita</string>
     <string name="profile_empty_owned">Non hai ancora creato nessuna Square</string>
     <string name="profile_empty_favourite">Non stai seguendo nessuna Square</string>
@@ -184,7 +184,7 @@
     <string name="photo_item_me_time">Time Text</string>
     <string name="frag_choose_luogo">Luogo</string>
     <string name="frag_choose_evento">Evento</string>
-    <string name="frag_choose_attività">Attività Commerciale</string>
+    <string name="frag_choose_attivita">Attività Commerciale</string>
     <string name="frag_place_initials">SN</string>
     <string name="frag_place_name">A very long square name that should resemble ones that we might have in our db</string>
     <string name="frag_place_price">$$$$ (50+)</string>
@@ -247,6 +247,65 @@
     <string name="swipe_layout_initials">AVL</string>
     <string name="swipe_layout_name">A very long square name that should resemble ones that we might have in our db</string>
     <string name="swipe_layout_last_activity">Ultima attivita\'</string>
+    <string name="insquare_share_promo">Vieni anche tu su InSquare! - https://play.google.com/store/apps/details?id=com.nsqre.insquare</string>
+    <string name="chat_permission_fail">Non posso scrivere sul disco senza permessi!</string>
+    <string name="chat_recent_msg_fail">Non sono riuscito ad ottenere i messaggi recenti!</string>
+    <string name="chat_feedback_fail">Non sono riuscito ad inviare il feedback</string>
+    <string name="chat_feedback_success">Feedback inviato con successo!</string>
+    <string name="dialog_mute_off">Abilita</string>
+    <string name="dialog_mute_1h">Disabilita per 1h</string>
+    <string name="dialog_mute_8h">Disabilita per 8h</string>
+    <string name="dialog_mute_2d">Disabilita per 2 giorni</string>
+    <string name="dialog_mute_on">Disabilita indefinitamente</string>
+    <string name="dialog_mute_title">Gestisci notifiche</string>
+    <string name="dialog_mute_result_off">Notifiche Abilitate</string>
+    <string name="dialog_mute_result_on">Notifiche Disabilitate</string>
+    <string name="dialog_mute_cancel">Annulla</string>
+    <string name="dialog_edit_name_hint">Modifica il nome</string>
+    <string name="dialog_edit_descr_hint">Modifica la descrizione</string>
+    <string name="dialog_edit_name_empty_error">Il nome non può essere vuoto</string>
+    <string name="dialog_edit_success">Modificata con successo!</string>
+    <string name="dialog_edit_fail">Ho avuto un problema con la connessione. Riprova..?</string>
+    <string name="login_no_connection">Senza internet nel 2016..?</string>
+    <string name="login_token_error">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="login_error_token">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="map_fragment_delete_success">La square è stata eliminata</string>
+    <string name="map_fragment_no_location_permissions">Mi hai negato i permessi di locazione!</string>
+    <string name="map_fragment_no_location">Non ho modo di prendere la locazione corrente!</string>
+    <string name="map_fragment_disabled_location">Geolocalizzazione disattivata..?</string>
+    <string name="map_fragment_permissions_error">Senza permessi non posso funzionare!</string>
+    <string name="map_fragment_long_press_hint">Tieni premuto per creare una Square!</string>
+    <string name="map_fragment_create_fail">Ho avuto un problema nella creazione</string>
+    <string name="map_fragment_create_success">Square creata con successo!</string>
+    <string name="map_fragment_create_error">Ho avuto un problema nella creazione</string>
+    <string name="recycler_profile_adapter_visits">" visite"</string>
+    <string name="dialog_delete_title">Attenzione!</string>
+    <string name="dialog_delete_message_p1">"Tutti i messaggi associati a "</string>
+    <string name="dialog_delete_message_p2">" andranno perduti."</string>
+    <string name="dialog_delete_success">Cancellazione avvenuta con successo!</string>
+    <string name="dialog_delete_fail">C\'e\' stato un problema con la cancellazione!</string>
+    <string name="dialog_delete_cancel">Annulla</string>
+    <string name="dialog_card_remove_title">Attenzione!</string>
+    <string name="dialog_card_remove_msg_p1">"Tutti i messaggi associati a "</string>
+    <string name="dialog_card_remove_msg_p2">" andranno perduti."</string>
+    <string name="dialog_card_delete_success">Cancellazione avvenuta con successo!</string>
+    <string name="dialog_card_delete_error">C\'e\' stato un problema con la cancellazione!</string>
+    <string name="dialog_card_delete_btn_cancel">Annulla</string>
+    <string name="settings_feedback_fail">Non sono riuscito ad inviare il feedback</string>
+    <string name="settings_feedback_success">Feedback inviato con successo!</string>
+    <string name="settings_disconnect_from">"Disconnetti da "</string>
+    <string name="settings_google_connect">Connetti con Google+</string>
+    <string name="settings_dialog_logout_title">Attenzione!</string>
+    <string name="settings_dialog_logout_msg">Sei sicuro di volerti disconnettere?</string>
+    <string name="settings_facebook_token_fail">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="square_last_message_incipit">"Ultimo messaggio: "</string>
+    <string name="create_square_empty_name_error">Il nome non può essere vuoto</string>
+    <string name="create_square_facebook_login">Non posso collegare Facebook senza login!</string>
+    <string name="create_square_token_fail">"Qualcosa non ha funzionato con il token di "</string>
+    <string name="square_create_invalid_link">Il link inserito non e\' valido</string>
+    <string name="square_create_facebook_fail">Facebook ha fallito...riprova?</string>
+    <string name="square_create_invalid_id">L\'Id non e\' valido</string>
+    <string name="square_create_at">" at "</string>
 
     <array name="create_square_type_elements">
         <item>Luogo</item>

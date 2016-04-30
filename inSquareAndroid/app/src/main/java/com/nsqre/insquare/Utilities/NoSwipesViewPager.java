@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
- * TODO Documentare
+ * Class that removes the swiping capability from the ViewPager in the Square creation process
  */
 public class NoSwipesViewPager extends ViewPager {
 

@@ -44,7 +44,7 @@ import java.util.HashMap;
 
 /**
  * Created by Umberto Sonnino on 29/03/2016.
- * TODO Documentare
+ * This is the adapter that handles the information visible in the Created Section of the BottomNavActivity
  */
 public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
@@ -144,7 +144,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
                         int[] array = new int[2];
                         v.getLocationOnScreen(array);
 
-                        Snackbar.make(madre.coordinatorLayout, castHolder.lowerSectionViews.getText() + " visite", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(madre.coordinatorLayout, castHolder.lowerSectionViews.getText() + madre.getString(R.string.recycler_profile_adapter_visits), Snackbar.LENGTH_SHORT).show();
 
                         return true;
                     }
@@ -164,7 +164,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
     private void setupTopSection(final SquareViewHolder castHolder, final Square square) {
         String squareName = square.getName();
         castHolder.squareName.setText(squareName);
-        castHolder.squareActivity.setText(square.formatTime());
+        castHolder.squareActivity.setText(context.getString(R.string.square_last_message_incipit) + square.formatTime());
         String description = square.getDescription().trim();
         if(!description.isEmpty())
         {
@@ -210,8 +210,9 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(context);
 
-        builder.setTitle("Attenzione!")
-                .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
+        builder.setTitle(context.getString(R.string.dialog_delete_title))
+                .setMessage(context.getString(R.string.dialog_delete_message_p1) +
+                        listItem.getName().toString().trim() + context.getString(R.string.dialog_delete_message_p2));
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -240,18 +241,18 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
                                 if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, R.string.dialog_delete_success, Snackbar.LENGTH_SHORT).show();
                                     squaresArrayList.remove(position);
                                     notifyItemRemoved(position);
                                 } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
-                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, R.string.dialog_delete_fail, Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     }
                 });
-        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(context.getString(R.string.dialog_delete_cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 squaresPendingRemoval.remove(listItem);
                 dialog.dismiss();
@@ -354,6 +355,7 @@ public class RecyclerProfileSquareAdapter extends RecyclerView.Adapter {
 
     private void fillEventDetails(final SquareViewHolder castHolder, final FacebookEventSquare event) {
 
+        Log.d(TAG, "fillEventDetails: " + event.toString());
         castHolder.facebookSection.setVisibility(View.VISIBLE);
         potentialEmptySection(castHolder.facebookLikeCount, "");
         potentialEmptySection(castHolder.facebookPhone, "");

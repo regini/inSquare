@@ -148,9 +148,6 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         }
     }
 
-    /**
-     * TODO documentare
-     */
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -180,7 +177,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("event");
-            Log.d("receiver", "Got message: " + message);
+            Log.d(TAG + " rec", "Got message: " + message);
             if("update".equals(intent.getStringExtra("action"))) {
                 calculateNotifications();
                 InSquareProfile.getInstance(getApplicationContext());
@@ -336,10 +333,10 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
     }
 
     /**
-     * TODO documentare
-     * @param square
-     * @param adapter
-     * @param viewHolderPosition
+     * It shows the bottom sheet dialog corresponding to the long press of an element in the RecyclerView.
+     * @param square the element that's being pressed
+     * @param adapter the RecyclerView adapter that refers to this element
+     * @param viewHolderPosition position in the RecyclerView
      */
     public void showBottomSheetDialog(Square square, RecyclerSquareAdapter adapter, int viewHolderPosition)
     {
@@ -394,7 +391,7 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
 
             if(item.getTitle().equals(shareString))
             {
-                String text = "Vieni anche tu su InSquare! - https://play.google.com/store/apps/details?id=com.nsqre.insquare";
+                String text = getString(R.string.insquare_share_promo);
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -412,15 +409,17 @@ public class BottomNavActivity extends AppCompatActivity implements BottomSheetI
                 fragmentListElementAdapter.removeElement(listHolderPosition);
             }
 
-
-            Log.d(TAG, "onBottomMenuItemClick: I've just clicked " + item.getTitle());
-
-            // TODO implementare menuitemclick
             bottomSheetDialog.dismiss();
         }
     }
     @Override
     public void onBackPressed() {
-        this.finishAffinity();
+        if(this.bottomNavigation.getCurrentItem() != 0)
+        {
+            this.bottomNavigation.setCurrentItem(0);
+        }else
+        {
+            this.finishAffinity();
+        }
     }
 }

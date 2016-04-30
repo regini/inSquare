@@ -38,8 +38,7 @@ import java.util.ArrayList;
  */
 
 /**
- * TODO Documentare
- * inutilizzato?
+ * unused
  */
 public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
 
@@ -75,7 +74,7 @@ public class RecyclerSwipeSquareAdapter extends RecyclerView.Adapter {
 
         String squareName = listItem.getName();
         castHolder.squareName.setText(squareName);
-        castHolder.squareActivity.setText(listItem.formatTime());
+        castHolder.squareActivity.setText(context.getString(R.string.square_last_message_incipit) + listItem.formatTime());
 
         setupLeftSection(castHolder, listItem.getInitials());
 

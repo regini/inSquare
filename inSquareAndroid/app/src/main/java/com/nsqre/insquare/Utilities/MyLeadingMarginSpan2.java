@@ -6,8 +6,7 @@ import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
 /**
- * Created by mrsa on 11/04/2016.
- * TODO Documentare
+ * Manages the indentation for ChatActivity's list of messages
  */
 public class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
     private int margin;
@@ -17,6 +16,7 @@ public class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan
         this.margin = margin;
         this.lines = lines;
     }
+
     /*Returns the value to which must be added indentation*/
     @Override
     public int getLeadingMargin(boolean first) {

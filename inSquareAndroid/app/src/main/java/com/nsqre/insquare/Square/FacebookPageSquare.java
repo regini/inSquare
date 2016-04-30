@@ -17,6 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Extension of the Square class for the pages
+ */
 public class FacebookPageSquare extends Square {
 
     private static final String TAG = "FacebookPageSquare";
@@ -24,37 +27,37 @@ public class FacebookPageSquare extends Square {
     /**
      * Facebook's page ID
      */
-    private String pageId;
+    private String pageId = "";
 
     /**
      * The number of Likes of the page
      */
-    public String likeCount;
+    public String likeCount = "";
 
     /**
      * The price range of the subject of the page
      */
-    public String priceRange;
+    public String priceRange = "";
 
     /**
      * Phone number provided by the owner of the page
      */
-    public String phoneNumber;
+    public String phoneNumber = "";
 
     /**
      * The website of the page as shown on Facebook
      */
-    public String website;
+    public String website = "";
 
     /**
      * The address of the page as shown on Facebook
      */
-    public String street;
+    public String street = "";
 
     /**
      * Timetable of the subject of the page
      */
-    public List<String> hoursList;
+    public List<String> hoursList = new ArrayList<>();
 
     /**
      * Creates a FacebookPageSquare object using Square's constructor and calling downloadAndFillPageDetails with the eventId
@@ -92,7 +95,6 @@ public class FacebookPageSquare extends Square {
                     @Override
                     public void onCompleted(GraphResponse response) {
                         JSONObject object = response.getJSONObject();
-//                        Log.d(TAG, "onCompleted: page details ====\n" + response.toString());
 
                         if(object == null)
                         {
@@ -122,8 +124,6 @@ public class FacebookPageSquare extends Square {
                                 location = object.getJSONObject("location");
                                 street = location.getString("street").trim();
                             }
-
-                            hoursList = new ArrayList<>();
 
                             // Hours
                             if(object.has("hours")) {
@@ -157,6 +157,22 @@ public class FacebookPageSquare extends Square {
                 }
         ).executeAsync();
     }
+
+    @Override
+    public String toString() {
+        String upper = super.toString();
+        for (String s : hoursList) {
+            upper += "\n" + s;
+        }
+        return upper +
+                "\nlikes=" + likeCount +
+                "\nphoneNumber=" + phoneNumber +
+                "\npriceRange=" + priceRange +
+                "\nstreet=" + street +
+                "\nwebsite=" + website
+                ;
+    }
+
 }
 
 
