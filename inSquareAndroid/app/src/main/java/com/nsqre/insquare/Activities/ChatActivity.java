@@ -449,9 +449,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         }
     }
 
-    /**
-     * TODO da documentare?
-     */
+
     private boolean addPermission(List<String> permissionsList, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -464,9 +462,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
         return true;
     }
 
-    /**
-     * TODO da documentare?
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -605,7 +600,8 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
     }
 
     /**
-     * TODO documentare
+     * Receiver for the event of deletion of the square that shows an appropriate alert
+     * and prevents the user from sending other messages.
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -615,6 +611,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             if("deletion".equals(intent.getStringExtra("action"))) {
                 if(mSquareId.equals(intent.getStringExtra("squareId"))) {
                     messageAdapter.clear();
+                    messageAdapter.notifyDataSetChanged();
                     findViewById(R.id.removed_text).setVisibility(View.VISIBLE);
                     chatEditText.setFocusable(false);
                 }

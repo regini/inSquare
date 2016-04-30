@@ -36,6 +36,9 @@ import com.nsqre.insquare.R;
 
 import java.util.Date;
 
+/**
+ * Class that receives and handles gcm messages
+ */
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
@@ -46,6 +49,8 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param from SenderID of the sender.
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
+     * @see #updateSquares(String, String, String)
+     * @see #sendNotification(String, String, String)
      */
     // [START receive_message]
     @Override
@@ -67,6 +72,12 @@ public class MyGcmListenerService extends GcmListenerService {
     }
     // [END receive_message]
 
+    /**
+     * Method that notifies listeners that some square data changed
+     * @param userId the id of the user
+     * @param squareId the id of the square that changed
+     * @param event what changed
+     */
     private void updateSquares(String userId, String squareId, String event) {
         Intent intent = new Intent("update_squares");
         intent.putExtra("event", "update_squares");
@@ -78,7 +89,7 @@ public class MyGcmListenerService extends GcmListenerService {
 
     /**
      * Create and show a simple notification containing the received GCM message.
-     *
+     * Manages how the notification will be shown in the notification bar.
      * @param message GCM message received.
      */
     private void sendNotification(String message, String squareName, String squareId) {
@@ -172,7 +183,7 @@ public class MyGcmListenerService extends GcmListenerService {
         }
 
     }
-
+    
     public static class QuickstartPreferences {
 
         public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";

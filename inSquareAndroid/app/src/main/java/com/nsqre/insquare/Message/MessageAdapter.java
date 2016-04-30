@@ -278,9 +278,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     }
 
     /**
-     * TODO Documentare
-     * @param message
-     * @param position
+     * Method that creates a link preview based on the given url
+     * @param message that contains the url
+     * @param position of the item in the adapter
      */
     private void checkUrl(final Message message, int position) {
         Matcher m = Patterns.WEB_URL.matcher(message.getText());
@@ -323,6 +323,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     /**
      * Adds an item to the dataset
      * @param msg the message to add
+     * @see #checkUrl(Message, int)
      */
     public void addItem(Message msg) {
         mDataset.add(msg);

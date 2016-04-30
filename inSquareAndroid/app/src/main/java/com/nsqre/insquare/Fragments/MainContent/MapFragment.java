@@ -573,7 +573,7 @@ public class MapFragment extends Fragment
     }
 
     /**
-     * TODO documentare
+     * Method that open the proper ChatActivity if the user clicked on a notification
      */
     public void checkActivityIntent(Intent intent) {
         if(intent != null && intent.getStringExtra("squareId") != null) {
