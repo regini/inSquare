@@ -13,8 +13,8 @@ class MoreViewController: UIViewController
 {
     @IBAction func logOutButton(sender: AnyObject)
     {
-        loggedIn = false
-        clearUsersSavedInCoreData()
+        //loggedIn = false
+        //clearUsersSavedInCoreData()
     }
 
     @IBAction func sendFeedback(sender: AnyObject)

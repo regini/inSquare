@@ -21,30 +21,40 @@ import Crashlytics
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate
 {
-
     var window: UIWindow?
     
-    func registerForAllNotifications() {
-        
+    func registerForAllNotifications()
+    {
         // Set notifications for this application
         let notificationSettings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
         
         UIApplication.sharedApplication().registerUserNotificationSettings(notificationSettings)
-        
         UIApplication.sharedApplication().registerForRemoteNotifications()
-        
-        
     }
 
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
 
+        //UIApplication.sharedApplication().statusBarStyle = .LightContent
+
+
+        //GOOGLE
         GMSServices.provideAPIKey("AIzaSyBmibIMY4xUPzLe2Sj9Ax4Ne2tNmCNoUic")
         
-        //UIApplication.sharedApplication().statusBarStyle = .LightContent
         
+        if isLoggedInCoreData() {
+            print("didFinishLaunchingWithOptions: LOGGEDIN")
+            fetchDataFromCoreData()
+            self.window!.rootViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateInitialViewController()
+        }
+        else {
+            print("didFinishLaunchingWithOptions: NOT LOGGED IN")
+            
+                        var rootController: UIViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateViewControllerWithIdentifier("LoginVcID")
+                        var navigation: UINavigationController = UINavigationController(rootViewController: rootController)
+                        self.window!.rootViewController = navigation
+        }
         // Configure tracker from GoogleService-Info.plist.
         var configureError:NSError?
         GGLContext.sharedInstance().configureWithError(&configureError)
@@ -54,80 +64,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         var gai = GAI.sharedInstance()
         gai.trackUncaughtExceptions = true  // report uncaught exceptions
         gai.logger.logLevel = GAILogLevel.Verbose  // remove before app release
+        //GOOGLE
+
         
-        // Register this app for notifications
-        registerForAllNotifications()
+        //NOTIFICATION
+        registerForAllNotifications() // Register this app for notifications
+        AGPushAnalytics.sendMetricsWhenAppLaunched(launchOptions) // Send metrics when app is launched due to push notification
         
-        // Check for launch Options, this could be from Local or Remote Notifications that was used to Open the app!
-        if let options = launchOptions as? [String : AnyObject] {
-            
-            if let notification = options[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
-                
-                if let userInfo = notification.userInfo {
-                    
-                    let foo = userInfo["foo"] as! String
+        // Check for launch Options, this could be from Local/Remote Notifications that was used to Open the app!
+        if let options = launchOptions as? [String : AnyObject]
+        {
+            print("LAUNCH OPTIONs: ", launchOptions)
+            //Manage Local Notifications that was used to Open the app!
+            if let notification = options[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification
+            {
+                if let userInfo = notification.userInfo
+                {
+                    //let foo = userInfo["foo"] as! String
                     print("app launced from local notification")
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) {
-                        
-                        self.showAlert("App Started from Local Notification", alert: "\(notification.alertBody!) foo=\(foo)", badgeCount: 0)
-                    }
+                    //                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) {
+                    //                        self.showAlert("App Started from Local Notification", alert: "\(notification.alertBody!) foo=", badgeCount: 0)
+                    //                    }
                 }
             }
-            
-            
-            // Remote Push Notifications
+            //Manage Remote Notifications that was used to Open the app!
             if let userInfo = options[UIApplicationLaunchOptionsRemoteNotificationKey] as? [NSObject : AnyObject] {
                 
+                print("App Started from Push Notification: ")
                 
-                if let aps = userInfo["aps"] {
+                if let notification = options[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSNotification
+                {
+                    NSQRENotificationManager.sharedInstance.addNotificationToNotificationTab(notification)
+
                     
-                    let badgeCount = aps["badge"] as! Int
+                    let mess = messageReceived(notification)
                     
-                    application.applicationIconBadgeNumber = badgeCount
                     
-                    let alert = aps["alert"] as! String
                     
-                    var message = alert
+                    print("App Started from Push Notification: ", mess)
                     
-                    if let messageId = userInfo["messageId"] {
-                        
-                        message = "\(alert) messageId=\(messageId)"
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(2 * NSEC_PER_SEC)), dispatch_get_main_queue())
+                    {
+                        //self.showAlert("App Started from Push Notification", alert: mess, badgeCount: 1)
+                        let alertController = UIAlertController(title: "App Started from Push Notification", message: mess, preferredStyle: .ActionSheet)
+                        self.getVisibleViewController(self.window?.rootViewController)!.presentViewController(alertController, animated: true, completion: nil)
                     }
-                    
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(2 * NSEC_PER_SEC)), dispatch_get_main_queue()) {
-                        
-                        self.showAlert("App Started from Push Notification", alert: message, badgeCount: badgeCount)
-                        
-                    }
-                    
-                    
                 }
-                
-                
-                
-                
             }
             
         }
         
         //Crashlytics has to be the lastone before return
         Fabric.with([Crashlytics.self])
+        
+        //oppure questo prima del return e return true
+        FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         return true
     }
     
     //facebook: The “OpenURL” method allows your app to open again after the user has validated their login credentials. FBSDKAppEvents.activateApp() method allows Facebook to capture events within your application including Ads clicked on from Facebook to track downloads from Facebook and events like how many times your app was opened.
-    func application(application: UIApplication,
-        openURL url: NSURL,
-        sourceApplication: String?,
-        annotation: AnyObject?) -> Bool {
-            //Fabric.with([Crashlytics.self])
-            return FBSDKApplicationDelegate.sharedInstance().application(
-                application,
-                openURL: url,
-                sourceApplication: sourceApplication,
-                annotation: annotation)
+    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject?) -> Bool
+    {
+        FBSDKApplicationDelegate.sharedInstance().application(application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
+        Fabric.with([Crashlytics.self]) //prima era commentato
+        return FBSDKApplicationDelegate.sharedInstance().application( application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
     }
+
     
     
     // Called if successful registeration for APNS.
@@ -135,17 +138,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         //send this device token to server
         //print(deviceToken)
         
-        print("APNS Success")
+        print("APNS Success", serverId)
         
-        let registration = AGDeviceRegistration(serverURL: NSURL(string: "https://aerogear-insquaretest.rhcloud.com/ag-push/")!)
+        //let registration = AGDeviceRegistration(serverURL: NSURL(string: "https://push-insquareapp.rhcloud.com/ag-push/")!)
+//        var registration: AGDeviceRegistration = AGDeviceRegistration(serverURL: NSURL(string: "push-insquareapp.rhcloud.com/ag-push/")!)
+        let registration = AGDeviceRegistration(serverURL: NSURL(string: "https://push-insquareapp.rhcloud.com/ag-push/")!)
+
+
         
         registration.registerWithClientInfo({ (clientInfo: AGClientDeviceInformation!)  in
             
             // apply the token, to identify this device
             clientInfo.deviceToken = deviceToken
             
-            clientInfo.variantID = "b79a94bc-f440-46c2-b7f6-aa6b6f2e0452"
-            clientInfo.variantSecret = "291509e2-bcaf-40d9-9dbc-8e28331b6118"
+            clientInfo.variantID = "f6c09133-ea75-48ba-9333-c979f93aa95f"
+            clientInfo.variantSecret = "787d37ba-f71e-48fc-a015-2acc040bd91b"
+
             
             // --optional config--
             // set some 'useful' hardware information params
@@ -153,10 +161,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             clientInfo.operatingSystem = currentDevice.systemName
             clientInfo.osVersion = currentDevice.systemVersion
             clientInfo.deviceType = currentDevice.model
+            //alias
             clientInfo.alias = serverId
             
             
-
+            
             
             }, success:
             {
@@ -183,54 +192,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         let serverReadyPushNotificationString = cleanedString.stringByReplacingOccurrencesOfString(" ", withString: "")
         print("didRegisterForRemoteNotificationsWithDeviceToken Server Device Token String = \(serverReadyPushNotificationString)")
         
+        //save token in userdata
+        apnToken = serverReadyPushNotificationString
         
-        request(.PATCH, "\(serverMainUrl)/apnToken?isApple=true&userId=\(serverId)&token=\(serverReadyPushNotificationString)").validate().responseString { response in
-            print("REQUEST PATCH APNS TOKEN: \(response.request)")
-            //print("body patch", response.request?.HTTPBody.)
-            switch response.result
-            {
-            case .Success:
-                print("RESULT PATCH APNS TOKEN: \(response.result)")
-                print("RESULT PATCH APNS TOKEN: \(response.result.value)")
-                
-            case .Failure(let error):
-                print("FALLITO \(error)")
-            }
+        if isLoggedInCoreData()
+        {
+            //se sono loggato ho un id server e posso postare token altrimenti lo posto in seguito
+            NSQREServerRequest.sharedInstance.patchApnTokenOnServer(serverReadyPushNotificationString, serverIdentifier: serverId)
+            
         }
         
-//        // ...register device token ON SERVER
-//        var urlPostSquare = "\(serverMainUrl)/apnToken"
-//        urlPostSquare = urlPostSquare.stringByReplacingOccurrencesOfString(" ", withString: "%20")
-//        
-//        print("REQUEST URL: \(urlPostSquare)")
-//        
-//        var dataForBody:JSON = ["apn": serverReadyPushNotificationString, "userId": serverId]
-//        
-//        request(.PATCH, urlPostSquare, parameters: ["apn": serverReadyPushNotificationString, "userId": serverId]).validate().responseString { response in
-//            print("REQUEST PATCH APNS TOKEN: \(response.request)")
-//            //print("body patch", response.request?.HTTPBody.)
-//            switch response.result
-//            {
-//            case .Success:
-//                print("RESULT PATCH APNS TOKEN: \(response.result)")
-//                print("RESULT PATCH APNS TOKEN: \(response.result.value)")
-//                
-//            case .Failure(let error):
-//                print("FALLITO \(error)")
-//            }
-//        }
-        
-        
     }
-
     
     // Called if unable to register for APNS.
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
         print(error)
     }
     
-    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject: AnyObject], fetchCompletionHandler: (UIBackgroundFetchResult) -> Void) {
         print(userInfo)
+        
+        // When a message is received, send NSNotification, would be handled by registered ViewController
+        let notification:NSNotification = NSNotification(name:"message_received", object:nil, userInfo:userInfo)
+        NSNotificationCenter.defaultCenter().postNotification(notification)
+        print("UPS message received: \(userInfo)")
+        
+        NSQRENotificationManager.sharedInstance.addNotificationToNotificationTab(notification)
+        
+        // Send metrics when app is brpught form backgrpund tp foreground due to push notification
+        AGPushAnalytics.sendMetricsWhenAppAwoken(application.applicationState, userInfo: userInfo)
+        
+        // No additioanl data to fetch
+        fetchCompletionHandler(UIBackgroundFetchResult.NoData)
+        
         
         let notificationReceivedJSON:JSON = JSON (userInfo)
         
@@ -238,36 +232,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         if application.applicationState == .Active {
             
-            let alert = notificationReceivedJSON["aps"]["alert"].string
+            let aps = notificationReceivedJSON["aps"]
+            print("ALERT", notificationReceivedJSON["aps"]["alert"])
+            
+            let alert = notificationReceivedJSON["aps"]["alert"]
             let title = notificationReceivedJSON["aps"]["alert"]["title"].string
             let message = notificationReceivedJSON["aps"]["alert"]["body"].string
-            let badgeCount = notificationReceivedJSON["aps"]["badge"].int
+            var badgeCount = notificationReceivedJSON["aps"]["badge"].int
             
             //usa custom sound qui
             
-            //MESS ID O ALTRI CAMPI
-            //            if let messageId = userInfo["messageId"] {
-            //                message = "\(alert) messageId=\(messageId)"
-            //            }
-
-
-        
-            if alert == nil {print("alert")}
-            if title == nil {print("title")}
-            if message == nil {print("message")}
-            if badgeCount == nil {print("badgeCount")}
-
+            if alert == nil {print("alert: ", alert)}
+            if title == nil {print("title: ", title)}
+            if message == nil {print("message: ", message)}
+            if badgeCount == nil
+            {
+                print("badgeCount: ", badgeCount)
+                badgeCount = 0 // PER EVITARE CRASH SE NON MANDO BADGE COUNT
+            }
+            
             application.applicationIconBadgeNumber = badgeCount!
-        
+            
             print("didReceiveRemoteNotification alert message=\(alert) Badge Count=\(badgeCount)")
             
             // Show Alert to user
-            showAlert("Push Notification In Foreground", alert: message!, badgeCount: badgeCount!)
+            showAlert("Push Notification In Foreground", alert: "\(message!)", badgeCount: badgeCount!)
             
             
         }
         
     }
+
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         
@@ -304,11 +299,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         alertController.addAction(okAction)
         
-//        dispatch_async(dispatch_get_main_queue(), {
-//            let importantAlert: UIAlertController = UIAlertController(title: "Action Sheet", message: "Hello I was presented from appdelegate ;)", preferredStyle: .ActionSheet)
-//            self.window?.rootViewController?.presentViewController(importantAlert, animated: true, completion: nil)
-//
-//        })
+        //        dispatch_async(dispatch_get_main_queue(), {
+        //            let importantAlert: UIAlertController = UIAlertController(title: "Action Sheet", message: "Hello I was presented from appdelegate ;)", preferredStyle: .ActionSheet)
+        //            self.window?.rootViewController?.presentViewController(importantAlert, animated: true, completion: nil)
+        //
+        //        })
         
         getVisibleViewController(self.window?.rootViewController)!.presentViewController(alertController, animated: true, completion: nil)
         
@@ -352,19 +347,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        print("GOING IN BACKGROUND")
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        
+        print("COMING BACK FROME BACKGROUND")
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        print("I'M BACK FROME BACKGROUND")
+        FBSDKAppEvents.activateApp()
+
+
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
+        print("APP WILL TERMINATE")
         self.saveContext()
     }
 

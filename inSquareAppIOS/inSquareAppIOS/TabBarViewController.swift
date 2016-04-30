@@ -33,13 +33,16 @@ class TabBarViewController: UITabBarController
         mapTab.selectedImage = insquareMapTabHighlightImage
         //make empty when unselected (solo contorno) e full quando selected
 
+
         
         //profileTab
         let profileTab = tabItems[0] as UITabBarItem
         profileTab.title = "Profile"
         
+        
         //recents
         let recTab = tabItems[1] as UITabBarItem
+        //recTab.badgeValue = "\(recBadge)"
 
         //appearance
         UITabBar.appearance().tintColor = inSquareUiColorQRed
@@ -105,7 +108,7 @@ class TabBarViewController: UITabBarController
     func showLoginIfNeededAnimated(animated : Bool, completion : (() -> Void)?) {
         
         // Show login if user is not logged-in, for example
-        if !loggedIn {
+        if !isLoggedInCoreData() && (serverId == "") {
         
             let viewController:LoginViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("LoginVcID") as! LoginViewController
             self.presentViewController(viewController, animated: false, completion: nil)
@@ -113,4 +116,6 @@ class TabBarViewController: UITabBarController
                     }
     }
 
+    
+    
 }//END TBVC

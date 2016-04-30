@@ -14,21 +14,9 @@ import CoreData
 import Crashlytics
 
 //serve in modo che se torno a loginVC da gia loggato non fa in automatico segue a home
-var alreadyLoggedIn = false
 class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
 {
     @IBOutlet weak var enter: UIButton!
-
-    @IBAction func buttPress(sender: AnyObject)
-    {
-        var myTabBar = self.storyboard?.instantiateViewControllerWithIdentifier("tabBarController") as! UITabBarController
-        
-       // var appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        
-        UIApplication.sharedApplication().delegate!.window?!.rootViewController = myTabBar
-    }
-    
-    
     //viewDidLoad
     override func viewDidLoad()
     {
@@ -36,160 +24,46 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         //print(clearUsersSavedInCoreData())
         print(howManyUserInCoreData())
         
+        
+        self.enter.enabled = (FBSDKAccessToken.currentAccessToken() != nil)
+        self.enter.hidden = (FBSDKAccessToken.currentAccessToken() == nil)
+        
+        
         if isLoggedInCoreData()
         {
             //print("\(isLoggedInCoreData()) vs \(howManyUserInCoreData())")
             
-            loggedIn = true
 
-            //recupera dati da CoreData cosi quando viewne lanciato viewWill appear fa segue to home
-            let appDel: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            let context: NSManagedObjectContext = appDel.managedObjectContext
-            
-            let request = NSFetchRequest(entityName: "Users")
-            
-            request.returnsObjectsAsFaults = false
-            
-            do
-            {
-                let results = try context.executeFetchRequest(request)
-                print("USERS (has to be 0 or 1): \(results.count)")
-                print("USERS (details): \(results)")
-
-                if results.count == 1
-                {
-                    for result in results as! [NSManagedObject]
-                    {
-                        //setting up datas
-                        if let usernameCD = result.valueForKey("username") as? String
-                        {
-                            print(usernameCD)
-                            username = usernameCD
-                        }
-                        if let serverIdCD = result.valueForKey("serverId") as? String
-                        {
-                            print(serverIdCD)
-                            serverId = serverIdCD
-                        }
-                        if let fbIdCD = result.valueForKey("fbId") as? String
-                        {
-                            print(fbIdCD)
-                            fbId = fbIdCD
-                        }
-                        if let emailCD = result.valueForKey("email") as? String
-                        {
-                            print(emailCD)
-                            email = emailCD
-                        }
-                        if let accessTokenCD = result.valueForKey("accessToken") as? String
-                        {
-                            print(accessTokenCD)
-                            accessToken = accessTokenCD
-                        }
-                        if let userAvatarUrlCD = result.valueForKey("userAvatarUrl") as? String
-                        {
-                            print("AVATAR URL \(userAvatarUrlCD)")
-                            userAvatarUrl = userAvatarUrlCD
-                            let url = NSURL(string: "\(userAvatarUrl)")
-                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                            if UIImage(data: data!) != nil
-                            {
-                                userAvatar = UIImage(data: data!)!
-                            }
-                            else
-                            {
-                                print("ERROR: personal FB img URL not working")
-                            }
-                            if userAvatarUrl != ""
-                            {
-                                if let url = NSURL(string: userAvatarUrl)
-                                {
-                                    let data = NSData(contentsOfURL: url) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                                    if UIImage(data: data!) != nil
-                                    {
-                                        userAvatar = UIImage(data: data!)!
-                                    }
-                                    else
-                                    {
-                                        print("ERROR: personal FB img URL not working")
-                                    }
-                                }
-                                else
-                                {
-                                    print("NO IMG URL SOMETHING WENT WRONG")
-                                }
-                            }
-                        }
-                        print("aaaaaaaaaa4")
-                    } //for result in result
-                }// if res.count = 1
-            }//do
-            catch
-            {
-                print("Fetch Failed")
-            }
+                //fetchDataFromCoreData()
         }
 
         self.navigationController?.setNavigationBarHidden(true, animated: true)
-
-        if !loggedIn
-        {
-            enter.hidden = true
-            enter.enabled = false
-        }
-        else if loggedIn
-        {
-            enter.hidden = false
-            enter.enabled = true
-        }
         
         //FB LOGIN
         if (FBSDKAccessToken.currentAccessToken() == nil)
         {
-            if !loggedIn { print("Not logged in...")}
+            print("Not logged in...")
         }
         else
         {
             print("Logged in...\(FBSDKAccessToken.currentAccessToken())")
         }
         
-        if !loggedIn
-        {
-            print("aaaaaaaaaa1")
+        //ADD LOGIN/LOGOUT BUTTON TO LOGINVC
+        var loginButton = FBSDKLoginButton()
+        loginButton.readPermissions = ["public_profile", "email", "user_friends"]
+        loginButton.center = self.view.center
+        loginButton.delegate = self
+        self.view.addSubview(loginButton)
 
-            var loginButton = FBSDKLoginButton()
-            loginButton.readPermissions = ["public_profile", "email", "user_friends"]
-            loginButton.center = self.view.center
-            loginButton.delegate = self
-            self.view.addSubview(loginButton)
-        }
-        //end FB
-        
-//        //crashalitics
-//        let button = UIButton(type: UIButtonType.RoundedRect)
-//        button.frame = CGRectMake(20, 50, 100, 30)
-//        button.setTitle("Crash", forState: UIControlState.Normal)
-//        button.addTarget(self, action: "crashButtonTapped:", forControlEvents: UIControlEvents.TouchUpInside)
-//        view.addSubview(button)
-//        //END CRASHALITICS
-        
     }
     //END viewDidLoad
 
     override func viewWillAppear(animated: Bool)
     {
         super.viewWillAppear(animated)
-        
-        if (loggedIn == true) && (serverId != "")
-        {
-            print("aaaaaaaaaa2")
-            dispatch_async(dispatch_get_main_queue())
-                {
-                    self.performSegueWithIdentifier("tableView", sender: self)
-            }
-        }
-        
-        
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+
         var name = "LoginViewController"
         
         // The UA-XXXXX-Y tracker ID is loaded automatically from the
@@ -204,10 +78,8 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         tracker.send(builder.build() as [NSObject : AnyObject])
         // [END screen_view_hit_swift]
 
-        
         print("will appear")
 
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
 
     }
     
@@ -215,39 +87,23 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
     {
         super.viewDidAppear(animated)
         
-        print("appear")
+        print("did appear")
         
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        if loggedIn
-        {
-            enter.hidden = false
-            enter.enabled = true
-
-
-            if !alreadyLoggedIn
-            {
-                Answers.logLoginWithMethod("Facebook",
-                    success: true,
-                    customAttributes: [:])
-                alreadyLoggedIn = true
                 
-                dispatch_async(dispatch_get_main_queue())
-                    {
-                        self.performSegueWithIdentifier("tableView", sender: self)
-                }
-            }
-        }
+//                dispatch_async(dispatch_get_main_queue())
+//                    {
+//                        self.performSegueWithIdentifier("tableView", sender: self)
+//                }
+        
     }//END ViewDidAppear
     
     override func viewWillDisappear(animated: Bool)
     {
         super.viewWillDisappear(animated)
+
         
-        if loggedIn
-        {
-            updateFavouriteSquares()
-        }
     }
     
     //didRecieveMemoryWarning
@@ -268,7 +124,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
             if FBSDKAccessToken.currentAccessToken() != nil
             {
                 print("Login complete.\(FBSDKAccessToken.currentAccessToken())")
-                loggedIn = true
 
                 request(.POST, "\(serverMainUrl)/auth/facebook/token", parameters:["access_token": FBSDKAccessToken.currentAccessToken().tokenString]).responseJSON { response in
                     if let value = response.result.value
@@ -312,6 +167,11 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
                                 
                                 // TODO: Move this to where you establish a user session
                                 self.logUser() //setupcrashlytics
+                                //era in viewdidappear credo
+                                Answers.logLoginWithMethod("Facebook", success: true, customAttributes: [:])
+                                self.enter.enabled = (FBSDKAccessToken.currentAccessToken() != nil)
+                                self.enter.hidden = (FBSDKAccessToken.currentAccessToken() == nil)
+                                self.goToMap()
                             }
                             else
                             {
@@ -340,9 +200,10 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         var tracker = GAI.sharedInstance().defaultTracker
         tracker.send(GAIDictionaryBuilder.createEventWithCategory("Log-in", action: "Loged-out", label: "User \(serverId) logged in", value: nil).build() as [NSObject : AnyObject])
         //clear serverid e clear coredata persistency
-        enter.enabled = false
-        enter.hidden = true
-        loggedIn = false
+        clearUsersSavedInCoreData()
+        
+        self.enter.enabled = (FBSDKAccessToken.currentAccessToken() != nil)
+        self.enter.hidden = (FBSDKAccessToken.currentAccessToken() == nil)
     }
     
 
@@ -376,6 +237,40 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
     }
     
     
+    func goToMap()
+    {
+        print("let's go to map")
+        var myTabBar = self.storyboard?.instantiateViewControllerWithIdentifier("tabBarController") as! UITabBarController
+        UIApplication.sharedApplication().delegate!.window?!.rootViewController = myTabBar
+        
+        //                dispatch_async(dispatch_get_main_queue())
+        //                    {
+        //                        self.performSegueWithIdentifier("tableView", sender: self)
+        //                }
+    }
     
+    //customizza er prendere altri dati
+    func returnUserData()
+    {
+        let graphRequest : FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "me", parameters: nil)
+        graphRequest.startWithCompletionHandler({ (connection, result, error) -> Void in
+            
+            if ((error) != nil)
+            {
+                // Process error
+                print("Error: \(error)")
+            }
+            else
+            {
+                print("fetched user: \(result)")
+                let userName : NSString = result.valueForKey("name") as! NSString
+                print("User Name is: \(userName)")
+                let userEmail : NSString = result.valueForKey("email") as! NSString
+                print("User Email is: \(userEmail)")
+            }
+        })
+    }
+
+ 
     
 }//ViewController

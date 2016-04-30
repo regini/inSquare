@@ -13,6 +13,10 @@
 		1F13D6081CC9167700C86727 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F13D6051CC9167700C86727 /* GoogleService-Info.plist */; };
 		1F1825A11CCA76F9006BA3F7 /* AlamofireExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */; };
 		1F1825A31CCA7E30006BA3F7 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */; };
+		1F2F97D01CD4BE2500026E8C /* NSQRENotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2F97CF1CD4BE2500026E8C /* NSQRENotificationManager.swift */; };
+		1F2F97D21CD4BF2800026E8C /* NSQRESquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2F97D11CD4BF2800026E8C /* NSQRESquare.swift */; };
+		1F40B1861CD01EAA003230FF /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F40B1851CD01EAA003230FF /* AppState.swift */; };
+		1F40B1881CD03387003230FF /* NSQREServerRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F40B1871CD03387003230FF /* NSQREServerRequest.swift */; };
 		1FAA0E921C7497630038785C /* mapPin-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FAA0E911C7497630038785C /* mapPin-01.png */; };
 		1FD8C7591C6A2F6C008A0094 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD8C7581C6A2F6C008A0094 /* UserData.swift */; };
 		1FED8E6C1CCC030B00D9CEAF /* Singletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED8E6B1CCC030B00D9CEAF /* Singletons.swift */; };
@@ -179,6 +183,10 @@
 		1F13D6051CC9167700C86727 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtension.swift; sourceTree = "<group>"; };
 		1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		1F2F97CF1CD4BE2500026E8C /* NSQRENotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSQRENotificationManager.swift; sourceTree = "<group>"; };
+		1F2F97D11CD4BF2800026E8C /* NSQRESquare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSQRESquare.swift; sourceTree = "<group>"; };
+		1F40B1851CD01EAA003230FF /* AppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		1F40B1871CD03387003230FF /* NSQREServerRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSQREServerRequest.swift; sourceTree = "<group>"; };
 		1FAA0E911C7497630038785C /* mapPin-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPin-01.png"; sourceTree = "<group>"; };
 		1FD8C7581C6A2F6C008A0094 /* UserData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		1FED8E6B1CCC030B00D9CEAF /* Singletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Singletons.swift; sourceTree = "<group>"; };
@@ -391,6 +399,8 @@
 				737EE7F81C56F4F400AE8CCF /* LoginViewController.swift */,
 				7306F8F21C859C4E000A5D3A /* TabBarViewController.swift */,
 				1F1825A21CCA7E30006BA3F7 /* NotificationManager.swift */,
+				1F2F97CF1CD4BE2500026E8C /* NSQRENotificationManager.swift */,
+				1F2F97D11CD4BF2800026E8C /* NSQRESquare.swift */,
 				1F1825A01CCA76F9006BA3F7 /* AlamofireExtension.swift */,
 				734063F61C8B9C35009CCDFF /* ProfileViewController.swift */,
 				738A72031C8F8AF40032C9D2 /* ProfileTableViewCell.swift */,
@@ -403,6 +413,8 @@
 				1FD8C7581C6A2F6C008A0094 /* UserData.swift */,
 				73CCD0AD1C5C15CF00A25F08 /* Methods.swift */,
 				738A12AA1C504EDF003BD441 /* AppDelegate.swift */,
+				1F40B1851CD01EAA003230FF /* AppState.swift */,
+				1F40B1871CD03387003230FF /* NSQREServerRequest.swift */,
 				739040231C90532700F71973 /* CoreDataFunctionality.swift */,
 				73F6579C1C87B226008E4617 /* NavigationToJSQViewController.swift */,
 				737865B61C82106A00EB58F1 /* SquareMessViewController.swift */,
@@ -724,6 +736,7 @@
 				738A132A1C504F01003BD441 /* SocketTypes.swift in Sources */,
 				738A130F1C504F01003BD441 /* SocketEventHandler.swift in Sources */,
 				738A13091C504F01003BD441 /* SocketEngineSpec.swift in Sources */,
+				1F2F97D21CD4BF2800026E8C /* NSQRESquare.swift in Sources */,
 				738A13121C504F01003BD441 /* SocketFixUTF8.swift in Sources */,
 				738A72041C8F8AF40032C9D2 /* ProfileTableViewCell.swift in Sources */,
 				1F1825A11CCA76F9006BA3F7 /* AlamofireExtension.swift in Sources */,
@@ -737,12 +750,14 @@
 				737865B71C82106A00EB58F1 /* SquareMessViewController.swift in Sources */,
 				1FD8C7591C6A2F6C008A0094 /* UserData.swift in Sources */,
 				738A13271C504F01003BD441 /* SocketStringReader.swift in Sources */,
+				1F40B1861CD01EAA003230FF /* AppState.swift in Sources */,
 				738A12FD1C504F01003BD441 /* SocketEngine.swift in Sources */,
 				738A12AB1C504EDF003BD441 /* AppDelegate.swift in Sources */,
 				73F6579D1C87B226008E4617 /* NavigationToJSQViewController.swift in Sources */,
 				1FED8E6C1CCC030B00D9CEAF /* Singletons.swift in Sources */,
 				738A12F11C504F01003BD441 /* SocketAckEmitter.swift in Sources */,
 				73E149301C87883500A4119E /* FavoriteSquareViewController.swift in Sources */,
+				1F2F97D01CD4BE2500026E8C /* NSQRENotificationManager.swift in Sources */,
 				738A13031C504F01003BD441 /* SocketEnginePacketType.swift in Sources */,
 				73CCD0AE1C5C15D000A25F08 /* Methods.swift in Sources */,
 				7306F8F31C859C4E000A5D3A /* TabBarViewController.swift in Sources */,
@@ -750,6 +765,7 @@
 				738A131E1C504F01003BD441 /* SocketLogger.swift in Sources */,
 				7358F7C21C6F3FCD0074E20F /* LGSimpleChat.swift in Sources */,
 				738A13061C504F01003BD441 /* SocketEnginePollable.swift in Sources */,
+				1F40B1881CD03387003230FF /* NSQREServerRequest.swift in Sources */,
 				739040281C90A70C00F71973 /* MoreViewController.swift in Sources */,
 				738A13151C504F01003BD441 /* SocketIOClient.swift in Sources */,
 				734063F71C8B9C35009CCDFF /* ProfileViewController.swift in Sources */,
