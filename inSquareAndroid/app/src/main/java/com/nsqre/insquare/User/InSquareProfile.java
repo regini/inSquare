@@ -216,6 +216,10 @@ public class InSquareProfile {
         editor.commit();
     }
 
+    /**
+     * Return an available username. It chooses from the internal one, Google's or Facebook's
+     * @return the username
+     */
     public static String getUsername()
     {
         // TODO dovrebbe return un HashMap
@@ -252,15 +256,26 @@ public class InSquareProfile {
         return pictureUrl;
     }
 
+    /**
+     * Checks if there are userID, username and email available
+     * @return true if they're available
+     */
     public static boolean hasLoginData() {
         return userId!= null && username!= null && email != null;
     }
 
+    /**
+     * Checks if the Facebook Access Token is available
+     * @return true if it is available
+     */
     public static boolean isFacebookConnected()
     {
         return facebookToken != null;
     }
 
+    /**
+     * Removes Facebook's saved credentials
+     */
     public static void clearFacebookCredentials(Context c)
     {
         facebookName = null;
@@ -271,11 +286,18 @@ public class InSquareProfile {
         save(c);
     }
 
+    /**
+     * Checks if the Google Access Token is available
+     * @return true if it is available
+     */
     public static boolean isGoogleConnected()
     {
         return googleToken != null;
     }
 
+    /**
+     * Removes Google's saved credentials
+     */
     public static void clearGoogleCredentials(Context c)
     {
         googleName = null;
@@ -286,6 +308,11 @@ public class InSquareProfile {
         save(c);
     }
 
+    /**
+     * Clears all the credentials saved on the disk
+     * @see #clearFacebookCredentials(Context)
+     * @see #clearGoogleCredentials(Context)
+     */
     public static void clearProfileCredentials(final Context c)
     {
         VolleyManager.getInstance(c).patchGCMToken("dummy", new VolleyManager.VolleyResponseListener() {
@@ -301,11 +328,9 @@ public class InSquareProfile {
 
             @Override
             public void responsePATCH(Object object) {
-                if(object == null)
-                {
+                if (object == null) {
                     Log.d(TAG, "responsePOST: my token wasn't posted correctly!");
-                }else
-                {
+                } else {
                     Log.d(TAG, "responsePOST: everything is fine!");
                     userId = null;
                     username = null;
@@ -315,7 +340,6 @@ public class InSquareProfile {
                     clearFacebookCredentials(c);
                     clearGoogleCredentials(c);
                     save(c);
-
 
 
                     Intent intent = new Intent(c, LoginActivity.class);
@@ -377,7 +401,9 @@ public class InSquareProfile {
     }
 
     /**
-     * TODO
+     * Adds a message to the list of outgoing messages
+     * @param mSquareId the square of the message
+     * @param message the Message itself
      */
     public static void addOutgoing(String mSquareId, Message message, Context c) {
         if (outgoingMessages.get(mSquareId) == null) {
@@ -389,7 +415,9 @@ public class InSquareProfile {
     }
 
     /**
-     * TODO
+     * Removes a message from the list of outgoing messages
+     * @param mSquareId the square of the message
+     * @param m the Message itself
      */
     public static void removeOutgoing(String mSquareId, Message m, Context c) {
         List<Message> messages = new ArrayList<>(outgoingMessages.get(mSquareId));
@@ -592,6 +620,10 @@ public class InSquareProfile {
         return outgoingMessages;
     }
 
+    /**
+     * Sets the owned squares list, notifying the listeners
+     * @param ownedSquaresList the list to set
+     */
     public static void setOwnedSquaresList(ArrayList<Square> ownedSquaresList) {
         InSquareProfile.ownedSquaresList = ownedSquaresList;
         // Notifica gli ascoltatori
@@ -602,6 +634,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Sets the favourite squares list, notifying the listeners
+     * @param favouriteSquaresList the list to set
+     */
     public static void setFavouriteSquaresList(ArrayList<Square> favouriteSquaresList) {
         InSquareProfile.favouriteSquaresList = favouriteSquaresList;
         // Notifica gli ascoltatori
@@ -612,6 +648,10 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Sets the recent squares list, notifying the listeners
+     * @param recentSquaresList the list to set
+     */
     public static void setRecentSquaresList(ArrayList<Square> recentSquaresList) {
         InSquareProfile.recentSquaresList = recentSquaresList;
         // Notifica gli ascoltatori
@@ -622,6 +662,11 @@ public class InSquareProfile {
         }
     }
 
+    /**
+     * Saves an image in the local storage
+     * @param bitmap the image to save
+     * @return the path of the saved image
+     */
     public static String saveToInternalStorage(Context currentContext, Bitmap bitmap)
     {
         ContextWrapper cw = new ContextWrapper(currentContext);
@@ -647,6 +692,10 @@ public class InSquareProfile {
         return directory.getAbsolutePath();
     }
 
+    /**
+     * Loads an image from the local storage
+     * @return the Bitmap object of the image
+     */
     public static Bitmap loadProfileImageFromStorage(Context context)
     {
         Bitmap b = null;
@@ -664,6 +713,12 @@ public class InSquareProfile {
         return b;
     }
 
+    /**
+     * Starts the download of owned, favourites and recent squares
+     * @see #downloadOwnedSquares()
+     * @see #downloadFavoriteSquares()
+     * @see #downloadRecentSquares()
+     */
     public static void downloadAllSquares()
     {
         Log.d(TAG, "downloadAllSquares: working on it!");
@@ -672,6 +727,9 @@ public class InSquareProfile {
         downloadRecentSquares();
     }
 
+    /**
+     * Makes a GET request to the server to download the recent squares
+     */
     public static void downloadRecentSquares()
     {
         VolleyManager.getInstance().getRecentSquares(
@@ -704,6 +762,9 @@ public class InSquareProfile {
         );
     }
 
+    /**
+     * Makes a GET request to the server to download the favourite squares
+     */
     public static void downloadFavoriteSquares()
     {
         VolleyManager.getInstance().getFavoriteSquares(InSquareProfile.getUserId(),
@@ -735,6 +796,9 @@ public class InSquareProfile {
                 });
     }
 
+    /**
+     * Makes a GET request to the server to download the owned squares
+     */
     public static void downloadOwnedSquares()
     {
         VolleyManager.getInstance().getOwnedSquares("true", InSquareProfile.getUserId(),
