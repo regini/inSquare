@@ -396,7 +396,7 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void responsePOST(Object object) {
                         if (object == null) {
-                            Toast.makeText(LoginActivity.this, getString(R.string.login_error_token) + serviceName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, getString(R.string.login_token_error) + serviceName, Toast.LENGTH_SHORT).show();
                         } else {
                             String serverResponse = (String) object;
                             json2login(serverResponse);
