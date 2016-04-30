@@ -398,7 +398,7 @@ public class SquareCreateFragment extends Fragment {
         if(!validLink)
         {
             ((TextInputLayout) facebookUrl.getParent()).setErrorEnabled(true);
-            ((TextInputLayout) facebookUrl.getParent()).setError("Il nome non può essere vuoto");
+            ((TextInputLayout) facebookUrl.getParent()).setError(father.getString(R.string.create_square_empty_name_error));
         }
 
         return validLink;
@@ -412,7 +412,7 @@ public class SquareCreateFragment extends Fragment {
         boolean validName = !newSquareName.getText().toString().trim().isEmpty();
         if(validName) {
             ((TextInputLayout) newSquareName.getParent()).setErrorEnabled(true);
-            ((TextInputLayout) newSquareName.getParent()).setError("Il nome non può essere vuoto");
+            ((TextInputLayout) newSquareName.getParent()).setError(father.getString(R.string.create_square_empty_name_error));
         }
         return validName;
     }
@@ -426,7 +426,7 @@ public class SquareCreateFragment extends Fragment {
         LoginManager.getInstance().registerCallback(fbCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     View main = v.findViewById(android.R.id.content);
-                    Toast errorMessage = Toast.makeText(getContext(), "Non posso collegare Facebook senza login!", Toast.LENGTH_LONG);
+                    Toast errorMessage = Toast.makeText(getContext(), R.string.create_square_facebook_login, Toast.LENGTH_LONG);
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         requestFacebookUserData();
@@ -453,7 +453,6 @@ public class SquareCreateFragment extends Fragment {
     private void requestFacebookUserData()
     {
         final SquareType requestType = father.squareType;
-        Log.d(TAG, "requestFacebookUserData: Sto richiedendo le informazioni da Facebook");
         // Creazione di una nuova richiesta al grafo di Facebook per le informazioni necessarie
         GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
@@ -481,7 +480,7 @@ public class SquareCreateFragment extends Fragment {
                             @Override
                             public void responsePATCH(Object object) {
                                 if (object == null) {
-                                    Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), SquareCreateFragment.this.getContext().getString(R.string.create_square_token_fail) + serviceName, Toast.LENGTH_SHORT).show();
                                 } else {
                                     String serverResponse = (String) object;
                                     try {
@@ -531,7 +530,7 @@ public class SquareCreateFragment extends Fragment {
         String pageId = extractPageName(url);
         if(pageId.isEmpty())
         {
-            Toast.makeText(getContext(), "Il link inserito non e' valido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.square_create_invalid_link, Toast.LENGTH_SHORT).show();
             return;
         }
         Log.d(TAG, "requestFacebookPageDetail: trying to get the page details of " + pageId);
@@ -550,7 +549,7 @@ public class SquareCreateFragment extends Fragment {
 
                         if(object == null)
                         {
-                            Toast.makeText(getContext(), "Facebook ha fallito...riprova?", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.square_create_facebook_fail, Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -662,7 +661,7 @@ public class SquareCreateFragment extends Fragment {
         String eventId = extractEventId(url);
         if(eventId.isEmpty())
         {
-            Toast.makeText(getContext(), "L'Id non e' valido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.square_create_invalid_id, Toast.LENGTH_SHORT).show();
         }
         Log.d(TAG, "requestFacebookEventDetail: trying to obtain details of " + eventId);
         GraphRequest request = new GraphRequest(
@@ -679,7 +678,7 @@ public class SquareCreateFragment extends Fragment {
 
                         if(object == null)
                         {
-                            Toast.makeText(getContext(), "Facebook ha fallito...riprova?", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.square_create_facebook_fail, Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -730,10 +729,8 @@ public class SquareCreateFragment extends Fragment {
                                     endDate = serverEndFormat.parse(jsonTime);
                                     expireString = serverEndFormat.format(endDate);
 
-                                    Log.d(TAG, "Parsed end_time for expireString: " + expireString);
-
-                                    String startIncipit = startTime.substring(0, startTime.indexOf(" at "));
-                                    String endIncipit = endTime.substring(0,endTime.indexOf(" at "));
+                                    String startIncipit = startTime.substring(0, startTime.indexOf(father.getString(R.string.square_create_at)));
+                                    String endIncipit = endTime.substring(0,endTime.indexOf(father.getString(R.string.square_create_at)));
 
                                     if(startIncipit.equals(endIncipit))
                                     {
@@ -790,7 +787,7 @@ public class SquareCreateFragment extends Fragment {
         if(url.isEmpty() || !url.toLowerCase().contains("facebook"))
         {
             ((TextInputLayout)facebookUrl.getParent()).setErrorEnabled(true);
-            ((TextInputLayout)facebookUrl.getParent()).setError("Inserisci un link valido!");
+            ((TextInputLayout)facebookUrl.getParent()).setError(getContext().getString(R.string.square_create_invalid_link));
             return null;
         }
         return url;

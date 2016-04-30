@@ -486,7 +486,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     chooseFileIntent();
                 } else {
                     // Permission Denied
-                    Toast.makeText(this, "Some Permission is Denied", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, R.string.chat_permission_fail, Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -512,7 +512,7 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                     @Override
                     public void responseGET(Object object) {
                         if (object == null) {
-                            Toast.makeText(ChatActivity.this, "Non sono riuscito ad ottenere i messaggi recenti!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatActivity.this, R.string.chat_recent_msg_fail, Toast.LENGTH_SHORT).show();
                         } else {
 
                             ArrayList<Message> messages = (ArrayList<Message>) object;
@@ -678,14 +678,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         if(mUsername == null) 
         {
-            Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
         String message = chatEditText.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
-            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
-
             return;
         }
 
@@ -715,13 +712,11 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
 
         if(mUsername == null)
         {
-            Log.d(TAG, "attemptSend: there's no Username specified");
             return;
         }
         String message = fotoURL;
         if (TextUtils.isEmpty(message)) {
             chatEditText.requestFocus();
-            Log.d(TAG, "attemptSend: the message you're trying to send is empty");
 
             return;
         }
@@ -767,7 +762,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(TAG, "run: First arg: " + args[0]);
                     JSONObject data = (JSONObject) args[0];
                     String username = "";
                     String message = "";
@@ -824,7 +818,6 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                         date = data.getString("date");
                         userSpot = data.getBoolean("userSpot");
 
-                        Log.d(TAG, userId + " - " + username + " IN: " + room + " saying: " + message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -919,9 +912,9 @@ public class ChatActivity extends AppCompatActivity implements MessageAdapter.Ch
                                     @Override
                                     public void responsePOST(Object object) {
                                         if (object == null) {
-                                            Toast.makeText(ChatActivity.this, "Non sono riuscito ad inviare il feedback", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChatActivity.this, R.string.chat_feedback_fail, Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(ChatActivity.this, "Feedback inviato con successo!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChatActivity.this, R.string.chat_feedback_success, Toast.LENGTH_SHORT).show();
                                             d.dismiss();
                                         }
                                     }

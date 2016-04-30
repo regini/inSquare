@@ -107,7 +107,7 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
         String squareName = listItem.getName();
         castHolder.squareName.setText(squareName);
-        castHolder.squareActivity.setText(listItem.formatTime());
+        castHolder.squareActivity.setText(context.getString(R.string.square_last_message_incipit) + listItem.formatTime());
 
         setupLeftSection(castHolder, listItem.getInitials());
 
@@ -205,8 +205,8 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(context);
 
-        builder.setTitle("Attenzione!")
-                .setMessage("Tutti i messaggi associati a " + listItem.getName().toString().trim() + " andranno perduti.");
+        builder.setTitle(context.getString(R.string.dialog_card_remove_title))
+                .setMessage(context.getString(R.string.dialog_card_remove_msg_p1) + listItem.getName().toString().trim() + context.getString(R.string.dialog_card_remove_msg_p2));
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -235,18 +235,18 @@ public class RecyclerSquareAdapter extends RecyclerView.Adapter {
 
                                 if (response) {
                                     Log.d(TAG, "responseDELETE: sono riuscito a eliminare correttamente!");
-                                    Snackbar.make(madre.coordinatorLayout, "Cancellazione avvenuta con successo!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, R.string.dialog_card_delete_success, Snackbar.LENGTH_SHORT).show();
                                     squaresArrayList.remove(position);
                                     notifyItemRemoved(position);
                                 } else {
                                     Log.d(TAG, "responseDELETE: c'e' stato un problema con la cancellazione");
-                                    Snackbar.make(madre.coordinatorLayout, "C'e' stato un problema con la cancellazione!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(madre.coordinatorLayout, R.string.dialog_card_delete_error, Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     }
                 });
-        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(context.getString(R.string.dialog_card_delete_btn_cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
             }

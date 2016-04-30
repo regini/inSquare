@@ -220,9 +220,9 @@ public class SettingsFragment extends Fragment implements
                                             @Override
                                             public void responsePOST(Object object) {
                                                 if (object == null) {
-                                                    Toast.makeText(getContext(), "Non sono riuscito ad inviare il feedback", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), R.string.settings_feedback_fail, Toast.LENGTH_SHORT).show();
                                                 } else {
-                                                    Toast.makeText(getContext(), "Feedback inviato con successo!", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), R.string.settings_feedback_success, Toast.LENGTH_SHORT).show();
                                                     d.dismiss();
                                                 }
                                             }
@@ -304,7 +304,7 @@ public class SettingsFragment extends Fragment implements
 
         if(InSquareProfile.isFacebookConnected())
         {
-            facebookConnectButton.setText("Disconnetti da " + InSquareProfile.facebookName);
+            facebookConnectButton.setText(c.getString(R.string.settings_disconnect_from) + InSquareProfile.facebookName);
 
             facebookConnectButton.setOnClickListener(
                     new View.OnClickListener() {
@@ -360,7 +360,7 @@ public class SettingsFragment extends Fragment implements
         googleConnectButton = (TextView) layout.findViewById(R.id.settings_google_connect);
         if(InSquareProfile.isGoogleConnected())
         {
-            googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
+            googleConnectButton.setText(c.getString(R.string.settings_disconnect_from) + InSquareProfile.googleName);
 
             googleConnectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -386,7 +386,7 @@ public class SettingsFragment extends Fragment implements
                 }
             });
         } else {
-            googleConnectButton.setText("Connetti con Google+");
+            googleConnectButton.setText(R.string.settings_google_connect);
 
             googleConnectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -406,8 +406,8 @@ public class SettingsFragment extends Fragment implements
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(c);
 
-        builder.setTitle("Attenzione!")
-                .setMessage("Sei sicuro di volerti disconnettere?");
+        builder.setTitle(c.getString(R.string.settings_dialog_logout_title))
+                .setMessage(c.getString(R.string.settings_dialog_logout_msg));
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -531,7 +531,7 @@ public class SettingsFragment extends Fragment implements
                                 profile.googleName = jsonObject.getString("googleName");
                                 profile.googleId = jsonObject.getString("googleId");
                                 profile.save(getActivity().getApplicationContext());
-                                googleConnectButton.setText("Disconnetti da " + InSquareProfile.googleName);
+                                googleConnectButton.setText(SettingsFragment.this.getContext().getString(R.string.settings_disconnect_from) + InSquareProfile.googleName);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -566,7 +566,7 @@ public class SettingsFragment extends Fragment implements
                     @Override
                     public void responsePATCH(Object object) {
                         if (object == null) {
-                            Toast.makeText(getActivity(), "Qualcosa non ha funzionato con il token di " + serviceName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), SettingsFragment.this.getContext().getString(R.string.settings_facebook_token_fail) + serviceName, Toast.LENGTH_SHORT).show();
                         } else {
                             String serverResponse = (String) object;
                             try {
@@ -576,7 +576,7 @@ public class SettingsFragment extends Fragment implements
                                 profile.facebookName = jsonObject.getString("facebookName");
                                 profile.facebookId = jsonObject.getString("facebookId");
                                 profile.save(getActivity().getApplicationContext());
-                                facebookConnectButton.setText("Disconnetti da " + InSquareProfile.facebookName);
+                                facebookConnectButton.setText(SettingsFragment.this.getContext().getString(R.string.settings_disconnect_from) + InSquareProfile.facebookName);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

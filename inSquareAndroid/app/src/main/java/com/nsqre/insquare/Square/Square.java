@@ -318,7 +318,7 @@ public class Square implements Parcelable, Comparable<Square> {
 
         timetoShow += df.format(msgCal.getTime());
 
-        return "Ultimo messaggio: " + timetoShow;
+        return timetoShow;
     }
 
     /**

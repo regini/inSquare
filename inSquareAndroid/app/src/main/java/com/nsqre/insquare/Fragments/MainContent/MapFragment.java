@@ -246,7 +246,7 @@ public class MapFragment extends Fragment
                     if(squareHashMap.get(m).getId().equals(intent.getStringExtra("squareId"))) {
                         squareHashMap.remove(m);
                         m.remove();
-                            Snackbar.make(mapCoordinatorLayout, "La square è stata eliminata", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_delete_success, Snackbar.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -266,7 +266,7 @@ public class MapFragment extends Fragment
                     && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) )
             {
 
-                Snackbar.make(mapCoordinatorLayout, "Mi hai negato i permessi di locazione!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_no_location_permissions, Snackbar.LENGTH_LONG).show();
             }else {
                 if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED) {
                     permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -343,7 +343,7 @@ public class MapFragment extends Fragment
                     mCurrentLocation = location;
                 }else
                 {
-                    Snackbar.make(mapCoordinatorLayout, "Non ho modo di prendere la locazione corrente!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_no_location, Snackbar.LENGTH_LONG).show();
                 }
 
             }else if(locationManager.isProviderEnabled(NETWORK))
@@ -362,12 +362,12 @@ public class MapFragment extends Fragment
                     mCurrentLocation = location;
                 }else
                 {
-                    Snackbar.make(mapCoordinatorLayout, "Non ho modo di prendere la locazione corrente!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_no_location, Snackbar.LENGTH_LONG).show();
                 }
             }else
             {
                 Snackbar.make(mapCoordinatorLayout,
-                        "Geolocalizzazione disattivata..?",
+                        R.string.map_fragment_disabled_location,
                         Snackbar.LENGTH_LONG)
                         .show();
                 return;
@@ -404,7 +404,7 @@ public class MapFragment extends Fragment
                     setupLocation();
                 }else {
                     Snackbar.make(mapCoordinatorLayout,
-                            "Senza permessi non posso funzionare!", Snackbar.LENGTH_SHORT).show();
+                            R.string.map_fragment_permissions_error, Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -810,7 +810,7 @@ public class MapFragment extends Fragment
     @Override
     public void onMapClick(final LatLng latLng) {
         mLastSelectedSquareId = "";
-        Snackbar.make(mapCoordinatorLayout, "Tieni premuto per creare una Square!", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_long_press_hint, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -852,7 +852,7 @@ public class MapFragment extends Fragment
                             public void responsePOST(Object object) {
                                 if (object == null) {
                                     Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
-                                    Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_create_fail, Snackbar.LENGTH_SHORT).show();
                                 } else {
                                     Square postedSquare = (Square) object;
                                     InSquareProfile.addFav(postedSquare);
@@ -864,7 +864,7 @@ public class MapFragment extends Fragment
                                     squareHashMap.put(marker, postedSquare);
                                     marker.setVisible(true);
                                     mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(finalPosition), 400, null);
-                                    Snackbar.make(mapCoordinatorLayout, "Square creata con successo!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_create_success, Snackbar.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -904,7 +904,7 @@ public class MapFragment extends Fragment
                             public void responsePOST(Object object) {
                                 if (object == null) {
                                     Log.d(TAG, "responsePOST Square: non sono riuscito a creare la square..!");
-                                    Snackbar.make(mapCoordinatorLayout, "Ho avuto un problema nella creazione", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(mapCoordinatorLayout, R.string.map_fragment_create_error, Snackbar.LENGTH_SHORT).show();
                                 } else {
                                     Square postedSquare = (Square) object;
                                     InSquareProfile.addFav(postedSquare);
@@ -1197,7 +1197,7 @@ public class MapFragment extends Fragment
         {
             squareName.setText(square.getName());
             squareInitials.setText(square.getInitials());
-            squareActivity.setText(square.formatTime());
+            squareActivity.setText(getContext().getString(R.string.square_last_message_incipit) + square.formatTime());
 
             if(square.isFacebookPage)
             {

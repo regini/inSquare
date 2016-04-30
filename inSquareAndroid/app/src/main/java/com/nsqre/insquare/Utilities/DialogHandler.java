@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.util.Log;
@@ -14,15 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.nsqre.insquare.Activities.CreateSquareActivity;
 import com.nsqre.insquare.R;
 import com.nsqre.insquare.Square.RecyclerProfileSquareAdapter;
 import com.nsqre.insquare.Square.Square;
 import com.nsqre.insquare.User.InSquareProfile;
 import com.nsqre.insquare.Utilities.REST.VolleyManager;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 /**
@@ -33,41 +28,6 @@ public class DialogHandler {
     public static final String SQUARE_TYPE = "SQUARE_TYPE";
     public static final String MAP_SCREENSHOT = "MAP_SCREENSHOT";
 
-    public static void handleCreateOptions(
-            final Context where,
-            final String TAG,
-            LatLng latLng,
-            Bitmap mapScreenshot)
-    {
-        final CharSequence options[] = new CharSequence[]{
-                "Luogo", //0
-                "Evento", //1
-                "Attività Commerciale", //2
-        };
-
-        final String lat = Double.toString(latLng.latitude);
-        final String lon = Double.toString(latLng.longitude);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        mapScreenshot.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        final byte[] screenshotData = stream.toByteArray();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(where);
-        builder.setTitle("Crea una Square");
-        builder.setItems(options,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(where, CreateSquareActivity.class);
-                        intent.putExtra(SQUARE_TYPE, which);
-                        intent.putExtra(MAP_SCREENSHOT, screenshotData);
-                        where.startActivity(intent);
-                    }
-        });
-
-        builder.show();
-
-    }
-
     public static void handleMuteRequest(
             final Context where,
             final View snackbarContainer,
@@ -76,15 +36,15 @@ public class DialogHandler {
     )
     {
         final CharSequence options[] = new CharSequence[]{
-                "Abilita", //0
-                "Disabilita per 1h", //1
-                "Disabilita per 8h", //2
-                "Disabilita per 2 giorni",//3
-                "Disabilita indefinitamente"//4
+                where.getString(R.string.dialog_mute_off), //0
+                where.getString(R.string.dialog_mute_1h), //1
+                where.getString(R.string.dialog_mute_8h), //2
+                where.getString(R.string.dialog_mute_2d),//3
+                where.getString(R.string.dialog_mute_on)//4
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(where);
-        builder.setTitle("Gestisci notifiche");
+        builder.setTitle(R.string.dialog_mute_title);
         builder.setItems(options,
                 new DialogInterface.OnClickListener() {
 
@@ -95,12 +55,12 @@ public class DialogHandler {
                         Snackbar showResult = Snackbar.make(snackbarContainer, "", Snackbar.LENGTH_LONG);
                         Log.d(TAG, "onCheckedChanged: " + which + " " + options[which]);
                         if (which == 0) {
-                            showResult.setText("Notifiche Abilitate");
+                            showResult.setText(R.string.dialog_mute_result_off);
                         } else {
-                            showResult.setText("Notifiche Disabilitate");
+                            showResult.setText(R.string.dialog_mute_result_on);
                         }
 
-                        showResult.setAction("Annulla",
+                        showResult.setAction(R.string.dialog_mute_cancel,
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -204,20 +164,22 @@ public class DialogHandler {
         String oldDescription = element.getDescription().trim();
         String oldName = element.getName().trim();
 
-        final Dialog editDialog = new Dialog(parentLayout.getContext());
+        final Context dialogContext = parentLayout.getContext();
+
+        final Dialog editDialog = new Dialog(dialogContext);
         editDialog.setContentView(R.layout.dialog_edit_square);
         editDialog.setCancelable(true);
         editDialog.show();
 
         final EditText nameEditText = (EditText) editDialog.findViewById(R.id.dialog_edit_name_text);
 
-        ((TextInputLayout)nameEditText.getParent()).setHint("Modifica il nome");
+        ((TextInputLayout)nameEditText.getParent()).setHint(dialogContext.getString(R.string.dialog_edit_name_hint));
         nameEditText.setText(oldName);
 
         final EditText descriptionEditText = (EditText) editDialog.findViewById(R.id.dialog_edit_description_text);
         if(!oldDescription.isEmpty())
         {
-            ((TextInputLayout)descriptionEditText.getParent()).setHint("Modifica la descrizione");
+            ((TextInputLayout)descriptionEditText.getParent()).setHint(dialogContext.getString(R.string.dialog_edit_descr_hint));
             descriptionEditText.setText(oldDescription);
         }
 
@@ -233,7 +195,7 @@ public class DialogHandler {
 //                            Toast.makeText(where, "Il nome non può essere vuoto!", Toast.LENGTH_SHORT).show();
 //                            Snackbar.make(parentLayout, "Il nome non può essere vuoto", Snackbar.LENGTH_SHORT).show();
                             ((TextInputLayout)nameEditText.getParent()).setErrorEnabled(true);
-                            ((TextInputLayout)nameEditText.getParent()).setError("Il nome non può essere vuoto");
+                            ((TextInputLayout)nameEditText.getParent()).setError(dialogContext.getString(R.string.dialog_edit_name_empty_error));
                             return;
                         }
 
@@ -269,12 +231,12 @@ public class DialogHandler {
                                                 squareViewHolder.squareDescription.setVisibility(View.VISIBLE);
                                             }
 //                                            Toast.makeText(where, "Modificata con successo!", Toast.LENGTH_SHORT).show();
-                                            Snackbar.make(parentLayout, "Modificata con successo!", Snackbar.LENGTH_SHORT).show();
+                                            Snackbar.make(parentLayout, R.string.dialog_edit_success, Snackbar.LENGTH_SHORT).show();
                                             editDialog.dismiss();
                                         } else {
                                             // Errore
 //                                            Toast.makeText(where, "Ho avuto un problema con la connessione. Riprova..?", Toast.LENGTH_SHORT).show();
-                                            Snackbar.make(parentLayout, "Ho avuto un problema con la connessione. Riprova..?", Snackbar.LENGTH_SHORT).show();
+                                            Snackbar.make(parentLayout, R.string.dialog_edit_fail, Snackbar.LENGTH_SHORT).show();
                                             editDialog.dismiss();
                                         }
                                     }
