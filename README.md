@@ -5,7 +5,7 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 Where we go. Who we meet.
 
 # Final Submission
- • [Watch a demonstrating video here!]()
+ • [Watch a demonstrating video here!](https://www.facebook.com/insquareapplication/videos/1714327192188246/)
 
  • UI updated and adapted to the guidelines.
  
