@@ -75,6 +75,7 @@ Where we go. Who we meet.
 # Documentation
 
 [The Javadoc for our Android Application.](http://regini.github.io/inSquare/insquaredoc/index.html)
+
 [The documentation of our backend.](http://regini.github.io/inSquare/api.html)
 
 # Let's Get In Touch!
