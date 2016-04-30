@@ -5,6 +5,8 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 Where we go. Who we meet.
 
 # Final Submission
+ • [Watch a demonstrating video here!]()
+
  • UI updated and adapted to the guidelines.
  
  • Better messaging(with photos!), research bar, social share and a tutorial!
