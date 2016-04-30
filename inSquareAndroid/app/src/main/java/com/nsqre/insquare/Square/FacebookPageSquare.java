@@ -17,6 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Extension of the Square class for the pages
+ */
 public class FacebookPageSquare extends Square {
 
     private static final String TAG = "FacebookPageSquare";

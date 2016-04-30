@@ -184,7 +184,7 @@
     <string name="photo_item_me_time">Time Text</string>
     <string name="frag_choose_luogo">Luogo</string>
     <string name="frag_choose_evento">Evento</string>
-    <string name="frag_choose_attività">Attività Commerciale</string>
+    <string name="frag_choose_attivita">Attività Commerciale</string>
     <string name="frag_place_initials">SN</string>
     <string name="frag_place_name">A very long square name that should resemble ones that we might have in our db</string>
     <string name="frag_place_price">$$$$ (50+)</string>

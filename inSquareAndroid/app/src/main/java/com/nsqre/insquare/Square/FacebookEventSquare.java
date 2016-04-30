@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Extension of the Square class
+ * Extension of the Square class for the events
  */
 public class FacebookEventSquare extends Square {
 

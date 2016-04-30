@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_vertical_margin"
                 android:layout_gravity="right|end"
-                android:text="@string/frag_choose_attività"
+                android:text="@string/frag_choose_attivita"
                 android:textSize="32sp"
                 android:textColor="@color/light_gray"
                 android:fontFamily="sans-serif-condensed"

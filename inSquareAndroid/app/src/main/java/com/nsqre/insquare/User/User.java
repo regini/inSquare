@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
- * Created by mrsa on 15/01/2016.
+ * A class to represent a User object
  */
 public class User implements Parcelable {
 

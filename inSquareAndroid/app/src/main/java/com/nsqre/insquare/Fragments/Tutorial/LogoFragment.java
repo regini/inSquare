@@ -5,6 +5,9 @@ import android.support.v4.view.ViewCompat;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * TODO Documentare
+ */
 public abstract class LogoFragment extends Fragment {
 
     protected ImageView logo;
