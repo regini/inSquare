@@ -4,9 +4,31 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 
 Where we go. Who we meet.
 
+# Final Submission
+ • UI updated and adapted to the guidelines.
+ 
+ • Better messaging(with photos!), research bar, social share and a tutorial!
+ 
+ • Personalized new kinds of square
+ 
+  ![](http://regini.github.io/inSquare/ScreenshotsFinalSubmission.png)
+  
 [Our app is now available on Google Play.](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
 
-[Get the iOS App] (https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
+[Download the apk file here.]()
+
+[Get the iOS App.](https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
+  
+# The architectural overview
+
+ ![](http://regini.github.io/inSquare/insquare_architecture.png)
+ 
+# Documentation
+
+[The Javadoc for our Android Application.](http://regini.github.io/inSquare/insquaredoc/index.html)
+
+[The documentation of our backend.](http://regini.github.io/inSquare/backendoc/index.html)
+
 
 # Our Adventure
 [Presenting The Idea (Pdf)](https://drive.google.com/open?id=0ByoM6ITfn2ntM1ktMXhTWW5vSFU)
@@ -71,22 +93,6 @@ Where we go. Who we meet.
  ![](http://regini.github.io/inSquare/ScreenshotsMilestone3.png)
  ![](http://regini.github.io/inSquare/ScreenshotIOs.png)
  
- 
-# Final Submission
- • UI updated and adapted to the guidelines.
- 
- • Better messaging(with photos!), research bar, social share and a tutorial!
- 
- • Personalized new kinds of square
- 
-  ![](http://regini.github.io/inSquare/ScreenshotsFinalSubmission.png)
- 
-
-# Documentation
-
-[The Javadoc for our Android Application.](http://regini.github.io/inSquare/insquaredoc/index.html)
-
-[The documentation of our backend.](http://regini.github.io/inSquare/backendoc/index.html)
 
 # Let's Get In Touch!
 [Please feel free to contact us for any further information. Your feedback is very important for us.](http://goo.gl/forms/2VcB24833w)
