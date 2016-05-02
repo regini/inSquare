@@ -6,7 +6,9 @@ Where we go. Who we meet.
 
 # Final Submission
  • [Watch a demonstrating video here!](https://youtu.be/RzOndcCgn70)
-
+ 
+ • [Documentation](http://docs.insquare.it)
+ 
  • UI updated and adapted to the guidelines.
  
  • Better messaging(with photos!), research bar, social share and a tutorial!
