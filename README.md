@@ -22,7 +22,9 @@ Where we go. Who we meet.
 
 [Download the apk file here.](https://drive.google.com/file/d/0B7PZp8m-DpIUZUVZRnRWR05acUE/view?usp=sharing)
 
-[Get the iOS App.](https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
+[Get the iOS App on App Store.](https://appsto.re/it/nUqRab.i)
+
+[Get the last iOS App.](https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
   
 # The architectural overview
 
