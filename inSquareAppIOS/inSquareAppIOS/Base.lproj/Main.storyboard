@@ -705,7 +705,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hjl-dV-GUT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="104.5" y="-765.5"/>
+            <point key="canvasLocation" x="432.5" y="-4253.5"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -823,7 +823,7 @@
         <!--Navigation Controller-->
         <scene sceneID="5Or-dm-ZEc">
             <objects>
-                <navigationController id="3CL-B0-VQX" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavTochat" id="3CL-B0-VQX" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Qht-JZ-3DL">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -839,13 +839,13 @@
         <!--Square Mess View Controller-->
         <scene sceneID="4p2-eW-RI6">
             <objects>
-                <viewController id="bBJ-et-D7k" customClass="SquareMessViewController" customModule="inSquare" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChatViewController" id="bBJ-et-D7k" customClass="SquareMessViewController" customModule="inSquare" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="yum-jS-fN0"/>
                         <viewControllerLayoutGuide type="bottom" id="8zm-Mz-arZ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="BS7-fe-dKi">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -933,7 +933,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ta-uC-4PM" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="832" y="-1634"/>
+            <point key="canvasLocation" x="1152" y="-3546"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aZv-rw-C3G">
@@ -962,10 +962,10 @@
         <image name="mapPinTrace3.png" width="109" height="120"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="X0u-pQ-US4"/>
         <segue reference="s5O-dI-Wu1"/>
         <segue reference="56M-rb-dB8"/>
         <segue reference="WrZ-v3-m2T"/>
-        <segue reference="7FW-as-7jV"/>
-        <segue reference="X0u-pQ-US4"/>
+        <segue reference="RLg-cn-1dQ"/>
     </inferredMetricsTieBreakers>
 </document>

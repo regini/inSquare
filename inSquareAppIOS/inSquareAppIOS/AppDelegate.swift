@@ -14,6 +14,7 @@ import GoogleMaps
 //import Google.Analytics.h
 import Alamofire
 import AeroGearPush
+import AudioToolbox
 import Fabric
 import Crashlytics
 
@@ -41,15 +42,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 
         //GOOGLE
         GMSServices.provideAPIKey("AIzaSyBmibIMY4xUPzLe2Sj9Ax4Ne2tNmCNoUic")
+
+        application.applicationIconBadgeNumber = 0
         
-        
-        if isLoggedInCoreData() {
+        if isLoggedInCoreData()
+        {
+            //registra notifiche
+            //NOTIFICATION
+            registerForAllNotifications() // Register this app for notifications
+            AGPushAnalytics.sendMetricsWhenAppLaunched(launchOptions) // Send metrics when app is launched due to push notification
+            //
+            
             print("didFinishLaunchingWithOptions: LOGGEDIN")
             fetchDataFromCoreData()
+            
             self.window!.rootViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateInitialViewController()
         }
-        else {
+        else
+        {
             print("didFinishLaunchingWithOptions: NOT LOGGED IN")
+            //registra notifiche su logincontroller
+
             
                         var rootController: UIViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateViewControllerWithIdentifier("LoginVcID")
                         var navigation: UINavigationController = UINavigationController(rootViewController: rootController)
@@ -67,8 +80,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         //GOOGLE
 
         
-        //NOTIFICATION
-        registerForAllNotifications() // Register this app for notifications
+    
+        
+        
+        //sposta in fi logged in? considerando no push a logout
         AGPushAnalytics.sendMetricsWhenAppLaunched(launchOptions) // Send metrics when app is launched due to push notification
         
         // Check for launch Options, this could be from Local/Remote Notifications that was used to Open the app!
@@ -95,15 +110,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate
                 if let notification = options[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSNotification
                 {
                     NSQRENotificationManager.sharedInstance.addNotificationToNotificationTab(notification)
-
-                    
                     let mess = messageReceived(notification)
-                    
-                    
-                    
                     print("App Started from Push Notification: ", mess)
                     
+                    //if lanched from push launch the right chat controller
+                    var rootController: UIViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateViewControllerWithIdentifier("ChatViewController")
                     
+                    var chatRoot = rootController as! SquareMessViewController
+                    
+                    request(.GET, "\(serverMainUrl)/squares/\(NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification))").validate().responseJSON { response in
+                        switch response.result {
+                        case .Success:
+                            print("REQUEST!!! \(response.request)")
+                            print("RESULT!!! \(response.result.value)")
+                            if let value = response.result.value {
+                                
+                                if let title = JSON(value)["name"].string
+                                {
+                                    chatRoot.squareId = NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification)
+                                    chatRoot.squareName = title
+                                }
+                                if let geoLoc = JSON(value)["geo_loc"].string
+                                {
+                                    let coordinates = geoLoc.componentsSeparatedByString(",")
+                                    print("GEOLOPUSH", geoLoc)
+                                    let latitude = (coordinates[0] as NSString).doubleValue
+                                    let longitude = (coordinates[1] as NSString).doubleValue
+                                    
+                                }
+                                if (chatRoot.squareId != "" && chatRoot.squareName != "")
+                                {
+                                    chatRoot.triggeredByPushNotification = true
+                                    var navigation: UINavigationController = UINavigationController(rootViewController: rootController)
+                                    
+                                    print("PAREEENT", navigation.parentViewController)
+                                    self.window!.rootViewController = navigation
+                                }
+                            }
+                        case .Failure(let error):
+                            print("FALLITO SEARCH: \(error)")
+                            
+                        }
+                    }//ENDREQUEST
+
+                    //end launch chat from puch
+                    
+                    //inutile?
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(2 * NSEC_PER_SEC)), dispatch_get_main_queue())
                     {
                         //self.showAlert("App Started from Push Notification", alert: mess, badgeCount: 1)
@@ -140,6 +192,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         print("APNS Success", serverId)
         
+    
+        
+        
         //let registration = AGDeviceRegistration(serverURL: NSURL(string: "https://push-insquareapp.rhcloud.com/ag-push/")!)
 //        var registration: AGDeviceRegistration = AGDeviceRegistration(serverURL: NSURL(string: "push-insquareapp.rhcloud.com/ag-push/")!)
         let registration = AGDeviceRegistration(serverURL: NSURL(string: "https://push-insquareapp.rhcloud.com/ag-push/")!)
@@ -151,8 +206,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             // apply the token, to identify this device
             clientInfo.deviceToken = deviceToken
             
+            //production variant iTunesConnect and Apple Store
             clientInfo.variantID = "f6c09133-ea75-48ba-9333-c979f93aa95f"
             clientInfo.variantSecret = "787d37ba-f71e-48fc-a015-2acc040bd91b"
+            
+            
+//            //development variant (sandbox, Xcode)
+//            clientInfo.variantID = "25e1cc97-f593-4395-944a-5691c6e81a9e"
+//            clientInfo.variantSecret = "20294d0b-d1cb-4b42-9878-670580ca0ea5"
 
             
             // --optional config--
@@ -163,6 +224,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             clientInfo.deviceType = currentDevice.model
             //alias
             clientInfo.alias = serverId
+            print("CIVSALIAS: ",clientInfo.alias, serverId)
+            
             
             
             
@@ -219,6 +282,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         NSQRENotificationManager.sharedInstance.addNotificationToNotificationTab(notification)
         
+        
+        
+        
         // Send metrics when app is brpught form backgrpund tp foreground due to push notification
         AGPushAnalytics.sendMetricsWhenAppAwoken(application.applicationState, userInfo: userInfo)
         
@@ -230,7 +296,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         print("RECEIVED NOTIFICATION IN FOREGROUND: ", notificationReceivedJSON)
         
-        if application.applicationState == .Active {
+        if application.applicationState == .Active
+        {
             
             let aps = notificationReceivedJSON["aps"]
             print("ALERT", notificationReceivedJSON["aps"]["alert"])
@@ -255,10 +322,99 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             
             print("didReceiveRemoteNotification alert message=\(alert) Badge Count=\(badgeCount)")
             
-            // Show Alert to user
-            showAlert("Push Notification In Foreground", alert: "\(message!)", badgeCount: badgeCount!)
             
             
+            request(.GET, "\(serverMainUrl)/squares/\(NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification))").validate().responseJSON { response in
+                switch response.result {
+                case .Success:
+                    print("REQUEST!!! \(response.request)")
+                    print("RESULT!!! \(response.result.value)")
+                    var SquareNameSa = ""
+                    var SquareIdSa = ""
+                    var lat = 0.0
+                    var lon = 0.0
+                    
+                    if let value = response.result.value {
+                        
+                        if let title = JSON(value)["name"].string
+                        {
+                            SquareIdSa = NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification)
+                            SquareNameSa = title
+                        }
+                        if let geoLoc = JSON(value)["geo_loc"].string
+                        {
+                            let coordinates = geoLoc.componentsSeparatedByString(",")
+                            print("GEOLOPUSH", geoLoc)
+                            lat = (coordinates[0] as NSString).doubleValue
+                            lon = (coordinates[1] as NSString).doubleValue
+                            
+                        }
+                        if (SquareIdSa != "" && SquareNameSa != "")
+                        {
+                            // Show Alert to user
+                            print("willshowallert")
+                            self.showAlert("\(SquareNameSa)", alert: "\(message!)", badgeCount: badgeCount!, squareId: SquareIdSa)
+                        }
+                    }
+                case .Failure(let error):
+                    print("FALLITO SEARCH: \(error)")
+                    
+                }
+            }//ENDREQUEST
+            
+            //end launch chat from puch
+
+            
+            
+            
+            
+        }
+        //push notification gestita quando non in foreground
+        else
+        {
+            
+            //if lanched from push launch the right chat controller
+            var rootController: UIViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateViewControllerWithIdentifier("ChatViewController")
+            
+            var chatRoot = rootController as! SquareMessViewController
+            
+            request(.GET, "\(serverMainUrl)/squares/\(NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification))").validate().responseJSON { response in
+                switch response.result {
+                case .Success:
+                    print("REQUEST!!! \(response.request)")
+                    print("RESULT!!! \(response.result.value)")
+                    if let value = response.result.value {
+                        
+                        if let title = JSON(value)["name"].string
+                        {
+                            chatRoot.squareId = NSQRENotificationManager.sharedInstance.getSquareIdFromRemoteNotification(notification)
+                            chatRoot.squareName = title
+                        }
+                        if let geoLoc = JSON(value)["geo_loc"].string
+                        {
+                            let coordinates = geoLoc.componentsSeparatedByString(",")
+                            print("GEOLOPUSH", geoLoc)
+                            let latitude = (coordinates[0] as NSString).doubleValue
+                            let longitude = (coordinates[1] as NSString).doubleValue
+                            
+                        }
+                        if (chatRoot.squareId != "" && chatRoot.squareName != "")
+                        {
+                            chatRoot.triggeredByPushNotification = true
+                            var navigation: UINavigationController = UINavigationController(rootViewController: rootController)
+                            
+                            print("PAREEENT", navigation.parentViewController)
+                            self.window!.rootViewController = navigation
+                        }
+                    }
+                case .Failure(let error):
+                    print("FALLITO SEARCH: \(error)")
+                    
+                }
+            }//ENDREQUEST
+            
+            //end launch chat from puch
+        
         }
         
     }
@@ -276,37 +432,108 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             let foo = userInfo["foo"] as! String
             print("didReceiveLocalNotification: foo=\(foo)")
             
-            showAlert("Local Notification In Foreground", alert: "\(notification.alertBody!) foo=\(foo)", badgeCount: 0)
+            showAlert("Local Notification In Foreground", alert: "\(notification.alertBody!) foo=\(foo)", badgeCount: 0, squareId: "")
             
         }
     }
     
     
     
-    func showAlert(title: String, alert: String, badgeCount: Int) {
-        
+    func showAlert(title: String, alert: String, badgeCount: Int, squareId: String) {
+        print("SHOWALLERT")
         var message = "\(alert)"
         
         if badgeCount > 0 {
             message = "\(alert) badgeCount=\(badgeCount)"
         }
         
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .ActionSheet)
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) {
-            UIAlertAction in
+        //check se vc visibile e quello che genera notifica
+        var isNotificationFromCUrrentChatOpen = false
+
+        let chatContr = self.getVisibleViewController(self.window?.rootViewController)
+        if (chatContr != nil)
+        {
+            print("CC NOT NIL", chatContr)
+            print("CC NOT NIL", chatContr!.isKindOfClass(SquareMessViewController))
+            if chatContr!.isKindOfClass(SquareMessViewController)
+            {
+                
+                let chatUnboxed = chatContr as! SquareMessViewController
+                
+                print("sqid!! ", chatUnboxed.squareId)
+                if chatUnboxed.squareId == squareId
+                {
+                    
+                    isNotificationFromCUrrentChatOpen = true
+                }
+                
+                
+            }
+            //check se sono in controller aperto da notifica (quello con done invece di back, poichè e messo in un navigation control quando lo instanzio da notifica serve un altro if
+            if chatContr!.isKindOfClass(UINavigationController)
+            {
+                let navig = chatContr as! UINavigationController
+                //prova top invece di visible
+                let chatUnboxed = navig.visibleViewController as! SquareMessViewController
+                
+                print("sqid!!2 ", chatUnboxed.squareId)
+                if chatUnboxed.squareId == squareId
+                {
+                    
+                    isNotificationFromCUrrentChatOpen = true
+                }
+                
+                
+            }
+            
         }
+        //fine check
         
-        alertController.addAction(okAction)
         
-        //        dispatch_async(dispatch_get_main_queue(), {
-        //            let importantAlert: UIAlertController = UIAlertController(title: "Action Sheet", message: "Hello I was presented from appdelegate ;)", preferredStyle: .ActionSheet)
-        //            self.window?.rootViewController?.presentViewController(importantAlert, animated: true, completion: nil)
-        //
-        //        })
         
-        getVisibleViewController(self.window?.rootViewController)!.presentViewController(alertController, animated: true, completion: nil)
         
+        // se non da controller attuale mostro alert
+        if !isNotificationFromCUrrentChatOpen
+        {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .ActionSheet)
+            
+            let okAction = UIAlertAction(title: "View", style: UIAlertActionStyle.Default) {
+                UIAlertAction in
+                print("OK")
+                
+                
+                
+                var rootController: UIViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateViewControllerWithIdentifier("ChatViewController")
+                
+                var chatRoot = rootController as! SquareMessViewController
+                
+                chatRoot.triggeredByPushNotification = true
+                chatRoot.squareName = title
+                chatRoot.squareId = squareId
+                var navigation: UINavigationController = UINavigationController(rootViewController: rootController)
+                
+                print("PAREEENT", navigation.parentViewController)
+                self.window!.rootViewController = navigation
+                
+                
+                
+                
+            }
+            
+            alertController.addAction(okAction)
+            
+            let koAction = UIAlertAction(title: "Ignore", style: UIAlertActionStyle.Default) {
+                UIAlertAction in
+                print("Ignore")
+            }
+            
+            alertController.addAction(koAction)
+            
+            
+            AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+            
+            getVisibleViewController(self.window?.rootViewController)!.presentViewController(alertController, animated: true, completion: nil)
+        }
         
     }
     
@@ -359,6 +586,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         print("I'M BACK FROME BACKGROUND")
+        application.applicationIconBadgeNumber = 0
         FBSDKAppEvents.activateApp()
 
 

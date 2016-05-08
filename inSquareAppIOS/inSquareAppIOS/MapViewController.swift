@@ -173,19 +173,27 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                     {
                         let i:Int=Int(index)!
                         
-                        
-                        
                         let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
                         let latitude = (coordinates[0] as NSString).doubleValue
                         let longitude = (coordinates[1] as NSString).doubleValue
                         let title = self.jsonSq[i]["_source"]["name"].string
-                        let identifier = self.jsonSq[i]["_id"].string
                         
+                        let identifier = self.jsonSq[i]["_id"].string
                         
                         let marker = GMSMarker()
                         marker.position = CLLocationCoordinate2DMake(latitude, longitude)
                         marker.title = title
-                        marker.snippet = self.snippetString
+                        if ((title! as NSString).length > 25)
+                        {
+                            marker.snippet = title
+                        }
+                        else
+                        {
+                            marker.snippet = self.snippetString
+                            print(marker.title)
+
+
+                        }
                         //marker.snippet = snippet
                         marker.icon = insquareMapPin
                         marker.groundAnchor.x = marker.groundAnchor.x + 0.45
@@ -458,7 +466,20 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2DMake(latitude, longitude)
             marker.title = title
-            marker.snippet = self.snippetString
+
+            if ((title! as NSString).length > 25)
+            {
+                marker.snippet = title
+            }
+            else
+            {
+                marker.snippet = self.snippetString
+                print(marker.title)
+                
+                
+            }
+
+            
             //marker.snippet = snippet
             marker.icon = insquareMapPin
             marker.groundAnchor.x = marker.groundAnchor.x + 0.45
@@ -592,7 +613,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                                 let marker = GMSMarker()
                                 marker.position = CLLocationCoordinate2DMake(latitude, longitude)
                                 marker.title = title
-                                marker.snippet = self.snippetString
+
+                                if ((title! as NSString).length > 25)
+                                {
+                                    marker.snippet = title
+                                }
+                                else
+                                {
+                                    marker.snippet = self.snippetString
+                                    print(marker.title)
+                                    
+                                }
+
+                                
                                 marker.userData = ["markerId": "\(identifier!)", "markerLat": "\(latitude)", "markerLon": "\(longitude)", "favouredBy": "\(self.jsonSq[i]["_source"]["favouredBy"])", "lastMessageDate": "\(self.jsonSq[i]["_source"]["lastMessageDate"].string!)", "views": "\(self.jsonSq[i]["_source"]["views"])", "state": "\(self.jsonSq[i]["_source"]["state"].string!)"]
                                 marker.icon = insquareMapPin
                                 marker.groundAnchor.x = marker.groundAnchor.x + 0.45

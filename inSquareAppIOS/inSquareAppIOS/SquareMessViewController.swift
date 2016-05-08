@@ -15,7 +15,7 @@ import AudioToolbox
 
 class SquareMessViewController: JSQMessagesViewController
 {
-    
+    var triggeredByPushNotification = false
     var viewControllerNavigatedFrom:AnyObject?
     
     //values passed by marker press in homeViewController, se fai segue vengono comunque sovrascritti
@@ -202,6 +202,16 @@ class SquareMessViewController: JSQMessagesViewController
         print("##viewDidLoad")
         updateFavouriteSquares()
         
+        print("triggeredByPushNotification", triggeredByPushNotification)
+        if triggeredByPushNotification
+        {
+            let refreshButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "doneAfterCheckingPush")
+            navigationItem.leftBarButtonItem = refreshButton
+            
+            //navigationController?.navigationBar.barTintColor = UIColor.greenColor()
+            //title = "Search result"
+
+        }
         
         //socket.io config handlers, connect and joining namespace
         self.addHandlers()
@@ -271,6 +281,14 @@ class SquareMessViewController: JSQMessagesViewController
     }
 
 
+    func doneAfterCheckingPush() {
+        print("Perform action")
+        var myTabBar = self.storyboard?.instantiateViewControllerWithIdentifier("tabBarController") as! UITabBarController
+        UIApplication.sharedApplication().delegate!.window?!.rootViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateInitialViewController()
+
+    }
+
+    
     //reload JSQ mess display
     func reloadMessagesView()
     {

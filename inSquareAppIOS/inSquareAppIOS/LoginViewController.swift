@@ -171,6 +171,15 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
                                 Answers.logLoginWithMethod("Facebook", success: true, customAttributes: [:])
                                 self.enter.enabled = (FBSDKAccessToken.currentAccessToken() != nil)
                                 self.enter.hidden = (FBSDKAccessToken.currentAccessToken() == nil)
+                                
+                                
+                                //UIApplication.sharedApplication().registerForRemoteNotifications()
+                                
+                                //NOTIFICATION
+                                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                                appDelegate.registerForAllNotifications() // Register this app for notifications
+                                
+                                
                                 self.goToMap()
                             }
                             else
@@ -201,6 +210,12 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate
         tracker.send(GAIDictionaryBuilder.createEventWithCategory("Log-in", action: "Loged-out", label: "User \(serverId) logged in", value: nil).build() as [NSObject : AnyObject])
         //clear serverid e clear coredata persistency
         clearUsersSavedInCoreData()
+        
+        //UNREGISTER FROM REMOTE NOTIFICATION
+        UIApplication.sharedApplication().unregisterForRemoteNotifications()
+
+        
+        //TODO TRIGGERA UNA LOCAL NOTIFICATION
         
         self.enter.enabled = (FBSDKAccessToken.currentAccessToken() != nil)
         self.enter.hidden = (FBSDKAccessToken.currentAccessToken() == nil)
