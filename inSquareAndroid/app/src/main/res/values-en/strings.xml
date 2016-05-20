@@ -215,7 +215,6 @@
     <string name="user_action_typing">is writing</string>
     <string name="tutorial_salta">Skip</string>
     <string name="tutorial_fine">End</string>
-    <string name="tutorial_square_types"></string>
     <string name="tutorial_title3">Create your Square!</string>
     <string name="tutorial_2_notifications">If you set a Square as your <b>favorite</b>, push notifications will keep you updated in real time, and you’ll know about news, events and promotions!</string>
     <string name="tutorial_3_longpress">It’s incredibly easy: if you <b>long press</b> on the map, the open wizard will pop up!\nYou can insert the Square details manually, or use a <b>Facebook URL</b> to connect it to an event or a page.</string>

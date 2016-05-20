@@ -295,5 +295,6 @@
     <string name="tutorial_4_swipe">In the <i>Created</i> tab you’ll see the details of all the Squares you created. You can modify the name or description thanks to the <i>Edit</i> button. You can also delete by <i>swiping to the left.</i></string>
     <string name="tutorial_1_intro">InSquare wants to make it easier for people to connect with the places they care about.\nIt’s a <i>seamless</i> solution to keep in touch directly with people that are <i>there</i>, know what’s going on and be updated in real time. Never lose anything, with InSquare!</string>
     <string name="frag_choose_attivita">Shop</string>
+    <string name="square_create_at">" at "</string>
 
 </resources>
