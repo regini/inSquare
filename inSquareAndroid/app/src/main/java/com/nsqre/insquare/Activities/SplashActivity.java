@@ -56,7 +56,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                                 boolean google = opr.isDone();
 
-                                if(google || isFacebookSignedIn())
+                                if((google || isFacebookSignedIn()) && InSquareProfile.hasLoginData())
                                 {
                                     nextScreen = new Intent(SplashActivity.this, BottomNavActivity.class);
                                 }else
