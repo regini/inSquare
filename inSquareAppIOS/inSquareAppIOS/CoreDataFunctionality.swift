@@ -136,6 +136,95 @@ func saveUserDataInCoreData() -> Bool
     return true
 }
 
+func fetchDataFromCoreData()
+{
+    //recupera dati da CoreData cosi quando viewne lanciato viewWill appear fa segue to home
+    let appDel: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let context: NSManagedObjectContext = appDel.managedObjectContext
+    
+    let request = NSFetchRequest(entityName: "Users")
+    
+    request.returnsObjectsAsFaults = false
+    do
+    {
+        let results = try context.executeFetchRequest(request)
+        print("USERS (has to be 0 or 1): \(results.count)")
+        print("USERS (details): \(results)")
+        
+        if results.count == 1
+        {
+            for result in results as! [NSManagedObject]
+            {
+                //setting up datas
+                if let usernameCD = result.valueForKey("username") as? String
+                {
+                    print(usernameCD)
+                    username = usernameCD
+                }
+                if let serverIdCD = result.valueForKey("serverId") as? String
+                {
+                    print(serverIdCD)
+                    serverId = serverIdCD
+                }
+                if let fbIdCD = result.valueForKey("fbId") as? String
+                {
+                    print(fbIdCD)
+                    fbId = fbIdCD
+                }
+                if let emailCD = result.valueForKey("email") as? String
+                {
+                    print(emailCD)
+                    email = emailCD
+                }
+                if let accessTokenCD = result.valueForKey("accessToken") as? String
+                {
+                    print(accessTokenCD)
+                    accessToken = accessTokenCD
+                }
+                if let userAvatarUrlCD = result.valueForKey("userAvatarUrl") as? String
+                {
+                    print("AVATAR URL \(userAvatarUrlCD)")
+                    userAvatarUrl = userAvatarUrlCD
+                    let url = NSURL(string: "\(userAvatarUrl)")
+                    let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                    if UIImage(data: data!) != nil
+                    {
+                        userAvatar = UIImage(data: data!)!
+                    }
+                    else
+                    {
+                        print("ERROR: personal FB img URL not working")
+                    }
+                    if userAvatarUrl != ""
+                    {
+                        if let url = NSURL(string: userAvatarUrl)
+                        {
+                            let data = NSData(contentsOfURL: url) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                            if UIImage(data: data!) != nil
+                            {
+                                userAvatar = UIImage(data: data!)!
+                            }
+                            else
+                            {
+                                print("ERROR: personal FB img URL not working")
+                            }
+                        }
+                        else
+                        {
+                            print("NO IMG URL SOMETHING WENT WRONG")
+                        }
+                    }
+                }
+                print("aaaaaaaaaa4")
+            } //for result in result
+        }// if res.count = 1
+    }//do
+    catch
+    {
+        print("Fetch Failed")
+    }
+    
+}
 
 //use it for store access token
 //                NSUserDefaults.standardUserDefaults().setObject(FBSDKAccessToken.currentAccessToken(), forKey: "FacebookAccessToken")

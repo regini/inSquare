@@ -9,11 +9,13 @@
 import UIKit
 import JSQMessagesViewController
 import Alamofire
+import AudioToolbox
+
 
 
 class SquareMessViewController: JSQMessagesViewController
 {
-    
+    var triggeredByPushNotification = false
     var viewControllerNavigatedFrom:AnyObject?
     
     //values passed by marker press in homeViewController, se fai segue vengono comunque sovrascritti
@@ -197,8 +199,19 @@ class SquareMessViewController: JSQMessagesViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        print("##viewDidLoad")
         updateFavouriteSquares()
         
+        print("triggeredByPushNotification", triggeredByPushNotification)
+        if triggeredByPushNotification
+        {
+            let refreshButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "doneAfterCheckingPush")
+            navigationItem.leftBarButtonItem = refreshButton
+            
+            //navigationController?.navigationBar.barTintColor = UIColor.greenColor()
+            //title = "Search result"
+
+        }
         
         //socket.io config handlers, connect and joining namespace
         self.addHandlers()
@@ -211,6 +224,7 @@ class SquareMessViewController: JSQMessagesViewController
         downloadExistingMessagesFromServer()
 
         //self.automaticallyScrollsToMostRecentMessage = true
+        self.showLoadEarlierMessagesHeader = true
         
     }//END VDL
     
@@ -218,6 +232,8 @@ class SquareMessViewController: JSQMessagesViewController
     override func viewWillAppear(animated: Bool)
     {
         super.viewWillAppear(true)
+        print("##viewWillAppear")
+
         
         updateFavouriteSquares()
 
@@ -234,6 +250,8 @@ class SquareMessViewController: JSQMessagesViewController
     override func viewWillDisappear(animated:Bool)
     {
         self.socket.disconnect()
+        print("##viewWillDisappear")
+
         super.viewWillDisappear(animated)
     }
 
@@ -263,6 +281,14 @@ class SquareMessViewController: JSQMessagesViewController
     }
 
 
+    func doneAfterCheckingPush() {
+        print("Perform action")
+        var myTabBar = self.storyboard?.instantiateViewControllerWithIdentifier("tabBarController") as! UITabBarController
+        UIApplication.sharedApplication().delegate!.window?!.rootViewController = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateInitialViewController()
+
+    }
+
+    
     //reload JSQ mess display
     func reloadMessagesView()
     {
@@ -319,20 +345,9 @@ class SquareMessViewController: JSQMessagesViewController
                     
                 }
                 self.addMessage("\(messJSN[0]["userid"].string)", sender: "\(messJSN[0]["username"])", date: date!, messageContent: "\(messJSN[0]["contents"].string!)")
-                //old chatt controller
-                //let newMess = LGChatMessage(content: "\(messJSN[0]["username"]):\n\(messJSN[0]["contents"].string!)", sentBy: .Opponent)
-                //self.chatController.messages.append(newMess)
-                //self.chatController.addNewMessage(newMess)
                 
-                //self.chatController.reloadInputViews()
-                //                self.shouldChatController(self.chatController, addMessage: newMess)
             }
-            
-//            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//                //self.tableView.reloadData()
-//            })
-            //             }
-            
+ 
         }
         
         socket.on("ping")
@@ -355,18 +370,30 @@ class SquareMessViewController: JSQMessagesViewController
         }
         
         socket.on("connect") {data, ack in
+            print("SOCKET ON CONNECT IN STATUS: \(self.socket.status)")
+
             
+            self.inputToolbar.contentView.rightBarButtonItem.enabled = true
             var data:JSON = ["username": username, "room": self.squareId, "user" : serverId]
             print("Socket Connect with data: \(data.rawValue)")
             self.socket.emit("addUser", data.rawValue)
            
 
-            
+        
             
 //            var tracker = GAI.sharedInstance().defaultTracker
 //            tracker.send(GAIDictionaryBuilder.createEventWithCategory("Soket.onConnect", action: "Data: \(data.rawValue)", label: "User \(serverId) got socket.onConnect event", value: nil).build() as [NSObject : AnyObject])
             
         }
+        
+        socket.on("reconnect") {data, ack in
+            
+            print("SOCKET ON RECONNECT IN STATUS: \(self.socket.status)")
+            self.inputToolbar.contentView.rightBarButtonItem.enabled = false
+            
+        }
+
+
     }
 
 //    override func viewDidAppear(animated: Bool) {
@@ -374,7 +401,10 @@ class SquareMessViewController: JSQMessagesViewController
 //        self.collectionView!.collectionViewLayout.springinessEnabled = true
 //
 //    }
+    
+    
 
+    
 
 }//END VC
 
@@ -404,6 +434,7 @@ extension SquareMessViewController {
         //RIGA SOTO INUTILE
         let mee = JSQMessage(senderId: senderId, senderDisplayName: sender, date: date, text: messageContent)
         print("ADD MESSAGE in JSQVC, MESS DATE: \(message.date)")
+        AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
         self.reloadMessagesView()
     }
     
@@ -428,6 +459,7 @@ extension SquareMessViewController {
 //        self.senderDisplayName = UIDevice.currentDevice().identifierForVendor?.UUIDString
     }
 }
+
 
 //MARK - Data Source
 extension SquareMessViewController {
@@ -571,6 +603,11 @@ extension SquareMessViewController {
 //MARK - Toolbar
 extension SquareMessViewController {
     override func didPressSendButton(button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: NSDate!) {
+        if self.socket.status != SocketIOClientStatus.Connected
+        {
+            //refere to send button
+            return
+        }
         let message = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, text: text)
         print("SQMVC, DATE DEVE ESSERE DIVERSA DA NIL: \(date)")
         //let mes = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, media: JSQPhotoMediaItem(image: insquareMapPin))
@@ -585,6 +622,7 @@ extension SquareMessViewController {
         print("didPressAccessoryButton")
     }
 }
+
 
 //MARK - ToServer
 extension SquareMessViewController {
@@ -666,6 +704,7 @@ extension SquareMessViewController {
 //            }
 //        }
     }//end smts
+    
     
     func downloadExistingMessagesFromServer()
     {

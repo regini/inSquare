@@ -35,7 +35,7 @@ class RecentsViewController: UIViewController, UITableViewDelegate
             switch response.result {
             case .Success:
                 if let value = response.result.value {
-                    print("RECSQUARES \(value)")
+//                    print("RECSQUARES \(value)")
                     self.recentSquares = JSON(value)
 
                     //                    for (index, value):(String, JSON) in self.jsonSq
@@ -85,7 +85,7 @@ class RecentsViewController: UIViewController, UITableViewDelegate
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         let date = dateFormatter.dateFromString("\(self.recentSquares[indexPath.row]["_source"]["lastMessageDate"].string!)")
-        print(date)
+//        print(date)
         let newDateFormatter = NSDateFormatter()
         newDateFormatter.locale = NSLocale.currentLocale()
         newDateFormatter.dateFormat = "hh:mm (dd-MMM)"
@@ -96,7 +96,7 @@ class RecentsViewController: UIViewController, UITableViewDelegate
             let path = tableView.indexPathForRowAtPoint(selectedCell.center)!
             let selectedSquare = self.recentSquares[path.row]
             
-            print("the selected item is \(selectedSquare)")
+//            print("the selected item is \(selectedSquare)")
             
             
             
@@ -114,6 +114,28 @@ class RecentsViewController: UIViewController, UITableViewDelegate
         return cell
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let indexPath = tableView.indexPathForSelectedRow
+        
+        let currentCell = tableView.cellForRowAtIndexPath(indexPath!)! as! RecentTableViewCell
+        
+        let selectedSquare = self.recentSquares[indexPath!.row]
+        //let path = tableView.indexPathForRowAtPoint(selectedCell.center)!
+        
+        print("the selected item is \(selectedSquare)")
+        
+        
+        
+        self.squareId = selectedSquare["_id"].string!
+        self.squareName = selectedSquare["_source"]["name"].string!
+        let coordinates = selectedSquare["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+        let latitude = (coordinates[0] as NSString).doubleValue
+        let longitude = (coordinates[1] as NSString).doubleValue
+        self.squareLatitude = latitude
+        self.squareLongitude = longitude
+        
+        self.performSegueWithIdentifier("chatFromRec", sender: self)
+    }
     
     
     override func didReceiveMemoryWarning() {

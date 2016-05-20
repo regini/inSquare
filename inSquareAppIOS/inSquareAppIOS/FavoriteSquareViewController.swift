@@ -14,6 +14,11 @@ import Alamofire
 class FavoriteSquareViewController: UIViewController, UITableViewDelegate
 {
     var favouriteSquare = JSON(data: NSData())
+            {
+            didSet {
+                self.tableView.reloadData()
+            }
+            }
 
     //values to pass by cell chatButton tap, updated when the button is tapped
     var squareId:String = String()
@@ -44,9 +49,9 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
             switch response.result {
             case .Success:
                 if let value = response.result.value {
-                    print("FAVOURITESQUARES \(value)")
+//                    print("FAVOURITESQUARES \(value)")
                     self.favouriteSquare = JSON(value)
-                    print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
+//                    print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
 
                     self.tableView.reloadData()
                 }
@@ -66,12 +71,12 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
         //let cell = FavouriteCellTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "favCell")
         
         let cell = self.tableView.dequeueReusableCellWithIdentifier("favCell", forIndexPath: indexPath) as! FavouriteCellTableViewCell
-        print("qwerty \(self.favouriteSquare[indexPath.row]["_source"]["lastMessageDate"])")
+//        print("qwerty \(self.favouriteSquare[indexPath.row]["_source"]["lastMessageDate"])")
         cell.squareName.text = self.favouriteSquare[indexPath.row]["_source"]["name"].string
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         let date = dateFormatter.dateFromString("\(self.favouriteSquare[indexPath.row]["_source"]["lastMessageDate"].string!)")
-        print(date)
+//        print(date)
         let newDateFormatter = NSDateFormatter()
         newDateFormatter.locale = NSLocale.currentLocale()
         newDateFormatter.dateFormat = "hh:mm (dd-MMM)"
@@ -82,7 +87,7 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
             let path = tableView.indexPathForRowAtPoint(selectedCell.center)!
             let selectedSquare = self.favouriteSquare[path.row]
             
-            print("the selected item is \(selectedSquare)")
+//            print("the selected item is \(selectedSquare)")
             
           
             
@@ -102,6 +107,29 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
         
         return cell
     }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let indexPath = tableView.indexPathForSelectedRow
+        
+        let currentCell = tableView.cellForRowAtIndexPath(indexPath!)! as! FavouriteCellTableViewCell
+        
+        let selectedSquare = self.favouriteSquare[indexPath!.row]
+        //let path = tableView.indexPathForRowAtPoint(selectedCell.center)!
+        
+        print("the selected item is \(selectedSquare)")
+        
+        
+        
+        self.squareId = selectedSquare["_id"].string!
+        self.squareName = selectedSquare["_source"]["name"].string!
+        let coordinates = selectedSquare["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
+        let latitude = (coordinates[0] as NSString).doubleValue
+        let longitude = (coordinates[1] as NSString).doubleValue
+        self.squareLatitude = latitude
+        self.squareLongitude = longitude
+        
+        self.performSegueWithIdentifier("chatFromFav", sender: self)
+    }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -114,9 +142,9 @@ class FavoriteSquareViewController: UIViewController, UITableViewDelegate
             switch response.result {
             case .Success:
                 if let value = response.result.value {
-                    print("FAVOURITESQUARES \(value)")
+//                    print("FAVOURITESQUARES \(value)")
                     self.favouriteSquare = JSON(value)
-                    print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
+//                    print("FAVOURITESQUARES2 \(self.favouriteSquare[0]["_source"])")
                     
                     self.tableView.reloadData()
                 }

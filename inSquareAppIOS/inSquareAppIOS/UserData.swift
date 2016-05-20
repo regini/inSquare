@@ -13,11 +13,13 @@ let serverMainUrl = "http://cloud.insquare.it"
 let serverSocketMainUrl = "http://chat.cloud.insquare.it"
 let serverSocketNamespace = "/squares"
 
-var loggedIn = false
-//var username:String = "Alessandro Steri Full"
+//var loggedIn = false
 var userAvatarUrl = ""
 var userAvatar:UIImage = UIImage(named: "logo insq.png")!
 var opponentDefaultAvatar:UIImage = UIImage(named: "opponentAvatar-01.png")!
+
+var apnToken = ""
+
 
 var username:String = ""
 var accessToken:String = String()
@@ -68,6 +70,8 @@ var navigationBarHeight:CGFloat = 44
 //http://recapp-insquare.rhcloud.com/ log:
 //rhc tail recapp --namespace insquare 
 // new tail rhc tail insquarerecapp --namespace insquare
+//rhc tail -a insquare
+//chat tail: rhc tail chat --namespace recappapp
 
 //pw v*******
 

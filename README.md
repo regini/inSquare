@@ -5,8 +5,10 @@ Geolocalized interactions for anyone's need and those who want to know more abou
 Where we go. Who we meet.
 
 # Final Submission
- • [Watch a demonstrating video here!]()
-
+ • [Watch a demonstrating video here!](https://youtu.be/RzOndcCgn70)
+ 
+ • [Documentation](http://docs.insquare.it)
+ 
  • UI updated and adapted to the guidelines.
  
  • Better messaging(with photos!), research bar, social share and a tutorial!
@@ -18,9 +20,11 @@ Where we go. Who we meet.
   
 [Our app is now available on Google Play.](https://play.google.com/store/apps/details?id=com.nsqre.insquare&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1)
 
-[Download the apk file here.]()
+[Download the apk file here.](https://drive.google.com/file/d/0B7PZp8m-DpIUZUVZRnRWR05acUE/view?usp=sharing)
 
-[Get the iOS App.](https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
+[Get the iOS App on App Store.](https://appsto.re/it/nUqRab.i)
+
+[Get the last iOS App.](https://docs.google.com/forms/d/1DxJuMuMHwqPWnLFzPkTMXjYEH9cX-Ujdk8QMkCKKme4/viewform)
   
 # The architectural overview
 

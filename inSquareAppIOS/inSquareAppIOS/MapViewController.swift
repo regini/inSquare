@@ -85,9 +85,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         //UIApplication.sharedApplication().statusBarStyle = .LightContent
 
+        updateFavouriteSquares()
+        
         
         print("SERVER ID: \(serverId)")
-        
+        print("USERNAME:", username)
         //search bar change color
         //searchBar.barTintColor = UIColor.blackColor()
         
@@ -171,18 +173,27 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                     {
                         let i:Int=Int(index)!
                         
-                        
                         let coordinates = self.jsonSq[i]["_source"]["geo_loc"].string!.componentsSeparatedByString(",")
                         let latitude = (coordinates[0] as NSString).doubleValue
                         let longitude = (coordinates[1] as NSString).doubleValue
                         let title = self.jsonSq[i]["_source"]["name"].string
-                        let identifier = self.jsonSq[i]["_id"].string
                         
+                        let identifier = self.jsonSq[i]["_id"].string
                         
                         let marker = GMSMarker()
                         marker.position = CLLocationCoordinate2DMake(latitude, longitude)
                         marker.title = title
-                        marker.snippet = self.snippetString
+                        if ((title! as NSString).length > 25)
+                        {
+                            marker.snippet = title
+                        }
+                        else
+                        {
+                            marker.snippet = self.snippetString
+                            print(marker.title)
+
+
+                        }
                         //marker.snippet = snippet
                         marker.icon = insquareMapPin
                         marker.groundAnchor.x = marker.groundAnchor.x + 0.45
@@ -455,7 +466,20 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2DMake(latitude, longitude)
             marker.title = title
-            marker.snippet = self.snippetString
+
+            if ((title! as NSString).length > 25)
+            {
+                marker.snippet = title
+            }
+            else
+            {
+                marker.snippet = self.snippetString
+                print(marker.title)
+                
+                
+            }
+
+            
             //marker.snippet = snippet
             marker.icon = insquareMapPin
             marker.groundAnchor.x = marker.groundAnchor.x + 0.45
@@ -543,7 +567,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
             let meters:CLLocationDistance = oldMapCenter.distanceFromLocation(newMapCenter)
             if meters > Double(distanceInKmForGetSquare*990)
             {
-                print("newGET")
+                //print("newGET")
                 
                 
                 if (mapCenterLatitude == 41.890466 && mapCenterLongitude == 12.492231) || (mapCenterLatitude == 0.0 && mapCenterLongitude == 0.0)
@@ -571,7 +595,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                 //getSquare(mapCenterLatitude, longitude: mapCenterLongitude, distanceInKm: distanceInKmForGetSquare) //ritorna json poi devi lavorarlo
                 //mi sa che prima di aggiungere marker nuovi va pulita mappa o non aggiunti quelli presenti
                 request(.GET, "\(serverMainUrl)/squares", parameters:["distance": "\(distanceInKmForGetSquare)km", "lat": mapCenterLatitude, "lon": mapCenterLongitude]).validate().responseJSON { response in
-                    print("QWERTYUIO \(response.request)")
+                    //print("QWERTYUIO \(response.request)")
                     switch response.result {
                     case .Success:
                         if let value = response.result.value {
@@ -589,7 +613,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                                 let marker = GMSMarker()
                                 marker.position = CLLocationCoordinate2DMake(latitude, longitude)
                                 marker.title = title
-                                marker.snippet = self.snippetString
+
+                                if ((title! as NSString).length > 25)
+                                {
+                                    marker.snippet = title
+                                }
+                                else
+                                {
+                                    marker.snippet = self.snippetString
+                                    print(marker.title)
+                                    
+                                }
+
+                                
                                 marker.userData = ["markerId": "\(identifier!)", "markerLat": "\(latitude)", "markerLon": "\(longitude)", "favouredBy": "\(self.jsonSq[i]["_source"]["favouredBy"])", "lastMessageDate": "\(self.jsonSq[i]["_source"]["lastMessageDate"].string!)", "views": "\(self.jsonSq[i]["_source"]["views"])", "state": "\(self.jsonSq[i]["_source"]["state"].string!)"]
                                 marker.icon = insquareMapPin
                                 marker.groundAnchor.x = marker.groundAnchor.x + 0.45
@@ -681,26 +717,26 @@ class MapViewController: UIViewController, GMSMapViewDelegate, UITableViewDataSo
                 var urlPostSquare = "\(serverMainUrl)/squares?name=\(textField.text!)&lat=\(latR)&lon=\(longR)&ownerId=\(serverId)"
                 urlPostSquare = urlPostSquare.stringByReplacingOccurrencesOfString(" ", withString: "%20")
                 
-                print("REQUEST URL: \(urlPostSquare)")
+                //print("REQUEST URL: \(urlPostSquare)")
                 request(.POST, urlPostSquare).validate().responseJSON { response in
-                    print("REQUEST POST SQUARE: \(response.request)")
+                    //print("REQUEST POST SQUARE: \(response.request)")
                     switch response.result {
                     case .Success:
-                        print("RESULT \(response.result)")
-                        print("RESULT \(response.result.value)")
+                        //print("RESULT \(response.result)")
+                        //print("RESULT \(response.result.value)")
 
                         if let value = response.result.value
                         {
                             jsnResult = JSON(value)
-                            print("qwert \(jsnResult)")
+                            //print("qwert \(jsnResult)")
                             //marker.userData = ["markerId": "\(jsnResult["_id"].string!)"]
                             //togli [0]
                             marker.userData = ["markerId": "\(jsnResult["_id"].string!)", "markerLat": "\(coordinate.latitude)", "markerLon": "\(coordinate.longitude)", "favouredBy": "0", "lastMessageDate": "\(NSDate())", "views": "0", "state": "asleep"]
-                            print("qwert \(marker.userData)")
+                            //print("qwert \(marker.userData)")
                             
                             //search
                             self.squareToSearch[marker.userData["markerId"] as! String] = marker
-                            print(self.squareToSearch.count)
+                            //print(self.squareToSearch.count)
                             
                             //Analitycs
                             var tracker = GAI.sharedInstance().defaultTracker
